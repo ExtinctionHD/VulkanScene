@@ -13,24 +13,26 @@ public:
 	void init();
 
 private:
+	// слои проверок Vulkan
 	const std::vector<const char *> validationLayers =
 	{
-		"VK_LAYER_LUNARG_standard_validation"
+		"VK_LAYER_LUNARG_standard_validation"  // набор стандартных слоев
 	};
 
-#ifdef _DEBUG
+#ifdef _DEBUG  // слои проверок включаютс€ толбко в отладочном режиме
 	const bool enableValidationLayers = true;
 #else
 	const bool enableValidationLayers = false;
 #endif
 
-	const std::vector<const char *> extensions =
-	{
-		VK_KHR_SWAPCHAIN_EXTENSION_NAME
-	};
+	VkDeleter<VkInstance> instance{ vkDestroyInstance };  // экземл€р Vulkan
 
-	VkDeleter<VkInstance> instance{ vkDestroyInstance };
+	void createInstance();  // создание экземпл€ра
 
-	void createInstance();
+	// проверки поддержки экземпл€ром слоев и расширений
+	static bool checkInstanceLayerSupport(std::vector<const char *> requiredLayers);
+	static bool checkInstanceExtensionSupport(std::vector<const char *> requiredExtensions);
+
+	std::vector<const char *> getRequiredExtensions();  // требуемые приложением расширени€
 };
 
