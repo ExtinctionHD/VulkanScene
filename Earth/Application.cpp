@@ -2,5 +2,7 @@
 
 void Application::run()
 {
+	window.init();
 
+	window.mainLoop();
 }
