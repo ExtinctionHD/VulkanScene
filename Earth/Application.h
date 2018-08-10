@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Window.h"
+#include "Vulkan.h"
 
 class Application
 {
@@ -9,5 +10,7 @@ public:
 
 private:
 	Window window;
+
+	Vulkan vulkan;
 };
 
