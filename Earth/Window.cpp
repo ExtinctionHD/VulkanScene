@@ -1,5 +1,7 @@
 #include "Window.h"
 
+// public:
+
 void Window::init()
 {
 	glfwInit();

@@ -5,10 +5,15 @@
 
 #include "Vulkan.h"
 
+// public:
+
 void Vulkan::init()
 {
 	createInstance();
+	createDebugCallback();
 }
+
+// private:
 
 void Vulkan::createInstance()
 {
@@ -125,4 +130,53 @@ std::vector<const char*> Vulkan::getRequiredExtensions()
 
 	return extensions;
 }
+
+VkResult Vulkan::vkCreateDebugReportCallbackEXT(VkInstance instance, const VkDebugReportCallbackCreateInfoEXT * pCreateInfo, const VkAllocationCallbacks * pAllocator, VkDebugReportCallbackEXT * pCallback)
+{
+	auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(
+		instance, "vkCreateDebugReportCallbackEXT"
+	);
+
+	if (func != nullptr)
+	{
+		return func(instance, pCreateInfo, pAllocator, pCallback);
+	}
+	else
+	{
+		return VK_ERROR_EXTENSION_NOT_PRESENT;
+	}
+}
+
+void Vulkan::vkDestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks * pAllocator)
+{
+	auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
+	if (func != nullptr)
+	{
+		func(instance, callback, pAllocator);
+	}
+}
+
+void Vulkan::createDebugCallback()
+{
+	if (!enableValidationLayers)
+	{
+		return;
+	}
+
+	VkDebugReportCallbackCreateInfoEXT createInfo = 
+	{
+		VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,			// sType
+		nullptr,															// pNext
+		VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT,	// flags
+		Logger::validationLayerCallback,									// pfnCallback
+		nullptr																// pUserData
+	};
+
+	if (vkCreateDebugReportCallbackEXT(instance, &createInfo, nullptr, callback.replace()) != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_CREATE_CALLBACK);
+	}
+}
+
+
 

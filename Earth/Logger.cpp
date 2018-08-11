@@ -3,9 +3,12 @@
 
 #include "Logger.h"
 
+// public:
+
 const std::string Logger::VALIDATION_LAYERS_NOT_AVAILABLE = "Required validation layers not available";
 const std::string Logger::INSTANCE_EXTENSIONS_NOT_AVAILABLE = "Required instance extensions not available";
 const std::string Logger::FAILED_TO_CREATE_INSTANCE = "Failed to create vulkan instance";
+const std::string Logger::FAILED_TO_CREATE_CALLBACK = "Failed to create validation layer debug callback";
 
 void Logger::infoValidationLayers(bool enabled)
 {
@@ -25,6 +28,15 @@ void Logger::fatal(std::string message, std::string file, int line)
 {
 	throw std::runtime_error("\nFatal: " + message + ". In " + getFilename(file) + " at line " + std::to_string(line));
 }
+
+VKAPI_ATTR VkBool32 VKAPI_CALL Logger::validationLayerCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char * layerPrefix, const char * msg, void * userData)
+{
+	std::cerr << "Validation layer: " << msg << "." << std::endl;
+
+	return VK_FALSE;
+}
+
+// private:
 
 void Logger::printInfo()
 {
