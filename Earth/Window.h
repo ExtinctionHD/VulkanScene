@@ -8,11 +8,12 @@ public:
 	int width = 1280;
 	int height = 720;
 
-	void init();		// инициализация библиотеки и создание окна
+	void init();  // инициализация библиотеки и создание окна
 
-	void mainLoop();	// цикл работы приложения
+	void mainLoop();  // цикл работы приложения
 
+	operator GLFWwindow*();  // приведение к дескриптору окна
 private:
-	GLFWwindow *window;
+	GLFWwindow * window;  // дескриптор окна
 };
 

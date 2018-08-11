@@ -9,6 +9,7 @@ const std::string Logger::VALIDATION_LAYERS_NOT_AVAILABLE = "Required validation
 const std::string Logger::INSTANCE_EXTENSIONS_NOT_AVAILABLE = "Required instance extensions not available";
 const std::string Logger::FAILED_TO_CREATE_INSTANCE = "Failed to create vulkan instance";
 const std::string Logger::FAILED_TO_CREATE_CALLBACK = "Failed to create validation layer debug callback";
+const std::string Logger::FAILED_TO_CREATE_SURFACE = "Failed to create window surface.";
 
 void Logger::infoValidationLayers(bool enabled)
 {

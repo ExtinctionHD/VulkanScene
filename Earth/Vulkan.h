@@ -1,8 +1,7 @@
 #pragma once
 
-#define VK_USE_PLATFORM_WIN32_KHR
-#include <vulkan/vulkan.h>
-
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
 #include <vector>
 
 #include "VkDeleter.h"
@@ -10,7 +9,7 @@
 class Vulkan
 {
 public:
-	void init();
+	void init(GLFWwindow *window);
 
 private:
 	// слои проверки Vulkan
@@ -29,6 +28,9 @@ private:
 
 	// callback слоев проверки
 	VkDeleter<VkDebugReportCallbackEXT> callback{ instance, vkDestroyDebugReportCallbackEXT };
+
+	// объект поверхности для отображения
+	VkDeleter<VkSurfaceKHR> surface{ instance, vkDestroySurfaceKHR };
 
 	void createInstance();  // создание экземпляра
 
@@ -52,5 +54,7 @@ private:
 	);
 
 	void createDebugCallback();  // создание обратного вызова слоев проверки
+
+	void createSurface(GLFWwindow *window);  // создание поверхности поверх окна
 };
 

@@ -19,3 +19,8 @@ void Window::mainLoop()
 		glfwPollEvents();
 	}
 }
+
+Window::operator GLFWwindow*()
+{
+	return window;
+}

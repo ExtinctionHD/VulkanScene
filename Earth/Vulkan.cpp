@@ -1,16 +1,15 @@
 #include <set>
-#include <GLFW/glfw3.h>
 
 #include "Logger.h"
-
 #include "Vulkan.h"
 
 // public:
 
-void Vulkan::init()
+void Vulkan::init(GLFWwindow *window)
 {
 	createInstance();
 	createDebugCallback();
+	createSurface(window);
 }
 
 // private:
@@ -172,9 +171,19 @@ void Vulkan::createDebugCallback()
 		nullptr																// pUserData
 	};
 
-	if (vkCreateDebugReportCallbackEXT(instance, &createInfo, nullptr, callback.replace()) != VK_SUCCESS)
+	VkResult result = vkCreateDebugReportCallbackEXT(instance, &createInfo, nullptr, callback.replace());
+	if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_CALLBACK);
+	}
+}
+
+void Vulkan::createSurface(GLFWwindow *window)
+{
+	VkResult result = glfwCreateWindowSurface(instance, window, nullptr, surface.replace());
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_CREATE_SURFACE);
 	}
 }
 

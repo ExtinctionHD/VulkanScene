@@ -17,6 +17,7 @@ public:
 	static const std::string INSTANCE_EXTENSIONS_NOT_AVAILABLE;
 	static const std::string FAILED_TO_CREATE_INSTANCE;
 	static const std::string FAILED_TO_CREATE_CALLBACK;
+	static const std::string FAILED_TO_CREATE_SURFACE;
 
 	static void infoValidationLayers(bool enabled);  // вывод информации о слоях проверки
 

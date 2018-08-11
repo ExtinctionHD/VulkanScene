@@ -5,7 +5,7 @@
 void Application::run()
 {
 	window.init();
-	vulkan.init();
+	vulkan.init(window);
 
 	window.mainLoop();
 }
