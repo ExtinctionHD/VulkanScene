@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Device.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="VkDeleter.h" />
     <ClInclude Include="Vulkan.h" />
@@ -27,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Device.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Vulkan.cpp" />

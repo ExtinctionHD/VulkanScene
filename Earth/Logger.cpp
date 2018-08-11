@@ -10,6 +10,8 @@ const std::string Logger::INSTANCE_EXTENSIONS_NOT_AVAILABLE = "Required instance
 const std::string Logger::FAILED_TO_CREATE_INSTANCE = "Failed to create vulkan instance";
 const std::string Logger::FAILED_TO_CREATE_CALLBACK = "Failed to create validation layer debug callback";
 const std::string Logger::FAILED_TO_CREATE_SURFACE = "Failed to create window surface.";
+const std::string Logger::NO_GPU_WITH_VULKAN_SUPPORT = "GPU with vulkan support not found.";
+const std::string Logger::NO_SUITABLE_GPU = "Suitable GPU not found";
 
 void Logger::infoValidationLayers(bool enabled)
 {

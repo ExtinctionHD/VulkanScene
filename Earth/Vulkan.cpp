@@ -1,6 +1,6 @@
 #include <set>
-
 #include "Logger.h"
+
 #include "Vulkan.h"
 
 // public:
@@ -16,7 +16,7 @@ void Vulkan::init(GLFWwindow *window)
 
 void Vulkan::createInstance()
 {
-	// слои проверок
+	// validation layers
 	Logger::infoValidationLayers(enableValidationLayers);
 	if (enableValidationLayers)
 	{
@@ -26,14 +26,14 @@ void Vulkan::createInstance()
 		}
 	}
 
-	// требуемые расширения
+	// required extenstions
 	std::vector<const char *> extensions = getRequiredExtensions();
 	if (!checkInstanceExtensionSupport(extensions))
 	{
 		LOGGER_FATAL(Logger::INSTANCE_EXTENSIONS_NOT_AVAILABLE);
 	}
 
-	// информация о приложении
+	// infoabout application for vulkan
 	VkApplicationInfo appInfo =
 	{
 		VK_STRUCTURE_TYPE_APPLICATION_INFO,	// sType
@@ -45,7 +45,7 @@ void Vulkan::createInstance()
 		VK_API_VERSION_1_0					// apiVersion
 	};
 
-	// информация для создания экземпляра Vulkan
+	// info for vulkan instance
 	VkInstanceCreateInfo createInfo =
 	{
 		VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,	// sType
@@ -58,14 +58,13 @@ void Vulkan::createInstance()
 		extensions.data()						// ppEnabledExtensionNames
 	};
 
-	// если включены слои проверок добавляем их в структуру
+	// add validation layers if they are enabled
 	if (enableValidationLayers)
 	{
 		createInfo.enabledLayerCount = validationLayers.size();
 		createInfo.ppEnabledLayerNames = validationLayers.data();
 	}
 
-	// создание экземпляра Vulkan
 	VkResult result = vkCreateInstance(&createInfo, nullptr, instance.replace());
 	if (result != VK_SUCCESS)
 	{
@@ -76,10 +75,10 @@ void Vulkan::createInstance()
 bool Vulkan::checkInstanceLayerSupport(std::vector<const char*> requiredLayers)
 {
 	uint32_t layerCount;
-	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);  // get count
 
 	std::vector<VkLayerProperties> availableLayers(layerCount);
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());  // get layers
 
 	std::set<std::string> requiredLayersSet(requiredLayers.begin(), requiredLayers.end());
 
@@ -88,16 +87,17 @@ bool Vulkan::checkInstanceLayerSupport(std::vector<const char*> requiredLayers)
 		requiredLayersSet.erase(layer.layerName);
 	}
 
+	// empty if all required layers are supported by instance
 	return requiredLayersSet.empty();
 }
 
 bool Vulkan::checkInstanceExtensionSupport(std::vector<const char*> requiredExtensions)
 {
 	uint32_t extensionCount;
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);  // get count
 
 	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.data());
+	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.data());  // get extensions
 
 	std::set<std::string> requiredExtensionsSet(requiredExtensions.begin(), requiredExtensions.end());
 
@@ -106,6 +106,7 @@ bool Vulkan::checkInstanceExtensionSupport(std::vector<const char*> requiredExte
 		requiredExtensionsSet.erase(layer.extensionName);
 	}
 
+	// empty if all required extensions are supported by instance
 	return requiredExtensionsSet.empty();
 }
 
@@ -113,6 +114,7 @@ std::vector<const char*> Vulkan::getRequiredExtensions()
 {
 	std::vector<const char*> extensions;
 
+	// glfw extensions, at least VK_KHR_surface
 	unsigned int glfwExtensionCount = 0;
 	const char **glfwExtensions;
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -122,6 +124,7 @@ std::vector<const char*> Vulkan::getRequiredExtensions()
 		extensions.push_back(glfwExtensions[i]);
 	}
 
+	// extension for validation layers callback
 	if (enableValidationLayers)
 	{
 		extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
@@ -157,6 +160,7 @@ void Vulkan::vkDestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportC
 
 void Vulkan::createDebugCallback()
 {
+	// don't need callback if validation layers are not enabled
 	if (!enableValidationLayers)
 	{
 		return;
@@ -180,6 +184,7 @@ void Vulkan::createDebugCallback()
 
 void Vulkan::createSurface(GLFWwindow *window)
 {
+	// glfw library create surface by it self
 	VkResult result = glfwCreateWindowSurface(instance, window, nullptr, surface.replace());
 	if (result != VK_SUCCESS)
 	{

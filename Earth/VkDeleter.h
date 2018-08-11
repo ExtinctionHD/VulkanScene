@@ -7,10 +7,10 @@ template <class T>
 class VkDeleter
 {
 public:
-	// конструктор по умолчанию
+	// default constructor
 	VkDeleter() : VkDeleter([](T, VkAllocationCallbacks*) {}) {}
 
-	// конструктор приимающий функцию деструктор
+	// constructor with object destructor function
 	VkDeleter(std::function<void(T, VkAllocationCallbacks*)> deleter)
 	{
 		this->deleter = [=](T obj)
@@ -19,7 +19,7 @@ public:
 		};
 	}
 
-	// конструктор дл€ объектов зависимых от экземпл€ра
+	// constructor for instance-dependent objects
 	VkDeleter(const VkDeleter<VkInstance>& instance, std::function<void(VkInstance, T, VkAllocationCallbacks*)> deleter)
 	{
 		this->deleter = [&instance, deleter](T obj)
@@ -28,7 +28,7 @@ public:
 		};
 	}
 
-	// конструктор дл€ объектов зависимых от логического устройства
+	// constructor for device-dependent objects
 	VkDeleter(const VkDeleter<VkDevice>& device, std::function<void(VkDevice, T, VkAllocationCallbacks*)> deleter)
 	{
 		this->deleter = [&device, deleter](T obj)
@@ -42,33 +42,33 @@ public:
 		cleanup();
 	}
 
-	// замена объекта: очистка предыдущего и сохранение нового
+	// replace: cleanup last object, return pointer for recording
 	T* replace()
 	{
 		cleanup();
 		return &object;
 	}
 
-	// приведение к объекту
+	// cast to object type
 	operator T() const
 	{
 		return object;
 	}
 
-	// вз€тие адресса
+	// cast to object address
 	const T* operator &() const
 	{
 		return &object;
 	}
 
-	// очистка при копировании
+	// cleanup before assigment
 	void operator =(T obj)
 	{
 		cleanup();
 		object = obj;
 	}
 
-	// сравнение
+	// compare with object
 	template<class V>
 	bool operator ==(V obj)
 	{
@@ -78,9 +78,9 @@ public:
 private:
 	T object{ VK_NULL_HANDLE };
 
-	std::function<void(T)> deleter;  // функци€ деструктор
+	std::function<void(T)> deleter;  // object destructor function
 
-	void cleanup()  // очистка объекта
+	void cleanup()
 	{
 		if (object != VK_NULL_HANDLE)
 		{

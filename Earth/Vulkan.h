@@ -12,35 +12,33 @@ public:
 	void init(GLFWwindow *window);
 
 private:
-	// слои проверки Vulkan
 	const std::vector<const char *> validationLayers =
 	{
-		"VK_LAYER_LUNARG_standard_validation"  // набор стандартных слоев
+		"VK_LAYER_LUNARG_standard_validation"  // some debug layers
 	};
 
-#ifdef _DEBUG  // слои провеки включаютс€ только в отладочном режиме
+#ifdef _DEBUG  // validation layers enable only in debug mode
 	const bool enableValidationLayers = true;
 #else
 	const bool enableValidationLayers = false;
 #endif
 
-	VkDeleter<VkInstance> instance{ vkDestroyInstance };  // экземл€р Vulkan
+	VkDeleter<VkInstance> instance{ vkDestroyInstance };
 
-	// callback слоев проверки
+	// validation layers callback
 	VkDeleter<VkDebugReportCallbackEXT> callback{ instance, vkDestroyDebugReportCallbackEXT };
 
-	// объект поверхности дл€ отображени€
+	// surface object for presentation
 	VkDeleter<VkSurfaceKHR> surface{ instance, vkDestroySurfaceKHR };
 
-	void createInstance();  // создание экземпл€ра
+	void createInstance();
 
-	// проверки поддержки экземпл€ром слоев и расширений
 	static bool checkInstanceLayerSupport(std::vector<const char *> requiredLayers);
 	static bool checkInstanceExtensionSupport(std::vector<const char *> requiredExtensions);
 
-	std::vector<const char *> getRequiredExtensions();  // требуемые приложением расширени€
+	std::vector<const char *> getRequiredExtensions();
 
-	// функции из расширений (EXT) необходимо загрузить перед использованием
+	// functions from extensions (EXT) need to get before use
 	static VkResult vkCreateDebugReportCallbackEXT(
 		VkInstance instance,
 		const VkDebugReportCallbackCreateInfoEXT *pCreateInfo,
@@ -53,8 +51,8 @@ private:
 		const VkAllocationCallbacks *pAllocator
 	);
 
-	void createDebugCallback();  // создание обратного вызова слоев проверки
+	void createDebugCallback();
 
-	void createSurface(GLFWwindow *window);  // создание поверхности поверх окна
+	void createSurface(GLFWwindow *window);
 };
 
