@@ -3,12 +3,14 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vector>
+#include "Device.h"
 
 #include "VkDeleter.h"
 
 class Vulkan
 {
 public:
+	// create all required objects
 	void init(GLFWwindow *window);
 
 private:
@@ -30,6 +32,8 @@ private:
 
 	// surface object for presentation
 	VkDeleter<VkSurfaceKHR> surface{ instance, vkDestroySurfaceKHR };
+
+	Device device;
 
 	void createInstance();
 

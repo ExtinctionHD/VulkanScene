@@ -10,6 +10,8 @@ void Vulkan::init(GLFWwindow *window)
 	createInstance();
 	createDebugCallback();
 	createSurface(window);
+
+	device.init(instance, surface, validationLayers);
 }
 
 // private:
@@ -80,15 +82,15 @@ bool Vulkan::checkInstanceLayerSupport(std::vector<const char*> requiredLayers)
 	std::vector<VkLayerProperties> availableLayers(layerCount);
 	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());  // get layers
 
-	std::set<std::string> requiredLayersSet(requiredLayers.begin(), requiredLayers.end());
+	std::set<std::string> requiredLayerSet(requiredLayers.begin(), requiredLayers.end());
 
 	for (const auto& layer : availableLayers)
 	{
-		requiredLayersSet.erase(layer.layerName);
+		requiredLayerSet.erase(layer.layerName);
 	}
 
 	// empty if all required layers are supported by instance
-	return requiredLayersSet.empty();
+	return requiredLayerSet.empty();
 }
 
 bool Vulkan::checkInstanceExtensionSupport(std::vector<const char*> requiredExtensions)
@@ -99,15 +101,15 @@ bool Vulkan::checkInstanceExtensionSupport(std::vector<const char*> requiredExte
 	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.data());  // get extensions
 
-	std::set<std::string> requiredExtensionsSet(requiredExtensions.begin(), requiredExtensions.end());
+	std::set<std::string> requiredExtensionSet(requiredExtensions.begin(), requiredExtensions.end());
 
 	for (const auto& layer : availableExtensions)
 	{
-		requiredExtensionsSet.erase(layer.extensionName);
+		requiredExtensionSet.erase(layer.extensionName);
 	}
 
 	// empty if all required extensions are supported by instance
-	return requiredExtensionsSet.empty();
+	return requiredExtensionSet.empty();
 }
 
 std::vector<const char*> Vulkan::getRequiredExtensions()

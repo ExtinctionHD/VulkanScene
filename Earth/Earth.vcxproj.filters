@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Исходные файлы\Device">
+      <UniqueIdentifier>{1cf1f2fb-0bb8-4689-84fa-2f6ad3a14ef0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Device">
+      <UniqueIdentifier>{2acb5c33-3297-4963-b663-8cc98836be15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VkDeleter.h">
@@ -31,7 +37,13 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Device.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="QueueFamilyIndices.h">
+      <Filter>Файлы заголовков\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="SurfaceSupportDetails.h">
+      <Filter>Файлы заголовков\Device</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -51,7 +63,13 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Device.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="QueueFamilyIndices.cpp">
+      <Filter>Исходные файлы\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="SurfaceSupportDetails.cpp">
+      <Filter>Исходные файлы\Device</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

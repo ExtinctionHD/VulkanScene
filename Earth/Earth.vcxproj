@@ -22,6 +22,8 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="QueueFamilyIndices.h" />
+    <ClInclude Include="SurfaceSupportDetails.h" />
     <ClInclude Include="VkDeleter.h" />
     <ClInclude Include="Vulkan.h" />
     <ClInclude Include="Window.h" />
@@ -31,6 +33,8 @@
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="QueueFamilyIndices.cpp" />
+    <ClCompile Include="SurfaceSupportDetails.cpp" />
     <ClCompile Include="Vulkan.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
