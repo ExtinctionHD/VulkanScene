@@ -45,6 +45,9 @@
     <ClInclude Include="SurfaceSupportDetails.h">
       <Filter>Файлы заголовков\Device</Filter>
     </ClInclude>
+    <ClInclude Include="SwapChain.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -70,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="SurfaceSupportDetails.cpp">
       <Filter>Исходные файлы\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="SwapChain.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

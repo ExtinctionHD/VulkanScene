@@ -21,6 +21,7 @@ public:
 	static const std::string NO_GPU_WITH_VULKAN_SUPPORT;
 	static const std::string NO_SUITABLE_GPU;
 	static const std::string FAILED_TO_CREATE_LOGICAL_DEVICE;
+	static const std::string FAILED_TO_CREATE_SWAPCHAIN;
 
 	static void infoValidationLayers(bool enabled);  // log inforamation about validation layers
 

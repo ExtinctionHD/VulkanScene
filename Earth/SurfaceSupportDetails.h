@@ -12,7 +12,7 @@ public:
 
 	std::vector<VkPresentModeKHR> presentModes;
 
-	// this device suitable for this surface
+	// this device is suitable for this surface
 	bool isSuitable();
 
 	// initialize all details

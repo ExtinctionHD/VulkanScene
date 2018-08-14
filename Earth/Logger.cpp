@@ -13,6 +13,7 @@ const std::string Logger::FAILED_TO_CREATE_SURFACE = "Failed to create window su
 const std::string Logger::NO_GPU_WITH_VULKAN_SUPPORT = "GPU with vulkan support not found.";
 const std::string Logger::NO_SUITABLE_GPU = "Suitable GPU not found";
 const std::string Logger::FAILED_TO_CREATE_LOGICAL_DEVICE = "Failed to create logical device";
+const std::string Logger::FAILED_TO_CREATE_SWAPCHAIN = "Failed to create SwapChain object";
 
 void Logger::infoValidationLayers(bool enabled)
 {

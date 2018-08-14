@@ -1,7 +1,5 @@
 #include <vector>
 #include "Logger.h"
-#include "QueueFamilyIndices.h"
-#include "SurfaceSupportDetails.h"
 #include <set>
 
 #include "Device.h"
@@ -13,6 +11,11 @@ void Device::init(VkInstance instance, VkSurfaceKHR surface, std::vector<const c
 	layers = requiredLayers;
 
 	pickPhysicalDevice(instance, surface);
+
+	// save properties of picked device
+	surfaceSupportDetails.init(physicalDevice, surface);
+	queueFamilyIndices.findFamilies(physicalDevice, surface);
+
 	createLogicalDevice(surface);
 }
 

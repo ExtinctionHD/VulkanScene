@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include "Device.h"
+#include "SwapChain.h"
 
 #include "VkDeleter.h"
 
@@ -33,7 +34,11 @@ private:
 	// surface object for presentation
 	VkDeleter<VkSurfaceKHR> surface{ instance, vkDestroySurfaceKHR };
 
+	// logical and physical device
 	Device device;
+
+	// swapchain object and its images
+	SwapChain swapChain;
 
 	void createInstance();
 

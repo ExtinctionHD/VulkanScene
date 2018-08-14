@@ -12,6 +12,7 @@ void Vulkan::init(GLFWwindow *window)
 	createSurface(window);
 
 	device.init(instance, surface, validationLayers);
+	swapChain.create(device, surface, { 1280, 720 });  // TODO: window extent
 }
 
 // private:

@@ -14,7 +14,5 @@ public:
 
 	// try to find required queue families and save they indices
 	void findFamilies(VkPhysicalDevice device, VkSurfaceKHR surface);
-
-private:
 };
 
