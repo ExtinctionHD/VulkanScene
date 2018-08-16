@@ -9,7 +9,7 @@ void Window::init()
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-	window = glfwCreateWindow(width, height, "Vulkan API", nullptr, nullptr);
+	window = glfwCreateWindow(baseWidth, baseHeight, "Vulkan API", nullptr, nullptr);
 }
 
 void Window::mainLoop()
@@ -18,6 +18,15 @@ void Window::mainLoop()
 	{
 		glfwPollEvents();
 	}
+}
+
+VkExtent2D Window::getExtent() const
+{
+	VkExtent2D extent;
+
+	glfwGetWindowSize(window, (int *)&extent.width, (int *)&extent.height);
+
+	return extent;
 }
 
 Window::operator GLFWwindow*()

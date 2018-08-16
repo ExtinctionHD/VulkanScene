@@ -83,7 +83,7 @@ void SwapChain::getImages(VkDevice device)
 	vkGetSwapchainImagesKHR(device, swapChain, &imageCount, images.data());  // get images
 }
 
-VkSurfaceFormatKHR SwapChain::chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats)
+VkSurfaceFormatKHR SwapChain::chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats) const
 {
 	// can choose any format
 	if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED)
@@ -105,7 +105,7 @@ VkSurfaceFormatKHR SwapChain::chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR
 	return availableFormats[0];
 }
 
-VkPresentModeKHR SwapChain::choosePresentMode(std::vector<VkPresentModeKHR> availablePresentModes)
+VkPresentModeKHR SwapChain::choosePresentMode(std::vector<VkPresentModeKHR> availablePresentModes) const
 {
 	for (const auto& availablePresentMode : availablePresentModes)
 	{

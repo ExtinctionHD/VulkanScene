@@ -5,6 +5,7 @@
 #include <vector>
 #include "Device.h"
 #include "SwapChain.h"
+#include "Window.h"
 
 #include "VkDeleter.h"
 
@@ -12,7 +13,7 @@ class Vulkan
 {
 public:
 	// create all required objects
-	void init(GLFWwindow *window);
+	void init(Window window);
 
 private:
 	const std::vector<const char *> validationLayers =

@@ -34,10 +34,10 @@ private:
 	const VkPresentModeKHR preferredPresentMode = { VK_PRESENT_MODE_MAILBOX_KHR };
 
 	// swapchain display frames on surface, so exactly swapchain sets format of surface
-	VkSurfaceFormatKHR chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats);
+	VkSurfaceFormatKHR chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats) const;
 
 	// choose order of displaying framebuffers
-	VkPresentModeKHR choosePresentMode(std::vector<VkPresentModeKHR> availablePresentModes);
+	VkPresentModeKHR choosePresentMode(std::vector<VkPresentModeKHR> availablePresentModes) const;
 
 	static VkExtent2D chooseExtent(VkSurfaceCapabilitiesKHR capabilities, VkExtent2D actualExtent);
 

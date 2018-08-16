@@ -5,14 +5,14 @@
 
 // public:
 
-void Vulkan::init(GLFWwindow *window)
+void Vulkan::init(Window window)
 {
 	createInstance();
 	createDebugCallback();
 	createSurface(window);
 
 	device.init(instance, surface, validationLayers);
-	swapChain.create(device, surface, { 1280, 720 });  // TODO: window extent
+	swapChain.create(device, surface, window.getExtent());
 }
 
 // private:
