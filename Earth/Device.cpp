@@ -13,8 +13,8 @@ void Device::init(VkInstance instance, VkSurfaceKHR surface, std::vector<const c
 	pickPhysicalDevice(instance, surface);
 
 	// save properties of picked device
-	surfaceSupportDetails.init(physicalDevice, surface);
-	queueFamilyIndices.findFamilies(physicalDevice, surface);
+	surfaceSupportDetails = SurfaceSupportDetails(physicalDevice, surface);
+	queueFamilyIndices = QueueFamilyIndices(physicalDevice, surface);
 
 	createLogicalDevice(surface);
 }
@@ -56,11 +56,8 @@ void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 
 bool Device::isPhysicalDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface, std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions)
 {
-	QueueFamilyIndices indices;
-	indices.findFamilies(device, surface);
-
-	SurfaceSupportDetails details;
-	details.init(device, surface);
+	QueueFamilyIndices indices(device, surface);
+	SurfaceSupportDetails details(device, surface);
 
 	bool layerSupport = checkDeviceLayerSupport(device, requiredLayers);
 
@@ -109,8 +106,7 @@ bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<co
 
 void Device::createLogicalDevice(VkSurfaceKHR surface)
 {
-	QueueFamilyIndices indices;
-	indices.findFamilies(physicalDevice, surface);
+	QueueFamilyIndices indices(physicalDevice, surface);
 
 	// graphics and present families can the same
 	std::set<int> uniqueQueueFamilyIndices =

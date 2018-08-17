@@ -9,10 +9,14 @@ public:
 	int graphics = -1;	// for drawing
 	int present = -1;	// for presenting on surface
 
+	// base constructor
+	QueueFamilyIndices() {}
+
+	// try to find required queue families and save they indices
+	QueueFamilyIndices(VkPhysicalDevice device, VkSurfaceKHR surface);
+
 	// this device have all required queue families (for this surface)
 	bool isComplete();
 
-	// try to find required queue families and save they indices
-	void findFamilies(VkPhysicalDevice device, VkSurfaceKHR surface);
 };
 

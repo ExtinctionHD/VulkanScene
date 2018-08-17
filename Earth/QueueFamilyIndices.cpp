@@ -9,7 +9,7 @@ bool QueueFamilyIndices::isComplete()
 	return graphics >= 0 && present >= 0;
 }
 
-void QueueFamilyIndices::findFamilies(VkPhysicalDevice device, VkSurfaceKHR surface)
+QueueFamilyIndices::QueueFamilyIndices(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
 	uint32_t queueFamilyCount = 0;
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);  // get count

@@ -12,10 +12,14 @@ public:
 
 	std::vector<VkPresentModeKHR> presentModes;
 
+	// base constructor
+	SurfaceSupportDetails() {}
+
+	// initialize all details
+	SurfaceSupportDetails(VkPhysicalDevice device, VkSurfaceKHR surface);
+
 	// this device is suitable for this surface
 	bool isSuitable();
 
-	// initialize all details
-	void init(VkPhysicalDevice device, VkSurfaceKHR surface);
 };
 

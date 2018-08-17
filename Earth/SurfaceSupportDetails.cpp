@@ -7,7 +7,7 @@ bool SurfaceSupportDetails::isSuitable()
 	return !formats.empty() && !presentModes.empty();
 }
 
-void SurfaceSupportDetails::init(VkPhysicalDevice device, VkSurfaceKHR surface)
+SurfaceSupportDetails::SurfaceSupportDetails(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &capabilities);
 
