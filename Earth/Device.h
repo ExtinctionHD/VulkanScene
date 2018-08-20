@@ -4,26 +4,27 @@
 #include "QueueFamilyIndices.h"
 #include "SurfaceSupportDetails.h"
 
-#include "VkDeleter.h"
-
 // contains logical (can be cast to it) and physical device
 class Device
 {
 public:
-	// pick physical and create logical device
-	void init(
-		VkInstance instance, 
-		VkSurfaceKHR surface, 
-		std::vector<const char *> requiredLayers
-	);
-
-	operator VkDevice();  // cast to logical device
+	VkDevice device;  // logical device (representation of GPU for vulkan)
 
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;  // GPU
 
 	SurfaceSupportDetails surfaceSupportDetails;  // detail of picked GPU
 
 	QueueFamilyIndices queueFamilyIndices;  // suitable indices on picked GPU
+
+	// pick physical and create logical device
+	Device(
+		VkInstance instance,
+		VkSurfaceKHR surface,
+		std::vector<const char *> requiredLayers
+	);
+
+	// destroy device
+	~Device();
 
 private:
 	const std::vector<const char*> extensions =
@@ -32,9 +33,6 @@ private:
 	};
 
 	std::vector<const char*> layers;
-
-	// logical device (representation of GPU for vulkan)
-	VkDeleter<VkDevice> device{ vkDestroyDevice };
 
 	VkQueue graphicsQueue;	// for drawing graphics
 	VkQueue presentQueue;	// for presenting it on surface

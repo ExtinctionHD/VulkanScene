@@ -3,10 +3,10 @@
 
 int main()
 {
-	Application app;
-
 	try
 	{
+		Application app;
+
 		app.run();
 	}
 	catch (const std::runtime_error& e)

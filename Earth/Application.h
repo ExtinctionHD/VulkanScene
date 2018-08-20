@@ -6,11 +6,15 @@
 class Application
 {
 public:
+	Application();
+
+	~Application();
+
 	void run();
 
 private:
-	Window window;
+	Window *pWindow;
 
-	Vulkan vulkan;
+	Vulkan *pVulkan;
 };
 

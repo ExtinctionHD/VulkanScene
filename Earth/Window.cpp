@@ -2,7 +2,7 @@
 
 // public:
 
-void Window::init()
+Window::Window()
 {
 	glfwInit();
 
@@ -29,7 +29,10 @@ VkExtent2D Window::getExtent() const
 	return extent;
 }
 
-Window::operator GLFWwindow*()
+Window::~Window()
 {
-	return window;
+	glfwDestroyWindow(window);
+
+	glfwTerminate();
 }
+

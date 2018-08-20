@@ -6,18 +6,19 @@
 class Window
 {
 public:
-	void init();  // initialize library and create window
+	GLFWwindow * window;  // window descriptor
+
+	Window();  // initialize library and create window
+
+	~Window();  // detroy window
 
 	void mainLoop();
 
 	VkExtent2D getExtent() const;  // window width and height in VKExtent2D structure
 
-	operator GLFWwindow*();  // return window descriptor instead of this
 private:
 	// initial window extent
 	const int baseWidth = 1280;
 	const int baseHeight = 720;
-
-	GLFWwindow *window;  // window descriptor
 };
 

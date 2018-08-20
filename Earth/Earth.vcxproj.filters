@@ -13,40 +13,46 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Исходные файлы\Device">
+    <Filter Include="Исходные файлы\Vulkan">
+      <UniqueIdentifier>{7a470124-682d-4eac-8516-c1d9fc393c5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Vulkan">
+      <UniqueIdentifier>{b7cf235d-0661-472f-9a21-0c2895a15209}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Vulkan\Device">
       <UniqueIdentifier>{1cf1f2fb-0bb8-4689-84fa-2f6ad3a14ef0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\Device">
+    <Filter Include="Файлы заголовков\Vulkan\Device">
       <UniqueIdentifier>{2acb5c33-3297-4963-b663-8cc98836be15}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="VkDeleter.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Application.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Vulkan.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Device.h">
-      <Filter>Файлы заголовков\Device</Filter>
+      <Filter>Файлы заголовков\Vulkan\Device</Filter>
     </ClInclude>
     <ClInclude Include="QueueFamilyIndices.h">
-      <Filter>Файлы заголовков\Device</Filter>
+      <Filter>Файлы заголовков\Vulkan\Device</Filter>
     </ClInclude>
     <ClInclude Include="SurfaceSupportDetails.h">
-      <Filter>Файлы заголовков\Device</Filter>
+      <Filter>Файлы заголовков\Vulkan\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="Vulkan.h">
+      <Filter>Файлы заголовков\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="SwapChain.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="VkDeleter.h">
+      <Filter>Файлы заголовков\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -59,23 +65,23 @@
     <ClCompile Include="Window.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Vulkan.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Device.cpp">
-      <Filter>Исходные файлы\Device</Filter>
+      <Filter>Исходные файлы\Vulkan\Device</Filter>
     </ClCompile>
     <ClCompile Include="QueueFamilyIndices.cpp">
-      <Filter>Исходные файлы\Device</Filter>
+      <Filter>Исходные файлы\Vulkan\Device</Filter>
     </ClCompile>
     <ClCompile Include="SurfaceSupportDetails.cpp">
-      <Filter>Исходные файлы\Device</Filter>
+      <Filter>Исходные файлы\Vulkan\Device</Filter>
     </ClCompile>
     <ClCompile Include="SwapChain.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Vulkan.cpp">
+      <Filter>Исходные файлы\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

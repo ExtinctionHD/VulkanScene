@@ -2,10 +2,19 @@
 
 // public:
 
+Application::Application()
+{
+	pWindow = new Window();
+	pVulkan = new Vulkan(pWindow);
+}
+
+Application::~Application()
+{
+	delete(pVulkan);
+	delete(pWindow);
+}
+
 void Application::run()
 {
-	window.init();
-	vulkan.init(window);
-
-	window.mainLoop();
+	pWindow->mainLoop();
 }

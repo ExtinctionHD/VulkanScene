@@ -7,23 +7,17 @@
 
 // public:
 
-SwapChain::operator VkSwapchainKHR()
+SwapChain::SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceExtent)
 {
-	return swapChain;
-}
-
-void SwapChain::create(Device &device, VkSurfaceKHR surface, VkExtent2D surfaceExtent)
-{
-	SurfaceSupportDetails details = device.surfaceSupportDetails;
+	device = pDevice->device;
 
 	// get necessary swapchain properties
+	SurfaceSupportDetails details = pDevice->surfaceSupportDetails;
 	VkSurfaceFormatKHR surfaceFormat = chooseSurfaceFormat(details.formats);
 	VkPresentModeKHR presentMode = choosePresentMode(details.presentModes);
 	extent = chooseExtent(details.capabilities, surfaceExtent);
 	imageCount = chooseImageCount(details.capabilities);
 	imageFormat = surfaceFormat.format;
-
-	//VkSwapchainKHR oldSwapChain = swapChain;
 
 	VkSwapchainCreateInfoKHR createInfo = 
 	{
@@ -44,14 +38,14 @@ void SwapChain::create(Device &device, VkSurfaceKHR surface, VkExtent2D surfaceE
 		VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,				// compositeAlpha
 		presentMode,									// presentMode
 		VK_TRUE,										// clipped
-		nullptr,									// oldSwapchain
+		nullptr,										// oldSwapchain
 	};
 
 	// concurrent sharing mode only when using different queue families
 	std::vector<uint32_t> indices =
 	{
-		(uint32_t)device.queueFamilyIndices.graphics,
-		(uint32_t)device.queueFamilyIndices.present
+		(uint32_t)pDevice->queueFamilyIndices.graphics,
+		(uint32_t)pDevice->queueFamilyIndices.present
 	};
 	if (indices[0] != indices[1])
 	{
@@ -60,28 +54,22 @@ void SwapChain::create(Device &device, VkSurfaceKHR surface, VkExtent2D surfaceE
 		createInfo.pQueueFamilyIndices = indices.data();
 	}
 
-	// create new and cleanup old swapchain
-	VkSwapchainKHR newSwapChain;
-	VkResult result = vkCreateSwapchainKHR(device, &createInfo, nullptr, swapChain.replace());
+	VkResult result = vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain);
 	if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_SWAPCHAIN);
 	}
-	//swapChain = newSwapChain;
 
 	// get frame images
-	getImages(device);
+	getImages();
+}
+
+SwapChain::~SwapChain()
+{
+	vkDestroySwapchainKHR(device, swapChain, nullptr);
 }
 
 // private:
-
-void SwapChain::getImages(VkDevice device)
-{
-	// real count of images can be greater than requsted
-	vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);  // get count
-	images.resize(imageCount);
-	vkGetSwapchainImagesKHR(device, swapChain, &imageCount, images.data());  // get images
-}
 
 VkSurfaceFormatKHR SwapChain::chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats) const
 {
@@ -152,4 +140,31 @@ uint32_t SwapChain::chooseImageCount(VkSurfaceCapabilitiesKHR capabilities)
 	}
 
 	return imageCount;
+}
+
+void SwapChain::getImages()
+{
+	// real count of images can be greater than requsted
+	vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);  // get count
+	images.resize(imageCount);
+	vkGetSwapchainImagesKHR(device, swapChain, &imageCount, images.data());  // get images
+}
+
+void SwapChain::createImageViews()
+{
+	/*imageViews.resize(
+		imageCount,
+		VkDeleter<VkImageView> { device, vkDestroyImageView }
+	);
+
+	for (uint32_t i = 0; i < imageCount; i++)
+	{
+		createImageView(
+			swapChainImages[i],
+			swapChainImageFormat,
+			VK_IMAGE_ASPECT_COLOR_BIT,
+			swapChainImageViews[i],
+			1
+		);
+	}*/
 }

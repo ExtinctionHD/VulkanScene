@@ -6,7 +6,7 @@
 
 // public:
 
-void Device::init(VkInstance instance, VkSurfaceKHR surface, std::vector<const char *> requiredLayers)
+Device::Device(VkInstance instance, VkSurfaceKHR surface, std::vector<const char *> requiredLayers)
 {
 	layers = requiredLayers;
 
@@ -19,9 +19,9 @@ void Device::init(VkInstance instance, VkSurfaceKHR surface, std::vector<const c
 	createLogicalDevice(surface);
 }
 
-Device::operator VkDevice()
+Device::~Device()
 {
-	return device;
+	vkDestroyDevice(device, nullptr);
 }
 
 // private:
@@ -147,7 +147,7 @@ void Device::createLogicalDevice(VkSurfaceKHR surface)
 		nullptr									// pEnabledFeatures;
 	};
 
-	VkResult result = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, device.replace());
+	VkResult result = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device);
 	if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_LOGICAL_DEVICE);

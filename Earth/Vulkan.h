@@ -7,13 +7,14 @@
 #include "SwapChain.h"
 #include "Window.h"
 
-#include "VkDeleter.h"
-
 class Vulkan
 {
 public:
 	// create all required objects
-	void init(Window window);
+	Vulkan(Window *pWindow);
+
+	// destroy objects: surface, callback, instance
+	~Vulkan();
 
 private:
 	const std::vector<const char *> validationLayers =
@@ -27,19 +28,19 @@ private:
 	const bool enableValidationLayers = false;
 #endif
 
-	VkDeleter<VkInstance> instance{ vkDestroyInstance };
+	VkInstance instance;
 
 	// validation layers callback
-	VkDeleter<VkDebugReportCallbackEXT> callback{ instance, vkDestroyDebugReportCallbackEXT };
+	VkDebugReportCallbackEXT callback;
 
 	// surface object for presentation
-	VkDeleter<VkSurfaceKHR> surface{ instance, vkDestroySurfaceKHR };
+	VkSurfaceKHR surface;
 
 	// logical and physical device
-	Device device;
+	Device *pDevice;
 
 	// swapchain object and its images
-	SwapChain swapChain;
+	SwapChain *pSwapChain;
 
 	void createInstance();
 

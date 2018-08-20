@@ -5,14 +5,25 @@
 
 // public:
 
-void Vulkan::init(Window window)
+Vulkan::Vulkan(Window *pWindow)
 {
 	createInstance();
-	createDebugCallback();
-	createSurface(window);
 
-	device.init(instance, surface, validationLayers);
-	swapChain.create(device, surface, window.getExtent());
+	createDebugCallback();
+	createSurface(pWindow->window);
+	
+	pDevice = new Device(instance, surface, validationLayers);
+	pSwapChain = new SwapChain(pDevice, surface, pWindow->getExtent());
+}
+
+Vulkan::~Vulkan()
+{
+	delete(pSwapChain);
+	delete(pDevice);
+
+	vkDestroySurfaceKHR(instance, surface, nullptr);
+	vkDestroyDebugReportCallbackEXT(instance, callback, nullptr);
+	vkDestroyInstance(instance, nullptr);
 }
 
 // private:
@@ -68,7 +79,7 @@ void Vulkan::createInstance()
 		createInfo.ppEnabledLayerNames = validationLayers.data();
 	}
 
-	VkResult result = vkCreateInstance(&createInfo, nullptr, instance.replace());
+	VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
 	if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_INSTANCE);
@@ -178,7 +189,7 @@ void Vulkan::createDebugCallback()
 		nullptr																// pUserData
 	};
 
-	VkResult result = vkCreateDebugReportCallbackEXT(instance, &createInfo, nullptr, callback.replace());
+	VkResult result = vkCreateDebugReportCallbackEXT(instance, &createInfo, nullptr, &callback);
 	if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_CALLBACK);
@@ -188,7 +199,7 @@ void Vulkan::createDebugCallback()
 void Vulkan::createSurface(GLFWwindow *window)
 {
 	// glfw library create surface by it self
-	VkResult result = glfwCreateWindowSurface(instance, window, nullptr, surface.replace());
+	VkResult result = glfwCreateWindowSurface(instance, window, nullptr, &surface);
 	if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_SURFACE);
