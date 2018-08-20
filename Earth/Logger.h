@@ -22,6 +22,11 @@ public:
 	static const std::string NO_SUITABLE_GPU;
 	static const std::string FAILED_TO_CREATE_LOGICAL_DEVICE;
 	static const std::string FAILED_TO_CREATE_SWAPCHAIN;
+	static const std::string FAILED_TO_CREATE_IMAGE;
+	static const std::string FAILED_TO_ALLOC_IMAGE_MEMORY;
+	static const std::string FAILED_TO_FIND_MEMORY_TYPE;
+	static const std::string FAILED_TO_CREATE_IMAGE_VIEW;
+	
 
 	static void infoValidationLayers(bool enabled);  // log inforamation about validation layers
 

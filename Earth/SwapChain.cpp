@@ -2,6 +2,7 @@
 #include "SurfaceSupportDetails.h"
 #include "Device.h"
 #include "Logger.h"
+#include "SwapChainImage.h"
 
 #include "SwapChain.h"
 
@@ -60,12 +61,20 @@ SwapChain::SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceEx
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_SWAPCHAIN);
 	}
 
-	// get frame images
+	// save swapchain images 
 	getImages();
+
+	// create to each image imageView
+	createImageViews();
 }
 
 SwapChain::~SwapChain()
 {
+	for (int i = 0; i < imageCount; i++)
+	{
+		vkDestroyImageView(device, imageViews[i], nullptr);
+	}
+
 	vkDestroySwapchainKHR(device, swapChain, nullptr);
 }
 
@@ -152,19 +161,12 @@ void SwapChain::getImages()
 
 void SwapChain::createImageViews()
 {
-	/*imageViews.resize(
-		imageCount,
-		VkDeleter<VkImageView> { device, vkDestroyImageView }
-	);
+	imageViews.resize(imageCount);
 
 	for (uint32_t i = 0; i < imageCount; i++)
 	{
-		createImageView(
-			swapChainImages[i],
-			swapChainImageFormat,
-			VK_IMAGE_ASPECT_COLOR_BIT,
-			swapChainImageViews[i],
-			1
-		);
-	}*/
+		SwapChainImage image(device, images[i], imageFormat);
+		image.createImageView(VK_IMAGE_ASPECT_COLOR_BIT, 1);
+		imageViews[i] = image.view;
+	}
 }

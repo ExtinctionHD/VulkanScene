@@ -25,6 +25,12 @@
     <Filter Include="Файлы заголовков\Vulkan\Device">
       <UniqueIdentifier>{2acb5c33-3297-4963-b663-8cc98836be15}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\Vulkan\Image">
+      <UniqueIdentifier>{8699a64c-1722-4b79-9fd3-0aa5dce5c3de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Vulkan\Image">
+      <UniqueIdentifier>{728a3b59-0642-404f-9390-3473ab97fc85}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -54,6 +60,12 @@
     <ClInclude Include="VkDeleter.h">
       <Filter>Файлы заголовков\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Файлы заголовков\Vulkan\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapChainImage.h">
+      <Filter>Файлы заголовков\Vulkan\Image</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -82,6 +94,12 @@
     </ClCompile>
     <ClCompile Include="Vulkan.cpp">
       <Filter>Исходные файлы\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Исходные файлы\Vulkan\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="SwapChainImage.cpp">
+      <Filter>Исходные файлы\Vulkan\Image</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

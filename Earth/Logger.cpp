@@ -14,6 +14,10 @@ const std::string Logger::NO_GPU_WITH_VULKAN_SUPPORT = "GPU with vulkan support 
 const std::string Logger::NO_SUITABLE_GPU = "Suitable GPU not found";
 const std::string Logger::FAILED_TO_CREATE_LOGICAL_DEVICE = "Failed to create logical device";
 const std::string Logger::FAILED_TO_CREATE_SWAPCHAIN = "Failed to create SwapChain object";
+const std::string Logger::FAILED_TO_CREATE_IMAGE = "Failed to create image";
+const std::string Logger::FAILED_TO_ALLOC_IMAGE_MEMORY = "Failed to allocate image memory";
+const std::string Logger::FAILED_TO_FIND_MEMORY_TYPE = "Failed to find suitable memory type";
+const std::string Logger::FAILED_TO_CREATE_IMAGE_VIEW = "Failed to create image view";
 
 void Logger::infoValidationLayers(bool enabled)
 {
@@ -34,7 +38,16 @@ void Logger::fatal(std::string message, std::string file, int line)
 	throw std::runtime_error("\nFatal: " + message + ". In " + getFilename(file) + " at line " + std::to_string(line));
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL Logger::validationLayerCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char * layerPrefix, const char * msg, void * userData)
+VKAPI_ATTR VkBool32 VKAPI_CALL Logger::validationLayerCallback(
+	VkDebugReportFlagsEXT flags,
+	VkDebugReportObjectTypeEXT objType,
+	uint64_t obj, 
+	size_t location, 
+	int32_t code, 
+	const char * layerPrefix, 
+	const char * msg, 
+	void * userData
+)
 {
 	std::cerr << "Validation layer: " << msg << "." << std::endl;
 

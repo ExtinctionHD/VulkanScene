@@ -26,6 +26,9 @@ public:
 	// destroy device
 	~Device();
 
+	// return index of memory type with such properties (for this physical device)
+	uint32_t findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
 private:
 	const std::vector<const char*> extensions =
 	{

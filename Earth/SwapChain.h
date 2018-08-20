@@ -16,6 +16,9 @@ public:
 	// images to rendering that swapchain provides
 	std::vector<VkImage> images;
 
+	// view of each swapchain image
+	std::vector<VkImageView> imageViews;
+
 	// reference to the device in order not to clone the VkDevice object
 	SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceExtent);
 

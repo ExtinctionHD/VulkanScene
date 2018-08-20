@@ -24,6 +24,22 @@ Device::~Device()
 	vkDestroyDevice(device, nullptr);
 }
 
+uint32_t Device::findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+{
+	VkPhysicalDeviceMemoryProperties memProperties;
+	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+
+	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+	{
+		if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+		{
+			return i;
+		}
+	}
+
+	LOGGER_FATAL(Logger::FAILED_TO_FIND_MEMORY_TYPE);
+}
+
 // private:
 
 void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
