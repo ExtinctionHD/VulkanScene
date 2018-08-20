@@ -31,17 +31,14 @@
     <Filter Include="Исходные файлы\Vulkan\Image">
       <UniqueIdentifier>{728a3b59-0642-404f-9390-3473ab97fc85}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\App">
+      <UniqueIdentifier>{fa012e63-ae60-441a-bacd-42a4d51f6f11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\App">
+      <UniqueIdentifier>{c80c53d9-931d-4561-b2f2-c59b20d93157}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
     <ClInclude Include="Device.h">
       <Filter>Файлы заголовков\Vulkan\Device</Filter>
     </ClInclude>
@@ -66,18 +63,21 @@
     <ClInclude Include="SwapChainImage.h">
       <Filter>Файлы заголовков\Vulkan\Image</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsPipeline.h">
+      <Filter>Файлы заголовков\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Файлы заголовков\App</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Файлы заголовков\App</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Файлы заголовков\App</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Logger.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Device.cpp">
@@ -100,6 +100,18 @@
     </ClCompile>
     <ClCompile Include="SwapChainImage.cpp">
       <Filter>Исходные файлы\Vulkan\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsPipeline.cpp">
+      <Filter>Исходные файлы\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Исходные файлы\App</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Исходные файлы\App</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Исходные файлы\App</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

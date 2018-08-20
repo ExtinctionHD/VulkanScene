@@ -8,16 +8,17 @@
 Vulkan::Vulkan(Window *pWindow)
 {
 	createInstance();
-
 	createDebugCallback();
 	createSurface(pWindow->window);
 	
 	pDevice = new Device(instance, surface, validationLayers);
 	pSwapChain = new SwapChain(pDevice, surface, pWindow->getExtent());
+	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain->imageFormat);
 }
 
 Vulkan::~Vulkan()
 {
+	delete(pGraphicsPipeline);
 	delete(pSwapChain);
 	delete(pDevice);
 

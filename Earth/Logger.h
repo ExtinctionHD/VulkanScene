@@ -26,6 +26,8 @@ public:
 	static const std::string FAILED_TO_ALLOC_IMAGE_MEMORY;
 	static const std::string FAILED_TO_FIND_MEMORY_TYPE;
 	static const std::string FAILED_TO_CREATE_IMAGE_VIEW;
+	static const std::string FAILED_TO_FIND_SUPPORTED_FORMAT;
+	static const std::string FAILED_TO_CREATE_RENDER_PASS;
 	
 
 	static void infoValidationLayers(bool enabled);  // log inforamation about validation layers

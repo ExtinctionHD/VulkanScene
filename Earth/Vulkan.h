@@ -6,6 +6,7 @@
 #include "Device.h"
 #include "SwapChain.h"
 #include "Window.h"
+#include "GraphicsPipeline.h"
 
 class Vulkan
 {
@@ -41,6 +42,8 @@ private:
 
 	// swapchain object and its images
 	SwapChain *pSwapChain;
+
+	GraphicsPipeline *pGraphicsPipeline;
 
 	void createInstance();
 

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="GraphicsPipeline.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
@@ -34,6 +35,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Device.cpp" />
+    <ClCompile Include="GraphicsPipeline.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />

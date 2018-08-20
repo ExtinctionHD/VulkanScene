@@ -40,6 +40,29 @@ uint32_t Device::findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags 
 	LOGGER_FATAL(Logger::FAILED_TO_FIND_MEMORY_TYPE);
 }
 
+VkFormat Device::findSupportedFormat(std::vector<VkFormat> requestedFormats, VkImageTiling tiling, VkFormatFeatureFlags features)
+{
+	for (VkFormat format : requestedFormats)
+	{
+		VkFormatProperties properties;
+		vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &properties);
+
+		// checks support of this format with linear tiling
+		if (tiling == VK_IMAGE_TILING_LINEAR && (properties.linearTilingFeatures & features) == features)
+		{
+			return format;
+		}
+
+		// checks support of this format with optimal tiling
+		if (tiling == VK_IMAGE_TILING_OPTIMAL && (properties.optimalTilingFeatures & features) == features)
+		{
+			return format;
+		}
+
+		LOGGER_FATAL(Logger::FAILED_TO_FIND_SUPPORTED_FORMAT);
+	}
+}
+
 // private:
 
 void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)

@@ -26,8 +26,15 @@ public:
 	// destroy device
 	~Device();
 
-	// return index of memory type with such properties (for this physical device)
+	// returns index of memory type with such properties (for this physical device)
 	uint32_t findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+	// returns first supported format (for this physical device)
+	VkFormat findSupportedFormat(
+		std::vector<VkFormat> requestedFormats,
+		VkImageTiling tiling,
+		VkFormatFeatureFlags features
+	);
 
 private:
 	const std::vector<const char*> extensions =
