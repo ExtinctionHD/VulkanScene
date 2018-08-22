@@ -75,6 +75,9 @@
     <ClInclude Include="Window.h">
       <Filter>Файлы заголовков\App</Filter>
     </ClInclude>
+    <ClInclude Include="DescriptorSet.h">
+      <Filter>Файлы заголовков\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -112,6 +115,9 @@
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Исходные файлы\App</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorSet.cpp">
+      <Filter>Исходные файлы\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

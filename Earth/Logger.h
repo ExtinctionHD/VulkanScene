@@ -28,6 +28,8 @@ public:
 	static const std::string FAILED_TO_CREATE_IMAGE_VIEW;
 	static const std::string FAILED_TO_FIND_SUPPORTED_FORMAT;
 	static const std::string FAILED_TO_CREATE_RENDER_PASS;
+	static const std::string FAILED_TO_CREATE_DS_LAYOUT;
+	static const std::string FAILED_TO_CREATE_PIPELINE_LAYOUT;
 	
 
 	static void infoValidationLayers(bool enabled);  // log inforamation about validation layers

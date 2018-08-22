@@ -9,7 +9,9 @@ class GraphicsPipeline
 public:
 	VkPipeline pipeline;
 
-	GraphicsPipeline(Device *pDevice, VkFormat colorAttachmentFormat);
+	VkFormat depthAttachmentFormat;
+
+	GraphicsPipeline(Device *pDevice, VkFormat colorAttachmentFormat, VkDescriptorSetLayout descriptorSetLayout);
 
 	~GraphicsPipeline();
 
@@ -25,6 +27,7 @@ private:
 	// device that provide pipeline
 	VkDevice device;
 
+	// layout of pipeline resources (descriptors)
 	VkPipelineLayout layout;
 	
 	// provides all attachments (color and depth)
@@ -32,5 +35,6 @@ private:
 
 	void createRenderPass(VkFormat colorAttachmentFormat, VkFormat depthAttachmentFormat);
 
+	void createLayout(VkDescriptorSetLayout descriptorSetLayout);
 };
 

@@ -1,24 +1,27 @@
-#include <array>
 #include "Logger.h"
 
 #include "GraphicsPipeline.h"
 
 // public:
 
-GraphicsPipeline::GraphicsPipeline(Device *pDevice, VkFormat colorAttachmentFormat)
+GraphicsPipeline::GraphicsPipeline(Device *pDevice, VkFormat colorAttachmentFormat, VkDescriptorSetLayout descriptorSetLayout)
 {
 	device = pDevice->device;
 
-	VkFormat depthAttachmentFormat = pDevice->findSupportedFormat(
+	depthAttachmentFormat = pDevice->findSupportedFormat(
 		depthFormats, 
 		VK_IMAGE_TILING_OPTIMAL, 
 		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
 	);
+
 	createRenderPass(colorAttachmentFormat, depthAttachmentFormat);
+
+	createLayout(descriptorSetLayout);
 }
 
 GraphicsPipeline::~GraphicsPipeline()
 {
+	vkDestroyPipelineLayout(device, layout, nullptr);
 	vkDestroyRenderPass(device, renderpass, nullptr);
 }
 
@@ -52,7 +55,7 @@ void GraphicsPipeline::createRenderPass(VkFormat colorAttachmentFormat, VkFormat
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,	// finalLayout;
 	};
 
-	std::array<VkAttachmentDescription, 2> attachments{
+	std::vector<VkAttachmentDescription> attachments{
 		colorAttachment,
 		depthAttachment
 	};
@@ -112,5 +115,26 @@ void GraphicsPipeline::createRenderPass(VkFormat colorAttachmentFormat, VkFormat
 	if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_RENDER_PASS);
+	}
+}
+
+void GraphicsPipeline::createLayout(VkDescriptorSetLayout descriptorSetLayout)
+{
+	std::vector<VkDescriptorSetLayout> setLayouts = { descriptorSetLayout };
+
+	VkPipelineLayoutCreateInfo createInfo{
+		VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,	// sType;
+		nullptr,										// pNext;
+		0,												// flags;
+		setLayouts.size(),								// setLayoutCount;
+		setLayouts.data(),								// pSetLayouts;
+		0,												// pushConstantRangeCount;
+		nullptr,										// pPushConstantRanges;
+	};
+
+	VkResult result = vkCreatePipelineLayout(device, &createInfo, nullptr, &layout);
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_CREATE_PIPELINE_LAYOUT);
 	}
 }

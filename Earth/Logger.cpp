@@ -20,6 +20,8 @@ const std::string Logger::FAILED_TO_FIND_MEMORY_TYPE = "Failed to find suitable 
 const std::string Logger::FAILED_TO_CREATE_IMAGE_VIEW = "Failed to create image view";
 const std::string Logger::FAILED_TO_FIND_SUPPORTED_FORMAT = "Failed to find supported format from requsted formats";
 const std::string Logger::FAILED_TO_CREATE_RENDER_PASS = "Failed to create render pass";
+const std::string Logger::FAILED_TO_CREATE_DS_LAYOUT = "Failed to create descriptor set layout";
+const std::string Logger::FAILED_TO_CREATE_PIPELINE_LAYOUT = "Failed to create pipeline layout";
 
 void Logger::infoValidationLayers(bool enabled)
 {

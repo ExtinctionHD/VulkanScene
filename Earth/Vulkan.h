@@ -7,6 +7,7 @@
 #include "SwapChain.h"
 #include "Window.h"
 #include "GraphicsPipeline.h"
+#include "DescriptorSet.h"
 
 class Vulkan
 {
@@ -42,6 +43,9 @@ private:
 
 	// swapchain object and its images
 	SwapChain *pSwapChain;
+
+	// Resources for graphics pipeline
+	DescriptorSet *pDescriptorSet;
 
 	GraphicsPipeline *pGraphicsPipeline;
 

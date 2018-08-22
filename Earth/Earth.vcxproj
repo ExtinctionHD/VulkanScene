@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="DescriptorSet.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="GraphicsPipeline.h" />
     <ClInclude Include="Image.h" />
@@ -34,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="DescriptorSet.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="GraphicsPipeline.cpp" />
     <ClCompile Include="Image.cpp" />
