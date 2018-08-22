@@ -22,10 +22,12 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="DescriptorSet.h" />
     <ClInclude Include="Device.h" />
+    <ClInclude Include="File.h" />
     <ClInclude Include="GraphicsPipeline.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
+    <ClInclude Include="ShaderModule.h" />
     <ClInclude Include="SurfaceSupportDetails.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="SwapChainImage.h" />
@@ -37,11 +39,13 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="DescriptorSet.cpp" />
     <ClCompile Include="Device.cpp" />
+    <ClCompile Include="File.cpp" />
     <ClCompile Include="GraphicsPipeline.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="QueueFamilyIndices.cpp" />
+    <ClCompile Include="ShaderModule.cpp" />
     <ClCompile Include="SurfaceSupportDetails.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="SwapChainImage.cpp" />

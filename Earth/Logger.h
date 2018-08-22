@@ -30,7 +30,6 @@ public:
 	static const std::string FAILED_TO_CREATE_RENDER_PASS;
 	static const std::string FAILED_TO_CREATE_DS_LAYOUT;
 	static const std::string FAILED_TO_CREATE_PIPELINE_LAYOUT;
-	
 
 	static void infoValidationLayers(bool enabled);  // log inforamation about validation layers
 
@@ -47,6 +46,10 @@ public:
 		const char *msg,
 		void *userData
 	);
+
+	static std::string getFileOpeningErrMsg(std::string filename);
+
+	static std::string getShaderCreatingErrMsg(std::string filename);
 
 private:
 	static void printInfo();

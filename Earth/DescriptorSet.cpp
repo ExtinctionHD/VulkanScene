@@ -1,4 +1,4 @@
-#include <array>
+#include <vector>
 #include "Logger.h"
 
 #include "DescriptorSet.h"
@@ -37,7 +37,7 @@ void DescriptorSet::createLayout()
 		nullptr										// pImmutableSamplers;
 	};
 
-	std::array<VkDescriptorSetLayoutBinding, 2> bindings{
+	std::vector<VkDescriptorSetLayoutBinding> bindings{
 		uboLayoutBinding,
 		samplerLayoutBinding
 	};

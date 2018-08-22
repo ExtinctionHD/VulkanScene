@@ -58,6 +58,16 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Logger::validationLayerCallback(
 	return VK_FALSE;
 }
 
+std::string Logger::getFileOpeningErrMsg(std::string filename)
+{
+	return "Failed to open file: " + filename;
+}
+
+std::string Logger::getShaderCreatingErrMsg(std::string filename)
+{
+	return "Failed to create shader module from file: " + filename;
+}
+
 // private:
 
 void Logger::printInfo()
