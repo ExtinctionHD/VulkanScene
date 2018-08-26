@@ -43,6 +43,12 @@
     <Filter Include="Файлы заголовков\Static">
       <UniqueIdentifier>{02dadbed-8ac5-4cca-85c6-31981a8247a1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Vulkan\Mesh">
+      <UniqueIdentifier>{0ead2906-725d-4a3b-9995-112bde4769e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Vulkan\Mesh">
+      <UniqueIdentifier>{cd26914f-85c0-4cfd-969c-a84e157c5730}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.h">
@@ -90,6 +96,9 @@
     <ClInclude Include="Logger.h">
       <Filter>Файлы заголовков\Static</Filter>
     </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Файлы заголовков\Vulkan\Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -136,6 +145,9 @@
     </ClCompile>
     <ClCompile Include="File.cpp">
       <Filter>Исходные файлы\Static</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Исходные файлы\Vulkan\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

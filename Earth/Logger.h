@@ -7,7 +7,7 @@
 #define LOGGER_FATAL(msg)														\
 {																				\
 	std::string message = (msg);												\
-	Logger::fatal(Logger::VALIDATION_LAYERS_NOT_AVAILABLE, __FILE__, __LINE__);	\
+	Logger::fatal(message, __FILE__, __LINE__);	\
 }
 
 class Logger
@@ -30,6 +30,7 @@ public:
 	static const std::string FAILED_TO_CREATE_RENDER_PASS;
 	static const std::string FAILED_TO_CREATE_DS_LAYOUT;
 	static const std::string FAILED_TO_CREATE_PIPELINE_LAYOUT;
+	static const std::string FAILED_TO_CREATE_GRAPHICS_PIPELINE;
 
 	static void infoValidationLayers(bool enabled);  // log inforamation about validation layers
 

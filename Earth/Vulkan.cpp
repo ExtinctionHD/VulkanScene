@@ -14,7 +14,7 @@ Vulkan::Vulkan(Window *pWindow)
 	pDevice = new Device(instance, surface, validationLayers);
 	pSwapChain = new SwapChain(pDevice, surface, pWindow->getExtent());
 	pDescriptorSet = new DescriptorSet(pDevice->device);
-	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain->imageFormat, pDescriptorSet->layout);
+	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain->imageFormat, pDescriptorSet->layout, pSwapChain->extent);
 }
 
 Vulkan::~Vulkan()

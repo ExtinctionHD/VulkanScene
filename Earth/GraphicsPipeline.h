@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include "File.h"
 
 #include "Device.h"
 
@@ -12,7 +13,7 @@ public:
 
 	VkFormat depthAttachmentFormat;
 
-	GraphicsPipeline(Device *pDevice, VkFormat colorAttachmentFormat, VkDescriptorSetLayout descriptorSetLayout);
+	GraphicsPipeline(Device *pDevice, VkFormat colorAttachmentFormat, VkDescriptorSetLayout descriptorSetLayout, VkExtent2D viewportExtent);
 
 	~GraphicsPipeline();
 
@@ -24,6 +25,10 @@ private:
 		VK_FORMAT_D32_SFLOAT_S8_UINT,
 		VK_FORMAT_D24_UNORM_S8_UINT
 	};
+
+	// files with shaders code
+	const std::string vertShaderPath = File::getExeDir() + "shaders/vert.spv";
+	const std::string fragShaderPath = File::getExeDir() + "shaders/frag.spv";
 
 	// device that provide pipeline
 	VkDevice device;
@@ -37,5 +42,7 @@ private:
 	void createRenderPass(VkFormat colorAttachmentFormat, VkFormat depthAttachmentFormat);
 
 	void createLayout(VkDescriptorSetLayout descriptorSetLayout);
+
+	void createPipeline(VkExtent2D viewportExtent);
 };
 

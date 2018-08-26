@@ -22,6 +22,7 @@ const std::string Logger::FAILED_TO_FIND_SUPPORTED_FORMAT = "Failed to find supp
 const std::string Logger::FAILED_TO_CREATE_RENDER_PASS = "Failed to create render pass";
 const std::string Logger::FAILED_TO_CREATE_DS_LAYOUT = "Failed to create descriptor set layout";
 const std::string Logger::FAILED_TO_CREATE_PIPELINE_LAYOUT = "Failed to create pipeline layout";
+const std::string Logger::FAILED_TO_CREATE_GRAPHICS_PIPELINE = "Failed to create graphics pipeline";
 
 void Logger::infoValidationLayers(bool enabled)
 {
