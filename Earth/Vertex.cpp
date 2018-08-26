@@ -1,5 +1,7 @@
 #include "Vertex.h"
 
+// public:
+
 Vertex::Vertex()
 {
 }

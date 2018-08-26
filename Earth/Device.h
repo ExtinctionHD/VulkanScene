@@ -15,6 +15,8 @@ public:
 	SurfaceSupportDetails surfaceSupportDetails;  // detail of picked GPU
 
 	QueueFamilyIndices queueFamilyIndices;  // suitable indices on picked GPU
+		
+	VkCommandPool commandPool;  // pool of command buffers of this device
 
 	// pick physical and create logical device
 	Device(
@@ -69,5 +71,7 @@ private:
 	static bool checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char *> requiredExtensions);
 
 	void createLogicalDevice(VkSurfaceKHR surface);
+
+	void createCommandPool(VkPhysicalDevice physicalDevice);
 };
 

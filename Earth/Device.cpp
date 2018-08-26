@@ -17,10 +17,13 @@ Device::Device(VkInstance instance, VkSurfaceKHR surface, std::vector<const char
 	queueFamilyIndices = QueueFamilyIndices(physicalDevice, surface);
 
 	createLogicalDevice(surface);
+
+	createCommandPool(physicalDevice);
 }
 
 Device::~Device()
 {
+	vkDestroyCommandPool(device, commandPool, nullptr);
 	vkDestroyDevice(device, nullptr);
 }
 
@@ -197,3 +200,18 @@ void Device::createLogicalDevice(VkSurfaceKHR surface)
 	vkGetDeviceQueue(device, indices.present, 0, &presentQueue);
 }
 
+void Device::createCommandPool(VkPhysicalDevice physicalDevice)
+{
+	VkCommandPoolCreateInfo createInfo{
+		VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,	// sType;
+		nullptr,									// pNext;
+		0,											// flags;
+		queueFamilyIndices.graphics					// queueFamilyIndex;
+	};
+
+	VkResult result = vkCreateCommandPool(device, &createInfo, nullptr, &commandPool);
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_CREATE_COMMAND_POOL);
+	}
+}

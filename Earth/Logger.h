@@ -4,9 +4,9 @@
 #include <vulkan/vulkan.h>
 
 // log fatal errors with filename and current line
-#define LOGGER_FATAL(msg)														\
-{																				\
-	std::string message = (msg);												\
+#define LOGGER_FATAL(msg)						\
+{												\
+	std::string message = (msg);				\
 	Logger::fatal(message, __FILE__, __LINE__);	\
 }
 
@@ -31,6 +31,7 @@ public:
 	static const std::string FAILED_TO_CREATE_DS_LAYOUT;
 	static const std::string FAILED_TO_CREATE_PIPELINE_LAYOUT;
 	static const std::string FAILED_TO_CREATE_GRAPHICS_PIPELINE;
+	static const std::string FAILED_TO_CREATE_COMMAND_POOL;
 
 	static void infoValidationLayers(bool enabled);  // log inforamation about validation layers
 

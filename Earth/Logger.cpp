@@ -23,6 +23,7 @@ const std::string Logger::FAILED_TO_CREATE_RENDER_PASS = "Failed to create rende
 const std::string Logger::FAILED_TO_CREATE_DS_LAYOUT = "Failed to create descriptor set layout";
 const std::string Logger::FAILED_TO_CREATE_PIPELINE_LAYOUT = "Failed to create pipeline layout";
 const std::string Logger::FAILED_TO_CREATE_GRAPHICS_PIPELINE = "Failed to create graphics pipeline";
+const std::string Logger::FAILED_TO_CREATE_COMMAND_POOL = "Failed to create command pool";
 
 void Logger::infoValidationLayers(bool enabled)
 {

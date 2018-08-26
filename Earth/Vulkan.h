@@ -49,6 +49,7 @@ private:
 
 	GraphicsPipeline *pGraphicsPipeline;
 
+
 	void createInstance();
 
 	static bool checkInstanceLayerSupport(std::vector<const char *> requiredLayers);
@@ -72,5 +73,6 @@ private:
 	void createDebugCallback();
 
 	void createSurface(GLFWwindow *window);
+
 };
 
