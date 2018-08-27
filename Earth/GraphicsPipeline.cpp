@@ -6,25 +6,36 @@
 
 // public:
 
-GraphicsPipeline::GraphicsPipeline(Device *pDevice, VkFormat colorAttachmentFormat, VkDescriptorSetLayout descriptorSetLayout, VkExtent2D viewportExtent)
+GraphicsPipeline::GraphicsPipeline(Device *pDevice, SwapChain *pSwapChain, VkDescriptorSetLayout descriptorSetLayout)
 {
 	device = pDevice->device;
 
-	depthAttachmentFormat = pDevice->findSupportedFormat(
+	VkFormat depthAttachmentFormat = pDevice->findSupportedFormat(
 		depthFormats, 
 		VK_IMAGE_TILING_OPTIMAL, 
 		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
 	);
 
-	createRenderPass(colorAttachmentFormat, depthAttachmentFormat);
+	createRenderPass(pSwapChain->imageFormat, depthAttachmentFormat);
+
+	createDepthResources(pDevice, pSwapChain->extent, depthAttachmentFormat);
 
 	createLayout(descriptorSetLayout);
 
-	createPipeline(viewportExtent);
+	createPipeline(pSwapChain->extent);
+
+	createFramebuffers(pSwapChain->imageViews);
 }
 
 GraphicsPipeline::~GraphicsPipeline()
 {
+	for (int i = 0; i < framebuffers.size(); i++)
+	{
+		vkDestroyFramebuffer(device, framebuffers[i], nullptr);
+	}
+
+	delete(pDepthImage);
+
 	vkDestroyPipeline(device, pipeline, nullptr);
 	vkDestroyPipelineLayout(device, layout, nullptr);
 	vkDestroyRenderPass(device, renderpass, nullptr);
@@ -121,6 +132,42 @@ void GraphicsPipeline::createRenderPass(VkFormat colorAttachmentFormat, VkFormat
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_RENDER_PASS);
 	}
+}
+
+void GraphicsPipeline::createDepthResources(Device *pDevice, VkExtent2D depthImageExtent, VkFormat depthImagetFormat)
+{
+	VkExtent3D extent{
+		depthImageExtent.width,
+		depthImageExtent.height,
+		1
+	};
+
+	pDepthImage = new Image(
+		pDevice,
+		extent,
+		1,
+		depthImagetFormat,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+	);
+
+	VkImageSubresourceRange subresourceRange{
+		VK_IMAGE_ASPECT_DEPTH_BIT,	// aspectMask;
+		0,							// baseMipLevel;
+		1,							// levelCount;
+		0,							// baseArrayLayer;
+		1,							// layerCount;
+	};
+
+	pDepthImage->createImageView(subresourceRange);
+
+	pDepthImage->transitLayout(
+		pDevice,
+		VK_IMAGE_LAYOUT_UNDEFINED,
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+		subresourceRange
+	);
 }
 
 void GraphicsPipeline::createLayout(VkDescriptorSetLayout descriptorSetLayout)
@@ -332,4 +379,36 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 	}
 }
 
+void GraphicsPipeline::createFramebuffers(std::vector<VkImageView> swapChainImageViews)
+{
+	framebuffers.resize(swapChainImageViews.size());
+
+	VkExtent3D extent = pDepthImage->extent;
+
+	for (int i = 0; i < swapChainImageViews.size(); i++)
+	{
+		std::vector<VkImageView> attachments{
+			swapChainImageViews[i],
+			pDepthImage->view
+		};
+
+		VkFramebufferCreateInfo createInfo{
+			VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
+			nullptr,									// pNext;
+			0,											// flags;
+			renderpass,									// renderPass;
+			attachments.size(),							// attachmentCount;
+			attachments.data(),							// pAttachments;
+			extent.width,								// width;
+			extent.height,								// height;
+			1,											// layers;
+		};
+
+		VkResult result = vkCreateFramebuffer(device, &createInfo, nullptr, &framebuffers[i]);
+		if (result != VK_SUCCESS)
+		{
+			LOGGER_FATAL(Logger::FAILED_TO_CREATE_FRAMEBUFFER);
+		}
+	}
+}
 

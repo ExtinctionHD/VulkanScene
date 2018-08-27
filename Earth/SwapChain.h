@@ -19,17 +19,11 @@ public:
 	// view of each swapchain image
 	std::vector<VkImageView> imageViews;
 
-	// destination images for rendering, 
-	// framebuffer attachments: image view and depth image
-	std::vector<VkFramebuffer> framebuffers;
-
 	// reference to the device in order not to clone the VkDevice object
 	SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceExtent);
 
 	// destroy objects: swapchain, imageViews
 	~SwapChain();
-
-	void createFramebuffers(VkImageView depthImageView, VkRenderPass renderpass);
 
 private:
 	// try to found this surface format

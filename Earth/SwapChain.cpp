@@ -70,48 +70,12 @@ SwapChain::SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceEx
 
 SwapChain::~SwapChain()
 {
-	for (int i = 0; i < framebuffers.size(); i++)
-	{
-		vkDestroyFramebuffer(device, framebuffers[i], nullptr);
-	}
-
 	for (int i = 0; i < imageViews.size(); i++)
 	{
 		vkDestroyImageView(device, imageViews[i], nullptr);
 	}
 
 	vkDestroySwapchainKHR(device, swapChain, nullptr);
-}
-
-void SwapChain::createFramebuffers(VkImageView depthImageView, VkRenderPass renderpass)
-{
-	framebuffers.resize(imageCount);
-
-	for (int i = 0; i < imageCount; i++)
-	{
-		std::vector<VkImageView> attachments{
-			imageViews[i],
-			depthImageView
-		};
-
-		VkFramebufferCreateInfo createInfo{
-			VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
-			nullptr,									// pNext;
-			0,											// flags;
-			renderpass,									// renderPass;
-			attachments.size(),							// attachmentCount;
-			attachments.data(),							// pAttachments;
-			extent.width,								// width;
-			extent.height,								// height;
-			1,											// layers;
-		};
-
-		VkResult result = vkCreateFramebuffer(device, &createInfo, nullptr, &framebuffers[i]);
-		if (result != VK_SUCCESS)
-		{
-			LOGGER_FATAL(Logger::FAILED_TO_CREATE_FRAMEBUFFER);
-		}
-	}
 }
 
 // private:

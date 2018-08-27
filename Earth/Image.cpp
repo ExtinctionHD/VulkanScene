@@ -15,6 +15,7 @@ Image::Image(
 )
 {
 	device = pDevice->device;
+	this->extent = extent;
 	this->format = format;
 
 	VkImageCreateInfo imageInfo{

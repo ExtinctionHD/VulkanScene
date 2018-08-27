@@ -22,6 +22,8 @@ public:
 
 	~Image();
 
+	VkExtent3D extent;
+
 	VkImageView view = VK_NULL_HANDLE;
 
 	void createImageView(VkImageSubresourceRange subresourceRange);

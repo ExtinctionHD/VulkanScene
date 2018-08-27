@@ -50,9 +50,6 @@ private:
 
 	GraphicsPipeline *pGraphicsPipeline;
 
-	// depth image and its view
-	Image *pDepthImage;
-
 	void createInstance();
 
 	static bool checkInstanceLayerSupport(std::vector<const char *> requiredLayers);
@@ -76,8 +73,5 @@ private:
 	void createDebugCallback();
 
 	void createSurface(GLFWwindow *window);
-
-	// create depth image, its view and execute its layout transition
-	void createDepthResources();
 };
 
