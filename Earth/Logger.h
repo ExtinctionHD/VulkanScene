@@ -32,6 +32,7 @@ public:
 	static const std::string FAILED_TO_CREATE_PIPELINE_LAYOUT;
 	static const std::string FAILED_TO_CREATE_GRAPHICS_PIPELINE;
 	static const std::string FAILED_TO_CREATE_COMMAND_POOL;
+	static const std::string UNSUPPORTED_LAYOUT_TRANSITION;
 
 	static void infoValidationLayers(bool enabled);  // log inforamation about validation layers
 

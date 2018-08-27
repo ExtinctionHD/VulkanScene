@@ -38,6 +38,12 @@ public:
 		VkFormatFeatureFlags features
 	);
 
+	// returns command buffer to write one time commands
+	VkCommandBuffer beginOneTimeCommands();
+
+	// ends command buffer and submit it to graphics queue
+	void endOneTimeCommands(VkCommandBuffer commandBuffer);
+
 private:
 	const std::vector<const char*> extensions =
 	{

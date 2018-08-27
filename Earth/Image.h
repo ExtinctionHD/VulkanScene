@@ -19,6 +19,13 @@ public:
 
 	~Image();
 
+	VkImageView view;
+
+	void createImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+
+	void transitionImageLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange);
+
+
 private:
 	VkDeviceMemory memory;
 

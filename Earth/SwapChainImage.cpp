@@ -9,10 +9,11 @@ SwapChainImage::SwapChainImage(VkDevice device, VkImage image, VkFormat format)
 	this->device = device;
 }
 
-void SwapChainImage::createImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels)
+VkImageView SwapChainImage::createImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels)
 {
-	VkImageSubresourceRange subresourceRange =
-	{
+	VkImageView imageView;
+
+	VkImageSubresourceRange subresourceRange{
 		aspectFlags,	// aspectMask;
 		0,				// baseMipLevel;
 		mipLevels,		// levelCount;
@@ -20,8 +21,7 @@ void SwapChainImage::createImageView(VkImageAspectFlags aspectFlags, uint32_t mi
 		1,				// layerCount;
 	};
 
-	VkImageViewCreateInfo createInfo =
-	{
+	VkImageViewCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,	// sType
 		nullptr,									// pNext
 		0,											// flags
@@ -32,9 +32,11 @@ void SwapChainImage::createImageView(VkImageAspectFlags aspectFlags, uint32_t mi
 		subresourceRange,							// subresourceRange
 	};
 
-	VkResult result = vkCreateImageView(device, &createInfo, nullptr, &view);
+	VkResult result = vkCreateImageView(device, &createInfo, nullptr, &imageView);
 	if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_IMAGE_VIEW);
 	}
+
+	return imageView;
 }

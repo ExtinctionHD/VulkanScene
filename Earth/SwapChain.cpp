@@ -166,7 +166,6 @@ void SwapChain::createImageViews()
 	for (uint32_t i = 0; i < imageCount; i++)
 	{
 		SwapChainImage image(device, images[i], imageFormat);
-		image.createImageView(VK_IMAGE_ASPECT_COLOR_BIT, 1);
-		imageViews[i] = image.view;
+		imageViews[i] = image.createImageView(VK_IMAGE_ASPECT_COLOR_BIT, 1);
 	}
 }

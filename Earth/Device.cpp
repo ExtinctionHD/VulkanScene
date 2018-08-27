@@ -66,6 +66,54 @@ VkFormat Device::findSupportedFormat(std::vector<VkFormat> requestedFormats, VkI
 	}
 }
 
+VkCommandBuffer Device::beginOneTimeCommands()
+{
+	VkCommandBuffer commandBuffer;
+
+	VkCommandBufferAllocateInfo allocInfo{
+		VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,	// sType;
+		nullptr,										// pNext;
+		commandPool,									// commandPool;
+		VK_COMMAND_BUFFER_LEVEL_PRIMARY,				// level;
+		1,												// commandBufferCount;
+	};
+
+	vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
+
+	VkCommandBufferBeginInfo beginInfo{
+		VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,	// sType;
+		nullptr,										// pNext;
+		VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,	// flags;
+		nullptr,										// pInheritanceInfo;
+	};
+
+	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+	return commandBuffer;
+}
+
+void Device::endOneTimeCommands(VkCommandBuffer commandBuffer)
+{
+	vkEndCommandBuffer(commandBuffer);
+
+	VkSubmitInfo submitInfo{
+		VK_STRUCTURE_TYPE_SUBMIT_INFO,	// sType;
+		nullptr,						// pNext;
+		0,								// waitSemaphoreCount;
+		nullptr,						// pWaitSemaphores;
+		nullptr,						// pWaitDstStageMask;
+		1,								// commandBufferCount;
+		&commandBuffer,					// pCommandBuffers;
+		0,								// signalSemaphoreCount;
+		nullptr,						// pSignalSemaphores;
+	};
+
+	vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(graphicsQueue);  // TODO: replace wait idle to signal semophore
+
+	vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
+}
+
 // private:
 
 void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)

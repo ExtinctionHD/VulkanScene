@@ -10,15 +10,13 @@ public:
 
 	VkFormat format;
 
-	VkImageView view;
-
 	SwapChainImage() {}
 
 	// save device, image, format
 	SwapChainImage(VkDevice device, VkImage image, VkFormat format);
 
 	// create view of saved image
-	void createImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+	VkImageView createImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 
 protected:
 	VkDevice device;  // device that control this image
