@@ -48,17 +48,49 @@ Image::Image(
 
 Image::~Image()
 {
-	vkDestroyImageView(device, view, nullptr);
-	vkDestroyImage(device, image, nullptr);
-	vkFreeMemory(device, memory, nullptr);
+	if (view != VK_NULL_HANDLE)
+	{
+		vkDestroyImageView(device, view, nullptr);
+	}
+	if (image != VK_NULL_HANDLE)
+	{
+		vkDestroyImage(device, image, nullptr);
+	}
+	if (memory != VK_NULL_HANDLE)
+	{
+		vkFreeMemory(device, memory, nullptr);
+	}
 }
 
 void Image::createImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels)
 {
-	view = SwapChainImage::createImageView(aspectFlags, mipLevels);
+	VkImageSubresourceRange subresourceRange{
+		aspectFlags,	// aspectMask;
+		0,				// baseMipLevel;
+		mipLevels,		// levelCount;
+		0,				// baseArrayLayer;
+		1,				// layerCount;
+	};
+
+	VkImageViewCreateInfo createInfo{
+		VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,	// sType
+		nullptr,									// pNext
+		0,											// flags
+		image,										// image
+		VK_IMAGE_VIEW_TYPE_2D,						// viewType
+		format,										// format
+		VkComponentMapping(),						// components
+		subresourceRange,							// subresourceRange
+	};
+
+	VkResult result = vkCreateImageView(device, &createInfo, nullptr, &view);
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_CREATE_IMAGE_VIEW);
+	}
 }
 
-void Image::transitionImageLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange)
+void Image::transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange)
 {
 	VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
 

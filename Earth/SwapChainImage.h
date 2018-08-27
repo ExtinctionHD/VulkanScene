@@ -6,7 +6,7 @@
 class SwapChainImage
 {
 public:
-	VkImage image;
+	VkImage image = VK_NULL_HANDLE;
 
 	VkFormat format;
 
@@ -16,9 +16,9 @@ public:
 	SwapChainImage(VkDevice device, VkImage image, VkFormat format);
 
 	// create view of saved image
-	VkImageView createImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+	VkImageView getImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 
 protected:
-	VkDevice device;  // device that control this image
+	VkDevice device;  // device that controls this image
 };
 

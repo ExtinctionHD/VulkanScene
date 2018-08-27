@@ -15,10 +15,13 @@ Vulkan::Vulkan(Window *pWindow)
 	pSwapChain = new SwapChain(pDevice, surface, pWindow->getExtent());
 	pDescriptorSet = new DescriptorSet(pDevice->device);
 	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain->imageFormat, pDescriptorSet->layout, pSwapChain->extent);
+
+	createDepthResources();
 }
 
 Vulkan::~Vulkan()
 {
+	delete(pDepthImage);
 	delete(pGraphicsPipeline);
 	delete(pDescriptorSet);
 	delete(pSwapChain);
@@ -207,6 +210,40 @@ void Vulkan::createSurface(GLFWwindow *window)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_SURFACE);
 	}
+}
+
+void Vulkan::createDepthResources()
+{
+	VkExtent3D extent{
+		pSwapChain->extent.width,
+		pSwapChain->extent.height,
+		1
+	};
+	pDepthImage = new Image(
+		pDevice,
+		extent,
+		1,
+		pGraphicsPipeline->depthAttachmentFormat,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+	);
+
+	pDepthImage->createImageView(VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+
+	VkImageSubresourceRange subresourceRange{
+		VK_IMAGE_ASPECT_DEPTH_BIT,	// aspectMask;
+		0,							// baseMipLevel;
+		1,							// levelCount;
+		0,							// baseArrayLayer;
+		1,							// layerCount;
+	};
+	pDepthImage->transitLayout(
+		pDevice,
+		VK_IMAGE_LAYOUT_UNDEFINED,
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+		subresourceRange
+	);
 }
 
 

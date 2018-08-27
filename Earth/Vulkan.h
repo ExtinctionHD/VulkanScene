@@ -8,6 +8,7 @@
 #include "Window.h"
 #include "GraphicsPipeline.h"
 #include "DescriptorSet.h"
+#include "Image.h"
 
 class Vulkan
 {
@@ -49,6 +50,8 @@ private:
 
 	GraphicsPipeline *pGraphicsPipeline;
 
+	// depth image and its view
+	Image *pDepthImage;
 
 	void createInstance();
 
@@ -74,5 +77,7 @@ private:
 
 	void createSurface(GLFWwindow *window);
 
+	// create depth image, its view and execute its layout transition
+	void createDepthResources();
 };
 

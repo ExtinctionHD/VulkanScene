@@ -7,6 +7,8 @@
 class Image: public SwapChainImage
 {
 public:
+	Image() {}
+
 	Image(
 		Device *pDevice,
 		VkExtent3D extent,
@@ -19,15 +21,15 @@ public:
 
 	~Image();
 
-	VkImageView view;
+	VkImageView view = VK_NULL_HANDLE;
 
 	void createImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 
-	void transitionImageLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange);
+	void transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange);
 
 
 private:
-	VkDeviceMemory memory;
+	VkDeviceMemory memory = VK_NULL_HANDLE;
 
 	void allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties);
 };

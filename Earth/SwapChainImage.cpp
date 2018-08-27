@@ -9,7 +9,7 @@ SwapChainImage::SwapChainImage(VkDevice device, VkImage image, VkFormat format)
 	this->device = device;
 }
 
-VkImageView SwapChainImage::createImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels)
+VkImageView SwapChainImage::getImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels)
 {
 	VkImageView imageView;
 
