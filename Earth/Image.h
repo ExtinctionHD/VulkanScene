@@ -3,7 +3,8 @@
 #include "Device.h"
 #include "SwapChainImage.h"
 
-// allocate memory and create new image
+// allocates memory and creates new image,
+// can create image view, and transit its layout
 class Image: public SwapChainImage
 {
 public:

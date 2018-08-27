@@ -17,6 +17,8 @@ Vulkan::Vulkan(Window *pWindow)
 	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain->imageFormat, pDescriptorSet->layout, pSwapChain->extent);
 
 	createDepthResources();
+
+	pSwapChain->createFramebuffers(pDepthImage->view, pGraphicsPipeline->renderpass);
 }
 
 Vulkan::~Vulkan()

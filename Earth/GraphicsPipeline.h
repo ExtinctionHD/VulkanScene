@@ -11,6 +11,9 @@ public:
 	// all stages of graphics pipeline
 	VkPipeline pipeline;
 
+	// provides all attachments (color and depth)
+	VkRenderPass renderpass;
+
 	VkFormat depthAttachmentFormat;
 
 	GraphicsPipeline(Device *pDevice, VkFormat colorAttachmentFormat, VkDescriptorSetLayout descriptorSetLayout, VkExtent2D viewportExtent);
@@ -32,9 +35,6 @@ private:
 
 	// device that provide pipeline
 	VkDevice device;
-	
-	// provides all attachments (color and depth)
-	VkRenderPass renderpass;
 
 	// layout of pipeline resources (descriptors)
 	VkPipelineLayout layout;

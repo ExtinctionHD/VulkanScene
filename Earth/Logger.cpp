@@ -25,6 +25,7 @@ const std::string Logger::FAILED_TO_CREATE_PIPELINE_LAYOUT = "Failed to create p
 const std::string Logger::FAILED_TO_CREATE_GRAPHICS_PIPELINE = "Failed to create graphics pipeline";
 const std::string Logger::FAILED_TO_CREATE_COMMAND_POOL = "Failed to create command pool";
 const std::string Logger::UNSUPPORTED_LAYOUT_TRANSITION = "Unsupported image layout transition";
+const std::string Logger::FAILED_TO_CREATE_FRAMEBUFFER = "Failed to create framebuffer";
 
 void Logger::infoValidationLayers(bool enabled)
 {
