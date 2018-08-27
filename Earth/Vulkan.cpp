@@ -219,6 +219,7 @@ void Vulkan::createDepthResources()
 		pSwapChain->extent.height,
 		1
 	};
+
 	pDepthImage = new Image(
 		pDevice,
 		extent,
@@ -229,8 +230,6 @@ void Vulkan::createDepthResources()
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 	);
 
-	pDepthImage->createImageView(VK_IMAGE_ASPECT_DEPTH_BIT, 1);
-
 	VkImageSubresourceRange subresourceRange{
 		VK_IMAGE_ASPECT_DEPTH_BIT,	// aspectMask;
 		0,							// baseMipLevel;
@@ -238,6 +237,9 @@ void Vulkan::createDepthResources()
 		0,							// baseArrayLayer;
 		1,							// layerCount;
 	};
+
+	pDepthImage->createImageView(subresourceRange);
+
 	pDepthImage->transitLayout(
 		pDevice,
 		VK_IMAGE_LAYOUT_UNDEFINED,

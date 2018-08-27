@@ -23,7 +23,7 @@ public:
 
 	VkImageView view = VK_NULL_HANDLE;
 
-	void createImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+	void createImageView(VkImageSubresourceRange subresourceRange);
 
 	void transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange);
 

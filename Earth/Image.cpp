@@ -62,16 +62,8 @@ Image::~Image()
 	}
 }
 
-void Image::createImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels)
+void Image::createImageView(VkImageSubresourceRange subresourceRange)
 {
-	VkImageSubresourceRange subresourceRange{
-		aspectFlags,	// aspectMask;
-		0,				// baseMipLevel;
-		mipLevels,		// levelCount;
-		0,				// baseArrayLayer;
-		1,				// layerCount;
-	};
-
 	VkImageViewCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,	// sType
 		nullptr,									// pNext

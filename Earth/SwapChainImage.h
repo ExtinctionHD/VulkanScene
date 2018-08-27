@@ -16,7 +16,7 @@ public:
 	SwapChainImage(VkDevice device, VkImage image, VkFormat format);
 
 	// create view of saved image
-	VkImageView getImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+	VkImageView getImageView(VkImageSubresourceRange subresourceRange);
 
 protected:
 	VkDevice device;  // device that controls this image

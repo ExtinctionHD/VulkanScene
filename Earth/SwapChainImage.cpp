@@ -9,17 +9,9 @@ SwapChainImage::SwapChainImage(VkDevice device, VkImage image, VkFormat format)
 	this->device = device;
 }
 
-VkImageView SwapChainImage::getImageView(VkImageAspectFlags aspectFlags, uint32_t mipLevels)
+VkImageView SwapChainImage::getImageView(VkImageSubresourceRange subresourceRange)
 {
 	VkImageView imageView;
-
-	VkImageSubresourceRange subresourceRange{
-		aspectFlags,	// aspectMask;
-		0,				// baseMipLevel;
-		mipLevels,		// levelCount;
-		0,				// baseArrayLayer;
-		1,				// layerCount;
-	};
 
 	VkImageViewCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,	// sType
