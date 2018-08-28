@@ -37,6 +37,8 @@ public:
 	static const std::string IMAGE_FORMAT_DOES_NOT_SUPPORT_LINEAR_BLITTING;
 	static const std::string FAILED_TO_CREATE_TEXTURE_SAMPLER;
 
+	static void printInfo(std::string message);
+
 	static void infoValidationLayers(bool enabled);  // log inforamation about validation layers
 
 	static void fatal(std::string message, std::string file, int line);  // log fatal errors
@@ -59,9 +61,10 @@ public:
 
 	static std::string getTextureLoadingErrMsg(std::string filename);
 
-private:
-	static void printInfo();
+	static std::string getModelLoadingErrMsg(std::string err);
 
-	static std::string getFilename(std::string path);  // get only filename from full path
+private:
+	static std::string formatModelErr(std::string err);
 };
+
 

@@ -11,7 +11,7 @@
 class Vertex
 {
 public:
-	Vertex();
+	Vertex(glm::vec3 pos, glm::vec2 tex);
 	~Vertex();
 
 	glm::vec3 pos;		// position of vertex (x, y, z)

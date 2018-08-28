@@ -43,10 +43,10 @@
     <Filter Include="Файлы заголовков\Static">
       <UniqueIdentifier>{02dadbed-8ac5-4cca-85c6-31981a8247a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Vulkan\Mesh">
+    <Filter Include="Исходные файлы\Vulkan\Model">
       <UniqueIdentifier>{0ead2906-725d-4a3b-9995-112bde4769e9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\Vulkan\Mesh">
+    <Filter Include="Файлы заголовков\Vulkan\Model">
       <UniqueIdentifier>{cd26914f-85c0-4cfd-969c-a84e157c5730}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -97,10 +97,13 @@
       <Filter>Файлы заголовков\Static</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
-      <Filter>Файлы заголовков\Vulkan\Mesh</Filter>
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
     </ClInclude>
     <ClInclude Include="TextureImage.h">
       <Filter>Файлы заголовков\Vulkan\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -150,10 +153,13 @@
       <Filter>Исходные файлы\Static</Filter>
     </ClCompile>
     <ClCompile Include="Vertex.cpp">
-      <Filter>Исходные файлы\Vulkan\Mesh</Filter>
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
     </ClCompile>
     <ClCompile Include="TextureImage.cpp">
       <Filter>Исходные файлы\Vulkan\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

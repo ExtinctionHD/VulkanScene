@@ -2,8 +2,10 @@
 
 // public:
 
-Vertex::Vertex()
+Vertex::Vertex(glm::vec3 pos, glm::vec2 tex)
 {
+	this->pos = pos;
+	this->tex = tex;
 }
 
 Vertex::~Vertex()

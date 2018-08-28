@@ -26,6 +26,7 @@
     <ClInclude Include="GraphicsPipeline.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="ShaderModule.h" />
     <ClInclude Include="SurfaceSupportDetails.h" />
@@ -46,6 +47,7 @@
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="QueueFamilyIndices.cpp" />
     <ClCompile Include="ShaderModule.cpp" />
     <ClCompile Include="SurfaceSupportDetails.cpp" />

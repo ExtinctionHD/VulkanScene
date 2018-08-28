@@ -1,5 +1,6 @@
 #include <string>
 #include <algorithm>
+#include "File.h"
 
 #include "Logger.h"
 
@@ -29,23 +30,26 @@ const std::string Logger::FAILED_TO_CREATE_FRAMEBUFFER = "Failed to create frame
 const std::string Logger::IMAGE_FORMAT_DOES_NOT_SUPPORT_LINEAR_BLITTING = "This image format does not support linear blitting";
 const std::string Logger::FAILED_TO_CREATE_TEXTURE_SAMPLER = "Failed to create texture sampler";
 
+void Logger::printInfo(std::string message)
+{
+	std::cout << "INFO:  " << message << std::endl;
+}
+
 void Logger::infoValidationLayers(bool enabled)
 {
-	printInfo();
-
 	if (enabled)
 	{
-		std::cout << "Validation layers enabled." << std::endl;
+		printInfo("Validation layers enabled.");
 	}
 	else
 	{
-		std::cout << "Validation layers not enabled." << std::endl;
+		printInfo("Validation layers not enabled.");
 	}
 }
 
 void Logger::fatal(std::string message, std::string file, int line)
 {
-	throw std::runtime_error("\nFatal: " + message + ". In " + getFilename(file) + " at line " + std::to_string(line));
+	throw std::runtime_error("\nFATAL: " + message + ". In " + File::getFilename(file) + " at line " + std::to_string(line));
 }
 
 VKAPI_ATTR VkBool32 VKAPI_CALL Logger::validationLayerCallback(
@@ -79,16 +83,26 @@ std::string Logger::getTextureLoadingErrMsg(std::string filename)
 	return "Failed to load texture image from file: " + filename;
 }
 
-// private:
-
-void Logger::printInfo()
+std::string Logger::getModelLoadingErrMsg(std::string err)
 {
-	std::cout << "Info: ";
+	return formatModelErr(err);
 }
 
-std::string Logger::getFilename(std::string path)
-{
-	std::replace(path.begin(), path.end(), '\\', '/');
+// private:
 
-	return path.substr(path.find_last_of('/') + 1);
+std::string Logger::formatModelErr(std::string err)
+{
+	err = err.substr(0, err.length() - 1);
+
+	size_t index = err.find_first_of("\n", 0);
+	while (index != std::string::npos)
+	{
+		err.insert(index + 1, "       ");
+		size_t offset = index + 1;
+		index = err.find_first_of("\n", offset);
+	}
+
+	std::replace(err.begin(), err.end(), '\\', '/');
+
+	return err;
 }

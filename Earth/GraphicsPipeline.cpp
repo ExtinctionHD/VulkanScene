@@ -11,7 +11,7 @@ GraphicsPipeline::GraphicsPipeline(Device *pDevice, SwapChain *pSwapChain, VkDes
 	device = pDevice->device;
 
 	VkFormat depthAttachmentFormat = pDevice->findSupportedFormat(
-		depthFormats, 
+		DEPTH_FORMATS, 
 		VK_IMAGE_TILING_OPTIMAL, 
 		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
 	);
