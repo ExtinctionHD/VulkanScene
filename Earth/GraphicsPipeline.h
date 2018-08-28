@@ -28,8 +28,8 @@ private:
 	};
 
 	// files with shaders code
-	const std::string vertShaderPath = File::getExeDir() + "shaders/vert.spv";
-	const std::string fragShaderPath = File::getExeDir() + "shaders/frag.spv";
+	const std::string VERT_SHADER_PATH = File::getExeDir() + "shaders/vert.spv";
+	const std::string FRAG_SHADER_PATH = File::getExeDir() + "shaders/frag.spv";
 
 	// device that provide pipeline
 	VkDevice device;

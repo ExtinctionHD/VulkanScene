@@ -45,7 +45,7 @@ public:
 	void endOneTimeCommands(VkCommandBuffer commandBuffer);
 
 private:
-	const std::vector<const char*> extensions =
+	const std::vector<const char*> EXTENSIONS =
 	{
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};

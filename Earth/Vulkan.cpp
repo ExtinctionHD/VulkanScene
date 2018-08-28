@@ -11,12 +11,12 @@ Vulkan::Vulkan(Window *pWindow)
 	createDebugCallback();
 	createSurface(pWindow->window);
 	
-	pDevice = new Device(instance, surface, validationLayers);
+	pDevice = new Device(instance, surface, VALIDATION_LAYERS);
 	pSwapChain = new SwapChain(pDevice, surface, pWindow->getExtent());
 	pDescriptorSet = new DescriptorSet(pDevice->device);
 	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain, pDescriptorSet->layout);
 
-	pEarthTexture = new TextureImage(pDevice, earthTexturePath);
+	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
 }
 
 Vulkan::~Vulkan()
@@ -37,10 +37,10 @@ Vulkan::~Vulkan()
 void Vulkan::createInstance()
 {
 	// validation layers
-	Logger::infoValidationLayers(enableValidationLayers);
-	if (enableValidationLayers)
+	Logger::infoValidationLayers(ENABLE_VALIDATION_LAYERS);
+	if (ENABLE_VALIDATION_LAYERS)
 	{
-		if (!checkInstanceLayerSupport(validationLayers))
+		if (!checkInstanceLayerSupport(VALIDATION_LAYERS))
 		{
 			LOGGER_FATAL(Logger::VALIDATION_LAYERS_NOT_AVAILABLE);
 		}
@@ -79,10 +79,10 @@ void Vulkan::createInstance()
 	};
 
 	// add validation layers if they are enabled
-	if (enableValidationLayers)
+	if (ENABLE_VALIDATION_LAYERS)
 	{
-		createInfo.enabledLayerCount = validationLayers.size();
-		createInfo.ppEnabledLayerNames = validationLayers.data();
+		createInfo.enabledLayerCount = VALIDATION_LAYERS.size();
+		createInfo.ppEnabledLayerNames = VALIDATION_LAYERS.data();
 	}
 
 	VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
@@ -145,7 +145,7 @@ std::vector<const char*> Vulkan::getRequiredExtensions()
 	}
 
 	// extension for validation layers callback
-	if (enableValidationLayers)
+	if (ENABLE_VALIDATION_LAYERS)
 	{
 		extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 	}
@@ -181,7 +181,7 @@ void Vulkan::vkDestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportC
 void Vulkan::createDebugCallback()
 {
 	// don't need callback if validation layers are not enabled
-	if (!enableValidationLayers)
+	if (!ENABLE_VALIDATION_LAYERS)
 	{
 		return;
 	}

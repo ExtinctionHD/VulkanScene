@@ -27,10 +27,10 @@ public:
 
 private:
 	// try to found this surface format
-	const VkSurfaceFormatKHR preferredFormat = { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
+	const VkSurfaceFormatKHR PRESENT_FORMAT = { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
 
 	// try to found this present mode
-	const VkPresentModeKHR preferredPresentMode = { VK_PRESENT_MODE_MAILBOX_KHR };
+	const VkPresentModeKHR PREFERRED_PRESENT_MODE = VK_PRESENT_MODE_MAILBOX_KHR;
 
 	// device that provide swapchain
 	VkDevice device;

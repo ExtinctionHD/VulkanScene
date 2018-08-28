@@ -195,7 +195,7 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 {
 	// loading shaders (vertex and fragment stage):
 
-	ShaderModule vertShaderModule{ device, vertShaderPath };
+	ShaderModule vertShaderModule{ device, VERT_SHADER_PATH };
 	VkPipelineShaderStageCreateInfo vertShaderStageCreateInfo{
 		VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,	// sType;
 		nullptr,												// pNext;
@@ -206,7 +206,7 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 		nullptr,												// pSpecializationInfo;
 	};
 
-	ShaderModule fragShaderModule{ device, fragShaderPath };
+	ShaderModule fragShaderModule{ device, FRAG_SHADER_PATH };
 	VkPipelineShaderStageCreateInfo fragShaderStageCreateInfo{
 		VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,	// sType;
 		nullptr,												// pNext;

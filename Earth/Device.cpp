@@ -132,7 +132,7 @@ void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 	// check each available gpu with vulkan support
 	for (const auto& device : physicalDevices)
 	{
-		if (isPhysicalDeviceSuitable(device, surface, layers, extensions))
+		if (isPhysicalDeviceSuitable(device, surface, layers, EXTENSIONS))
 		{
 			physicalDevice = device;
 		}
@@ -232,8 +232,8 @@ void Device::createLogicalDevice(VkSurfaceKHR surface)
 		queueCreateInfos.data(),				// pQueueCreateInfos;
 		layers.size(),							// enabledLayerCount;
 		layers.data(),							// ppEnabledLayerNames;
-		extensions.size(),						// enabledExtensionCount;
-		extensions.data(),						// ppEnabledExtensionNames;
+		EXTENSIONS.size(),						// enabledExtensionCount;
+		EXTENSIONS.data(),						// ppEnabledExtensionNames;
 		nullptr									// pEnabledFeatures;
 	};
 

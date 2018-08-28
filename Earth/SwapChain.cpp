@@ -85,14 +85,14 @@ VkSurfaceFormatKHR SwapChain::chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR
 	// can choose any format
 	if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED)
 	{
-		return preferredFormat;
+		return PRESENT_FORMAT;
 	}
 
 	// try to found preferred format from available
 	for (const auto& availableFormat : availableFormats)
 	{
-		if (availableFormat.format == preferredFormat.format &&
-			availableFormat.colorSpace == preferredFormat.colorSpace)
+		if (availableFormat.format == PRESENT_FORMAT.format &&
+			availableFormat.colorSpace == PRESENT_FORMAT.colorSpace)
 		{
 			return availableFormat;
 		}
@@ -106,7 +106,7 @@ VkPresentModeKHR SwapChain::choosePresentMode(std::vector<VkPresentModeKHR> avai
 {
 	for (const auto& availablePresentMode : availablePresentModes)
 	{
-		if (availablePresentMode == preferredPresentMode)
+		if (availablePresentMode == PREFERRED_PRESENT_MODE)
 		{
 			return availablePresentMode;
 		}

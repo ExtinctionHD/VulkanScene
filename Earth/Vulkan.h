@@ -21,18 +21,18 @@ public:
 	~Vulkan();
 
 private:
-	const std::vector<const char *> validationLayers =
+	const std::vector<const char *> VALIDATION_LAYERS =
 	{
 		"VK_LAYER_LUNARG_standard_validation"  // some debug layers
 	};
 
 #ifdef _DEBUG  // validation layers enable only in debug mode
-	const bool enableValidationLayers = true;
+	const bool ENABLE_VALIDATION_LAYERS = true;
 #else
-	const bool enableValidationLayers = false;
+	const bool ENABLE_VALIDATION_LAYERS = false;
 #endif
 
-	const std::string earthTexturePath = File::getExeDir() + "textures/earth.jpg";
+	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "textures/earth.jpg";
 
 	VkInstance instance;
 
