@@ -22,7 +22,11 @@ public:
 
 	~Image();
 
+	// extent of this image
 	VkExtent3D extent;
+
+	// memory that stores this image
+	VkDeviceMemory memory = VK_NULL_HANDLE;
 
 	VkImageView view = VK_NULL_HANDLE;
 
@@ -30,10 +34,27 @@ public:
 
 	void transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange);
 
+	static void copyImage(
+		Device *pDevice, 
+		Image& srcImage, 
+		Image& dstImage,
+		VkExtent3D extent,
+		VkImageSubresourceLayers subresourceLayers
+	);
+
+protected:
+	// constructor method to use in derived class
+	void createThisImage(
+		Device *pDevice,
+		VkExtent3D extent,
+		uint32_t mipLevels,
+		VkFormat format,
+		VkImageTiling tiling,
+		VkImageUsageFlags usage,
+		VkMemoryPropertyFlags properties
+	);
 
 private:
-	VkDeviceMemory memory = VK_NULL_HANDLE;
-
 	void allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties);
 };
 

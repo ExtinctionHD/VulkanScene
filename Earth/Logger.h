@@ -34,6 +34,8 @@ public:
 	static const std::string FAILED_TO_CREATE_COMMAND_POOL;
 	static const std::string UNSUPPORTED_LAYOUT_TRANSITION;
 	static const std::string FAILED_TO_CREATE_FRAMEBUFFER;
+	static const std::string IMAGE_FORMAT_DOES_NOT_SUPPORT_LINEAR_BLITTING;
+	static const std::string FAILED_TO_CREATE_TEXTURE_SAMPLER;
 
 	static void infoValidationLayers(bool enabled);  // log inforamation about validation layers
 
@@ -54,6 +56,8 @@ public:
 	static std::string getFileOpeningErrMsg(std::string filename);
 
 	static std::string getShaderCreatingErrMsg(std::string filename);
+
+	static std::string getTextureLoadingErrMsg(std::string filename);
 
 private:
 	static void printInfo();

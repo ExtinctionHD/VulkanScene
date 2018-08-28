@@ -26,6 +26,8 @@ const std::string Logger::FAILED_TO_CREATE_GRAPHICS_PIPELINE = "Failed to create
 const std::string Logger::FAILED_TO_CREATE_COMMAND_POOL = "Failed to create command pool";
 const std::string Logger::UNSUPPORTED_LAYOUT_TRANSITION = "Unsupported image layout transition";
 const std::string Logger::FAILED_TO_CREATE_FRAMEBUFFER = "Failed to create framebuffer";
+const std::string Logger::IMAGE_FORMAT_DOES_NOT_SUPPORT_LINEAR_BLITTING = "This image format does not support linear blitting";
+const std::string Logger::FAILED_TO_CREATE_TEXTURE_SAMPLER = "Failed to create texture sampler";
 
 void Logger::infoValidationLayers(bool enabled)
 {
@@ -70,6 +72,11 @@ std::string Logger::getFileOpeningErrMsg(std::string filename)
 std::string Logger::getShaderCreatingErrMsg(std::string filename)
 {
 	return "Failed to create shader module from file: " + filename;
+}
+
+std::string Logger::getTextureLoadingErrMsg(std::string filename)
+{
+	return "Failed to load texture image from file: " + filename;
 }
 
 // private:

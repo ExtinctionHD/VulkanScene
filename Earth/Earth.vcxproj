@@ -31,6 +31,7 @@
     <ClInclude Include="SurfaceSupportDetails.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="SwapChainImage.h" />
+    <ClInclude Include="TextureImage.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VkDeleter.h" />
     <ClInclude Include="Vulkan.h" />
@@ -50,6 +51,7 @@
     <ClCompile Include="SurfaceSupportDetails.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="SwapChainImage.cpp" />
+    <ClCompile Include="TextureImage.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Vulkan.cpp" />
     <ClCompile Include="Window.cpp" />

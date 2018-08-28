@@ -9,6 +9,7 @@
 #include "GraphicsPipeline.h"
 #include "DescriptorSet.h"
 #include "Image.h"
+#include "TextureImage.h"
 
 class Vulkan
 {
@@ -31,6 +32,8 @@ private:
 	const bool enableValidationLayers = false;
 #endif
 
+	const std::string earthTexturePath = File::getExeDir() + "textures/earth.jpg";
+
 	VkInstance instance;
 
 	// validation layers callback
@@ -49,6 +52,9 @@ private:
 	DescriptorSet *pDescriptorSet;
 
 	GraphicsPipeline *pGraphicsPipeline;
+
+	// earth surface texture
+	TextureImage *pEarthTexture;
 
 	void createInstance();
 

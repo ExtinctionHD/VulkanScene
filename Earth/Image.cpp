@@ -14,37 +14,7 @@ Image::Image(
 	VkMemoryPropertyFlags properties
 )
 {
-	device = pDevice->device;
-	this->extent = extent;
-	this->format = format;
-
-	VkImageCreateInfo imageInfo{
-		VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,	// sType;
-		nullptr,								// pNext;
-		0,										// flags;
-		VK_IMAGE_TYPE_2D,						// imageType;
-		format,									// format;
-		extent,									// extent;
-		mipLevels,								// mipLevels;
-		1,										// arrayLayers;
-		VK_SAMPLE_COUNT_1_BIT,					// samples;
-		tiling,									// tiling;
-		usage,									// usage;
-		VK_SHARING_MODE_EXCLUSIVE,				// sharingMode;
-		0,										// queueFamilyIndexCount;
-		nullptr,								// pQueueFamilyIndices;
-		VK_IMAGE_LAYOUT_UNDEFINED				// initialLayout;
-	};
-
-	VkResult result = vkCreateImage(device, &imageInfo, nullptr, &image);
-	if (result != VK_SUCCESS)
-	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_IMAGE);
-	}
-
-	allocateMemory(pDevice, properties);
-
-	vkBindImageMemory(device, image, memory, 0);
+	createThisImage(pDevice, extent, mipLevels, format, tiling, usage, properties);
 }
 
 Image::~Image()
@@ -150,6 +120,68 @@ void Image::transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayou
 	);
 
 	pDevice->endOneTimeCommands(commandBuffer);
+}
+
+void Image::copyImage(Device *pDevice, Image& srcImage, Image& dstImage, VkExtent3D extent, VkImageSubresourceLayers subresourceLayers)
+{
+	VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
+
+	VkImageCopy region{
+		subresourceLayers,	// srcSubresource;
+		{ 0, 0, 0},			// srcOffset;
+		subresourceLayers,	// dstSubresource;
+		{ 0, 0, 0 },		// dstOffset;
+		extent				// extent;
+	};
+
+	vkCmdCopyImage(
+		commandBuffer,
+		srcImage.image,
+		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+		dstImage.image,
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		1,
+		&region
+	);
+
+	pDevice->endOneTimeCommands(commandBuffer);
+}
+
+// protected:
+
+void Image::createThisImage(Device * pDevice, VkExtent3D extent, uint32_t mipLevels, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties)
+{
+	device = pDevice->device;
+	this->extent = extent;
+	this->format = format;
+
+	VkImageCreateInfo imageInfo{
+		VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,	// sType;
+		nullptr,								// pNext;
+		0,										// flags;
+		VK_IMAGE_TYPE_2D,						// imageType;
+		format,									// format;
+		extent,									// extent;
+		mipLevels,								// mipLevels;
+		1,										// arrayLayers;
+		VK_SAMPLE_COUNT_1_BIT,					// samples;
+		tiling,									// tiling;
+		usage,									// usage;
+		VK_SHARING_MODE_EXCLUSIVE,				// sharingMode;
+		0,										// queueFamilyIndexCount;
+		nullptr,								// pQueueFamilyIndices;
+		VK_IMAGE_LAYOUT_UNDEFINED				// initialLayout;
+	};
+
+	VkResult result = vkCreateImage(device, &imageInfo, nullptr, &image);
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_CREATE_IMAGE);
+	}
+
+	allocateMemory(pDevice, properties);
+
+	vkBindImageMemory(device, image, memory, 0);
 }
 
 // private:

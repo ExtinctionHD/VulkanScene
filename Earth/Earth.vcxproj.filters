@@ -99,6 +99,9 @@
     <ClInclude Include="Vertex.h">
       <Filter>Файлы заголовков\Vulkan\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="TextureImage.h">
+      <Filter>Файлы заголовков\Vulkan\Image</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -148,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="Vertex.cpp">
       <Filter>Исходные файлы\Vulkan\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureImage.cpp">
+      <Filter>Исходные файлы\Vulkan\Image</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
