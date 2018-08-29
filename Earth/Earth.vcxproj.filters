@@ -105,6 +105,9 @@
     <ClInclude Include="Model.h">
       <Filter>Файлы заголовков\Vulkan\Model</Filter>
     </ClInclude>
+    <ClInclude Include="Buffer.h">
+      <Filter>Файлы заголовков\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -160,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>Исходные файлы\Vulkan\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffer.cpp">
+      <Filter>Исходные файлы\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

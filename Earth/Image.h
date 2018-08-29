@@ -25,14 +25,16 @@ public:
 	// extent of this image
 	VkExtent3D extent;
 
-	// memory that stores this image
-	VkDeviceMemory memory = VK_NULL_HANDLE;
-
 	VkImageView view = VK_NULL_HANDLE;
 
 	void createImageView(VkImageSubresourceRange subresourceRange);
 
 	void transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange);
+
+	// load pixels in image memory 
+	// pixel size depend from image format
+	// memory size must be equals width * height * pixel size
+	void updateData(uint8_t * pixels, size_t pixelSize);
 
 	static void copyImage(
 		Device *pDevice, 
@@ -55,6 +57,9 @@ protected:
 	);
 
 private:
+	// memory that stores this image
+	VkDeviceMemory memory = VK_NULL_HANDLE;
+
 	void allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties);
 };
 

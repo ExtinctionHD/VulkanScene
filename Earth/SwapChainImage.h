@@ -16,9 +16,10 @@ public:
 	SwapChainImage(VkDevice device, VkImage image, VkFormat format);
 
 	// create view of saved image
-	VkImageView getImageView(VkImageSubresourceRange subresourceRange);
+	VkImageView getImageView(VkImageSubresourceRange subresourceRange) const;
 
 protected:
-	VkDevice device;  // device that controls this image
+	// device that provides this buffer and memory
+	VkDevice device;
 };
 

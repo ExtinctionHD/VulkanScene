@@ -122,6 +122,47 @@ void Image::transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayou
 	pDevice->endOneTimeCommands(commandBuffer);
 }
 
+void Image::updateData(uint8_t *pixels, size_t pixelSize)
+{
+	void *data;
+	VkDeviceSize size = extent.width * extent.height * pixelSize;
+	vkMapMemory(device, memory, 0, size, 0, &data);
+
+	VkImageSubresource subresource{
+		VK_IMAGE_ASPECT_COLOR_BIT,
+		0,
+		0
+	};
+
+	VkSubresourceLayout layout;
+	vkGetImageSubresourceLayout(
+		device,
+		image,
+		&subresource,
+		&layout
+	);
+
+	if (layout.rowPitch == extent.width * pixelSize)
+	{
+		memcpy(data, pixels, size);
+	}
+	else
+	{
+		uint8_t *dataBytes = reinterpret_cast<uint8_t*>(data);
+
+		for (int y = 0; y < extent.height; y++)
+		{
+			memcpy(
+				&dataBytes[y * layout.rowPitch],
+				&pixels[y * extent.width * pixelSize],
+				extent.width * pixelSize
+			);
+		}
+	}
+
+	vkUnmapMemory(device, memory);
+}
+
 void Image::copyImage(Device *pDevice, Image& srcImage, Image& dstImage, VkExtent3D extent, VkImageSubresourceLayers subresourceLayers)
 {
 	VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();

@@ -36,6 +36,8 @@ public:
 	static const std::string FAILED_TO_CREATE_FRAMEBUFFER;
 	static const std::string IMAGE_FORMAT_DOES_NOT_SUPPORT_LINEAR_BLITTING;
 	static const std::string FAILED_TO_CREATE_TEXTURE_SAMPLER;
+	static const std::string FAILED_TO_CREATE_BUFFER;
+	static const std::string FAILED_TO_ALLOC_BUFFER_MEMORY;
 
 	static void printInfo(std::string message);
 

@@ -15,7 +15,16 @@ TextureImage::TextureImage(Device *pDevice, std::string filename)
 	stbi_uc *pixels = loadPixels(filename);
 
 	// staging image can be mapped
-	Image *pStagingImage = createStagingImage(pDevice, pixels);
+	Image *pStagingImage = new Image(
+		pDevice,
+		extent,
+		1,
+		format,
+		VK_IMAGE_TILING_LINEAR,
+		VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+	);
+	pStagingImage->updateData(pixels, STBI_rgb_alpha);
 
 	stbi_image_free(pixels);
 
@@ -100,59 +109,6 @@ stbi_uc* TextureImage::loadPixels(std::string filename)
 	}
 
 	return pixels;
-}
-
-Image* TextureImage::createStagingImage(Device *pDevice, stbi_uc *pixels)
-{
-	Image *pStagingImage = new Image(
-		pDevice,
-		extent,
-		1,
-		format,
-		VK_IMAGE_TILING_LINEAR,
-		VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-	);
-
-	void *data;
-	VkDeviceSize size = extent.width * extent.height * STBI_rgb_alpha;
-	vkMapMemory(pDevice->device, pStagingImage->memory, 0, size, 0, &data);
-
-	VkImageSubresource subresource{
-		VK_IMAGE_ASPECT_COLOR_BIT,
-		0,
-		0
-	};
-
-	VkSubresourceLayout layout;
-	vkGetImageSubresourceLayout(
-		pDevice->device,
-		pStagingImage->image,
-		&subresource, 
-		&layout
-	);
-
-	if (layout.rowPitch == extent.width * STBI_rgb_alpha)
-	{
-		memcpy(data, pixels, size);
-	}
-	else
-	{
-		uint8_t *dataBytes = reinterpret_cast<uint8_t*>(data);
-
-		for (int y = 0; y < extent.height; y++)
-		{
-			memcpy(
-				&dataBytes[y * layout.rowPitch],
-				&pixels[y * extent.width * STBI_rgb_alpha],
-				extent.width * STBI_rgb_alpha
-			);
-		}
-	}
-
-	vkUnmapMemory(pDevice->device, pStagingImage->memory);
-
-	return pStagingImage;
 }
 
 void TextureImage::generateMipmaps(Device *pDevice)

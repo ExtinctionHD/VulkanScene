@@ -29,6 +29,8 @@ const std::string Logger::UNSUPPORTED_LAYOUT_TRANSITION = "Unsupported image lay
 const std::string Logger::FAILED_TO_CREATE_FRAMEBUFFER = "Failed to create framebuffer";
 const std::string Logger::IMAGE_FORMAT_DOES_NOT_SUPPORT_LINEAR_BLITTING = "This image format does not support linear blitting";
 const std::string Logger::FAILED_TO_CREATE_TEXTURE_SAMPLER = "Failed to create texture sampler";
+const std::string Logger::FAILED_TO_CREATE_BUFFER = "Failed to create buffer";
+const std::string Logger::FAILED_TO_ALLOC_BUFFER_MEMORY = "Failed to allocate buffer memory";
 
 void Logger::printInfo(std::string message)
 {

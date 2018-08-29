@@ -21,9 +21,6 @@ private:
 	// returns pixel bytes and save image extent
 	stbi_uc* loadPixels(std::string filename);
 
-	// returns staging
-	Image* createStagingImage(Device *pDevice, stbi_uc *pixels);
-
 	// generate mipmap levels and transit image layout to SHADER_READ_ONLY
 	void generateMipmaps(Device *pDevice);
 

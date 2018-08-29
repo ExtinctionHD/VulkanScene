@@ -9,7 +9,7 @@ SwapChainImage::SwapChainImage(VkDevice device, VkImage image, VkFormat format)
 	this->device = device;
 }
 
-VkImageView SwapChainImage::getImageView(VkImageSubresourceRange subresourceRange)
+VkImageView SwapChainImage::getImageView(VkImageSubresourceRange subresourceRange) const
 {
 	VkImageView imageView;
 
