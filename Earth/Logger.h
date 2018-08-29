@@ -38,6 +38,8 @@ public:
 	static const std::string FAILED_TO_CREATE_TEXTURE_SAMPLER;
 	static const std::string FAILED_TO_CREATE_BUFFER;
 	static const std::string FAILED_TO_ALLOC_BUFFER_MEMORY;
+	static const std::string FAILED_TO_CREATE_DESCRIPTOR_POOL;
+	static const std::string FAILED_TO_ALLOC_DESCRIPTOR_SET;
 
 	static void printInfo(std::string message);
 

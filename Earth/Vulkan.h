@@ -32,8 +32,6 @@ private:
 #else
 	const bool ENABLE_VALIDATION_LAYERS = false;
 #endif
-
-	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "/textures/earth.jpg";
 	const std::string EARTH_MODEL_PATH = File::getExeDir() + "/models/sphere.obj";
 
 	VkInstance instance;
@@ -54,9 +52,6 @@ private:
 	DescriptorSet *pDescriptorSet;
 
 	GraphicsPipeline *pGraphicsPipeline;
-
-	// earth surface texture
-	TextureImage *pEarthTexture;
 
 	// model of earth
 	Model *pEarthModel;

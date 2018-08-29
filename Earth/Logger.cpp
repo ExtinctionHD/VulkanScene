@@ -31,6 +31,8 @@ const std::string Logger::IMAGE_FORMAT_DOES_NOT_SUPPORT_LINEAR_BLITTING = "This 
 const std::string Logger::FAILED_TO_CREATE_TEXTURE_SAMPLER = "Failed to create texture sampler";
 const std::string Logger::FAILED_TO_CREATE_BUFFER = "Failed to create buffer";
 const std::string Logger::FAILED_TO_ALLOC_BUFFER_MEMORY = "Failed to allocate buffer memory";
+const std::string Logger::FAILED_TO_CREATE_DESCRIPTOR_POOL = "Failed to create descriptor pool";
+const std::string Logger::FAILED_TO_ALLOC_DESCRIPTOR_SET = "Failed to allocate descriptor set";
 
 void Logger::printInfo(std::string message)
 {

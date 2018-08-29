@@ -13,17 +13,15 @@ Vulkan::Vulkan(Window *pWindow)
 	
 	pDevice = new Device(instance, surface, VALIDATION_LAYERS);
 	pSwapChain = new SwapChain(pDevice, surface, pWindow->getExtent());
-	pDescriptorSet = new DescriptorSet(pDevice->device);
+	pDescriptorSet = new DescriptorSet(pDevice);
 	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain, pDescriptorSet->layout);
 
-	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
 	pEarthModel = new Model(EARTH_MODEL_PATH);
 }
 
 Vulkan::~Vulkan()
 {
 	delete(pEarthModel);
-	delete(pEarthTexture);
 
 	delete(pGraphicsPipeline);
 	delete(pDescriptorSet);

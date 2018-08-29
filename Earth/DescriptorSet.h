@@ -5,23 +5,47 @@
 #include "Buffer.h"
 #include "TextureImage.h"
 
-// provides a pipeline with resources: buffers and textures
+// provides a pipeline with resources: uniform buffers and textures
+// deletes all resources during destroying
 class DescriptorSet
 {
 public:
-	DescriptorSet(VkDevice device);
+	DescriptorSet(Device *pDevice);
 	~DescriptorSet();
 
-	VkDescriptorSetLayout layout;
+	// resources
+	std::vector<Buffer*> uniformBuffers;
+	std::vector<TextureImage*> textures;
+
+	// layout of current resouces
+	VkDescriptorSetLayout layout = VK_NULL_HANDLE;
+
+	// updates layout, pool and set
+	// call after resource change
+	void update();
 
 private:
 	// device that provide descriptor set
-	VkDevice device;
+	Device *pDevice;
 
-	std::vector<Buffer> uniformBuffers;
+	VkDescriptorPool pool = VK_NULL_HANDLE;
 
-	std::vector<TextureImage> textures;
+	VkDescriptorSet set = VK_NULL_HANDLE;
 
+	// create layout of current resources
 	void createLayout();
+
+	// create pool of descriptors for current resources
+	void createDescriptorPool();
+
+	// create descriptor set of current resources
+	void createDescriptorSet();
+
+	// equals number of uniform buffers
+	uint32_t getTextureBindingsOffset();
+
+	void initUniformBuffers();
+
+	void initTextures();
 };
 
