@@ -11,6 +11,7 @@
 #include "Image.h"
 #include "TextureImage.h"
 #include "Model.h"
+#include "MVPmatrices.h"
 
 class Vulkan
 {
@@ -55,9 +56,10 @@ private:
 	GraphicsPipeline *pGraphicsPipeline;
 
 	// resources
-	TextureImage *pEarthTexture;  // texture of earth surface
-	Model *pEarthModel;  // model of earth
-	Buffer *pMVPBuffer;  // buffer containing MVP(model, view, projection) matrices
+	TextureImage *pEarthTexture;	// texture of earth surface
+	Model *pEarthModel;				// model of earth
+	Buffer *pMVPBuffer;				// buffer containing MVP(model, view, projection) matrices
+	MVPmatrices mvp;				// model, view, projection matrices
 
 	std::vector<VkCommandBuffer> graphicCommands;
 

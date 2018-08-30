@@ -108,6 +108,9 @@
     <ClInclude Include="Buffer.h">
       <Filter>Файлы заголовков\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="MVPmatrices.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

@@ -28,6 +28,7 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="MVPmatrices.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="ShaderModule.h" />
     <ClInclude Include="SurfaceSupportDetails.h" />

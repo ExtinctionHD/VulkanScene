@@ -222,9 +222,11 @@ void Vulkan::initDescriptorSet()
 
 	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
 	pEarthModel = new Model(pDevice, EARTH_MODEL_PATH);
+	pMVPBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, sizeof(mvp));
 
 	pDescriptorSet->addTexture(pEarthTexture);
 	pDescriptorSet->addModel(pEarthModel);
+	pDescriptorSet->addBuffer(pMVPBuffer);
 
 	pDescriptorSet->update();  // save changes in descriptor set
 }
