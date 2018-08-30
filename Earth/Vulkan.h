@@ -87,6 +87,6 @@ private:
 
 	void initDescriptorSet();
 
-	void initGraphicsCommands();
+	void initGraphicCommands();
 };
 

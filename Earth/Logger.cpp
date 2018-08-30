@@ -34,6 +34,8 @@ const std::string Logger::FAILED_TO_ALLOC_BUFFER_MEMORY = "Failed to allocate bu
 const std::string Logger::FAILED_TO_CREATE_DESCRIPTOR_POOL = "Failed to create descriptor pool";
 const std::string Logger::FAILED_TO_ALLOC_DESCRIPTOR_SET = "Failed to allocate descriptor set";
 const std::string Logger::FAILED_TO_ALLOC_COMMAND_BUFFERS = "Failed to allocate command buffers";
+const std::string Logger::FAILED_TO_BEGIN_COMMAND_BUFFER = "Failed to begin command buffers";
+const std::string Logger::FAILED_TO_END_COMMAND_BUFFER = "Failed to end command buffers";
 
 void Logger::printInfo(std::string message)
 {

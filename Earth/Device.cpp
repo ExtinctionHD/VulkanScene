@@ -91,14 +91,22 @@ VkCommandBuffer Device::beginOneTimeCommands()
 		nullptr,										// pInheritanceInfo;
 	};
 
-	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_BEGIN_COMMAND_BUFFER);
+	}
 
 	return commandBuffer;
 }
 
 void Device::endOneTimeCommands(VkCommandBuffer commandBuffer)
 {
-	vkEndCommandBuffer(commandBuffer);
+	VkResult result = vkEndCommandBuffer(commandBuffer);
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_END_COMMAND_BUFFER);
+	}
 
 	VkSubmitInfo submitInfo{
 		VK_STRUCTURE_TYPE_SUBMIT_INFO,	// sType;

@@ -41,6 +41,8 @@ public:
 	static const std::string FAILED_TO_CREATE_DESCRIPTOR_POOL;
 	static const std::string FAILED_TO_ALLOC_DESCRIPTOR_SET;
 	static const std::string FAILED_TO_ALLOC_COMMAND_BUFFERS;
+	static const std::string FAILED_TO_BEGIN_COMMAND_BUFFER;
+	static const std::string FAILED_TO_END_COMMAND_BUFFER;
 
 	static void printInfo(std::string message);
 

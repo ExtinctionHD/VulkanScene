@@ -20,7 +20,7 @@ Vulkan::Vulkan(Window *pWindow)
 
 	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain, pDescriptorSet->layout);
 
-	initGraphicsCommands();
+	initGraphicCommands();
 }
 
 Vulkan::~Vulkan()
@@ -229,7 +229,7 @@ void Vulkan::initDescriptorSet()
 	pDescriptorSet->update();  // save changes in descriptor set
 }
 
-void Vulkan::initGraphicsCommands()
+void Vulkan::initGraphicCommands()
 {
 	// return old command buffers to pool
 	if (!graphicCommands.empty())
@@ -273,7 +273,11 @@ void Vulkan::initGraphicsCommands()
 			nullptr,										// pInheritanceInfo;
 		};
 
-		vkBeginCommandBuffer(graphicCommands[i], &beginInfo);
+		result = vkBeginCommandBuffer(graphicCommands[i], &beginInfo);
+		if (result != VK_SUCCESS)
+		{
+			LOGGER_FATAL(Logger::FAILED_TO_BEGIN_COMMAND_BUFFER);
+		}
 
 		VkRenderPassBeginInfo renderPassBeginInfo{
 			VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	// sType;
@@ -294,7 +298,11 @@ void Vulkan::initGraphicsCommands()
 
 		vkCmdEndRenderPass(graphicCommands[i]);
 
-		vkEndCommandBuffer(graphicCommands[i]);
+		result = vkEndCommandBuffer(graphicCommands[i]);
+		if (result != VK_SUCCESS)
+		{
+			LOGGER_FATAL(Logger::FAILED_TO_END_COMMAND_BUFFER);
+		}
 	}
 }
 
