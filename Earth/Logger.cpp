@@ -36,6 +36,7 @@ const std::string Logger::FAILED_TO_ALLOC_DESCRIPTOR_SET = "Failed to allocate d
 const std::string Logger::FAILED_TO_ALLOC_COMMAND_BUFFERS = "Failed to allocate command buffers";
 const std::string Logger::FAILED_TO_BEGIN_COMMAND_BUFFER = "Failed to begin command buffers";
 const std::string Logger::FAILED_TO_END_COMMAND_BUFFER = "Failed to end command buffers";
+const std::string Logger::FAILED_TO_CREATE_SEMAPHORE = "Failed to create semaphore";
 
 void Logger::printInfo(std::string message)
 {

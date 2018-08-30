@@ -21,10 +21,16 @@ Vulkan::Vulkan(Window *pWindow)
 	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain, pDescriptorSet->layout);
 
 	initGraphicCommands();
+
+	createSemaphore(pDevice->device, imageAvailable);
+	createSemaphore(pDevice->device, renderingFinished);
 }
 
 Vulkan::~Vulkan()
 {
+	vkDestroySemaphore(pDevice->device, imageAvailable, nullptr);
+	vkDestroySemaphore(pDevice->device, renderingFinished, nullptr);
+
 	delete(pGraphicsPipeline);
 	delete(pDescriptorSet);
 	delete(pSwapChain);
@@ -305,6 +311,26 @@ void Vulkan::initGraphicCommands()
 		{
 			LOGGER_FATAL(Logger::FAILED_TO_END_COMMAND_BUFFER);
 		}
+	}
+}
+
+void Vulkan::createSemaphore(VkDevice device, VkSemaphore& semaphore)
+{
+	if (semaphore != VK_NULL_HANDLE)
+	{
+		vkDestroySemaphore(device, semaphore, nullptr);
+	}
+
+	VkSemaphoreCreateInfo createInfo{
+		VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,	// sType;
+		nullptr,									// pNext;
+		0,											// flags;
+	};
+
+	VkResult result = vkCreateSemaphore(device, &createInfo, nullptr, &semaphore);
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_CREATE_SEMAPHORE);
 	}
 }
 

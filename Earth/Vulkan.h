@@ -63,6 +63,9 @@ private:
 
 	std::vector<VkCommandBuffer> graphicCommands;
 
+	VkSemaphore imageAvailable = VK_NULL_HANDLE;
+	VkSemaphore renderingFinished = VK_NULL_HANDLE;
+
 	void createInstance();
 
 	static bool checkInstanceLayerSupport(std::vector<const char *> requiredLayers);
@@ -90,5 +93,7 @@ private:
 	void initDescriptorSet();
 
 	void initGraphicCommands();
+
+	static void createSemaphore(VkDevice device, VkSemaphore& semaphore);
 };
 
