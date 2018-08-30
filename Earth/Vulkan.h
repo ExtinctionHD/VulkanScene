@@ -5,7 +5,6 @@
 #include <vector>
 #include "Device.h"
 #include "SwapChain.h"
-#include "Window.h"
 #include "GraphicsPipeline.h"
 #include "DescriptorSet.h"
 #include "Image.h"
@@ -17,11 +16,12 @@ class Vulkan
 {
 public:
 	// create all required objects
-	Vulkan(Window *pWindow);
+	Vulkan(GLFWwindow *window, VkExtent2D windowExtent);
 
 	// destroy objects: surface, callback, instance
 	~Vulkan();
 
+	// executes graphics commands and present result image on surface
 	void drawFrame();
 
 private:
@@ -65,6 +65,7 @@ private:
 
 	std::vector<VkCommandBuffer> graphicCommands;
 
+	// synchronizing objects
 	VkSemaphore imageAvailable = VK_NULL_HANDLE;
 	VkSemaphore renderingFinished = VK_NULL_HANDLE;
 
@@ -92,10 +93,15 @@ private:
 
 	void createSurface(GLFWwindow *window);
 
+	// creates textures, buffers, models, and adds it in descriptor set
 	void initDescriptorSet();
 
+	// initialize rendering commands
 	void initGraphicCommands();
 
 	static void createSemaphore(VkDevice device, VkSemaphore& semaphore);
+
+	// changes mvp and load it in buffer
+	void updateMVPBuffer();
 };
 

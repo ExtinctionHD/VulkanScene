@@ -12,11 +12,13 @@ Window::Window()
 	window = glfwCreateWindow(baseWidth, baseHeight, "Vulkan API", nullptr, nullptr);
 }
 
-void Window::mainLoop()
+void Window::mainLoop(Vulkan *pVulkan)
 {
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
+
+		pVulkan->drawFrame();
 	}
 }
 

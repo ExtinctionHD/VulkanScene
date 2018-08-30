@@ -1,19 +1,23 @@
 #include <set>
 #include "Logger.h"
 #include <array>
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "Vulkan.h"
 
 // public:
 
-Vulkan::Vulkan(Window *pWindow)
+Vulkan::Vulkan(GLFWwindow *window, VkExtent2D windowExtent)
 {
 	createInstance();
 	createDebugCallback();
-	createSurface(pWindow->window);
+	createSurface(window);
 	
 	pDevice = new Device(instance, surface, VALIDATION_LAYERS);
-	pSwapChain = new SwapChain(pDevice, surface, pWindow->getExtent());
+	pSwapChain = new SwapChain(pDevice, surface, windowExtent);
 
 	pDescriptorSet = new DescriptorSet(pDevice);
 	initDescriptorSet();
@@ -28,6 +32,8 @@ Vulkan::Vulkan(Window *pWindow)
 
 Vulkan::~Vulkan()
 {
+	vkDeviceWaitIdle(pDevice->device);
+
 	vkDestroySemaphore(pDevice->device, imageAvailable, nullptr);
 	vkDestroySemaphore(pDevice->device, renderingFinished, nullptr);
 
@@ -43,8 +49,9 @@ Vulkan::~Vulkan()
 
 void Vulkan::drawFrame()
 {
-	uint32_t imageIndex;
+	updateMVPBuffer();
 
+	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(
 		pDevice->device,
 		pSwapChain->swapChain,
@@ -56,6 +63,7 @@ void Vulkan::drawFrame()
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
 		// TODO: recreate swapchain
+		return;
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
@@ -99,6 +107,7 @@ void Vulkan::drawFrame()
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 	{
 		// TODO: recreate swapchain
+		return;
 	}
 	else if (result != VK_SUCCESS)
 	{
@@ -397,6 +406,19 @@ void Vulkan::createSemaphore(VkDevice device, VkSemaphore& semaphore)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_SEMAPHORE);
 	}
+}
+
+void Vulkan::updateMVPBuffer()
+{
+	const float viewAngle = 45.0f;
+	const float zNear = 0.1f;
+	const float zFar = 50;
+
+	mvp.view = glm::lookAt(glm::vec3(0.0f, 1.2f, 8.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	mvp.proj = glm::perspective(glm::radians(viewAngle), pSwapChain->getAspect(), zNear, zFar);
+	mvp.proj[1][1] *= -1;
+
+	pMVPBuffer->updateData(&mvp);
 }
 
 

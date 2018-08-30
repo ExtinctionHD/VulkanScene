@@ -78,6 +78,11 @@ SwapChain::~SwapChain()
 	vkDestroySwapchainKHR(device, swapChain, nullptr);
 }
 
+float SwapChain::getAspect()
+{
+	return extent.width / (float)extent.height;
+}
+
 // private:
 
 VkSurfaceFormatKHR SwapChain::chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats) const

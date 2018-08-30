@@ -24,6 +24,8 @@ public:
 	// destroy objects: swapchain, imageViews
 	~SwapChain();
 
+	float getAspect();
+
 private:
 	// try to found this surface format
 	const VkSurfaceFormatKHR PRESENT_FORMAT = { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };

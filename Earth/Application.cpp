@@ -5,7 +5,7 @@
 Application::Application()
 {
 	pWindow = new Window();
-	pVulkan = new Vulkan(pWindow);
+	pVulkan = new Vulkan(pWindow->window, pWindow->getExtent());
 }
 
 Application::~Application()
@@ -16,5 +16,5 @@ Application::~Application()
 
 void Application::run()
 {
-	pWindow->mainLoop();
+	pWindow->mainLoop(pVulkan);
 }

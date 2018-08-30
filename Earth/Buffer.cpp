@@ -12,7 +12,7 @@ Buffer::Buffer(Device *pDevice, VkBufferUsageFlags usage, VkDeviceSize size)
 	createBuffer(
 		pDevice,
 		size,
-		usage | VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		&stagingBuffer,
 		&stagingBufferMemory

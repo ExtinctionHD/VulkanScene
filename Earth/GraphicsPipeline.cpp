@@ -84,7 +84,7 @@ void GraphicsPipeline::createRenderPass(VkFormat colorAttachmentFormat, VkFormat
 	};
 
 	VkAttachmentReference depthAttachmentRef{
-		0,													// attachment;
+		1,													// attachment;
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL	// layout;
 	};
 
