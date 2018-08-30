@@ -40,7 +40,7 @@ std::string File::getExeDir()
 
 std::string File::getFileDir(std::string path)
 {
-	return path.substr(0, path.find_last_of("/"));
+	return path.substr(0, path.find_last_of("/") + 1);
 }
 
 std::string File::getFilename(std::string path)

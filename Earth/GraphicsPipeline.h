@@ -18,6 +18,16 @@ public:
 
 	~GraphicsPipeline();
 
+	// provides all attachments (color and depth)
+	VkRenderPass renderpass;
+
+	// layout of pipeline resources (descriptors)
+	VkPipelineLayout layout;
+
+	// destination images for rendering, 
+	// framebuffer attachments: image view and depth image
+	std::vector<VkFramebuffer> framebuffers;
+
 private:
 	// possible formats of depth attachment
 	const std::vector<VkFormat> DEPTH_FORMATS =
@@ -28,24 +38,14 @@ private:
 	};
 
 	// files with shaders code
-	const std::string VERT_SHADER_PATH = File::getExeDir() + "/shaders/vert.spv";
-	const std::string FRAG_SHADER_PATH = File::getExeDir() + "/shaders/frag.spv";
+	const std::string VERT_SHADER_PATH = File::getExeDir() + "shaders/vert.spv";
+	const std::string FRAG_SHADER_PATH = File::getExeDir() + "shaders/frag.spv";
 
 	// device that provide pipeline
 	VkDevice device;
 
-	// provides all attachments (color and depth)
-	VkRenderPass renderpass;
-
-	// layout of pipeline resources (descriptors)
-	VkPipelineLayout layout;
-
 	// depth image and its view
 	Image *pDepthImage;
-
-	// destination images for rendering, 
-	// framebuffer attachments: image view and depth image
-	std::vector<VkFramebuffer> framebuffers;
 
 	void createRenderPass(VkFormat colorAttachmentFormat, VkFormat depthAttachmentFormat);
 

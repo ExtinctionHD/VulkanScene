@@ -78,7 +78,11 @@ VkCommandBuffer Device::beginOneTimeCommands()
 		1,												// commandBufferCount;
 	};
 
-	vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
+	VkResult result = vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_ALLOC_COMMAND_BUFFERS);
+	}
 
 	VkCommandBufferBeginInfo beginInfo{
 		VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,	// sType;

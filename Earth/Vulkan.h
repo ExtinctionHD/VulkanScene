@@ -32,7 +32,8 @@ private:
 #else
 	const bool ENABLE_VALIDATION_LAYERS = false;
 #endif
-	const std::string EARTH_MODEL_PATH = File::getExeDir() + "/models/sphere.obj";
+
+	const VkClearColorValue backgroundColor = { 0, 0, 0, 1 };
 
 	VkInstance instance;
 
@@ -53,8 +54,12 @@ private:
 
 	GraphicsPipeline *pGraphicsPipeline;
 
-	// model of earth
-	Model *pEarthModel;
+	// resources
+	TextureImage *pEarthTexture;  // texture of earth surface
+	Model *pEarthModel;  // model of earth
+	Buffer *pMVPBuffer;  // buffer containing MVP(model, view, projection) matrices
+
+	std::vector<VkCommandBuffer> graphicCommands;
 
 	void createInstance();
 
@@ -79,5 +84,9 @@ private:
 	void createDebugCallback();
 
 	void createSurface(GLFWwindow *window);
+
+	void initDescriptorSet();
+
+	void initGraphicsCommands();
 };
 

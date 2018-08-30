@@ -6,7 +6,7 @@
 
 // public:
 
-Model::Model(std::string filename)
+Model::Model(Device *pDevice, std::string filename)
 {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
@@ -23,16 +23,24 @@ Model::Model(std::string filename)
 		Logger::printInfo(Logger::getModelLoadingErrMsg(err));
 	}
 
-	initModel(attrib, shapes);
+	initVectors(attrib, shapes);
+	initBuffers(pDevice);
 }
 
 Model::~Model()
 {
+	delete(pIndexBuffer);
+	delete(pVertexBuffer);
 }
 
 // private:
 
-void Model::initModel(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> shapes)
+size_t Model::getIndexCount()
+{
+	return indices.size();
+}
+
+void Model::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> shapes)
 {
 	for (const auto& shape : shapes)
 	{
@@ -54,4 +62,15 @@ void Model::initModel(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> sh
 			indices.push_back(indices.size());
 		}
 	}
+}
+
+void Model::initBuffers(Device *pDevice)
+{
+	VkDeviceSize size = vertices.size() * sizeof(vertices[0]);
+	pVertexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, size);
+	pVertexBuffer->updateData(vertices.data());
+
+	size = indices.size() * sizeof(indices[0]);
+	pIndexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, size);
+	pIndexBuffer->updateData(indices.data());
 }

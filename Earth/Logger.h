@@ -40,6 +40,7 @@ public:
 	static const std::string FAILED_TO_ALLOC_BUFFER_MEMORY;
 	static const std::string FAILED_TO_CREATE_DESCRIPTOR_POOL;
 	static const std::string FAILED_TO_ALLOC_DESCRIPTOR_SET;
+	static const std::string FAILED_TO_ALLOC_COMMAND_BUFFERS;
 
 	static void printInfo(std::string message);
 

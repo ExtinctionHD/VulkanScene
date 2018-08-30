@@ -1,6 +1,7 @@
 #include <vector>
 #include "Logger.h"
 #include "File.h"
+#include <algorithm>
 
 #include "DescriptorSet.h"
 
@@ -9,15 +10,14 @@
 DescriptorSet::DescriptorSet(Device *pDevice)
 {
 	this->pDevice = pDevice;
-
-	initUniformBuffers();
-	initTextures();
-
-	update();
 }
 
 DescriptorSet::~DescriptorSet()
 {
+	for (int i = 0; i < models.size(); i++)
+	{
+		delete(models[i]);
+	}
 	for (int i = 0; i < uniformBuffers.size(); i++)
 	{
 		delete(uniformBuffers[i]);
@@ -36,6 +36,53 @@ void DescriptorSet::update()
 	createLayout();
 	createDescriptorPool();
 	createDescriptorSet();
+}
+
+void DescriptorSet::addBuffer(Buffer * pBuffer)
+{
+	uniformBuffers.push_back(pBuffer);
+}
+
+void DescriptorSet::addTexture(TextureImage * pTexture)
+{
+	textures.push_back(pTexture);
+}
+
+void DescriptorSet::removeBuffer(Buffer * pBuffer)
+{
+	std::remove(uniformBuffers.begin(), uniformBuffers.end(), pBuffer);
+}
+
+void DescriptorSet::removeTexture(TextureImage * pTexture)
+{
+	std::remove(textures.begin(), textures.end(), pTexture);
+}
+
+void DescriptorSet::addModel(Model * pModel)
+{
+	models.push_back(pModel);
+}
+
+void DescriptorSet::removeModel(Model * pModel)
+{
+	std::remove(models.begin(), models.end(), pModel);
+}
+
+void DescriptorSet::bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout)
+{
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &set, 0, nullptr);
+}
+
+void DescriptorSet::drawModels(VkCommandBuffer commandBuffer)
+{
+	for (Model *pModel : models)
+	{
+		VkBuffer vertexBuffers[] = { pModel->pVertexBuffer->buffer };
+		VkDeviceSize offsets[] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+		vkCmdBindIndexBuffer(commandBuffer, pModel->pIndexBuffer->buffer, 0, VK_INDEX_TYPE_UINT32);
+		vkCmdDrawIndexed(commandBuffer, pModel->getIndexCount(), 1, 0, 0, 0);
+	}
 }
 
 // private:
@@ -205,15 +252,4 @@ void DescriptorSet::createDescriptorSet()
 uint32_t DescriptorSet::getTextureBindingsOffset()
 {
 	return uniformBuffers.size();
-}
-
-void DescriptorSet::initUniformBuffers()
-{
-
-}
-
-void DescriptorSet::initTextures()
-{
-	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "/textures/earth.jpg";
-	textures.push_back(new TextureImage(pDevice, EARTH_TEXTURE_PATH));
 }

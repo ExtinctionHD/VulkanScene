@@ -1,5 +1,6 @@
 #include <set>
 #include "Logger.h"
+#include <array>
 
 #include "Vulkan.h"
 
@@ -13,16 +14,17 @@ Vulkan::Vulkan(Window *pWindow)
 	
 	pDevice = new Device(instance, surface, VALIDATION_LAYERS);
 	pSwapChain = new SwapChain(pDevice, surface, pWindow->getExtent());
+
 	pDescriptorSet = new DescriptorSet(pDevice);
+	initDescriptorSet();
+
 	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain, pDescriptorSet->layout);
 
-	pEarthModel = new Model(EARTH_MODEL_PATH);
+	initGraphicsCommands();
 }
 
 Vulkan::~Vulkan()
 {
-	delete(pEarthModel);
-
 	delete(pGraphicsPipeline);
 	delete(pDescriptorSet);
 	delete(pSwapChain);
@@ -210,6 +212,89 @@ void Vulkan::createSurface(GLFWwindow *window)
 	if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_CREATE_SURFACE);
+	}
+}
+
+void Vulkan::initDescriptorSet()
+{
+	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "textures/earth.jpg";
+	const std::string EARTH_MODEL_PATH = File::getExeDir() + "models/sphere.obj";
+
+	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
+	pEarthModel = new Model(pDevice, EARTH_MODEL_PATH);
+
+	pDescriptorSet->addTexture(pEarthTexture);
+	pDescriptorSet->addModel(pEarthModel);
+
+	pDescriptorSet->update();  // save changes in descriptor set
+}
+
+void Vulkan::initGraphicsCommands()
+{
+	// return old command buffers to pool
+	if (!graphicCommands.empty())
+	{
+		vkFreeCommandBuffers(pDevice->device, pDevice->commandPool, graphicCommands.size(), graphicCommands.data());
+	}
+
+	graphicCommands.resize(pSwapChain->imageCount);
+
+	VkCommandBufferAllocateInfo allocInfo{
+		VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,	// sType;
+		nullptr,										// pNext;
+		pDevice->commandPool,							// commandPool;
+		VK_COMMAND_BUFFER_LEVEL_PRIMARY,				// level;
+		graphicCommands.size(),							// commandBufferCount;
+	};
+
+	VkResult result = vkAllocateCommandBuffers(pDevice->device, &allocInfo, graphicCommands.data());
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_ALLOC_COMMAND_BUFFERS);
+	}
+
+	// clear values for each frame
+	std::array<VkClearValue, 2> clearValues = {};
+	clearValues[0].color = backgroundColor;
+	clearValues[1].depthStencil = { 1, 0 };
+
+	// render area for each frame
+	VkRect2D renderArea{
+		{ 0, 0 },			// offset
+		pSwapChain->extent	// extent
+	};
+
+	for (int i = 0; i < graphicCommands.size(); i++)
+	{
+		VkCommandBufferBeginInfo beginInfo{
+			VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,	// sType;
+			nullptr,										// pNext;
+			VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT,	// flags;
+			nullptr,										// pInheritanceInfo;
+		};
+
+		vkBeginCommandBuffer(graphicCommands[i], &beginInfo);
+
+		VkRenderPassBeginInfo renderPassBeginInfo{
+			VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	// sType;
+			nullptr,									// pNext;
+			pGraphicsPipeline->renderpass,				// renderPass;
+			pGraphicsPipeline->framebuffers[i],			// framebuffer;
+			renderArea,									// renderArea;
+			clearValues.size(),							// clearValueCount;
+			clearValues.data()							// pClearValues;
+		};
+
+		vkCmdBeginRenderPass(graphicCommands[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+		vkCmdBindPipeline(graphicCommands[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pGraphicsPipeline->pipeline);
+
+		pDescriptorSet->bind(graphicCommands[i], pGraphicsPipeline->layout);
+		pDescriptorSet->drawModels(graphicCommands[i]);
+
+		vkCmdEndRenderPass(graphicCommands[i]);
+
+		vkEndCommandBuffer(graphicCommands[i]);
 	}
 }
 
