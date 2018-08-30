@@ -120,7 +120,13 @@ void Device::endOneTimeCommands(VkCommandBuffer commandBuffer)
 		nullptr,						// pSignalSemaphores;
 	};
 
-	vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	result = vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_SUBMIT_COMMANDS);
+	}
+
+
 	vkQueueWaitIdle(graphicsQueue);  // TODO: replace wait idle to signal semophore
 
 	vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);

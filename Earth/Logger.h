@@ -44,6 +44,10 @@ public:
 	static const std::string FAILED_TO_BEGIN_COMMAND_BUFFER;
 	static const std::string FAILED_TO_END_COMMAND_BUFFER;
 	static const std::string FAILED_TO_CREATE_SEMAPHORE;
+	static const std::string FAILED_TO_ACQUIRE_NEXT_FRAME;
+	static const std::string FAILED_TO_SUBMIT_COMMANDS;
+	static const std::string FAILED_TO_PRESENT_FRAME;
+
 
 	static void printInfo(std::string message);
 

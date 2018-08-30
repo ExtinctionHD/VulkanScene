@@ -41,6 +41,71 @@ Vulkan::~Vulkan()
 	vkDestroyInstance(instance, nullptr);
 }
 
+void Vulkan::drawFrame()
+{
+	uint32_t imageIndex;
+
+	VkResult result = vkAcquireNextImageKHR(
+		pDevice->device,
+		pSwapChain->swapChain,
+		(std::numeric_limits<uint64_t>::max)(),
+		imageAvailable,
+		VK_NULL_HANDLE,
+		&imageIndex
+	);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		// TODO: recreate swapchain
+	}
+	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_ACQUIRE_NEXT_FRAME);
+	}
+
+	std::vector<VkSemaphore> waitSemaphores{ imageAvailable };
+	std::vector<VkPipelineStageFlags> waitStages{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	std::vector<VkSemaphore> signalSemaphores{ renderingFinished };
+	VkSubmitInfo submitInfo{
+		VK_STRUCTURE_TYPE_SUBMIT_INFO,	// sType;
+		nullptr,						// pNext;
+		waitSemaphores.size(),			// waitSemaphoreCount;
+		waitSemaphores.data(),			// pWaitSemaphores;
+		waitStages.data(),				// pWaitDstStageMask;
+		1,								// commandBufferCount;
+		&graphicCommands[imageIndex],	// pCommandBuffers;
+		signalSemaphores.size(),		// signalSemaphoreCount;
+		signalSemaphores.data(),		// pSignalSemaphores;
+	};
+
+	result = vkQueueSubmit(pDevice->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_SUBMIT_COMMANDS);
+	}
+
+	std::vector<VkSwapchainKHR> swapChains{ pSwapChain->swapChain };
+	VkPresentInfoKHR presentInfo{
+		VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,	// sType;
+		nullptr,							// pNext;
+		signalSemaphores.size(),			// waitSemaphoreCount;
+		signalSemaphores.data(),			// pWaitSemaphores;
+		swapChains.size(),					// swapchainCount;
+		swapChains.data(),					// pSwapchains;
+		&imageIndex,						// pImageIndices;
+		nullptr,							// pResults;
+	};
+
+	result = vkQueuePresentKHR(pDevice->presentQueue, &presentInfo);
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+	{
+		// TODO: recreate swapchain
+	}
+	else if (result != VK_SUCCESS)
+	{
+		LOGGER_FATAL(Logger::FAILED_TO_PRESENT_FRAME);
+	}
+}
+
 // private:
 
 void Vulkan::createInstance()

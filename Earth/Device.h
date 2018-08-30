@@ -28,6 +28,9 @@ public:
 	// destroy device
 	~Device();
 
+	VkQueue graphicsQueue;	// for drawing graphics
+	VkQueue presentQueue;	// for presenting it on surface
+
 	// returns index of memory type with such properties (for this physical device)
 	uint32_t findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
@@ -51,9 +54,6 @@ private:
 	};
 
 	std::vector<const char*> layers;
-
-	VkQueue graphicsQueue;	// for drawing graphics
-	VkQueue presentQueue;	// for presenting it on surface
 
 	void pickPhysicalDevice(
 		VkInstance instance, 

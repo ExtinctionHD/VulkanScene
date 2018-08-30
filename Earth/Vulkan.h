@@ -22,6 +22,8 @@ public:
 	// destroy objects: surface, callback, instance
 	~Vulkan();
 
+	void drawFrame();
+
 private:
 	const std::vector<const char *> VALIDATION_LAYERS =
 	{
