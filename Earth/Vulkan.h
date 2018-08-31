@@ -10,7 +10,7 @@
 #include "Image.h"
 #include "TextureImage.h"
 #include "Model.h"
-#include "MVPmatrices.h"
+#include "MvpMatrices.h"
 
 // graphic API class that create all necessary objects
 // and set this as window user pointer
@@ -66,8 +66,8 @@ private:
 	// resources
 	TextureImage *pEarthTexture;	// texture of earth surface
 	Model *pEarthModel;				// model of earth
-	Buffer *pMVPBuffer;				// buffer containing MVP(model, view, projection) matrices
-	MVPmatrices mvp;				// model, view, projection matrices
+	Buffer *pMvpBuffer;				// buffer containing MVP(model, view, projection) matrices
+	MvpMatrices mvp;				// model, view, projection matrices
 
 	std::vector<VkCommandBuffer> graphicCommands;
 

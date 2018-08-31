@@ -317,11 +317,11 @@ void Vulkan::initDescriptorSet()
 
 	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
 	pEarthModel = new Model(pDevice, EARTH_MODEL_PATH);
-	pMVPBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, sizeof(mvp));
+	pMvpBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, sizeof(mvp));
 
 	pDescriptorSet->addTexture(pEarthTexture);
 	pDescriptorSet->addModel(pEarthModel);
-	pDescriptorSet->addBuffer(pMVPBuffer);
+	pDescriptorSet->addBuffer(pMvpBuffer);
 
 	pDescriptorSet->update();  // save changes in descriptor set
 }
@@ -433,7 +433,7 @@ void Vulkan::updateMVPBuffer()
 	mvp.proj = glm::perspective(glm::radians(viewAngle), pSwapChain->getAspect(), zNear, zFar);
 	mvp.proj[1][1] *= -1;
 
-	pMVPBuffer->updateData(&mvp);
+	pMvpBuffer->updateData(&mvp);
 }
 
 

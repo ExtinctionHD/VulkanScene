@@ -49,6 +49,12 @@
     <Filter Include="Файлы заголовков\Vulkan\Model">
       <UniqueIdentifier>{cd26914f-85c0-4cfd-969c-a84e157c5730}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\Vulkan\Other">
+      <UniqueIdentifier>{3d8820ad-0f15-490a-88dd-eb7fd03788d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Vulkan\Other">
+      <UniqueIdentifier>{e63213be-b5d5-4451-8ff6-fc2c6897251a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.h">
@@ -63,32 +69,17 @@
     <ClInclude Include="Vulkan.h">
       <Filter>Файлы заголовков\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="SwapChain.h">
-      <Filter>Файлы заголовков\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="VkDeleter.h">
-      <Filter>Файлы заголовков\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="Image.h">
       <Filter>Файлы заголовков\Vulkan\Image</Filter>
     </ClInclude>
     <ClInclude Include="SwapChainImage.h">
       <Filter>Файлы заголовков\Vulkan\Image</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPipeline.h">
-      <Filter>Файлы заголовков\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="Application.h">
       <Filter>Файлы заголовков\App</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Файлы заголовков\App</Filter>
-    </ClInclude>
-    <ClInclude Include="DescriptorSet.h">
-      <Filter>Файлы заголовков\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderModule.h">
-      <Filter>Файлы заголовков\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="File.h">
       <Filter>Файлы заголовков\Static</Filter>
@@ -105,11 +96,26 @@
     <ClInclude Include="Model.h">
       <Filter>Файлы заголовков\Vulkan\Model</Filter>
     </ClInclude>
-    <ClInclude Include="Buffer.h">
-      <Filter>Файлы заголовков\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="MVPmatrices.h">
+    <ClInclude Include="MvpMatrices.h">
       <Filter>Файлы заголовков\Vulkan\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer.h">
+      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorSet.h">
+      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsPipeline.h">
+      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderModule.h">
+      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapChain.h">
+      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="VkDeleter.h">
+      <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -125,9 +131,6 @@
     <ClCompile Include="SurfaceSupportDetails.cpp">
       <Filter>Исходные файлы\Vulkan\Device</Filter>
     </ClCompile>
-    <ClCompile Include="SwapChain.cpp">
-      <Filter>Исходные файлы\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="Vulkan.cpp">
       <Filter>Исходные файлы\Vulkan</Filter>
     </ClCompile>
@@ -137,20 +140,11 @@
     <ClCompile Include="SwapChainImage.cpp">
       <Filter>Исходные файлы\Vulkan\Image</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPipeline.cpp">
-      <Filter>Исходные файлы\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="Application.cpp">
       <Filter>Исходные файлы\App</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Исходные файлы\App</Filter>
-    </ClCompile>
-    <ClCompile Include="DescriptorSet.cpp">
-      <Filter>Исходные файлы\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderModule.cpp">
-      <Filter>Исходные файлы\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Исходные файлы\Static</Filter>
@@ -168,7 +162,19 @@
       <Filter>Исходные файлы\Vulkan\Model</Filter>
     </ClCompile>
     <ClCompile Include="Buffer.cpp">
-      <Filter>Исходные файлы\Vulkan</Filter>
+      <Filter>Исходные файлы\Vulkan\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorSet.cpp">
+      <Filter>Исходные файлы\Vulkan\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsPipeline.cpp">
+      <Filter>Исходные файлы\Vulkan\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderModule.cpp">
+      <Filter>Исходные файлы\Vulkan\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="SwapChain.cpp">
+      <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
