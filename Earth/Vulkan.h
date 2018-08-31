@@ -11,6 +11,7 @@
 #include "TextureImage.h"
 #include "Model.h"
 #include "MvpMatrices.h"
+#include "Timer.h"
 
 // graphic API class that create all necessary objects
 // and set this as window user pointer
@@ -75,6 +76,8 @@ private:
 	VkSemaphore imageAvailable = VK_NULL_HANDLE;
 	VkSemaphore renderingFinished = VK_NULL_HANDLE;
 
+	Timer timer;
+
 	void createInstance();
 
 	static bool checkInstanceLayerSupport(std::vector<const char *> requiredLayers);
@@ -108,6 +111,6 @@ private:
 	static void createSemaphore(VkDevice device, VkSemaphore& semaphore);
 
 	// changes mvp and load it in buffer
-	void updateMVPBuffer();
+	void updateMvpBuffer();
 };
 

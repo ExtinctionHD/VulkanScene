@@ -51,7 +51,7 @@ Vulkan::~Vulkan()
 
 void Vulkan::drawFrame()
 {
-	updateMVPBuffer();
+	updateMvpBuffer();
 
 	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(
@@ -423,13 +423,19 @@ void Vulkan::createSemaphore(VkDevice device, VkSemaphore& semaphore)
 	}
 }
 
-void Vulkan::updateMVPBuffer()
+void Vulkan::updateMvpBuffer()
 {
+	// init model matrix: model rotation
+	float deltaSec = timer.getDeltaSec();
+	mvp.model = glm::rotate(mvp.model, glm::radians(90.0f) * deltaSec, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// init view matrix
+	mvp.view = glm::lookAt(glm::vec3(0.0f, 1.2f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// init projection matrix
 	const float viewAngle = 45.0f;
 	const float zNear = 0.1f;
-	const float zFar = 50;
-
-	mvp.view = glm::lookAt(glm::vec3(0.0f, 1.2f, 8.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	const float zFar = 50.0f;
 	mvp.proj = glm::perspective(glm::radians(viewAngle), pSwapChain->getAspect(), zNear, zFar);
 	mvp.proj[1][1] *= -1;
 

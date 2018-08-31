@@ -55,6 +55,12 @@
     <Filter Include="Исходные файлы\Vulkan\Other">
       <UniqueIdentifier>{e63213be-b5d5-4451-8ff6-fc2c6897251a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\Vulkan\Scene">
+      <UniqueIdentifier>{3f71a597-8bf9-405e-9d70-adf7576992c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Vulkan\Scene">
+      <UniqueIdentifier>{869673bd-6988-44b4-bb84-e3cefad9594a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.h">
@@ -96,9 +102,6 @@
     <ClInclude Include="Model.h">
       <Filter>Файлы заголовков\Vulkan\Model</Filter>
     </ClInclude>
-    <ClInclude Include="MvpMatrices.h">
-      <Filter>Файлы заголовков\Vulkan\Model</Filter>
-    </ClInclude>
     <ClInclude Include="Buffer.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
@@ -116,6 +119,12 @@
     </ClInclude>
     <ClInclude Include="VkDeleter.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="MvpMatrices.h">
+      <Filter>Файлы заголовков\Vulkan\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Файлы заголовков\Vulkan\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +184,9 @@
     </ClCompile>
     <ClCompile Include="SwapChain.cpp">
       <Filter>Исходные файлы\Vulkan\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Исходные файлы\Vulkan\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
