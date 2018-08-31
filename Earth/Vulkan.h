@@ -12,17 +12,22 @@
 #include "Model.h"
 #include "MVPmatrices.h"
 
+// graphic API class that create all necessary objects
+// and set this as window user pointer
 class Vulkan
 {
 public:
 	// create all required objects
-	Vulkan(GLFWwindow *window, VkExtent2D windowExtent);
+	Vulkan(GLFWwindow *window, VkExtent2D frameExtent);
 
 	// destroy objects: surface, callback, instance
 	~Vulkan();
 
-	// executes graphics commands and present result image on surface
+	// executes graphics commands and present result image on window surface
 	void drawFrame();
+
+	// rebuild swapchain and all dependent objects for new extension
+	void resize(VkExtent2D newExtent);
 
 private:
 	const std::vector<const char *> VALIDATION_LAYERS =
@@ -36,7 +41,8 @@ private:
 	const bool ENABLE_VALIDATION_LAYERS = false;
 #endif
 
-	const VkClearColorValue backgroundColor = { 0, 0, 0, 1 };
+	// color that clear each image
+	const VkClearColorValue clearColor = { 0, 0, 0, 1 };
 
 	VkInstance instance;
 

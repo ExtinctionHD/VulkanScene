@@ -11,10 +11,6 @@ public:
 	VkDevice device;  // logical device (representation of GPU for vulkan)
 
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;  // GPU
-
-	SurfaceSupportDetails surfaceSupportDetails;  // detail of picked GPU
-
-	QueueFamilyIndices queueFamilyIndices;  // suitable indices on picked GPU
 		
 	VkCommandPool commandPool;  // pool of command buffers of this device
 
@@ -41,6 +37,10 @@ public:
 		VkFormatFeatureFlags features
 	);
 
+	SurfaceSupportDetails getSurfaceSupportDetails();  // detail of picked GPU
+
+	QueueFamilyIndices getQueueFamilyIndices();  // suitable indices on picked GPU
+
 	// returns command buffer to write one time commands
 	VkCommandBuffer beginOneTimeCommands();
 
@@ -54,6 +54,8 @@ private:
 	};
 
 	std::vector<const char*> layers;
+
+	VkSurfaceKHR surface;  // properties of the device are calculated for this surface
 
 	void pickPhysicalDevice(
 		VkInstance instance, 

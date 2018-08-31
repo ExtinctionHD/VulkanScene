@@ -13,13 +13,17 @@ public:
 
 	~Window();  // detroy window
 
-	void mainLoop(Vulkan *pVulkan);
+	void mainLoop();
 
-	VkExtent2D getExtent() const;  // window width and height in VKExtent2D structure
+	VkExtent2D getFrameExtent() const;  // window width and height in VKExtent2D structure
 
 private:
 	// initial window extent
 	const int baseWidth = 1280;
 	const int baseHeight = 720;
+
+	static Vulkan* getVulkanPointer(GLFWwindow *window);
+
+	static void framebufferSizeCallback(GLFWwindow *window, int width, int height);
 };
 

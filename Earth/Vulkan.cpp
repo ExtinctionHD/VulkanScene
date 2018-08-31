@@ -10,14 +10,16 @@
 
 // public:
 
-Vulkan::Vulkan(GLFWwindow *window, VkExtent2D windowExtent)
+Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 {
+	glfwSetWindowUserPointer(window, this);
+
 	createInstance();
 	createDebugCallback();
 	createSurface(window);
 	
 	pDevice = new Device(instance, surface, VALIDATION_LAYERS);
-	pSwapChain = new SwapChain(pDevice, surface, windowExtent);
+	pSwapChain = new SwapChain(pDevice, surface, frameExtent);
 
 	pDescriptorSet = new DescriptorSet(pDevice);
 	initDescriptorSet();
@@ -62,7 +64,7 @@ void Vulkan::drawFrame()
 	);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
-		// TODO: recreate swapchain
+		resize(pSwapChain->extent);
 		return;
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
@@ -106,13 +108,26 @@ void Vulkan::drawFrame()
 	result = vkQueuePresentKHR(pDevice->presentQueue, &presentInfo);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 	{
-		// TODO: recreate swapchain
+		resize(pSwapChain->extent);
 		return;
 	}
 	else if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_PRESENT_FRAME);
 	}
+}
+
+void Vulkan::resize(VkExtent2D newExtent)
+{
+	vkDeviceWaitIdle(pDevice->device);
+
+	delete(pGraphicsPipeline);
+	delete(pSwapChain);
+
+	pSwapChain = new SwapChain(pDevice, surface, newExtent);
+	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain, pDescriptorSet->layout);
+
+	initGraphicCommands();
 }
 
 // private:
@@ -337,7 +352,7 @@ void Vulkan::initGraphicCommands()
 
 	// clear values for each frame
 	std::array<VkClearValue, 2> clearValues = {};
-	clearValues[0].color = backgroundColor;
+	clearValues[0].color = clearColor;
 	clearValues[1].depthStencil = { 1, 0 };
 
 	// render area for each frame

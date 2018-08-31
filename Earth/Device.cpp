@@ -8,14 +8,10 @@
 
 Device::Device(VkInstance instance, VkSurfaceKHR surface, std::vector<const char *> requiredLayers)
 {
+	this->surface = surface;
 	layers = requiredLayers;
 
 	pickPhysicalDevice(instance, surface);
-
-	// save properties of picked device
-	surfaceSupportDetails = SurfaceSupportDetails(physicalDevice, surface);
-	queueFamilyIndices = QueueFamilyIndices(physicalDevice, surface);
-
 	createLogicalDevice(surface);
 
 	createCommandPool(physicalDevice);
@@ -64,6 +60,16 @@ VkFormat Device::findSupportedFormat(std::vector<VkFormat> requestedFormats, VkI
 
 		LOGGER_FATAL(Logger::FAILED_TO_FIND_SUPPORTED_FORMAT);
 	}
+}
+
+SurfaceSupportDetails Device::getSurfaceSupportDetails()
+{
+	return SurfaceSupportDetails(physicalDevice, surface);
+}
+
+QueueFamilyIndices Device::getQueueFamilyIndices()
+{
+	return QueueFamilyIndices(physicalDevice, surface);
 }
 
 VkCommandBuffer Device::beginOneTimeCommands()
@@ -271,7 +277,7 @@ void Device::createCommandPool(VkPhysicalDevice physicalDevice)
 		VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,	// sType;
 		nullptr,									// pNext;
 		0,											// flags;
-		queueFamilyIndices.graphics					// queueFamilyIndex;
+		getQueueFamilyIndices().graphics					// queueFamilyIndex;
 	};
 
 	VkResult result = vkCreateCommandPool(device, &createInfo, nullptr, &commandPool);

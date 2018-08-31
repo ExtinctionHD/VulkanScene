@@ -13,7 +13,7 @@ SwapChain::SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceEx
 	device = pDevice->device;
 
 	// get necessary swapchain properties
-	SurfaceSupportDetails details = pDevice->surfaceSupportDetails;
+	SurfaceSupportDetails details = pDevice->getSurfaceSupportDetails();
 	VkSurfaceFormatKHR surfaceFormat = chooseSurfaceFormat(details.formats);
 	VkPresentModeKHR presentMode = choosePresentMode(details.presentModes);
 	extent = chooseExtent(details.capabilities, surfaceExtent);
@@ -45,8 +45,8 @@ SwapChain::SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceEx
 	// concurrent sharing mode only when using different queue families
 	std::vector<uint32_t> indices =
 	{
-		(uint32_t)pDevice->queueFamilyIndices.graphics,
-		(uint32_t)pDevice->queueFamilyIndices.present
+		(uint32_t)pDevice->getQueueFamilyIndices().graphics,
+		(uint32_t)pDevice->getQueueFamilyIndices().present
 	};
 	if (indices[0] != indices[1])
 	{
