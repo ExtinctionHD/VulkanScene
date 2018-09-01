@@ -4,7 +4,9 @@
 
 struct Lighting
 {
-	glm::vec3 color;
-	
+	glm::vec3 direction;
+
 	float ambientStrength;
+
+	glm::vec3 color;
 };

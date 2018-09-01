@@ -113,6 +113,9 @@ void Model::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> 
 			indices.push_back(indices.size());
 		}
 	}
+
+	// initialize normal attribute of each vertex
+	initNormals();
 }
 
 void Model::initSize(glm::vec3 minVertex, glm::vec3 maxVertex)

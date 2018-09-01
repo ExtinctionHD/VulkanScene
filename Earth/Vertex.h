@@ -14,8 +14,9 @@ public:
 	Vertex(glm::vec3 pos, glm::vec2 tex);
 	~Vertex();
 
-	glm::vec3 pos;		// position of vertex (x, y, z)
-	glm::vec2 tex;	// position of texture on this vertex (u, v)
+	glm::vec3 pos;  // position of vertex (x, y, z)
+	glm::vec2 tex;  // position of texture on this vertex (u, v)
+	glm::vec3 normal = glm::vec3(0.0f, 0.0f, 0.0f);  // normal for vertex (x, y, z)
 
 	// description of whole vertex
 	static VkVertexInputBindingDescription getBindingDescription(uint32_t binding);

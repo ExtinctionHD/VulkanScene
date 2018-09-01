@@ -68,15 +68,17 @@ private:
 	// resources:
 
 	TextureImage *pEarthTexture;	// texture of earth surface
+	TextureImage *pEarthNormalMap;	// map of earth normals
 	Model *pEarthModel;				// model of earth
 
 	Buffer *pMvpBuffer;  // buffer containing MVP(model, view, projection) matrices
 	MvpMatrices mvp;
 
 	Buffer *pLightingBuffer;  // buffer containing lighting attributes
-	Lighting lighting{ 
+	Lighting lighting{
 		glm::vec3(1.0f, 1.0f, 1.0f),	// color
-		0.05f							// ambientStrength
+		0.03f,							// ambientStrength
+		glm::vec3(1.0f, 0.0f, 0.0f),	// direction
 	};
 
 	std::vector<VkCommandBuffer> graphicCommands;

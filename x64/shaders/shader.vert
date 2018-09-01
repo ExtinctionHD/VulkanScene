@@ -2,6 +2,7 @@
 #extension GL_ARB_separate_shader_objects : enable
 
 // binding from application:
+
 // uniform buffer with mvp matrices
 // that positioning vertices in scene space
 layout(binding = 0) uniform ModelViewProjection {
@@ -10,12 +11,16 @@ layout(binding = 0) uniform ModelViewProjection {
     mat4 proj;
 } mvp;
 
+// input and output values:
+
 // vertex input attributes
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec2 inTexCoord;
+layout(location = 2) in vec3 inNormal;
 
 // value passed to fragment shader
 layout(location = 0) out vec2 fragTexCoord;
+layout(location = 1) out vec3 fragNormal;
 
 // result of vertex shader: position of each vertex
 out gl_PerVertex {
@@ -25,6 +30,8 @@ out gl_PerVertex {
 // vertex shader code
 void main() {
     gl_Position = mvp.proj * mvp.view * mvp.model * vec4(inPosition, 1.0);
+    gl_Position.y = -gl_Position.y;
 
     fragTexCoord = inTexCoord;
+    fragNormal = (mvp.model * vec4(inNormal, 0.0f)).xyz;
 }

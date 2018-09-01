@@ -37,5 +37,12 @@ std::vector<VkVertexInputAttributeDescription> Vertex::getAttributeDescriptions(
 		offsetof(Vertex, tex)		// offset;
 	};
 
-	return std::vector<VkVertexInputAttributeDescription>{ posDescription, texDescription };
+	VkVertexInputAttributeDescription normalDescription{
+		2,							// location;
+		binding,					// binding;
+		VK_FORMAT_R32G32B32_SFLOAT,	// format;
+		offsetof(Vertex, normal)	// offset;
+	};
+
+	return std::vector<VkVertexInputAttributeDescription>{ posDescription, texDescription, normalDescription };
 }

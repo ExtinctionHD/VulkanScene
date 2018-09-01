@@ -312,7 +312,8 @@ void Vulkan::createSurface(GLFWwindow *window)
 
 void Vulkan::initDescriptorSet()
 {
-	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "textures/earth.jpg";
+	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "textures/earth_texture.jpg";
+	const std::string EARTH_NORMALS_PATH = File::getExeDir() + "textures/earth_normals.jpg";
 	const std::string EARTH_MODEL_PATH = File::getExeDir() + "models/sphere.obj";
 
 	// create models
@@ -327,11 +328,13 @@ void Vulkan::initDescriptorSet()
 
 	// create textures
 	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
+	pEarthNormalMap = new TextureImage(pDevice, EARTH_NORMALS_PATH);
 
 	// load resources in descriptor set
 	pDescriptorSet->addBuffer(pMvpBuffer);
 	pDescriptorSet->addBuffer(pLightingBuffer);
 	pDescriptorSet->addTexture(pEarthTexture);
+	pDescriptorSet->addTexture(pEarthNormalMap);
 	pDescriptorSet->addModel(pEarthModel);
 
 	pDescriptorSet->update();  // save changes in descriptor set
@@ -438,17 +441,16 @@ void Vulkan::updateMvpBuffer()
 {
 	// init model matrix: model rotation
 	float deltaSec = timer.getDeltaSec();
-	mvp.model = glm::rotate(mvp.model, glm::radians(90.0f) * deltaSec, glm::vec3(0.0f, 1.0f, 0.0f));
+	mvp.model = glm::rotate(mvp.model, glm::radians(30.0f) * deltaSec, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// init view matrix
-	mvp.view = glm::lookAt(glm::vec3(0.0f, 2.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	mvp.view = glm::lookAt(glm::vec3(0.0f, -1.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 
 	// init projection matrix
 	const float viewAngle = 45.0f;
 	const float zNear = 0.1f;
 	const float zFar = 50.0f;
 	mvp.proj = glm::perspective(glm::radians(viewAngle), pSwapChain->getAspect(), zNear, zFar);
-	mvp.proj[1][1] *= -1;
 
 	pMvpBuffer->updateData(&mvp);
 }
