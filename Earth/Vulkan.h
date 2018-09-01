@@ -77,7 +77,7 @@ private:
 	Buffer *pLightingBuffer;  // buffer containing lighting attributes
 	Lighting lighting{
 		glm::vec3(1.0f, 1.0f, 1.0f),	// color
-		0.03f,							// ambientStrength
+		0.025f,							// ambientStrength
 		glm::vec3(1.0f, 0.0f, 0.0f),	// direction
 	};
 

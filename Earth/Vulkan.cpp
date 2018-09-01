@@ -18,7 +18,10 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 	createDebugCallback();
 	createSurface(window);
 	
-	pDevice = new Device(instance, surface, VALIDATION_LAYERS);
+	std::vector<const char*> requiredLayers = ENABLE_VALIDATION_LAYERS ? 
+		VALIDATION_LAYERS : std::vector<const char*>();
+
+	pDevice = new Device(instance, surface, requiredLayers);
 	pSwapChain = new SwapChain(pDevice, surface, frameExtent);
 
 	pDescriptorSet = new DescriptorSet(pDevice);
