@@ -24,6 +24,7 @@ Model::Model(Device *pDevice, std::string filename)
 	}
 
 	initVectors(attrib, shapes);
+	initSize(minVertex, maxVertex);
 	initBuffers(pDevice);
 }
 
@@ -40,8 +41,30 @@ size_t Model::getIndexCount()
 	return indices.size();
 }
 
+void Model::normilize()
+{
+	glm::vec3 delta = glm::vec3(
+		size.x / 2 - maxVertex.x,
+		size.y / 2 - maxVertex.y,
+		size.z / 2 - maxVertex.z
+	);
+
+	for (Vertex& vertex : vertices)
+	{
+		vertex.pos += delta;
+	}
+
+	maxVertex += delta;
+	minVertex += delta;
+
+	pVertexBuffer->updateData(vertices.data());
+}
+
 void Model::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> shapes)
 {
+	minVertex = glm::vec3(max, max, max);
+	maxVertex = glm::vec3(min, min, min);
+
 	for (const auto& shape : shapes)
 	{
 		for (const auto& index : shape.mesh.indices)
@@ -58,6 +81,34 @@ void Model::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> 
 				}
 			};
 
+			// find min vertex components
+			if (vertex.pos.x < minVertex.x)
+			{
+				minVertex.x = vertex.pos.x;
+			}
+			if (vertex.pos.y < minVertex.y)
+			{
+				minVertex.y = vertex.pos.y;
+			}
+			if (vertex.pos.z < minVertex.z)
+			{
+				minVertex.z = vertex.pos.z;
+			}
+
+			// find max vertex components
+			if (vertex.pos.x > maxVertex.x)
+			{
+				maxVertex.x = vertex.pos.x;
+			}
+			if (vertex.pos.y > maxVertex.y)
+			{
+				maxVertex.y = vertex.pos.y;
+			}
+			if (vertex.pos.z > maxVertex.z)
+			{
+				maxVertex.z = vertex.pos.z;
+			}
+
 			vertices.push_back(vertex);
 			indices.push_back(indices.size());
 		}
@@ -73,4 +124,11 @@ void Model::initBuffers(Device *pDevice)
 	size = indices.size() * sizeof(indices[0]);
 	pIndexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, size);
 	pIndexBuffer->updateData(indices.data());
+}
+
+void Model::initSize(glm::vec3 minVertex, glm::vec3 maxVertex)
+{
+	size.x = maxVertex.x - minVertex.x;
+	size.y = maxVertex.y - minVertex.y;
+	size.z = maxVertex.z - minVertex.z;
 }

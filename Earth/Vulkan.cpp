@@ -317,6 +317,7 @@ void Vulkan::initDescriptorSet()
 
 	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
 	pEarthModel = new Model(pDevice, EARTH_MODEL_PATH);
+	pEarthModel->normilize();
 	pMvpBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, sizeof(mvp));
 
 	pDescriptorSet->addTexture(pEarthTexture);
@@ -430,7 +431,7 @@ void Vulkan::updateMvpBuffer()
 	mvp.model = glm::rotate(mvp.model, glm::radians(90.0f) * deltaSec, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// init view matrix
-	mvp.view = glm::lookAt(glm::vec3(0.0f, 1.2f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	mvp.view = glm::lookAt(glm::vec3(0.0f, 2.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// init projection matrix
 	const float viewAngle = 45.0f;
