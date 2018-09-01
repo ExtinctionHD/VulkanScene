@@ -23,7 +23,7 @@ Device::~Device()
 	vkDestroyDevice(device, nullptr);
 }
 
-uint32_t Device::findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+uint32_t Device::findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
 {
 	VkPhysicalDeviceMemoryProperties memProperties;
 	vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
@@ -39,7 +39,7 @@ uint32_t Device::findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags 
 	LOGGER_FATAL(Logger::FAILED_TO_FIND_MEMORY_TYPE);
 }
 
-VkFormat Device::findSupportedFormat(std::vector<VkFormat> requestedFormats, VkImageTiling tiling, VkFormatFeatureFlags features)
+VkFormat Device::findSupportedFormat(std::vector<VkFormat> requestedFormats, VkImageTiling tiling, VkFormatFeatureFlags features) const
 {
 	for (VkFormat format : requestedFormats)
 	{
@@ -62,12 +62,12 @@ VkFormat Device::findSupportedFormat(std::vector<VkFormat> requestedFormats, VkI
 	}
 }
 
-SurfaceSupportDetails Device::getSurfaceSupportDetails()
+SurfaceSupportDetails Device::getSurfaceSupportDetails() const
 {
 	return SurfaceSupportDetails(physicalDevice, surface);
 }
 
-QueueFamilyIndices Device::getQueueFamilyIndices()
+QueueFamilyIndices Device::getQueueFamilyIndices() const
 {
 	return QueueFamilyIndices(physicalDevice, surface);
 }

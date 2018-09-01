@@ -19,7 +19,7 @@ public:
 	SurfaceSupportDetails(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 	// this device is suitable for this surface
-	bool isSuitable();
+	bool isSuitable() const;
 
 };
 

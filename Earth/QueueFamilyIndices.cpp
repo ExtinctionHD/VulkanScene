@@ -4,7 +4,7 @@
 
 // pubilc:
 
-bool QueueFamilyIndices::isComplete()
+bool QueueFamilyIndices::isComplete() const
 {
 	return graphics >= 0 && present >= 0;
 }

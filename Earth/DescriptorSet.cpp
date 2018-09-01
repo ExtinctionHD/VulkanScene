@@ -68,12 +68,12 @@ void DescriptorSet::removeModel(Model * pModel)
 	std::remove(models.begin(), models.end(), pModel);
 }
 
-void DescriptorSet::bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout)
+void DescriptorSet::bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) const
 {
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &set, 0, nullptr);
 }
 
-void DescriptorSet::drawModels(VkCommandBuffer commandBuffer)
+void DescriptorSet::drawModels(VkCommandBuffer commandBuffer) const
 {
 	for (Model *pModel : models)
 	{

@@ -24,7 +24,7 @@ public:
 	// destroy objects: swapchain, imageViews
 	~SwapChain();
 
-	float getAspect();
+	float getAspect() const;
 
 private:
 	// try to found this surface format
@@ -48,7 +48,7 @@ private:
 	static uint32_t chooseImageCount(VkSurfaceCapabilitiesKHR capabilities);
 
 	// get real image count and images themself
-	void getImages();
+	void initImages();
 
 	void createImageViews();
 };

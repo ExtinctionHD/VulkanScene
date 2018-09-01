@@ -34,9 +34,9 @@ public:
 
 	void removeModel(Model *pModel);
 
-	void bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout);
+	void bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) const;
 
-	void drawModels(VkCommandBuffer commandBuffer);
+	void drawModels(VkCommandBuffer commandBuffer) const;
 
 private:
 	// device that provide descriptor set

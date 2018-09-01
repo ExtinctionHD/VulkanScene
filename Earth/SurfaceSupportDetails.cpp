@@ -2,7 +2,7 @@
 
 // public:
 
-bool SurfaceSupportDetails::isSuitable()
+bool SurfaceSupportDetails::isSuitable() const
 {
 	return !formats.empty() && !presentModes.empty();
 }

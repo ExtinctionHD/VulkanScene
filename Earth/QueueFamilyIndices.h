@@ -16,7 +16,7 @@ public:
 	QueueFamilyIndices(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 	// this device have all required queue families (for this surface)
-	bool isComplete();
+	bool isComplete() const;
 
 };
 

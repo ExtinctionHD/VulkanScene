@@ -32,7 +32,7 @@ ShaderModule::~ShaderModule()
 	vkDestroyShaderModule(device, shaderModule, nullptr);
 }
 
-ShaderModule::operator VkShaderModule()
+ShaderModule::operator VkShaderModule() const
 {
 	return shaderModule;
 }

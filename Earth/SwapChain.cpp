@@ -62,7 +62,7 @@ SwapChain::SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceEx
 	}
 
 	// save swapchain images 
-	getImages();
+	initImages();
 
 	// create to each image imageView
 	createImageViews();
@@ -78,7 +78,7 @@ SwapChain::~SwapChain()
 	vkDestroySwapchainKHR(device, swapChain, nullptr);
 }
 
-float SwapChain::getAspect()
+float SwapChain::getAspect() const
 {
 	return extent.width / (float)extent.height;
 }
@@ -156,7 +156,7 @@ uint32_t SwapChain::chooseImageCount(VkSurfaceCapabilitiesKHR capabilities)
 	return imageCount;
 }
 
-void SwapChain::getImages()
+void SwapChain::initImages()
 {
 	// real count of images can be greater than requsted
 	vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);  // get count

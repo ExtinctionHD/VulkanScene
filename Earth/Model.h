@@ -22,7 +22,7 @@ public:
 	Buffer *pIndexBuffer;
 
 	// return number of indices
-	size_t getIndexCount();
+	size_t getIndexCount() const;
 
 	// vertices with extreme values of x, y, z
 	glm::vec3 minVertex = glm::vec3(max, max, max);
@@ -41,8 +41,8 @@ private:
 	// initialize vertex array and extreme values
 	void initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> shapes);
 
-	void initBuffers(Device *pDevice);
-
 	void initSize(glm::vec3 minVertex, glm::vec3 maxVertex);
+
+	void initBuffers(Device *pDevice);
 };
 

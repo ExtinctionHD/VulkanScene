@@ -28,18 +28,18 @@ public:
 	VkQueue presentQueue;	// for presenting it on surface
 
 	// returns index of memory type with such properties (for this physical device)
-	uint32_t findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+	uint32_t findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 
 	// returns first supported format (for this physical device)
 	VkFormat findSupportedFormat(
 		std::vector<VkFormat> requestedFormats,
 		VkImageTiling tiling,
 		VkFormatFeatureFlags features
-	);
+	) const;
 
-	SurfaceSupportDetails getSurfaceSupportDetails();  // detail of picked GPU
+	SurfaceSupportDetails getSurfaceSupportDetails() const;  // detail of picked GPU
 
-	QueueFamilyIndices getQueueFamilyIndices();  // suitable indices on picked GPU
+	QueueFamilyIndices getQueueFamilyIndices() const;  // suitable indices on picked GPU
 
 	// returns command buffer to write one time commands
 	VkCommandBuffer beginOneTimeCommands();

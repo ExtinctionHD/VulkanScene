@@ -36,7 +36,7 @@ Model::~Model()
 
 // private:
 
-size_t Model::getIndexCount()
+size_t Model::getIndexCount() const
 {
 	return indices.size();
 }
@@ -115,6 +115,13 @@ void Model::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> 
 	}
 }
 
+void Model::initSize(glm::vec3 minVertex, glm::vec3 maxVertex)
+{
+	size.x = maxVertex.x - minVertex.x;
+	size.y = maxVertex.y - minVertex.y;
+	size.z = maxVertex.z - minVertex.z;
+}
+
 void Model::initBuffers(Device *pDevice)
 {
 	VkDeviceSize size = vertices.size() * sizeof(vertices[0]);
@@ -124,11 +131,4 @@ void Model::initBuffers(Device *pDevice)
 	size = indices.size() * sizeof(indices[0]);
 	pIndexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, size);
 	pIndexBuffer->updateData(indices.data());
-}
-
-void Model::initSize(glm::vec3 minVertex, glm::vec3 maxVertex)
-{
-	size.x = maxVertex.x - minVertex.x;
-	size.y = maxVertex.y - minVertex.y;
-	size.z = maxVertex.z - minVertex.z;
 }
