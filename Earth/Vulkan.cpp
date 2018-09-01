@@ -315,14 +315,24 @@ void Vulkan::initDescriptorSet()
 	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "textures/earth.jpg";
 	const std::string EARTH_MODEL_PATH = File::getExeDir() + "models/sphere.obj";
 
-	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
+	// create models
 	pEarthModel = new Model(pDevice, EARTH_MODEL_PATH);
 	pEarthModel->normilize();
-	pMvpBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, sizeof(mvp));
 
+	//create buffers
+	pMvpBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(mvp));
+	pMvpBuffer->updateData(&mvp);
+	pLightingBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(lighting));
+	pLightingBuffer->updateData(&lighting);
+
+	// create textures
+	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
+
+	// load resources in descriptor set
+	pDescriptorSet->addBuffer(pMvpBuffer);
+	pDescriptorSet->addBuffer(pLightingBuffer);
 	pDescriptorSet->addTexture(pEarthTexture);
 	pDescriptorSet->addModel(pEarthModel);
-	pDescriptorSet->addBuffer(pMvpBuffer);
 
 	pDescriptorSet->update();  // save changes in descriptor set
 }

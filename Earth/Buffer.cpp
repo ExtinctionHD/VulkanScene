@@ -4,10 +4,11 @@
 
 // public:
 
-Buffer::Buffer(Device *pDevice, VkBufferUsageFlags usage, VkDeviceSize size)
+Buffer::Buffer(Device *pDevice, VkBufferUsageFlags usage, VkShaderStageFlagBits shaderStage, VkDeviceSize size)
 {
-	this->size = size;
 	this->pDevice = pDevice;
+	this->shaderStage = shaderStage;
+	this->size = size;
 
 	createBuffer(
 		pDevice,

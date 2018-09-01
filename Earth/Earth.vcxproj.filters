@@ -126,6 +126,9 @@
     <ClInclude Include="Timer.h">
       <Filter>Файлы заголовков\Vulkan\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Lighting.h">
+      <Filter>Файлы заголовков\Vulkan\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">

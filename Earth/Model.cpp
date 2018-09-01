@@ -125,10 +125,10 @@ void Model::initSize(glm::vec3 minVertex, glm::vec3 maxVertex)
 void Model::initBuffers(Device *pDevice)
 {
 	VkDeviceSize size = vertices.size() * sizeof(vertices[0]);
-	pVertexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, size);
+	pVertexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_SHADER_STAGE_ALL, size);
 	pVertexBuffer->updateData(vertices.data());
 
 	size = indices.size() * sizeof(indices[0]);
-	pIndexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, size);
+	pIndexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_SHADER_STAGE_ALL, size);
 	pIndexBuffer->updateData(indices.data());
 }

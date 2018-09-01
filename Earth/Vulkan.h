@@ -12,6 +12,7 @@
 #include "Model.h"
 #include "MvpMatrices.h"
 #include "Timer.h"
+#include "Lighting.h"
 
 // graphic API class that create all necessary objects
 // and set this as window user pointer
@@ -42,7 +43,7 @@ private:
 	const bool ENABLE_VALIDATION_LAYERS = false;
 #endif
 
-	// color that clear each image
+	// color that clear each frame
 	const VkClearColorValue clearColor = { 0, 0, 0, 1 };
 
 	VkInstance instance;
@@ -64,11 +65,19 @@ private:
 
 	GraphicsPipeline *pGraphicsPipeline;
 
-	// resources
+	// resources:
+
 	TextureImage *pEarthTexture;	// texture of earth surface
 	Model *pEarthModel;				// model of earth
-	Buffer *pMvpBuffer;				// buffer containing MVP(model, view, projection) matrices
-	MvpMatrices mvp;				// model, view, projection matrices
+
+	Buffer *pMvpBuffer;  // buffer containing MVP(model, view, projection) matrices
+	MvpMatrices mvp;
+
+	Buffer *pLightingBuffer;  // buffer containing lighting attributes
+	Lighting lighting{ 
+		glm::vec3(1.0f, 1.0f, 1.0f),	// color
+		0.05f							// ambientStrength
+	};
 
 	std::vector<VkCommandBuffer> graphicCommands;
 
@@ -76,6 +85,7 @@ private:
 	VkSemaphore imageAvailable = VK_NULL_HANDLE;
 	VkSemaphore renderingFinished = VK_NULL_HANDLE;
 
+	// timer for animations
 	Timer timer;
 
 	void createInstance();

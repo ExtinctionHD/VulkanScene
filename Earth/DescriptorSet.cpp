@@ -2,6 +2,7 @@
 #include "Logger.h"
 #include "File.h"
 #include <algorithm>
+#include <array>
 
 #include "DescriptorSet.h"
 
@@ -101,11 +102,11 @@ void DescriptorSet::createLayout()
 	for (int i = 0; i < uniformBuffers.size(); i++)
 	{
 		VkDescriptorSetLayoutBinding uniformBufferLayoutBinding{
-			i,									// binding;
-			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,	// descriptorType;
-			1,									// descriptorCount;
-			VK_SHADER_STAGE_VERTEX_BIT,			// stageFlags;
-			nullptr								// pImmutableSamplers;
+			i,															// binding;
+			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,							// descriptorType;
+			1,															// descriptorCount;
+			uniformBuffers[i]->shaderStage,	// stageFlags;
+			nullptr														// pImmutableSamplers;
 		};
 
 		bindings.push_back(uniformBufferLayoutBinding);
@@ -193,9 +194,10 @@ void DescriptorSet::createDescriptorSet()
 
 	// write uniform buffers in descriptor set
 	std::vector<VkWriteDescriptorSet> uniformBuffersWrites;
+	std::vector<VkDescriptorBufferInfo> buffersInfo(uniformBuffers.size());
 	for (int i = 0; i < uniformBuffers.size(); i++)
 	{
-		VkDescriptorBufferInfo bufferInfo{
+		buffersInfo[i] = {
 			uniformBuffers[i]->buffer,	// buffer;
 			0,							// offset;
 			uniformBuffers[i]->size		// range;
@@ -210,7 +212,7 @@ void DescriptorSet::createDescriptorSet()
 			1,										// descriptorCount;
 			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,		// descriptorType;
 			nullptr,								// pImageInfo;
-			&bufferInfo,							// pBufferInfo;
+			&buffersInfo[i],						// pBufferInfo;
 			nullptr,								// pTexelBufferView;
 		};
 
@@ -219,25 +221,26 @@ void DescriptorSet::createDescriptorSet()
 
 	// write textures in descriptor set
 	std::vector<VkWriteDescriptorSet> texturesWrites;
+	std::vector<VkDescriptorImageInfo> imagesInfo(textures.size());
 	for (int i = 0; i < textures.size(); i++)
 	{
-		VkDescriptorImageInfo imageInfo{
+		imagesInfo[i] = {
 			textures[i]->sampler,						// sampler;
 			textures[i]->view,							// imageView;
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,	// imageLayout;
 		};
 
 		VkWriteDescriptorSet textureWrite{
-			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,		// sType;
-			nullptr,									// pNext;
-			set,										// dstSet;
-			getTextureBindingsOffset() + i,				// dstBinding;
-			0,											// dstArrayElement;
-			1,											// descriptorCount;
-			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	// descriptorType;
-			&imageInfo,									// pImageInfo;
-			nullptr,									// pBufferInfo;
-			nullptr,									// pTexelBufferView;
+			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,			// sType;
+			nullptr,										// pNext;
+			set,											// dstSet;
+			getTextureBindingsOffset() + i,					// dstBinding;
+			0,												// dstArrayElement;
+			1,												// descriptorCount;
+			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,		// descriptorType;
+			&imagesInfo[i],	// pImageInfo;
+			nullptr,										// pBufferInfo;
+			nullptr,										// pTexelBufferView;
 		};
 
 		texturesWrites.push_back(textureWrite);

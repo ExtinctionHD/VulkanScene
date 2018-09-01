@@ -232,7 +232,7 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 		0,															// flags;
 		1,															// vertexBindingDescriptionCount;
 		&bindingDescription,										// pVertexBindingDescriptions;
-		(uint32_t)attributeDescriptions.size(),								// vertexAttributeDescriptionCount;
+		(uint32_t)attributeDescriptions.size(),						// vertexAttributeDescriptionCount;
 		attributeDescriptions.data()								// pVertexAttributeDescriptions;
 	};
 
@@ -249,12 +249,12 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 	// view area:
 
 	VkViewport viewport{
-		0,				// x;
-		0,				// y;
+		0,						// x;
+		0,						// y;
 		viewportExtent.width,	// width;
 		viewportExtent.height,	// height;
-		0,				// minDepth;
-		1				// maxDepth;
+		0,						// minDepth;
+		1						// maxDepth;
 	};
 
 	VkRect2D scissor{

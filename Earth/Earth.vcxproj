@@ -26,6 +26,7 @@
     <ClInclude Include="File.h" />
     <ClInclude Include="GraphicsPipeline.h" />
     <ClInclude Include="Image.h" />
+    <ClInclude Include="Lighting.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MvpMatrices.h" />

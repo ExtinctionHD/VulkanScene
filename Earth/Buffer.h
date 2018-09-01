@@ -7,7 +7,7 @@
 class Buffer
 {
 public:
-	Buffer(Device *pDevice, VkBufferUsageFlags usage, VkDeviceSize size);
+	Buffer(Device *pDevice, VkBufferUsageFlags usage, VkShaderStageFlagBits shaderStage, VkDeviceSize size);
 	~Buffer();
 
 	// main buffer object
@@ -15,6 +15,9 @@ public:
 
 	// size of this buffer
 	VkDeviceSize size;
+
+	// shader stage on which the buffer is used
+	VkShaderStageFlagBits shaderStage;
 
 	// load data in this buffer
 	// data size must be equals buffer size
