@@ -316,7 +316,8 @@ void Vulkan::createSurface(GLFWwindow *window)
 void Vulkan::initDescriptorSet()
 {
 	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "textures/earth_texture.jpg";
-	const std::string EARTH_NORMALS_PATH = File::getExeDir() + "textures/earth_normals.jpg";
+	const std::string EARTH_NORMAL_MAP_PATH = File::getExeDir() + "textures/earth_normal_map.jpg";
+	const std::string EARTH_SPECULAR_MAP_PATH = File::getExeDir() + "textures/earth_specular_map.jpg";
 	const std::string EARTH_MODEL_PATH = File::getExeDir() + "models/sphere.obj";
 
 	// create models
@@ -331,16 +332,22 @@ void Vulkan::initDescriptorSet()
 
 	// create textures
 	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
-	pEarthNormalMap = new TextureImage(pDevice, EARTH_NORMALS_PATH);
+	pEarthNormalMap = new TextureImage(pDevice, EARTH_NORMAL_MAP_PATH);
+	pEarthSpecularMap = new TextureImage(pDevice, EARTH_SPECULAR_MAP_PATH);
 
-	// load resources in descriptor set
+	// load resources in descriptor set:
+
 	pDescriptorSet->addBuffer(pMvpBuffer);
 	pDescriptorSet->addBuffer(pLightingBuffer);
+
 	pDescriptorSet->addTexture(pEarthTexture);
 	pDescriptorSet->addTexture(pEarthNormalMap);
+	pDescriptorSet->addTexture(pEarthSpecularMap);
+
 	pDescriptorSet->addModel(pEarthModel);
 
-	pDescriptorSet->update();  // save changes in descriptor set
+	// save changes in descriptor set
+	pDescriptorSet->update();
 }
 
 void Vulkan::initGraphicCommands()
@@ -447,7 +454,7 @@ void Vulkan::updateMvpBuffer()
 	mvp.model = glm::rotate(mvp.model, glm::radians(30.0f) * deltaSec, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// init view matrix
-	mvp.view = glm::lookAt(glm::vec3(0.0f, -1.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+	mvp.view = glm::lookAt(lighting.cameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 
 	// init projection matrix
 	const float viewAngle = 45.0f;

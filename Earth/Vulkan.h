@@ -67,9 +67,10 @@ private:
 
 	// resources:
 
-	TextureImage *pEarthTexture;	// texture of earth surface
-	TextureImage *pEarthNormalMap;	// map of earth normals
-	Model *pEarthModel;				// model of earth
+	TextureImage *pEarthTexture;		// texture of earth surface
+	TextureImage *pEarthNormalMap;		// map of earth normals
+	TextureImage *pEarthSpecularMap;	// map of specular factor
+	Model *pEarthModel;					// model of earth
 
 	Buffer *pMvpBuffer;  // buffer containing MVP(model, view, projection) matrices
 	MvpMatrices mvp;
@@ -78,7 +79,10 @@ private:
 	Lighting lighting{
 		glm::vec3(1.0f, 1.0f, 1.0f),	// color
 		0.025f,							// ambientStrength
-		glm::vec3(1.0f, 0.0f, 0.0f),	// direction
+		glm::vec3(1.0f, 0.0f, 1.0f),	// direction
+		0.8f,							// diffuseStrength
+		glm::vec3(0.0f, -1.0f, -3.0f),	// cameraPos
+		2.0f							// specularPower
 	};
 
 	std::vector<VkCommandBuffer> graphicCommands;

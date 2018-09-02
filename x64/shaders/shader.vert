@@ -21,6 +21,7 @@ layout(location = 2) in vec3 inNormal;
 // value passed to fragment shader
 layout(location = 0) out vec2 fragTexCoord;
 layout(location = 1) out vec3 fragNormal;
+layout(location = 2) out vec3 fragPos;
 
 // result of vertex shader: position of each vertex
 out gl_PerVertex {
@@ -29,9 +30,14 @@ out gl_PerVertex {
 
 // vertex shader code
 void main() {
-    gl_Position = mvp.proj * mvp.view * mvp.model * vec4(inPosition, 1.0);
-    gl_Position.y = -gl_Position.y;
-
     fragTexCoord = inTexCoord;
-    fragNormal = (mvp.model * vec4(inNormal, 0.0f)).xyz;
+    // vertex normal vector in world coordinates
+    fragNormal = (mvp.model * vec4(inNormal, 0.0f)).xyz;	
+    // position of fragment in world coordinates
+    fragPos = (mvp.model * vec4(inPosition, 1.0f)).xyz;
+
+    gl_Position = mvp.proj * mvp.view * mvp.model * vec4(inPosition, 1.0f);
+
+    // fixes difference from opengl
+    gl_Position.y = -gl_Position.y;
 }

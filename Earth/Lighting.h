@@ -4,9 +4,15 @@
 
 struct Lighting
 {
-	glm::vec3 direction;
+	glm::vec3 color;
 
 	float ambientStrength;
 
-	glm::vec3 color;
+	glm::vec3 direction;
+
+	float diffuesStrength;
+
+	glm::vec3 cameraPos;
+
+	float specularPower;
 };
