@@ -76,14 +76,7 @@ private:
 	MvpMatrices mvp;
 
 	Buffer *pLightingBuffer;  // buffer containing lighting attributes
-	Lighting lighting{
-		glm::vec3(1.0f, 1.0f, 1.0f),	// color
-		0.025f,							// ambientStrength
-		glm::vec3(1.0f, 0.0f, 1.0f),	// direction
-		1.0f,							// diffuseStrength
-		glm::vec3(0.0f, -1.0f, -3.0f),	// cameraPos
-		2.0f							// specularPower
-	};
+	Lighting lighting;
 
 	std::vector<VkCommandBuffer> graphicCommands;
 
@@ -120,6 +113,10 @@ private:
 
 	// creates textures, buffers, models, and adds it in descriptor set
 	void initDescriptorSet();
+
+	void initMvpMatrices();
+
+	void initLighting();
 
 	// initialize rendering commands
 	void initGraphicCommands();

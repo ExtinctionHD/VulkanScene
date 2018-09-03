@@ -324,11 +324,15 @@ void Vulkan::initDescriptorSet()
 	pEarthModel = new Model(pDevice, EARTH_MODEL_PATH);
 	pEarthModel->normilize();
 
-	//create buffers
-	pMvpBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(mvp));
-	pMvpBuffer->updateData(&mvp);
+	//create buffers:
+
 	pLightingBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(lighting));
+	initLighting();
 	pLightingBuffer->updateData(&lighting);
+
+	pMvpBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(mvp));
+	initMvpMatrices();
+	pMvpBuffer->updateData(&mvp);
 
 	// create textures
 	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
@@ -348,6 +352,38 @@ void Vulkan::initDescriptorSet()
 
 	// save changes in descriptor set
 	pDescriptorSet->update();
+}
+
+void Vulkan::initMvpMatrices()
+{
+	// attributes for view matrix
+	const glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f);
+	const glm::vec3 up = glm::vec3(0.0f, -1.0f, 0.0f);
+
+	// attributes for projection matrix
+	const float viewAngle = 45.0f;
+	const float zNear = 0.1f;
+	const float zFar = 50.0f;
+
+	mvp = MvpMatrices{
+		glm::mat4(1),
+		glm::lookAt(lighting.cameraPos, center, up),
+		glm::perspective(glm::radians(viewAngle), pSwapChain->getAspect(), zNear, zFar)
+	};
+
+	mvp.model = glm::rotate(mvp.model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+}
+
+void Vulkan::initLighting()
+{
+	lighting = Lighting{
+		glm::vec3(1.0f, 1.0f, 1.0f),	// color
+		0.025f,							// ambientStrength
+		glm::vec3(1.0f, 0.0f, 1.0f),	// direction
+		1.0f,							// diffuseStrength
+		glm::vec3(0.0f, -1.0f, -3.0f),	// cameraPos
+		2.0f							// specularPower
+	};
 }
 
 void Vulkan::initGraphicCommands()
@@ -452,9 +488,6 @@ void Vulkan::updateMvpBuffer()
 	// init model matrix: model rotation
 	float deltaSec = timer.getDeltaSec();
 	mvp.model = glm::rotate(mvp.model, glm::radians(30.0f) * deltaSec, glm::vec3(0.0f, 1.0f, 0.0f));
-
-	// init view matrix
-	mvp.view = glm::lookAt(lighting.cameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
 
 	// init projection matrix
 	const float viewAngle = 45.0f;
