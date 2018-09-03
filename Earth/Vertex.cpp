@@ -44,5 +44,12 @@ std::vector<VkVertexInputAttributeDescription> Vertex::getAttributeDescriptions(
 		offsetof(Vertex, normal)	// offset;
 	};
 
-	return std::vector<VkVertexInputAttributeDescription>{ posDescription, texDescription, normalDescription };
+	VkVertexInputAttributeDescription tangentDescription{
+		3,							// location;
+		binding,					// binding;
+		VK_FORMAT_R32G32B32_SFLOAT,	// format;
+		offsetof(Vertex, tangent)	// offset;
+	};
+
+	return std::vector<VkVertexInputAttributeDescription>{ posDescription, texDescription, normalDescription, tangentDescription };
 }

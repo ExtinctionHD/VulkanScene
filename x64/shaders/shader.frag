@@ -26,18 +26,43 @@ layout(binding = 4) uniform sampler2D specularMap;
 // input and output values:
 
 // input data obtained from vertex shader
-layout(location = 0) in vec2 fragTexCoord;
-layout(location = 1) in vec3 fragNormal;
-layout(location = 2) in vec3 fragPos;
+layout(location = 0) in vec3 fragPos;
+layout(location = 1) in vec2 fragTexCoord;
+layout(location = 2) in vec3 fragNormal;
+layout(location = 3) in vec3 fragTangent;
 
 // result of fragment shader: color of each fragment
 layout(location = 0) out vec4 outColor;
+
+vec3 calculateBumpedNormal()
+{
+	vec3 normal = normalize(fragNormal);
+
+	// texture u vector in world space
+	vec3 tangent = normalize(fragTangent);
+	tangent = normalize(tangent - dot(tangent, normal) * normal);
+
+	// texture v vector in world space
+	vec3 bitangent = cross(tangent, normal);
+
+	// normal from map
+	vec3 bumMapNormal = texture(normalMap, fragTexCoord).xyz;
+	bumMapNormal = 2.0f * bumMapNormal - vec3(1.0f, 1.0f, 1.0f);
+
+	// normal from map in world space
+	vec3 resultNormal;
+	mat3 tbn = mat3(tangent, bitangent, normal);
+	resultNormal = tbn * bumMapNormal;
+	resultNormal = normalize(resultNormal);
+
+	return resultNormal;
+}
 
 // fragment shader code:
 void main() 
 {
 	vec3 direction = normalize(light.direction);
-	vec3 normal = normalize(fragNormal);
+	vec3 normal = calculateBumpedNormal();
 
 	// ambient lighting
 	vec3 ambient = light.color * light.ambientStrength;

@@ -80,7 +80,7 @@ private:
 		glm::vec3(1.0f, 1.0f, 1.0f),	// color
 		0.025f,							// ambientStrength
 		glm::vec3(1.0f, 0.0f, 1.0f),	// direction
-		0.8f,							// diffuseStrength
+		1.0f,							// diffuseStrength
 		glm::vec3(0.0f, -1.0f, -3.0f),	// cameraPos
 		2.0f							// specularPower
 	};

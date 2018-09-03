@@ -114,8 +114,67 @@ void Model::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> 
 		}
 	}
 
-	// initialize normal attribute of each vertex
-	initNormals();
+	
+	initNormals();	// initialize normal attribute of each vertex
+	initTangents();	// initialize tangent attribute of each vertex
+}
+
+void Model::initNormals()
+{
+	for (uint32_t i = 0; i < indices.size(); i += 3)
+	{
+		uint32_t Index0 = indices[i];
+		uint32_t Index1 = indices[i + 1];
+		uint32_t Index2 = indices[i + 2];
+
+		glm::vec3 v1 = vertices[Index1].pos - vertices[Index0].pos;
+		glm::vec3 v2 = vertices[Index2].pos - vertices[Index0].pos;
+		glm::vec3 normal = glm::cross(v1, v2);
+		normal = glm::normalize(normal);
+
+		vertices[Index0].normal += normal;
+		vertices[Index1].normal += normal;
+		vertices[Index2].normal += normal;
+	}
+
+	for (uint32_t i = 0; i < vertices.size(); i++) {
+		vertices[i].normal = glm::normalize(vertices[i].normal);
+	}
+}
+
+void Model::initTangents()
+{
+	for (uint32_t i = 0; i < indices.size(); i += 3) 
+	{
+		Vertex& v0 = vertices[indices[i]];
+		Vertex& v1 = vertices[indices[i + 1]];
+		Vertex& v2 = vertices[indices[i + 2]];
+
+		glm::vec3 edge1 = v1.pos - v0.pos;
+		glm::vec3 edge2 = v2.pos - v0.pos;
+
+		float deltaU1 = v1.tex.x - v0.tex.x;
+		float deltaV1 = v1.tex.y - v0.tex.y;
+		float deltaU2 = v2.tex.x - v0.tex.x;
+		float deltaV2 = v2.tex.y - v0.tex.y;
+
+		float f = 1.0f / (deltaU1 * deltaV2 - deltaU2 * deltaV1);
+
+		glm::vec3 tangent;
+
+		tangent.x = f * (deltaV2 * edge1.x - deltaV1 * edge2.x);
+		tangent.y = f * (deltaV2 * edge1.y - deltaV1 * edge2.y);
+		tangent.z = f * (deltaV2 * edge1.z - deltaV1 * edge2.z);
+
+		v0.tangent += tangent;
+		v1.tangent += tangent;
+		v2.tangent += tangent;
+	}
+
+	for (uint32_t i = 0; i < vertices.size(); i++) 
+	{
+		vertices[i].tangent = glm::normalize(vertices[i].tangent);
+	}
 }
 
 void Model::initSize(glm::vec3 minVertex, glm::vec3 maxVertex)
