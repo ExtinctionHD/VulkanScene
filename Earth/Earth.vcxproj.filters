@@ -129,6 +129,9 @@
     <ClInclude Include="Lighting.h">
       <Filter>Файлы заголовков\Vulkan\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Файлы заголовков\Vulkan\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -189,6 +192,9 @@
       <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
+      <Filter>Исходные файлы\Vulkan\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
       <Filter>Исходные файлы\Vulkan\Scene</Filter>
     </ClCompile>
   </ItemGroup>

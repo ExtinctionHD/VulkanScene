@@ -21,5 +21,7 @@ private:
 	static Vulkan* getVulkanPointer(GLFWwindow *window);
 
 	static void framebufferSizeCallback(GLFWwindow *window, int width, int height);
+
+	static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode);
 };
 

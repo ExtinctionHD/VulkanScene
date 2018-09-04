@@ -13,6 +13,7 @@
 #include "MvpMatrices.h"
 #include "Timer.h"
 #include "Lighting.h"
+#include "Camera.h"
 
 // graphic API class that create all necessary objects
 // and set this as window user pointer
@@ -30,6 +31,9 @@ public:
 
 	// rebuild swapchain and all dependent objects for new extension
 	void resize(VkExtent2D newExtent);
+
+	// moves camera on key press
+	void onKeyPress(int key);
 
 private:
 	const std::vector<const char *> VALIDATION_LAYERS =
@@ -65,6 +69,22 @@ private:
 
 	GraphicsPipeline *pGraphicsPipeline;
 
+	std::vector<VkCommandBuffer> graphicCommands;
+
+	// synchronizing objects
+	VkSemaphore imageAvailable = VK_NULL_HANDLE;
+	VkSemaphore renderingFinished = VK_NULL_HANDLE;
+
+	// camera attributes
+	Camera camera{
+		glm::vec3(0.0f, 0.0f, -3.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f),
+		glm::vec3(0.0f, -1.0f, 0.0f)
+	};
+
+	// timer for animations
+	Timer timer;
+
 	// resources:
 
 	TextureImage *pEarthTexture;		// texture of earth surface
@@ -77,15 +97,6 @@ private:
 
 	Buffer *pLightingBuffer;  // buffer containing lighting attributes
 	Lighting lighting;
-
-	std::vector<VkCommandBuffer> graphicCommands;
-
-	// synchronizing objects
-	VkSemaphore imageAvailable = VK_NULL_HANDLE;
-	VkSemaphore renderingFinished = VK_NULL_HANDLE;
-
-	// timer for animations
-	Timer timer;
 
 	void createInstance();
 

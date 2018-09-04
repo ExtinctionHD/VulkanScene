@@ -133,6 +133,11 @@ void Vulkan::resize(VkExtent2D newExtent)
 	initGraphicCommands();
 }
 
+void Vulkan::onKeyPress(int key)
+{
+	camera.onKeyPress(key);
+}
+
 // private:
 
 void Vulkan::createInstance()
@@ -354,6 +359,18 @@ void Vulkan::initDescriptorSet()
 	pDescriptorSet->update();
 }
 
+void Vulkan::initLighting()
+{
+	lighting = Lighting{
+		glm::vec3(1.0f, 1.0f, 1.0f),	// color
+		0.025f,							// ambientStrength
+		glm::vec3(1.0f, 0.0f, 1.0f),	// direction
+		1.0f,							// diffuseStrength
+		camera.getPos(),				// cameraPos
+		2.0f							// specularPower
+	};
+}
+
 void Vulkan::initMvpMatrices()
 {
 	// attributes for view matrix
@@ -367,23 +384,11 @@ void Vulkan::initMvpMatrices()
 
 	mvp = MvpMatrices{
 		glm::mat4(1),
-		glm::lookAt(lighting.cameraPos, center, up),
+		glm::lookAt(camera.getPos(), camera.getTarget(), camera.getUp()),
 		glm::perspective(glm::radians(viewAngle), pSwapChain->getAspect(), zNear, zFar)
 	};
 
 	mvp.model = glm::rotate(mvp.model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-}
-
-void Vulkan::initLighting()
-{
-	lighting = Lighting{
-		glm::vec3(1.0f, 1.0f, 1.0f),	// color
-		0.025f,							// ambientStrength
-		glm::vec3(1.0f, 0.0f, 1.0f),	// direction
-		1.0f,							// diffuseStrength
-		glm::vec3(0.0f, -1.0f, -3.0f),	// cameraPos
-		2.0f							// specularPower
-	};
 }
 
 void Vulkan::initGraphicCommands()
@@ -488,6 +493,8 @@ void Vulkan::updateMvpBuffer()
 	// init model matrix: model rotation
 	float deltaSec = timer.getDeltaSec();
 	mvp.model = glm::rotate(mvp.model, glm::radians(30.0f) * deltaSec, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	mvp.view = glm::lookAt(camera.getPos(), camera.getTarget(), camera.getUp());
 
 	// init projection matrix
 	const float viewAngle = 45.0f;
