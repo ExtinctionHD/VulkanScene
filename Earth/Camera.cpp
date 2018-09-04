@@ -64,6 +64,14 @@ bool Camera::onKeyPress(int key)
 			return true;
 		}
 
+	case GLFW_KEY_LEFT_SHIFT:
+		pos += (up * STEP_SIZE);
+		return true;
+
+	case GLFW_KEY_LEFT_CONTROL:
+		pos -= (up * STEP_SIZE);
+		return true;
+
 	default:
 		return false;
 	}
