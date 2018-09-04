@@ -2,14 +2,14 @@
 
 // public:
 
-Window::Window()
+Window::Window(int width, int height)
 {
 	glfwInit();
 
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-	window = glfwCreateWindow(baseWidth, baseHeight, "Vulkan API", nullptr, nullptr);
+	window = glfwCreateWindow(width, height, "Vulkan API", nullptr, nullptr);
 	glfwSetFramebufferSizeCallback(window, Window::framebufferSizeCallback);
 }
 

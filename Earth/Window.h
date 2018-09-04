@@ -7,9 +7,9 @@
 class Window
 {
 public:
-	GLFWwindow * window;  // window descriptor
+	GLFWwindow *window;  // window descriptor
 
-	Window();  // initialize library and create window
+	Window(int width, int height);  // initialize library and create window
 
 	~Window();  // detroy window
 
@@ -18,10 +18,6 @@ public:
 	VkExtent2D getFrameExtent() const;  // window width and height in VKExtent2D structure
 
 private:
-	// initial window extent
-	const int baseWidth = 1280;
-	const int baseHeight = 720;
-
 	static Vulkan* getVulkanPointer(GLFWwindow *window);
 
 	static void framebufferSizeCallback(GLFWwindow *window, int width, int height);

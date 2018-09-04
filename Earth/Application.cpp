@@ -4,7 +4,7 @@
 
 Application::Application()
 {
-	pWindow = new Window();
+	pWindow = new Window(1280, 720);
 	pVulkan = new Vulkan(pWindow->window, pWindow->getFrameExtent());
 }
 
