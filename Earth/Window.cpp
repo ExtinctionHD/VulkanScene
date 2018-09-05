@@ -13,6 +13,7 @@ Window::Window(int width, int height)
 
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	glfwSetKeyCallback(window, keyCallback);
+	glfwSetCursorPosCallback(window, cursorPosCallback);
 }
 
 void Window::mainLoop()
@@ -69,5 +70,15 @@ void Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, 
 	{
 		getVulkanPointer(window)->onKeyPress(key);
 	}
+}
+
+void Window::cursorPosCallback(GLFWwindow * window, double x, double y)
+{
+	getVulkanPointer(window)->onMouseMove(x, y);
+
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+
+	glfwSetCursorPos(window, width / 2.0, height / 2.0);
 }
 

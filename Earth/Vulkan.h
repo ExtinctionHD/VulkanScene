@@ -35,6 +35,9 @@ public:
 	// moves camera on key press
 	void onKeyPress(int key);
 
+	// moves camera on mouse move
+	void onMouseMove(float x, float y);
+
 private:
 	const std::vector<const char *> VALIDATION_LAYERS =
 	{
@@ -76,11 +79,7 @@ private:
 	VkSemaphore renderingFinished = VK_NULL_HANDLE;
 
 	// camera attributes
-	Camera camera{
-		glm::vec3(0.0f, 0.0f, -3.0f),
-		glm::vec3(0.0f, 0.0f, 1.0f),
-		glm::vec3(0.0f, -1.0f, 0.0f)
-	};
+	Camera *pCamera;
 
 	// timer for animations
 	Timer timer;
@@ -122,12 +121,14 @@ private:
 
 	void createSurface(GLFWwindow *window);
 
-	// creates textures, buffers, models, and adds it in descriptor set
-	void initDescriptorSet();
+	void initCamera();
 
 	void initMvpMatrices();
 
 	void initLighting();
+
+	// creates textures, buffers, models, and adds it in descriptor set
+	void initDescriptorSet();
 
 	// initialize rendering commands
 	void initGraphicCommands();

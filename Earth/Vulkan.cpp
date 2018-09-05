@@ -42,6 +42,7 @@ Vulkan::~Vulkan()
 	vkDestroySemaphore(pDevice->device, imageAvailable, nullptr);
 	vkDestroySemaphore(pDevice->device, renderingFinished, nullptr);
 
+	delete(pCamera);
 	delete(pGraphicsPipeline);
 	delete(pDescriptorSet);
 	delete(pSwapChain);
@@ -131,11 +132,18 @@ void Vulkan::resize(VkExtent2D newExtent)
 	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain, pDescriptorSet->layout);
 
 	initGraphicCommands();
+
+	initCamera();
 }
 
 void Vulkan::onKeyPress(int key)
 {
-	camera.onKeyPress(key);
+	pCamera->onKeyPress(key);
+}
+
+void Vulkan::onMouseMove(float x, float y)
+{
+	pCamera->onMouseMove(x, y);
 }
 
 // private:
@@ -318,6 +326,52 @@ void Vulkan::createSurface(GLFWwindow *window)
 	}
 }
 
+void Vulkan::initCamera()
+{
+	if (pCamera != nullptr)
+	{
+		delete(pCamera);
+	}
+
+	glm::vec3 pos{ 0.0f, 0.0f, -3.0f };
+	glm::vec3 forward{ 0.0f, 0.0f, 1.0f };
+	glm::vec3 up{ 0.0f, -1.0f, 0.0f };
+
+	pCamera = new Camera(pos, forward, up, pSwapChain->extent);
+}
+
+void Vulkan::initLighting()
+{
+	lighting = Lighting{
+		glm::vec3(1.0f, 1.0f, 1.0f),	// color
+		0.025f,							// ambientStrength
+		glm::vec3(1.0f, 0.0f, 1.0f),	// direction
+		1.0f,							// diffuseStrength
+		pCamera->getPos(),				// cameraPos
+		2.0f							// specularPower
+	};
+}
+
+void Vulkan::initMvpMatrices()
+{
+	// attributes for view matrix
+	const glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f);
+	const glm::vec3 up = glm::vec3(0.0f, -1.0f, 0.0f);
+
+	// attributes for projection matrix
+	const float viewAngle = 45.0f;
+	const float zNear = 0.1f;
+	const float zFar = 50.0f;
+
+	mvp = MvpMatrices{
+		glm::mat4(1),
+		glm::lookAt(pCamera->getPos(), pCamera->getTarget(), pCamera->getUp()),
+		glm::perspective(glm::radians(viewAngle), pSwapChain->getAspect(), zNear, zFar)
+	};
+
+	mvp.model = glm::rotate(mvp.model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+}
+
 void Vulkan::initDescriptorSet()
 {
 	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "textures/earth_texture.jpg";
@@ -330,6 +384,8 @@ void Vulkan::initDescriptorSet()
 	pEarthModel->normilize();
 
 	//create buffers:
+
+	initCamera();
 
 	pLightingBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(lighting));
 	initLighting();
@@ -357,38 +413,6 @@ void Vulkan::initDescriptorSet()
 
 	// save changes in descriptor set
 	pDescriptorSet->update();
-}
-
-void Vulkan::initLighting()
-{
-	lighting = Lighting{
-		glm::vec3(1.0f, 1.0f, 1.0f),	// color
-		0.025f,							// ambientStrength
-		glm::vec3(1.0f, 0.0f, 1.0f),	// direction
-		1.0f,							// diffuseStrength
-		camera.getPos(),				// cameraPos
-		2.0f							// specularPower
-	};
-}
-
-void Vulkan::initMvpMatrices()
-{
-	// attributes for view matrix
-	const glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f);
-	const glm::vec3 up = glm::vec3(0.0f, -1.0f, 0.0f);
-
-	// attributes for projection matrix
-	const float viewAngle = 45.0f;
-	const float zNear = 0.1f;
-	const float zFar = 50.0f;
-
-	mvp = MvpMatrices{
-		glm::mat4(1),
-		glm::lookAt(camera.getPos(), camera.getTarget(), camera.getUp()),
-		glm::perspective(glm::radians(viewAngle), pSwapChain->getAspect(), zNear, zFar)
-	};
-
-	mvp.model = glm::rotate(mvp.model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 void Vulkan::initGraphicCommands()
@@ -494,7 +518,7 @@ void Vulkan::updateMvpBuffer()
 	float deltaSec = timer.getDeltaSec();
 	mvp.model = glm::rotate(mvp.model, glm::radians(30.0f) * deltaSec, glm::vec3(0.0f, 1.0f, 0.0f));
 
-	mvp.view = glm::lookAt(camera.getPos(), camera.getTarget(), camera.getUp());
+	mvp.view = glm::lookAt(pCamera->getPos(), pCamera->getTarget(), pCamera->getUp());
 
 	// init projection matrix
 	const float viewAngle = 45.0f;
