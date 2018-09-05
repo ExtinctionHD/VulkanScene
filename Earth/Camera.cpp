@@ -91,7 +91,7 @@ void Camera::onMouseMove(float x, float y)
 	float deltaX = x - getCenter().x;
 	float deltaY = y - getCenter().y;
 
-	const float MAX_DELTA = 10.0f;
+	const float MAX_DELTA = 100.0f;
 	deltaX = abs(deltaX) < MAX_DELTA ? deltaX : MAX_DELTA * deltaX / abs(deltaX);
 	deltaY = abs(deltaY) < MAX_DELTA ? deltaY : MAX_DELTA * deltaY / abs(deltaY);
 
@@ -101,14 +101,14 @@ void Camera::onMouseMove(float x, float y)
 	const glm::vec3 vAxis{ 0.0f, 1.0f, 0.0f };
 
 	// rotate the view by the horizontal angle
-	glm::vec3 view(1.0f, 0.0f, 0.0f);
-	view = glm::rotate(view, angleH, vAxis);
+	glm::vec3 view(0.0f, 0.0f, 1.0f);
+	view = glm::rotate(view, glm::radians(angleH), vAxis);
 	view = glm::normalize(view);
 
 	// rotate the view by the vertical angle
 	glm::vec3 hAxis = glm::cross(view, vAxis);
 	hAxis = glm::normalize(hAxis);
-	view = glm::rotate(view, angleV, hAxis);
+	view = glm::rotate(view, glm::radians(angleV), hAxis);
 
 	// save changes
 	forward = glm::normalize(view);
@@ -124,27 +124,30 @@ void Camera::init()
 	horizontal = glm::normalize(horizontal);
 
 	// horizontal camera angle
-	if (horizontal.z >= 0.0f)
+	if (horizontal.x >= 0.0f)
 	{
-		if (horizontal.x >= 0.0f)
+		if (horizontal.z >= 0.0f)
 		{
-			angleH = 360.0f - glm::degrees(glm::asin(horizontal.z));
+			// first quarter
+			angleH = 360.0f - glm::degrees(glm::asin(horizontal.x));
 		}
 		else
 		{
-			angleH = 180.0f + glm::degrees(glm::asin(horizontal.z));
+			// second quarter
+			angleH = 180.0f + glm::degrees(glm::asin(horizontal.x));
 		}
 	}
 	else
 	{
-
-		if (horizontal.x >= 0.0f)
+		if (horizontal.z >= 0.0f)
 		{
-			angleH = glm::degrees(glm::asin(-horizontal.z));
+			// third quarter
+			angleH = glm::degrees(glm::asin(-horizontal.x));
 		}
 		else
 		{
-			angleH = 90.0f + glm::degrees(glm::asin(-horizontal.z));
+			// fourth quarter
+			angleH = 90.0f + glm::degrees(glm::asin(-horizontal.x));
 		}
 	}
 

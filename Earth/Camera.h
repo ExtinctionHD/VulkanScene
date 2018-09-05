@@ -37,7 +37,7 @@ private:
 	const float STEP_SIZE = 0.1f;
 
 	// camera rotation sensitivity
-	const float SENSITIVITY = 0.005f;
+	const float SENSITIVITY = 0.3f;
 
 	// position of camera
 	glm::vec3 pos;
@@ -52,6 +52,7 @@ private:
 	VkExtent2D extent;
 
 	// horizontal angle
+	// angle 0.0f directed towards z axis
 	float angleH;
 
 	// vertical angle

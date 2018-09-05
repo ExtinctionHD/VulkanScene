@@ -25,5 +25,9 @@ private:
 	static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode); 
 	
 	static void cursorPosCallback(GLFWwindow *window, double x, double y);
+
+	static void cursorEnterCallback(GLFWwindow *window, int entered);
+
+	static void setCursorInCenter(GLFWwindow *window);
 };
 
