@@ -58,16 +58,12 @@ void Camera::onKeyDown(int key)
 		break;
 
 	case GLFW_KEY_A:
-	{
 		movement.right = Direction::negative;
 		break;
-	}
 
 	case GLFW_KEY_D:
-	{
 		movement.right = Direction::positive;
 		break;
-	}
 
 	case GLFW_KEY_SPACE:
 		movement.up = Direction::positive;
@@ -123,13 +119,19 @@ void Camera::moveCamera(float deltaSec)
 {
 	const float DISTANCE = SPEED * deltaSec;
 
-	pos += forward * (float)movement.forward * DISTANCE;
+	glm::vec3 direction = forward * (float)movement.forward;
 
 	glm::vec3 right = glm::cross(forward, up);
 	right = glm::normalize(right);
-	pos += right * (float)movement.right * DISTANCE;
+	direction += right * (float)movement.right;
 
-	pos += up * (float)movement.up * DISTANCE;
+	direction += up * (float)movement.up;
+
+	if (glm::length(direction) != 0.0f)
+	{
+		direction = glm::normalize(direction);
+	}
+	pos += direction * DISTANCE;
 }
 
 void Camera::onMouseMove(float x, float y)
