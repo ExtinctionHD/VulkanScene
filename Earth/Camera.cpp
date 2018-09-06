@@ -147,7 +147,7 @@ void Camera::onMouseMove(float x, float y)
 	deltaY = abs(deltaY) < MAX_DELTA ? deltaY : MAX_DELTA * deltaY / abs(deltaY);
 	angleV += (deltaY * SENSITIVITY);
 	// set vertical angle limits: -VERT_ANGLE_LIMIT and VERT_ANGLE_LIMIT degrees
-	angleV = abs(deltaY) > VERT_ANGLE_LIMIT ? VERT_ANGLE_LIMIT * angleV / abs(angleV) : angleV;
+	angleV = abs(angleV) > VERT_ANGLE_LIMIT ? VERT_ANGLE_LIMIT * angleV / abs(angleV) : angleV;
 
 	const glm::vec3 vAxis{ 0.0f, 1.0f, 0.0f };
 

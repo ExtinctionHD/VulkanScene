@@ -529,10 +529,10 @@ void Vulkan::updateMvpBuffer(float deltaSec)
 	mvp.view = glm::lookAt(pCamera->getPos(), pCamera->getTarget(), pCamera->getUp());
 
 	// init projection matrix
-	const float viewAngle = 45.0f;
+	const float fov = 55.0f;
 	const float zNear = 0.1f;
 	const float zFar = 50.0f;
-	mvp.proj = glm::perspective(glm::radians(viewAngle), pSwapChain->getAspect(), zNear, zFar);
+	mvp.proj = glm::perspective(glm::radians(fov), pSwapChain->getAspect(), zNear, zFar);
 
 	pMvpBuffer->updateData(&mvp);
 }
