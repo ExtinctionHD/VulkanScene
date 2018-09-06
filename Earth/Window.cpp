@@ -14,7 +14,6 @@ Window::Window(int width, int height)
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 	glfwSetKeyCallback(window, keyCallback);
 	glfwSetCursorPosCallback(window, cursorPosCallback);
-	glfwSetCursorEnterCallback(window, cursorEnterCallback);
 
 	setCursorInCenter(window);
 }
@@ -77,14 +76,6 @@ void Window::cursorPosCallback(GLFWwindow * window, double x, double y)
 	getVulkanPointer(window)->onMouseMove(x, y);
 
 	setCursorInCenter(window);
-}
-
-void Window::cursorEnterCallback(GLFWwindow * window, int entered)
-{
-	if (entered)
-	{
-		setCursorInCenter(window);
-	}
 }
 
 void Window::setCursorInCenter(GLFWwindow * window)

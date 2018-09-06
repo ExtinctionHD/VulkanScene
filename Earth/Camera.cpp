@@ -134,15 +134,18 @@ void Camera::moveCamera(float deltaSec)
 
 void Camera::onMouseMove(float x, float y)
 {
-	float deltaX = x - getCenter().x;
-	float deltaY = y - getCenter().y;
-
 	const float MAX_DELTA = 100.0f;
-	deltaX = abs(deltaX) < MAX_DELTA ? deltaX : MAX_DELTA * deltaX / abs(deltaX);
-	deltaY = abs(deltaY) < MAX_DELTA ? deltaY : MAX_DELTA * deltaY / abs(deltaY);
+	const float VERT_ANGLE_LIMIT = 90.0f;
 
+	float deltaX = x - getCenter().x;
+	deltaX = abs(deltaX) < MAX_DELTA ? deltaX : MAX_DELTA * deltaX / abs(deltaX);
 	angleH += (deltaX * SENSITIVITY);
+
+	float deltaY = y - getCenter().y;
+	deltaY = abs(deltaY) < MAX_DELTA ? deltaY : MAX_DELTA * deltaY / abs(deltaY);
 	angleV += (deltaY * SENSITIVITY);
+	// set vertical angle limits: -VERT_ANGLE_LIMIT and VERT_ANGLE_LIMIT degrees
+	angleV = abs(deltaY) > VERT_ANGLE_LIMIT ? VERT_ANGLE_LIMIT * angleV / abs(angleV) : angleV;
 
 	const glm::vec3 vAxis{ 0.0f, 1.0f, 0.0f };
 
