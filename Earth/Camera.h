@@ -26,15 +26,34 @@ public:
 	// returns camera up vector
 	glm::vec3 getUp() const;
 
-	// moves camera on key pressing
-	void onKeyPress(int key);
+	// begins camera movement
+	void onKeyDown(int key);
+
+	// ends camera movement
+	void onKeyUp(int key);
+
+	void moveCamera(float deltaSec);
 
 	// rotate camera on mouse movement
 	void onMouseMove(float x, float y);
 
 private:
+	enum Direction
+	{
+		negative = -1,
+		none = 0,
+		positive = 1
+	};
+
+	struct Movement
+	{
+		Direction forward = Direction::none;
+		Direction right = Direction::none;
+		Direction up = Direction::none;
+	};
+
 	// step of camera movement
-	const float STEP_SIZE = 0.1f;
+	const float SPEED = 1.0f;
 
 	// camera rotation sensitivity
 	const float SENSITIVITY = 0.3f;
@@ -51,6 +70,9 @@ private:
 	// surface extent
 	VkExtent2D extent;
 
+	// asix movement states
+	Movement movement;
+
 	// horizontal angle
 	// angle 0.0f directed towards z axis
 	float angleH;
@@ -58,6 +80,7 @@ private:
 	// vertical angle
 	float angleV;
 
+	// initializes camera angles
 	void init();
 
 	// returns x, y coordinates extent center

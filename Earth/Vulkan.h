@@ -33,7 +33,7 @@ public:
 	void resize(VkExtent2D newExtent);
 
 	// moves camera on key press
-	void onKeyPress(int key);
+	void onKeyAction(int key, int action);
 
 	// moves camera on mouse move
 	void onMouseMove(float x, float y);
@@ -82,7 +82,7 @@ private:
 	Camera *pCamera;
 
 	// timer for animations
-	Timer timer;
+	Timer frameTimer;
 
 	// resources:
 
@@ -136,6 +136,6 @@ private:
 	static void createSemaphore(VkDevice device, VkSemaphore& semaphore);
 
 	// changes mvp and load it in buffer
-	void updateMvpBuffer();
+	void updateMvpBuffer(float deltaSec);
 };
 

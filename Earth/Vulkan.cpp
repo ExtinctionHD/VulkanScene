@@ -55,7 +55,9 @@ Vulkan::~Vulkan()
 
 void Vulkan::drawFrame()
 {
-	updateMvpBuffer();
+	float deltaSec = frameTimer.getDeltaSec();
+	pCamera->moveCamera(deltaSec);
+	updateMvpBuffer(deltaSec);
 
 	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(
@@ -136,9 +138,17 @@ void Vulkan::resize(VkExtent2D newExtent)
 	initCamera();
 }
 
-void Vulkan::onKeyPress(int key)
+void Vulkan::onKeyAction(int key, int action)
 {
-	pCamera->onKeyPress(key);
+	if (action == GLFW_PRESS)
+	{
+		pCamera->onKeyDown(key);
+	}
+
+	if (action == GLFW_RELEASE)
+	{
+		pCamera->onKeyUp(key);
+	}
 }
 
 void Vulkan::onMouseMove(float x, float y)
@@ -512,10 +522,8 @@ void Vulkan::createSemaphore(VkDevice device, VkSemaphore& semaphore)
 	}
 }
 
-void Vulkan::updateMvpBuffer()
+void Vulkan::updateMvpBuffer(float deltaSec)
 {
-	// init model matrix: model rotation
-	float deltaSec = timer.getDeltaSec();
 	mvp.model = glm::rotate(mvp.model, glm::radians(30.0f) * deltaSec, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	mvp.view = glm::lookAt(pCamera->getPos(), pCamera->getTarget(), pCamera->getUp());

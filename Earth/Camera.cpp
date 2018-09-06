@@ -45,45 +45,91 @@ glm::vec3 Camera::getUp() const
 	return up;
 }
 
-void Camera::onKeyPress(int key)
+void Camera::onKeyDown(int key)
 {
 	switch (key)
 	{
 	case GLFW_KEY_W:
-		pos += (forward * STEP_SIZE);
+		movement.forward = Direction::positive;
 		break;
 
 	case GLFW_KEY_S:
-		pos -= (forward * STEP_SIZE);
+		movement.forward = Direction::negative;
 		break;
 
 	case GLFW_KEY_A:
-		{
-			glm::vec3 left = glm::cross(up, forward);
-			left = glm::normalize(left);
-			pos += (left * STEP_SIZE);
-			break;
-		}
+	{
+		movement.right = Direction::negative;
+		break;
+	}
 
 	case GLFW_KEY_D:
-		{
-			glm::vec3 right = glm::cross(forward, up);
-			right = glm::normalize(right);
-			pos += (right * STEP_SIZE);
-			break;
-		}
+	{
+		movement.right = Direction::positive;
+		break;
+	}
 
-	case GLFW_KEY_LEFT_SHIFT:
-		pos += (up * STEP_SIZE);
+	case GLFW_KEY_SPACE:
+		movement.up = Direction::positive;
 		break;
 
 	case GLFW_KEY_LEFT_CONTROL:
-		pos -= (up * STEP_SIZE);
+		movement.up = Direction::negative;
 		break;
 
 	default:
 		break;
 	}
+}
+
+void Camera::onKeyUp(int key)
+{
+	switch (key)
+	{
+	case GLFW_KEY_W:
+		movement.forward = Direction::none;
+		break;
+
+	case GLFW_KEY_S:
+		movement.forward = Direction::none;
+		break;
+
+	case GLFW_KEY_A:
+	{
+		movement.right = Direction::none;
+		break;
+	}
+
+	case GLFW_KEY_D:
+	{
+		movement.right = Direction::none;
+		break;
+	}
+
+	case GLFW_KEY_SPACE:
+		movement.up = Direction::none;
+		break;
+
+	case GLFW_KEY_LEFT_CONTROL:
+		movement.up = Direction::none;
+		break;
+
+	default:
+		break;
+	}
+}
+
+void Camera::moveCamera(float deltaSec)
+{
+	const float DISTANCE = SPEED * deltaSec;
+
+	pos += forward * (float)movement.forward * DISTANCE;
+
+	glm::vec3 right = glm::cross(forward, up);
+	right = glm::normalize(right);
+	pos += right * (float)movement.right * DISTANCE;
+
+	pos += up * (float)movement.up * DISTANCE;
 }
 
 void Camera::onMouseMove(float x, float y)

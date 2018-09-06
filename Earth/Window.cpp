@@ -69,10 +69,7 @@ void Window::framebufferSizeCallback(GLFWwindow *window, int width, int height)
 
 void Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
-	if (action != GLFW_RELEASE)
-	{
-		getVulkanPointer(window)->onKeyPress(key);
-	}
+	getVulkanPointer(window)->onKeyAction(key, action);
 }
 
 void Window::cursorPosCallback(GLFWwindow * window, double x, double y)
