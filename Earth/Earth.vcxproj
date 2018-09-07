@@ -32,6 +32,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="MvpMatrices.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
+    <ClInclude Include="RenderPass.h" />
     <ClInclude Include="ShaderModule.h" />
     <ClInclude Include="SurfaceSupportDetails.h" />
     <ClInclude Include="SwapChain.h" />
@@ -56,6 +57,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="QueueFamilyIndices.cpp" />
+    <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="ShaderModule.cpp" />
     <ClCompile Include="SurfaceSupportDetails.cpp" />
     <ClCompile Include="SwapChain.cpp" />

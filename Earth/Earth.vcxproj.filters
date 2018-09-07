@@ -61,6 +61,12 @@
     <Filter Include="Исходные файлы\Vulkan\Scene">
       <UniqueIdentifier>{869673bd-6988-44b4-bb84-e3cefad9594a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Vulkan\Rendering">
+      <UniqueIdentifier>{be8adc87-240d-4eb1-9426-949715dc027b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Vulkan\Rendering">
+      <UniqueIdentifier>{22574b2c-f0d1-4a67-88da-42d2ea061b28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.h">
@@ -108,9 +114,6 @@
     <ClInclude Include="DescriptorSet.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsPipeline.h">
-      <Filter>Файлы заголовков\Vulkan\Other</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderModule.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
@@ -131,6 +134,12 @@
     </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Файлы заголовков\Vulkan\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsPipeline.h">
+      <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPass.h">
+      <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -182,9 +191,6 @@
     <ClCompile Include="DescriptorSet.cpp">
       <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsPipeline.cpp">
-      <Filter>Исходные файлы\Vulkan\Other</Filter>
-    </ClCompile>
     <ClCompile Include="ShaderModule.cpp">
       <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
@@ -196,6 +202,12 @@
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Исходные файлы\Vulkan\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsPipeline.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPass.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

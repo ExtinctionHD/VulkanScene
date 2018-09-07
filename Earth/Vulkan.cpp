@@ -27,7 +27,8 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 	pDescriptorSet = new DescriptorSet(pDevice);
 	initDescriptorSet();
 
-	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain, pDescriptorSet->layout);
+	pRenderPass = new RenderPass(pDevice, pSwapChain);
+	pGraphicsPipeline = new GraphicsPipeline(pDevice->device, { pDescriptorSet->layout }, pRenderPass);
 
 	initGraphicCommands();
 
@@ -55,6 +56,7 @@ Vulkan::~Vulkan()
 
 void Vulkan::drawFrame()
 {
+	// update resources
 	float deltaSec = frameTimer.getDeltaSec();
 	pCamera->moveCamera(deltaSec);
 	updateMvpBuffer(deltaSec);
@@ -131,7 +133,8 @@ void Vulkan::resize(VkExtent2D newExtent)
 	delete(pSwapChain);
 
 	pSwapChain = new SwapChain(pDevice, surface, newExtent);
-	pGraphicsPipeline = new GraphicsPipeline(pDevice, pSwapChain, pDescriptorSet->layout);
+	pRenderPass = new RenderPass(pDevice, pSwapChain);
+	pGraphicsPipeline = new GraphicsPipeline(pDevice->device, { pDescriptorSet->layout }, pRenderPass);
 
 	initGraphicCommands();
 
@@ -478,8 +481,8 @@ void Vulkan::initGraphicCommands()
 		VkRenderPassBeginInfo renderPassBeginInfo{
 			VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	// sType;
 			nullptr,									// pNext;
-			pGraphicsPipeline->renderpass,				// renderPass;
-			pGraphicsPipeline->framebuffers[i],			// framebuffer;
+			pRenderPass->renderPass,				// renderPass;
+			pRenderPass->framebuffers[i],			// framebuffer;
 			renderArea,									// renderArea;
 			clearValues.size(),							// clearValueCount;
 			clearValues.data()							// pClearValues;

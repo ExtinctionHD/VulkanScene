@@ -5,6 +5,7 @@
 #include <vector>
 #include "Device.h"
 #include "SwapChain.h"
+#include "RenderPass.h"
 #include "GraphicsPipeline.h"
 #include "DescriptorSet.h"
 #include "Image.h"
@@ -69,6 +70,8 @@ private:
 
 	// Resources for graphics pipeline
 	DescriptorSet *pDescriptorSet;
+
+	RenderPass *pRenderPass;
 
 	GraphicsPipeline *pGraphicsPipeline;
 
