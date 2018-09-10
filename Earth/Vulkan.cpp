@@ -5,6 +5,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "ShaderModule.h"
 
 #include "Vulkan.h"
 
@@ -28,7 +29,11 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 	initDescriptorSet();
 
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
-	pGraphicsPipeline = new GraphicsPipeline(pDevice->device, { pDescriptorSet->layout }, pRenderPass);
+	std::vector<ShaderModule*> shaderModules{
+		new ShaderModule(pDevice->device, VERT_SHADER_PATH, VK_SHADER_STAGE_VERTEX_BIT),
+		new ShaderModule(pDevice->device, FRAG_SHADER_PATH, VK_SHADER_STAGE_FRAGMENT_BIT),
+	};
+	pGraphicsPipeline = new GraphicsPipeline(pDevice->device, { pDescriptorSet->layout }, pRenderPass, shaderModules);
 
 	initGraphicCommands();
 
@@ -129,15 +134,16 @@ void Vulkan::resize(VkExtent2D newExtent)
 {
 	vkDeviceWaitIdle(pDevice->device);
 
-	delete(pGraphicsPipeline);
+	delete(pRenderPass);
 	delete(pSwapChain);
 
 	pSwapChain = new SwapChain(pDevice, surface, newExtent);
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
-	pGraphicsPipeline = new GraphicsPipeline(pDevice->device, { pDescriptorSet->layout }, pRenderPass);
+	pGraphicsPipeline->recreate(pRenderPass);
 
 	initGraphicCommands();
 
+	// TODO: add change camera extent func
 	initCamera();
 }
 
@@ -481,8 +487,8 @@ void Vulkan::initGraphicCommands()
 		VkRenderPassBeginInfo renderPassBeginInfo{
 			VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	// sType;
 			nullptr,									// pNext;
-			pRenderPass->renderPass,				// renderPass;
-			pRenderPass->framebuffers[i],			// framebuffer;
+			pRenderPass->renderPass,					// renderPass;
+			pRenderPass->framebuffers[i],				// framebuffer;
 			renderArea,									// renderArea;
 			clearValues.size(),							// clearValueCount;
 			clearValues.data()							// pClearValues;

@@ -1,14 +1,14 @@
 #include "Logger.h"
-#include "ShaderModule.h"
 #include "Vertex.h"
 
 #include "GraphicsPipeline.h"
 
 // public:
 
-GraphicsPipeline::GraphicsPipeline(VkDevice device, std::vector<VkDescriptorSetLayout> descriptorSetLayouts, RenderPass *pRenderPass)
+GraphicsPipeline::GraphicsPipeline(VkDevice device, std::vector<VkDescriptorSetLayout> descriptorSetLayouts, RenderPass *pRenderPass, std::vector<ShaderModule*> shaderModules)
 {
 	this->device = device;
+	this->shaderModules = shaderModules;
 
 	createLayout(descriptorSetLayouts);
 
@@ -17,8 +17,18 @@ GraphicsPipeline::GraphicsPipeline(VkDevice device, std::vector<VkDescriptorSetL
 
 GraphicsPipeline::~GraphicsPipeline()
 {
+	for (ShaderModule *pShaderModule : shaderModules)
+	{
+		delete(pShaderModule);
+	}
 	vkDestroyPipeline(device, pipeline, nullptr);
 	vkDestroyPipelineLayout(device, layout, nullptr);
+}
+
+void GraphicsPipeline::recreate(RenderPass *pRenderPass)
+{
+	vkDestroyPipeline(device, pipeline, nullptr);
+	createPipeline(pRenderPass->renderPass, pRenderPass->attachmentsExtent);
 }
 
 // private:
@@ -44,31 +54,23 @@ void GraphicsPipeline::createLayout(std::vector<VkDescriptorSetLayout> descripto
 
 void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewportExtent)
 {
-	// loading shaders (vertex and fragment stage):
+	// shader stages info:
 
-	ShaderModule vertShaderModule{ device, VERT_SHADER_PATH };
-	VkPipelineShaderStageCreateInfo vertShaderStageCreateInfo{
-		VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,	// sType;
-		nullptr,												// pNext;
-		0,														// flags;
-		VK_SHADER_STAGE_VERTEX_BIT,								// stage;
-		vertShaderModule,										// module;
-		"main",													// pName;
-		nullptr,												// pSpecializationInfo;
-	};
+	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+	for (ShaderModule *pShaderModule : shaderModules)
+	{
+		VkPipelineShaderStageCreateInfo shaderStageCreateInfo{
+			VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,	// sType;
+			nullptr,												// pNext;
+			0,														// flags;
+			pShaderModule->stage,									// stage;
+			pShaderModule->module,									// module;
+			"main",													// pName;
+			nullptr,												// pSpecializationInfo;
+		};
 
-	ShaderModule fragShaderModule{ device, FRAG_SHADER_PATH };
-	VkPipelineShaderStageCreateInfo fragShaderStageCreateInfo{
-		VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,	// sType;
-		nullptr,												// pNext;
-		0,														// flags;
-		VK_SHADER_STAGE_FRAGMENT_BIT,							// stage;
-		fragShaderModule,										// module;
-		"main",													// pName;
-		nullptr,												// pSpecializationInfo;
-	};
-
-	std::vector<VkPipelineShaderStageCreateInfo> shaderStages = { vertShaderStageCreateInfo, fragShaderStageCreateInfo };
+		shaderStages.push_back(shaderStageCreateInfo);
+	}
 
 	// info about input vertices:
 

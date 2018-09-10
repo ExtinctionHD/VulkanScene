@@ -114,9 +114,6 @@
     <ClInclude Include="DescriptorSet.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderModule.h">
-      <Filter>Файлы заголовков\Vulkan\Other</Filter>
-    </ClInclude>
     <ClInclude Include="SwapChain.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
@@ -139,6 +136,9 @@
       <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="RenderPass.h">
+      <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderModule.h">
       <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
@@ -191,9 +191,6 @@
     <ClCompile Include="DescriptorSet.cpp">
       <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderModule.cpp">
-      <Filter>Исходные файлы\Vulkan\Other</Filter>
-    </ClCompile>
     <ClCompile Include="SwapChain.cpp">
       <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
@@ -207,6 +204,9 @@
       <Filter>Исходные файлы\Vulkan\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="RenderPass.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderModule.cpp">
       <Filter>Исходные файлы\Vulkan\Rendering</Filter>
     </ClCompile>
   </ItemGroup>

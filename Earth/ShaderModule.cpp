@@ -6,9 +6,10 @@
 
 // public:
 
-ShaderModule::ShaderModule(VkDevice device, std::string filename)
+ShaderModule::ShaderModule(VkDevice device, std::string filename, VkShaderStageFlagBits stage)
 {
 	this->device = device;
+	this->stage = stage;
 
 	std::vector<char> code = File::getFileBytes(filename);
 
@@ -20,7 +21,7 @@ ShaderModule::ShaderModule(VkDevice device, std::string filename)
 		(uint32_t*)code.data()							// pCode;
 	};
 
-	VkResult result = vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule);
+	VkResult result = vkCreateShaderModule(device, &createInfo, nullptr, &module);
 	if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::getShaderCreatingErrMsg(filename));
@@ -29,10 +30,5 @@ ShaderModule::ShaderModule(VkDevice device, std::string filename)
 
 ShaderModule::~ShaderModule()
 {
-	vkDestroyShaderModule(device, shaderModule, nullptr);
-}
-
-ShaderModule::operator VkShaderModule() const
-{
-	return shaderModule;
+	vkDestroyShaderModule(device, module, nullptr);
 }

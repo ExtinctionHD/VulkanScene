@@ -54,6 +54,10 @@ private:
 	// color that clear each frame
 	const VkClearColorValue clearColor = { 0, 0, 0, 1 };
 
+	// files with shaders code
+	const std::string VERT_SHADER_PATH = File::getExeDir() + "shaders/vert.spv";
+	const std::string FRAG_SHADER_PATH = File::getExeDir() + "shaders/frag.spv";
+
 	VkInstance instance;
 
 	// validation layers callback

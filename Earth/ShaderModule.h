@@ -5,15 +5,15 @@
 class ShaderModule
 {
 public:
-	ShaderModule(VkDevice device, std::string filename);
+	ShaderModule(VkDevice device, std::string filename, VkShaderStageFlagBits stage);
 	~ShaderModule();
 
-	operator VkShaderModule() const;
+	VkShaderStageFlagBits stage;
+
+	VkShaderModule module;
 
 private:
 	// device that provide shader module
 	VkDevice device;
-
-	VkShaderModule shaderModule;
 };
 
