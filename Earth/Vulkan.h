@@ -10,7 +10,7 @@
 #include "DescriptorSet.h"
 #include "Image.h"
 #include "TextureImage.h"
-#include "Model.h"
+#include "GeneralModel.h"
 #include "MvpMatrices.h"
 #include "Timer.h"
 #include "Lighting.h"
@@ -72,12 +72,13 @@ private:
 	// swapchain object and its images
 	SwapChain *pSwapChain;
 
-	// Resources for graphics pipeline
-	DescriptorSet *pDescriptorSet;
+	// resources for main graphics pipeline
+	DescriptorSet *pMainDS;
 
 	RenderPass *pRenderPass;
 
-	GraphicsPipeline *pGraphicsPipeline;
+	// graphics pipelines for rendering main objects
+	GraphicsPipeline *pMainPipeline;
 
 	std::vector<VkCommandBuffer> graphicCommands;
 
@@ -96,7 +97,7 @@ private:
 	TextureImage *pEarthTexture;		// texture of earth surface
 	TextureImage *pEarthNormalMap;		// map of earth normals
 	TextureImage *pEarthSpecularMap;	// map of specular factor
-	Model *pEarthModel;					// model of earth
+	GeneralModel *pEarthModel;					// model of earth
 
 	Buffer *pMvpBuffer;  // buffer containing MVP(model, view, projection) matrices
 	MvpMatrices mvp;
@@ -135,7 +136,7 @@ private:
 	void initLighting();
 
 	// creates textures, buffers, models, and adds it in descriptor set
-	void initDescriptorSet();
+	void initMainDS();
 
 	// initialize rendering commands
 	void initGraphicCommands();

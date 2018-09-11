@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="ModelBase.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DescriptorSet.h" />
@@ -29,12 +30,13 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="Lighting.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="Model.h" />
+    <ClInclude Include="GeneralModel.h" />
     <ClInclude Include="MvpMatrices.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="ShaderModule.h" />
+    <ClInclude Include="SkyboxModel.h" />
     <ClInclude Include="SurfaceSupportDetails.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="SwapChainImage.h" />
@@ -47,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="ModelBase.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DescriptorSet.cpp" />
@@ -56,11 +59,12 @@
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="GeneralModel.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="QueueFamilyIndices.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="ShaderModule.cpp" />
+    <ClCompile Include="SkyboxModel.cpp" />
     <ClCompile Include="SurfaceSupportDetails.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="SwapChainImage.cpp" />

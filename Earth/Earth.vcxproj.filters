@@ -105,9 +105,6 @@
     <ClInclude Include="TextureImage.h">
       <Filter>Файлы заголовков\Vulkan\Image</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Файлы заголовков\Vulkan\Model</Filter>
-    </ClInclude>
     <ClInclude Include="Buffer.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
@@ -142,6 +139,15 @@
       <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Position.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyboxModel.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelBase.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneralModel.h">
       <Filter>Файлы заголовков\Vulkan\Model</Filter>
     </ClInclude>
   </ItemGroup>
@@ -185,9 +191,6 @@
     <ClCompile Include="TextureImage.cpp">
       <Filter>Исходные файлы\Vulkan\Image</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Исходные файлы\Vulkan\Model</Filter>
-    </ClCompile>
     <ClCompile Include="Buffer.cpp">
       <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
@@ -213,6 +216,15 @@
       <Filter>Исходные файлы\Vulkan\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="Position.cpp">
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyboxModel.cpp">
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelBase.cpp">
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneralModel.cpp">
       <Filter>Исходные файлы\Vulkan\Model</Filter>
     </ClCompile>
   </ItemGroup>

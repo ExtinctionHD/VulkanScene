@@ -25,8 +25,8 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 	pDevice = new Device(instance, surface, requiredLayers);
 	pSwapChain = new SwapChain(pDevice, surface, frameExtent);
 
-	pDescriptorSet = new DescriptorSet(pDevice);
-	initDescriptorSet();
+	pMainDS = new DescriptorSet(pDevice);
+	initMainDS();
 
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
 	std::vector<ShaderModule*> shaderModules{
@@ -34,9 +34,9 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 		new ShaderModule(pDevice->device, FRAG_SHADER_PATH, VK_SHADER_STAGE_FRAGMENT_BIT),
 	};
 	const uint32_t binding = 0;
-	pGraphicsPipeline = new GraphicsPipeline(
+	pMainPipeline = new GraphicsPipeline(
 		pDevice->device, 
-		{ pDescriptorSet->layout }, 
+		{ pMainDS->layout }, 
 		pRenderPass, 
 		shaderModules,
 		Vertex::getBindingDescription(binding),
@@ -57,8 +57,8 @@ Vulkan::~Vulkan()
 	vkDestroySemaphore(pDevice->device, renderingFinished, nullptr);
 
 	delete(pCamera);
-	delete(pGraphicsPipeline);
-	delete(pDescriptorSet);
+	delete(pMainPipeline);
+	delete(pMainDS);
 	delete(pSwapChain);
 	delete(pDevice);
 
@@ -147,7 +147,7 @@ void Vulkan::resize(VkExtent2D newExtent)
 
 	pSwapChain = new SwapChain(pDevice, surface, newExtent);
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
-	pGraphicsPipeline->recreate(pRenderPass);
+	pMainPipeline->recreate(pRenderPass);
 
 	initGraphicCommands();
 
@@ -399,7 +399,7 @@ void Vulkan::initMvpMatrices()
 	mvp.model = glm::rotate(mvp.model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
-void Vulkan::initDescriptorSet()
+void Vulkan::initMainDS()
 {
 	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "textures/earth_texture.jpg";
 	const std::string EARTH_NORMAL_MAP_PATH = File::getExeDir() + "textures/earth_normal_map.jpg";
@@ -407,7 +407,7 @@ void Vulkan::initDescriptorSet()
 	const std::string EARTH_MODEL_PATH = File::getExeDir() + "models/sphere.obj";
 
 	// create models
-	pEarthModel = new Model(pDevice, EARTH_MODEL_PATH);
+	pEarthModel = new GeneralModel(pDevice, EARTH_MODEL_PATH);
 	pEarthModel->normilize();
 
 	//create buffers:
@@ -429,17 +429,17 @@ void Vulkan::initDescriptorSet()
 
 	// load resources in descriptor set:
 
-	pDescriptorSet->addBuffer(pMvpBuffer);
-	pDescriptorSet->addBuffer(pLightingBuffer);
+	pMainDS->addBuffer(pMvpBuffer);
+	pMainDS->addBuffer(pLightingBuffer);
 
-	pDescriptorSet->addTexture(pEarthTexture);
-	pDescriptorSet->addTexture(pEarthNormalMap);
-	pDescriptorSet->addTexture(pEarthSpecularMap);
+	pMainDS->addTexture(pEarthTexture);
+	pMainDS->addTexture(pEarthNormalMap);
+	pMainDS->addTexture(pEarthSpecularMap);
 
-	pDescriptorSet->addModel(pEarthModel);
+	pMainDS->addModel(pEarthModel);
 
 	// save changes in descriptor set
-	pDescriptorSet->update();
+	pMainDS->update();
 }
 
 void Vulkan::initGraphicCommands()
@@ -504,10 +504,10 @@ void Vulkan::initGraphicCommands()
 
 		vkCmdBeginRenderPass(graphicCommands[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		vkCmdBindPipeline(graphicCommands[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pGraphicsPipeline->pipeline);
+		vkCmdBindPipeline(graphicCommands[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pMainPipeline->pipeline);
 
-		pDescriptorSet->bind(graphicCommands[i], pGraphicsPipeline->layout);
-		pDescriptorSet->drawModels(graphicCommands[i]);
+		pMainDS->bind(graphicCommands[i], pMainPipeline->layout);
+		pMainDS->drawModels(graphicCommands[i]);
 
 		vkCmdEndRenderPass(graphicCommands[i]);
 

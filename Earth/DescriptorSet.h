@@ -4,7 +4,7 @@
 #include <vector>
 #include "Buffer.h"
 #include "TextureImage.h"
-#include "Model.h"
+#include "ModelBase.h"
 #include "Vertex.h"
 
 // provides a pipeline with resources: uniform buffers and textures
@@ -30,9 +30,9 @@ public:
 
 	void removeTexture(TextureImage *pTexture);
 
-	void addModel(Model *pModel);
+	void addModel(ModelBase *pModel);
 
-	void removeModel(Model *pModel);
+	void removeModel(ModelBase *pModel);
 
 	void bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) const;
 
@@ -50,7 +50,7 @@ private:
 	std::vector<Buffer*> uniformBuffers;
 	std::vector<TextureImage*> textures;
 
-	std::vector<Model*> models;
+	std::vector<ModelBase*> models;
 
 	// create layout of current resources
 	void createLayout();

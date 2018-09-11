@@ -2,11 +2,11 @@
 #include "File.h"
 #include "Logger.h"
 
-#include "Model.h"
+#include "GeneralModel.h"
 
 // public:
 
-Model::Model(Device *pDevice, std::string filename)
+GeneralModel::GeneralModel(Device *pDevice, std::string filename)
 {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
@@ -28,20 +28,9 @@ Model::Model(Device *pDevice, std::string filename)
 	initBuffers(pDevice);
 }
 
-Model::~Model()
-{
-	delete(pIndexBuffer);
-	delete(pVertexBuffer);
-}
-
 // private:
 
-size_t Model::getIndexCount() const
-{
-	return indices.size();
-}
-
-void Model::normilize()
+void GeneralModel::normilize()
 {
 	glm::vec3 delta = glm::vec3(
 		size.x / 2 - maxVertex.x,
@@ -60,7 +49,7 @@ void Model::normilize()
 	pVertexBuffer->updateData(vertices.data());
 }
 
-void Model::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> shapes)
+void GeneralModel::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> shapes)
 {
 	minVertex = glm::vec3(max, max, max);
 	maxVertex = glm::vec3(min, min, min);
@@ -81,33 +70,7 @@ void Model::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> 
 				}
 			};
 
-			// find min vertex components
-			if (vertex.pos.x < minVertex.x)
-			{
-				minVertex.x = vertex.pos.x;
-			}
-			if (vertex.pos.y < minVertex.y)
-			{
-				minVertex.y = vertex.pos.y;
-			}
-			if (vertex.pos.z < minVertex.z)
-			{
-				minVertex.z = vertex.pos.z;
-			}
-
-			// find max vertex components
-			if (vertex.pos.x > maxVertex.x)
-			{
-				maxVertex.x = vertex.pos.x;
-			}
-			if (vertex.pos.y > maxVertex.y)
-			{
-				maxVertex.y = vertex.pos.y;
-			}
-			if (vertex.pos.z > maxVertex.z)
-			{
-				maxVertex.z = vertex.pos.z;
-			}
+			findMaxMin(vertex);
 
 			vertices.push_back(vertex);
 			indices.push_back(indices.size());
@@ -119,7 +82,39 @@ void Model::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> 
 	initTangents();	// initialize tangent attribute of each vertex
 }
 
-void Model::initNormals()
+void GeneralModel::findMaxMin(Vertex vertex)
+{
+
+	// find min vertex components
+	if (vertex.pos.x < minVertex.x)
+	{
+		minVertex.x = vertex.pos.x;
+	}
+	if (vertex.pos.y < minVertex.y)
+	{
+		minVertex.y = vertex.pos.y;
+	}
+	if (vertex.pos.z < minVertex.z)
+	{
+		minVertex.z = vertex.pos.z;
+	}
+
+	// find max vertex components
+	if (vertex.pos.x > maxVertex.x)
+	{
+		maxVertex.x = vertex.pos.x;
+	}
+	if (vertex.pos.y > maxVertex.y)
+	{
+		maxVertex.y = vertex.pos.y;
+	}
+	if (vertex.pos.z > maxVertex.z)
+	{
+		maxVertex.z = vertex.pos.z;
+	}
+}
+
+void GeneralModel::initNormals()
 {
 	for (uint32_t i = 0; i < indices.size(); i += 3)
 	{
@@ -142,7 +137,7 @@ void Model::initNormals()
 	}
 }
 
-void Model::initTangents()
+void GeneralModel::initTangents()
 {
 	for (uint32_t i = 0; i < indices.size(); i += 3) 
 	{
@@ -177,14 +172,14 @@ void Model::initTangents()
 	}
 }
 
-void Model::initSize(glm::vec3 minVertex, glm::vec3 maxVertex)
+void GeneralModel::initSize(glm::vec3 minVertex, glm::vec3 maxVertex)
 {
 	size.x = maxVertex.x - minVertex.x;
 	size.y = maxVertex.y - minVertex.y;
 	size.z = maxVertex.z - minVertex.z;
 }
 
-void Model::initBuffers(Device *pDevice)
+void GeneralModel::initBuffers(Device *pDevice)
 {
 	VkDeviceSize size = vertices.size() * sizeof(vertices[0]);
 	pVertexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_SHADER_STAGE_ALL, size);

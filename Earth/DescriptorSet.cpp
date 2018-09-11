@@ -59,12 +59,12 @@ void DescriptorSet::removeTexture(TextureImage * pTexture)
 	std::remove(textures.begin(), textures.end(), pTexture);
 }
 
-void DescriptorSet::addModel(Model * pModel)
+void DescriptorSet::addModel(ModelBase * pModel)
 {
 	models.push_back(pModel);
 }
 
-void DescriptorSet::removeModel(Model * pModel)
+void DescriptorSet::removeModel(ModelBase * pModel)
 {
 	std::remove(models.begin(), models.end(), pModel);
 }
@@ -76,7 +76,7 @@ void DescriptorSet::bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelin
 
 void DescriptorSet::drawModels(VkCommandBuffer commandBuffer) const
 {
-	for (Model *pModel : models)
+	for (ModelBase *pModel : models)
 	{
 		VkBuffer vertexBuffers[] = { pModel->pVertexBuffer->buffer };
 		VkDeviceSize offsets[] = { 0 };
