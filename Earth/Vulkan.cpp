@@ -33,7 +33,15 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 		new ShaderModule(pDevice->device, VERT_SHADER_PATH, VK_SHADER_STAGE_VERTEX_BIT),
 		new ShaderModule(pDevice->device, FRAG_SHADER_PATH, VK_SHADER_STAGE_FRAGMENT_BIT),
 	};
-	pGraphicsPipeline = new GraphicsPipeline(pDevice->device, { pDescriptorSet->layout }, pRenderPass, shaderModules);
+	const uint32_t binding = 0;
+	pGraphicsPipeline = new GraphicsPipeline(
+		pDevice->device, 
+		{ pDescriptorSet->layout }, 
+		pRenderPass, 
+		shaderModules,
+		Vertex::getBindingDescription(binding),
+		Vertex::getAttributeDescriptions(binding)
+	);
 
 	initGraphicCommands();
 

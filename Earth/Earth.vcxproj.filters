@@ -141,6 +141,9 @@
     <ClInclude Include="ShaderModule.h">
       <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="Position.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -208,6 +211,9 @@
     </ClCompile>
     <ClCompile Include="ShaderModule.cpp">
       <Filter>Исходные файлы\Vulkan\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Position.cpp">
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

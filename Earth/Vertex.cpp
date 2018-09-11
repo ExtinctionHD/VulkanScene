@@ -8,10 +8,6 @@ Vertex::Vertex(glm::vec3 pos, glm::vec2 tex)
 	this->tex = tex;
 }
 
-Vertex::~Vertex()
-{
-}
-
 VkVertexInputBindingDescription Vertex::getBindingDescription(uint32_t binding)
 {
 	return VkVertexInputBindingDescription{

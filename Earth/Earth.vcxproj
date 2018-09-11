@@ -31,6 +31,7 @@
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MvpMatrices.h" />
+    <ClInclude Include="Position.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="ShaderModule.h" />
@@ -56,6 +57,7 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Position.cpp" />
     <ClCompile Include="QueueFamilyIndices.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="ShaderModule.cpp" />

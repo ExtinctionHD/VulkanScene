@@ -5,10 +5,19 @@
 
 // public:
 
-GraphicsPipeline::GraphicsPipeline(VkDevice device, std::vector<VkDescriptorSetLayout> descriptorSetLayouts, RenderPass *pRenderPass, std::vector<ShaderModule*> shaderModules)
+GraphicsPipeline::GraphicsPipeline(
+	VkDevice device, 
+	std::vector<VkDescriptorSetLayout> descriptorSetLayouts, 
+	RenderPass *pRenderPass, 
+	std::vector<ShaderModule*> shaderModules,
+	VkVertexInputBindingDescription bindingDescription,
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions
+)
 {
 	this->device = device;
 	this->shaderModules = shaderModules;
+	this->bindingDescription = bindingDescription;
+	this->attributeDescriptions = attributeDescriptions;
 
 	createLayout(descriptorSetLayouts);
 
@@ -72,13 +81,6 @@ void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewpo
 		shaderStages.push_back(shaderStageCreateInfo);
 	}
 
-	// info about input vertices:
-
-	uint32_t binding = 0;
-
-	VkVertexInputBindingDescription bindingDescription = Vertex::getBindingDescription(binding);
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions = Vertex::getAttributeDescriptions(binding);
-
 	VkPipelineVertexInputStateCreateInfo vertexInputState{
 		VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,	// sType;
 		nullptr,													// pNext;
@@ -111,8 +113,8 @@ void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewpo
 	};
 
 	VkRect2D scissor{
-		{ 0, 0 },	// offset
-		viewportExtent		// extent
+		{ 0, 0 },		// offset
+		viewportExtent	// extent
 	};
 
 	VkPipelineViewportStateCreateInfo viewportState{
