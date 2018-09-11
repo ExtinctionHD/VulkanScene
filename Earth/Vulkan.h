@@ -15,6 +15,7 @@
 #include "Timer.h"
 #include "Lighting.h"
 #include "Camera.h"
+#include "SkyboxModel.h"
 
 // graphic API class that create all necessary objects
 // and set this as window user pointer
@@ -55,8 +56,10 @@ private:
 	const VkClearColorValue clearColor = { 0, 0, 0, 1 };
 
 	// files with shaders code
-	const std::string VERT_SHADER_PATH = File::getExeDir() + "shaders/vert.spv";
-	const std::string FRAG_SHADER_PATH = File::getExeDir() + "shaders/frag.spv";
+	const std::string MAIN_VERT_SHADER_PATH = File::getExeDir() + "shaders/mainVert.spv";
+	const std::string MAIN_FRAG_SHADER_PATH = File::getExeDir() + "shaders/mainFrag.spv";
+	const std::string SKYBOX_VERT_SHADER_PATH = File::getExeDir() + "shader/skyboxVert.spv";
+	const std::string SKYBOX_FRAG_SHADER_PATH = File::getExeDir() + "shader/skyboxFrag.spv";
 
 	VkInstance instance;
 
@@ -75,10 +78,16 @@ private:
 	// resources for main graphics pipeline
 	DescriptorSet *pMainDS;
 
+	// resources for skybox graphics pipeline
+	DescriptorSet *pSkyboxDS;
+
 	RenderPass *pRenderPass;
 
 	// graphics pipelines for rendering main objects
 	GraphicsPipeline *pMainPipeline;
+
+	// graphics pipeline for rendering skybox
+	GraphicsPipeline *pSkyboxPipeline;
 
 	std::vector<VkCommandBuffer> graphicCommands;
 
@@ -97,7 +106,8 @@ private:
 	TextureImage *pEarthTexture;		// texture of earth surface
 	TextureImage *pEarthNormalMap;		// map of earth normals
 	TextureImage *pEarthSpecularMap;	// map of specular factor
-	GeneralModel *pEarthModel;					// model of earth
+	GeneralModel *pEarthModel;			// model of earth
+	SkyboxModel *pSkyboxModel;			// model of skybox
 
 	Buffer *pMvpBuffer;  // buffer containing MVP(model, view, projection) matrices
 	MvpMatrices mvp;
@@ -135,8 +145,13 @@ private:
 
 	void initLighting();
 
-	// creates textures, buffers, models, and adds it in descriptor set
+	// creates textures, buffers, models, for main pipeline 
+	// and adds it to main DS
 	void initMainDS();
+
+	// creates textures and models for skybox pipeline 
+	// and adds it to skybox DS
+	void initSkyboxDS();
 
 	// initialize rendering commands
 	void initGraphicCommands();

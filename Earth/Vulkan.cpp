@@ -25,15 +25,16 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 	pDevice = new Device(instance, surface, requiredLayers);
 	pSwapChain = new SwapChain(pDevice, surface, frameExtent);
 
+	pRenderPass = new RenderPass(pDevice, pSwapChain);
+
+	const uint32_t binding = 0;
+	// create DS and pipeline for rendering main objects
 	pMainDS = new DescriptorSet(pDevice);
 	initMainDS();
-
-	pRenderPass = new RenderPass(pDevice, pSwapChain);
 	std::vector<ShaderModule*> shaderModules{
-		new ShaderModule(pDevice->device, VERT_SHADER_PATH, VK_SHADER_STAGE_VERTEX_BIT),
-		new ShaderModule(pDevice->device, FRAG_SHADER_PATH, VK_SHADER_STAGE_FRAGMENT_BIT),
+		new ShaderModule(pDevice->device, MAIN_VERT_SHADER_PATH, VK_SHADER_STAGE_VERTEX_BIT),
+		new ShaderModule(pDevice->device, MAIN_FRAG_SHADER_PATH, VK_SHADER_STAGE_FRAGMENT_BIT),
 	};
-	const uint32_t binding = 0;
 	pMainPipeline = new GraphicsPipeline(
 		pDevice->device, 
 		{ pMainDS->layout }, 
@@ -42,6 +43,9 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 		Vertex::getBindingDescription(binding),
 		Vertex::getAttributeDescriptions(binding)
 	);
+	// create DS and pipeline for rendering skybox
+	pSkyboxDS = new DescriptorSet(pDevice);
+	initSkyboxDS();
 
 	initGraphicCommands();
 
@@ -59,6 +63,7 @@ Vulkan::~Vulkan()
 	delete(pCamera);
 	delete(pMainPipeline);
 	delete(pMainDS);
+	delete(pSkyboxDS);
 	delete(pSwapChain);
 	delete(pDevice);
 
@@ -429,6 +434,8 @@ void Vulkan::initMainDS()
 
 	// load resources in descriptor set:
 
+	pMainDS->addModel(pEarthModel);
+
 	pMainDS->addBuffer(pMvpBuffer);
 	pMainDS->addBuffer(pLightingBuffer);
 
@@ -436,10 +443,41 @@ void Vulkan::initMainDS()
 	pMainDS->addTexture(pEarthNormalMap);
 	pMainDS->addTexture(pEarthSpecularMap);
 
-	pMainDS->addModel(pEarthModel);
-
 	// save changes in descriptor set
 	pMainDS->update();
+}
+
+void Vulkan::initSkyboxDS()
+{
+	std::vector<Position> cubeVertices{
+		glm::vec3(-1.0f, -1.0f, -1.0f),
+		glm::vec3(-1.0f, 1.0f, -1.0f),
+		glm::vec3(1.0f, -1.0f, -1.0f),
+		glm::vec3(1.0f, 1.0f, -1.0f),
+		glm::vec3(1.0f, -1.0f, 1.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(-1.0f, -1.0f, -1.0f),
+		glm::vec3(-1.0f, 1.0f, 1.0f)
+	};
+	std::vector<uint32_t> cubeIndices{
+		0, 1, 2,
+		2, 1, 3,
+		2, 3, 4,
+		4, 3, 5,
+		4, 5, 6,
+		6, 5, 7,
+		6, 7, 0,
+		0, 7, 1,
+		6, 0, 2,
+		2, 4, 6,
+		7, 5, 3,
+		7, 3, 1
+	};
+	pSkyboxModel = new SkyboxModel(pDevice, cubeVertices, cubeIndices);
+
+	pSkyboxDS->addModel(pSkyboxModel);
+
+	pSkyboxDS->update();
 }
 
 void Vulkan::initGraphicCommands()
