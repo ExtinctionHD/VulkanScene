@@ -27,14 +27,14 @@ public:
 
 	VkImageView view = VK_NULL_HANDLE;
 
-	void createImageView(VkImageSubresourceRange subresourceRange);
+	void createImageView(VkImageSubresourceRange subresourceRange, VkImageViewType viewType);
 
 	void transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange);
 
 	// load pixels in image memory 
 	// pixel size depend from image format
 	// memory size must be equals width * height * pixel size
-	void updateData(uint8_t * pixels, size_t pixelSize);
+	void updateData(uint8_t * pixels, size_t pixelSize, uint32_t arrayLayer = 0);
 
 	static void copyImage(
 		Device *pDevice, 
@@ -49,11 +49,13 @@ protected:
 	void createThisImage(
 		Device *pDevice,
 		VkExtent3D extent,
+		VkImageCreateFlags flags,
 		uint32_t mipLevels,
 		VkFormat format,
 		VkImageTiling tiling,
 		VkImageUsageFlags usage,
-		VkMemoryPropertyFlags properties
+		VkMemoryPropertyFlags properties,
+		uint32_t arrayLayers = 1
 	);
 
 private:

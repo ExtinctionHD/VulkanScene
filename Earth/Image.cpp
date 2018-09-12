@@ -14,7 +14,7 @@ Image::Image(
 	VkMemoryPropertyFlags properties
 )
 {
-	createThisImage(pDevice, extent, mipLevels, format, tiling, usage, properties);
+	createThisImage(pDevice, extent, 0, mipLevels, format, tiling, usage, properties);
 }
 
 Image::~Image()
@@ -33,14 +33,14 @@ Image::~Image()
 	}
 }
 
-void Image::createImageView(VkImageSubresourceRange subresourceRange)
+void Image::createImageView(VkImageSubresourceRange subresourceRange, VkImageViewType viewType)
 {
 	VkImageViewCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,	// sType
 		nullptr,									// pNext
 		0,											// flags
 		image,										// image
-		VK_IMAGE_VIEW_TYPE_2D,						// viewType
+		viewType,									// viewType
 		format,										// format
 		VkComponentMapping(),						// components
 		subresourceRange,							// subresourceRange
@@ -122,7 +122,7 @@ void Image::transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayou
 	pDevice->endOneTimeCommands(commandBuffer);
 }
 
-void Image::updateData(uint8_t *pixels, size_t pixelSize)
+void Image::updateData(uint8_t *pixels, size_t pixelSize, uint32_t arrayLayer)
 {
 	void *data;
 	VkDeviceSize size = extent.width * extent.height * pixelSize;
@@ -131,7 +131,7 @@ void Image::updateData(uint8_t *pixels, size_t pixelSize)
 	VkImageSubresource subresource{
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		0,
-		0
+		arrayLayer
 	};
 
 	VkSubresourceLayout layout;
@@ -190,7 +190,17 @@ void Image::copyImage(Device *pDevice, Image& srcImage, Image& dstImage, VkExten
 
 // protected:
 
-void Image::createThisImage(Device * pDevice, VkExtent3D extent, uint32_t mipLevels, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties)
+void Image::createThisImage(
+	Device *pDevice, 
+	VkExtent3D extent, 
+	VkImageCreateFlags flags, 
+	uint32_t mipLevels, 
+	VkFormat format, 
+	VkImageTiling tiling, 
+	VkImageUsageFlags usage, 
+	VkMemoryPropertyFlags properties, 
+	uint32_t arrayLayers
+)
 {
 	device = pDevice->device;
 	this->extent = extent;
@@ -199,12 +209,12 @@ void Image::createThisImage(Device * pDevice, VkExtent3D extent, uint32_t mipLev
 	VkImageCreateInfo imageInfo{
 		VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,	// sType;
 		nullptr,								// pNext;
-		0,										// flags;
+		flags,									// flags;
 		VK_IMAGE_TYPE_2D,						// imageType;
 		format,									// format;
 		extent,									// extent;
 		mipLevels,								// mipLevels;
-		1,										// arrayLayers;
+		arrayLayers,							// arrayLayers;
 		VK_SAMPLE_COUNT_1_BIT,					// samples;
 		tiling,									// tiling;
 		usage,									// usage;
@@ -213,6 +223,10 @@ void Image::createThisImage(Device * pDevice, VkExtent3D extent, uint32_t mipLev
 		nullptr,								// pQueueFamilyIndices;
 		VK_IMAGE_LAYOUT_UNDEFINED				// initialLayout;
 	};
+	if (extent.depth > 1)
+	{
+		imageInfo.imageType = VK_IMAGE_TYPE_3D;
+	}
 
 	VkResult result = vkCreateImage(device, &imageInfo, nullptr, &image);
 	if (result != VK_SUCCESS)

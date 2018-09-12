@@ -153,7 +153,7 @@ void RenderPass::createDepthResources(Device *pDevice, VkExtent2D depthImageExte
 		1,							// layerCount;
 	};
 
-	pDepthImage->createImageView(subresourceRange);
+	pDepthImage->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
 
 	pDepthImage->transitLayout(
 		pDevice,

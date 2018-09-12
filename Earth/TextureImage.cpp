@@ -35,6 +35,7 @@ TextureImage::TextureImage(Device *pDevice, std::string filename)
 	createThisImage(
 		pDevice,
 		extent,
+		0,
 		mipLevels,
 		VK_FORMAT_R8G8B8A8_UNORM,
 		VK_IMAGE_TILING_OPTIMAL,
@@ -79,7 +80,7 @@ TextureImage::TextureImage(Device *pDevice, std::string filename)
 
 	// create other image objects
 	generateMipmaps(pDevice);
-	createImageView(subresourceRange);
+	createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
 	createSampler();
 }
 
