@@ -22,7 +22,7 @@ private:
 	stbi_uc* loadPixels(std::string filename);
 
 	// generate mipmap levels and transit image layout to SHADER_READ_ONLY
-	void generateMipmaps(Device *pDevice);
+	void generateMipmaps(Device *pDevice, uint32_t arrayLayers = 1);
 
 	void createSampler();
 };

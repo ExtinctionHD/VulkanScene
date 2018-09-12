@@ -112,7 +112,7 @@ stbi_uc* TextureImage::loadPixels(std::string filename)
 	return pixels;
 }
 
-void TextureImage::generateMipmaps(Device *pDevice)
+void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers)
 {
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(pDevice->physicalDevice, format, &formatProperties);
@@ -139,7 +139,7 @@ void TextureImage::generateMipmaps(Device *pDevice)
 			0,							// baseMipLevel
 			1,							// levelCount
 			0,							// baseArrayLayer
-			1							// layerCount
+			arrayLayers					// layerCount
 		}										// subresourceRange;
 	};
 
@@ -174,7 +174,7 @@ void TextureImage::generateMipmaps(Device *pDevice)
 		blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		blit.srcSubresource.mipLevel = i - 1;
 		blit.srcSubresource.baseArrayLayer = 0;
-		blit.srcSubresource.layerCount = 1;
+		blit.srcSubresource.layerCount = arrayLayers;
 		// dst area:
 		blit.dstOffsets[0] = { 0, 0, 0 };
 		blit.dstOffsets[1] = { 
@@ -185,7 +185,7 @@ void TextureImage::generateMipmaps(Device *pDevice)
 		blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		blit.dstSubresource.mipLevel = i;
 		blit.dstSubresource.baseArrayLayer = 0;
-		blit.dstSubresource.layerCount = 1;
+		blit.dstSubresource.layerCount = arrayLayers;
 		vkCmdBlitImage(
 			commandBuffer,
 			image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
