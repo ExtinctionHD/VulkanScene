@@ -78,10 +78,10 @@ void DescriptorSet::drawModels(VkCommandBuffer commandBuffer) const
 {
 	for (ModelBase *pModel : models)
 	{
-		VkBuffer vertexBuffers[] = { pModel->pVertexBuffer->buffer };
+		VkBuffer vertexBuffers[] = { pModel->pVertexBuffer->getBuffer() };
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		vkCmdBindIndexBuffer(commandBuffer, pModel->pIndexBuffer->buffer, 0, VK_INDEX_TYPE_UINT32);
+		vkCmdBindIndexBuffer(commandBuffer, pModel->pIndexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
 		vkCmdDrawIndexed(commandBuffer, pModel->getIndexCount(), 1, 0, 0, 0);
 	}
 }
@@ -198,9 +198,9 @@ void DescriptorSet::createDescriptorSet()
 	for (int i = 0; i < uniformBuffers.size(); i++)
 	{
 		buffersInfo[i] = {
-			uniformBuffers[i]->buffer,	// buffer;
-			0,							// offset;
-			uniformBuffers[i]->size		// range;
+			uniformBuffers[i]->getBuffer(),	// buffer;
+			0,								// offset;
+			uniformBuffers[i]->getSize()	// range;
 		};
 
 		VkWriteDescriptorSet bufferWrite{

@@ -5,7 +5,8 @@
 
 // allocates memory and creates new image,
 // can create image view, and transit its layout
-class Image: public SwapChainImage
+class Image : 
+	public SwapChainImage
 {
 public:
 	Image() {}
@@ -13,11 +14,13 @@ public:
 	Image(
 		Device *pDevice,
 		VkExtent3D extent,
+		VkImageCreateFlags flags,
 		uint32_t mipLevels,
 		VkFormat format,
 		VkImageTiling tiling,
 		VkImageUsageFlags usage,
-		VkMemoryPropertyFlags properties
+		VkMemoryPropertyFlags properties,
+		uint32_t arrayLayers
 	);
 
 	~Image();
@@ -34,7 +37,7 @@ public:
 	// load pixels in image memory 
 	// pixel size depend from image format
 	// memory size must be equals width * height * pixel size
-	void updateData(uint8_t * pixels, size_t pixelSize, uint32_t arrayLayer = 0);
+	void updateData(uint8_t * pixels, size_t pixelSize, uint32_t arrayLayer);
 
 	static void copyImage(
 		Device *pDevice, 
@@ -55,12 +58,12 @@ protected:
 		VkImageTiling tiling,
 		VkImageUsageFlags usage,
 		VkMemoryPropertyFlags properties,
-		uint32_t arrayLayers = 1
+		uint32_t arrayLayers
 	);
 
 private:
 	// memory that stores this image
-	VkDeviceMemory memory = VK_NULL_HANDLE;
+	VkDeviceMemory stagingMemory = VK_NULL_HANDLE;
 
 	void allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties);
 };

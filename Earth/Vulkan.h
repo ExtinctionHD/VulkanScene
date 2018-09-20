@@ -16,6 +16,7 @@
 #include "Lighting.h"
 #include "Camera.h"
 #include "SkyboxModel.h"
+#include "CubeTextureImage.h"
 
 // graphic API class that create all necessary objects
 // and set this as window user pointer
@@ -58,8 +59,8 @@ private:
 	// files with shaders code
 	const std::string MAIN_VERT_SHADER_PATH = File::getExeDir() + "shaders/mainVert.spv";
 	const std::string MAIN_FRAG_SHADER_PATH = File::getExeDir() + "shaders/mainFrag.spv";
-	const std::string SKYBOX_VERT_SHADER_PATH = File::getExeDir() + "shader/skyboxVert.spv";
-	const std::string SKYBOX_FRAG_SHADER_PATH = File::getExeDir() + "shader/skyboxFrag.spv";
+	const std::string SKYBOX_VERT_SHADER_PATH = File::getExeDir() + "shaders/skyboxVert.spv";
+	const std::string SKYBOX_FRAG_SHADER_PATH = File::getExeDir() + "shaders/skyboxFrag.spv";
 
 	VkInstance instance;
 
@@ -107,13 +108,19 @@ private:
 	TextureImage *pEarthNormalMap;		// map of earth normals
 	TextureImage *pEarthSpecularMap;	// map of specular factor
 	GeneralModel *pEarthModel;			// model of earth
+
+	CubeTextureImage *pSkyboxTexture;	// texture of sky
 	SkyboxModel *pSkyboxModel;			// model of skybox
 
-	Buffer *pMvpBuffer;  // buffer containing MVP(model, view, projection) matrices
-	MvpMatrices mvp;
+	Buffer *pEarthMvpBuffer;  // buffer containing MVP(model, view, projection) matrices for earth model
+	MvpMatrices earthMvp;
 
 	Buffer *pLightingBuffer;  // buffer containing lighting attributes
 	Lighting lighting;
+
+	Buffer *pSkyboxMvpBuffer;  // buffer containing MVP(model, view, projection) matrices for skybox model
+	glm::mat4 skyboxMvp;
+
 
 	void createInstance();
 
@@ -141,9 +148,11 @@ private:
 
 	void initCamera();
 
-	void initMvpMatrices();
+	void initEarthMvpMatrices();
 
 	void initLighting();
+
+	void initSkyboxMvpMatrices();
 
 	// creates textures, buffers, models, for main pipeline 
 	// and adds it to main DS
@@ -159,6 +168,6 @@ private:
 	static void createSemaphore(VkDevice device, VkSemaphore& semaphore);
 
 	// changes mvp and load it in buffer
-	void updateMvpBuffer(float deltaSec);
+	void updateMvpBuffers(float deltaSec);
 };
 

@@ -138,11 +138,13 @@ void RenderPass::createDepthResources(Device *pDevice, VkExtent2D depthImageExte
 	pDepthImage = new Image(
 		pDevice,
 		extent,
+		0,
 		1,
 		depthImagetFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		1
 	);
 
 	VkImageSubresourceRange subresourceRange{

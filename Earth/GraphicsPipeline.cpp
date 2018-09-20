@@ -163,17 +163,17 @@ void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewpo
 
 	VkPipelineDepthStencilStateCreateInfo depthStencilState{
 		VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,	// sType;
-		nullptr,			// pNext;
-		0,					// flags;
-		VK_TRUE,			// depthTestEnable;
-		VK_TRUE,			// depthWriteEnable;
-		VK_COMPARE_OP_LESS,	// depthCompareOp;
-		VK_FALSE,			// depthBoundsTestEnable;
-		VK_FALSE,			// stencilTestEnable;
-		{},					// front;
-		{},					// back;
-		0,					// minDepthBounds;
-		1					// maxDepthBounds;
+		nullptr,						// pNext;
+		0,								// flags;
+		VK_TRUE,						// depthTestEnable;
+		VK_TRUE,						// depthWriteEnable;
+		VK_COMPARE_OP_LESS_OR_EQUAL,	// depthCompareOp;
+		VK_FALSE,						// depthBoundsTestEnable;
+		VK_FALSE,						// stencilTestEnable;
+		{},								// front;
+		{},								// back;
+		0,								// minDepthBounds;
+		1								// maxDepthBounds;
 	};
 
 	// color blending:

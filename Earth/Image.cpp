@@ -7,14 +7,16 @@
 Image::Image(
 	Device *pDevice, 
 	VkExtent3D extent, 
+	VkImageCreateFlags flags,
 	uint32_t mipLevels, 
 	VkFormat format, 
 	VkImageTiling tiling, 
 	VkImageUsageFlags usage, 
-	VkMemoryPropertyFlags properties
+	VkMemoryPropertyFlags properties,
+	uint32_t arrayLayers
 )
 {
-	createThisImage(pDevice, extent, 0, mipLevels, format, tiling, usage, properties);
+	createThisImage(pDevice, extent, flags, mipLevels, format, tiling, usage, properties, arrayLayers);
 }
 
 Image::~Image()
@@ -27,9 +29,9 @@ Image::~Image()
 	{
 		vkDestroyImage(device, image, nullptr);
 	}
-	if (memory != VK_NULL_HANDLE)
+	if (stagingMemory != VK_NULL_HANDLE)
 	{
-		vkFreeMemory(device, memory, nullptr);
+		vkFreeMemory(device, stagingMemory, nullptr);
 	}
 }
 
@@ -126,7 +128,7 @@ void Image::updateData(uint8_t *pixels, size_t pixelSize, uint32_t arrayLayer)
 {
 	void *data;
 	VkDeviceSize size = extent.width * extent.height * pixelSize;
-	vkMapMemory(device, memory, 0, size, 0, &data);
+	vkMapMemory(device, stagingMemory, 0, size, 0, &data);
 
 	VkImageSubresource subresource{
 		VK_IMAGE_ASPECT_COLOR_BIT,
@@ -160,7 +162,7 @@ void Image::updateData(uint8_t *pixels, size_t pixelSize, uint32_t arrayLayer)
 		}
 	}
 
-	vkUnmapMemory(device, memory);
+	vkUnmapMemory(device, stagingMemory);
 }
 
 void Image::copyImage(Device *pDevice, Image& srcImage, Image& dstImage, VkExtent3D extent, VkImageSubresourceLayers subresourceLayers)
@@ -236,7 +238,7 @@ void Image::createThisImage(
 
 	allocateMemory(pDevice, properties);
 
-	vkBindImageMemory(device, image, memory, 0);
+	vkBindImageMemory(device, image, stagingMemory, 0);
 }
 
 // private:
@@ -259,7 +261,7 @@ void Image::allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties)
 		memoryTypeIndex,						// memoryTypeIndex
 	};
 
-	VkResult result = vkAllocateMemory(device, &allocInfo, nullptr, &memory);
+	VkResult result = vkAllocateMemory(device, &allocInfo, nullptr, &stagingMemory);
 	if (result != VK_SUCCESS)
 	{
 		LOGGER_FATAL(Logger::FAILED_TO_ALLOC_IMAGE_MEMORY);

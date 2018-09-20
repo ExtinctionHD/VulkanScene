@@ -1,7 +1,5 @@
 #include "ModelBase.h"
 
-
-
 ModelBase::~ModelBase()
 {
 	delete(pIndexBuffer);

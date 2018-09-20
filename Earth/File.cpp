@@ -17,21 +17,21 @@ std::vector<char> File::getFileBytes(std::string filename)
 	}
 
 	size_t fileSize = (size_t)file.tellg();
-	std::vector<char> buffer(fileSize);
+	std::vector<char> stagingBuffer(fileSize);
 
 	file.seekg(0);
-	file.read(buffer.data(), fileSize);
+	file.read(stagingBuffer.data(), fileSize);
 
 	file.close();
 
-	return buffer;
+	return stagingBuffer;
 }
 
 std::string File::getExeDir()
 {
-	char buffer[MAX_PATH];
-	GetModuleFileName(NULL, buffer, MAX_PATH);
-	std::string path(buffer);
+	char stagingBuffer[MAX_PATH];
+	GetModuleFileName(NULL, stagingBuffer, MAX_PATH);
+	std::string path(stagingBuffer);
 
 	std::replace(path.begin(), path.end(), '\\', '/');
 

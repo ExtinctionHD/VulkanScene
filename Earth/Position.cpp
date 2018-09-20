@@ -11,7 +11,7 @@ VkVertexInputBindingDescription Position::getBindingDescription(uint32_t binding
 {
 	return VkVertexInputBindingDescription{
 		binding,					// binding;
-		sizeof(Position),				// stride;
+		sizeof(Position),			// stride;
 		VK_VERTEX_INPUT_RATE_VERTEX	// inputRate;
 	};
 }

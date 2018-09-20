@@ -2,48 +2,28 @@
 
 #include <vulkan/vulkan.h>
 #include "Device.h"
+#include "StagingBuffer.h"
 
-// provides VkBuffer object and the ability to update it
-class Buffer
+// buffer with device local memory 
+// updates using staging buffer
+class Buffer : public StagingBuffer
 {
 public:
 	Buffer(Device *pDevice, VkBufferUsageFlags usage, VkShaderStageFlagBits shaderStage, VkDeviceSize size);
 	~Buffer();
 
-	// main buffer object
-	VkBuffer buffer;
-
-	// size of this buffer
-	VkDeviceSize size;
-
 	// shader stage on which the buffer is used
 	VkShaderStageFlagBits shaderStage;
 
-	// load data in this buffer
-	// data size must be equals buffer size
-	void updateData(void *data);
+	virtual VkBuffer getBuffer() const override;
+
+	virtual void updateData(void *pData, VkDeviceSize dataSize, VkDeviceSize offset) override;
 
 private:
-	// device that provides this buffer and memory
-	Device *pDevice;
+	// main buffer object
+	VkBuffer buffer;
 
 	// main buffer memory
 	VkDeviceMemory memory;
-
-	// staging buffer allows update memory
-	VkBuffer stagingBuffer;
-
-	VkDeviceMemory stagingBufferMemory;
-
-	static void createBuffer(
-		Device *pDevice,
-		VkDeviceSize size,
-		VkBufferUsageFlags usage,
-		VkMemoryPropertyFlags properties,
-		VkBuffer *pBuffer, 
-		VkDeviceMemory *pMemory
-	);
-
-	static void allocateMemory(Device *pDevice, VkBuffer *pBuffer, VkDeviceMemory *pMemory, VkMemoryPropertyFlags properties);
 };
 

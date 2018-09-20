@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="CubeTextureImage.h" />
     <ClInclude Include="ModelBase.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Camera.h" />
@@ -37,6 +38,7 @@
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="ShaderModule.h" />
     <ClInclude Include="SkyboxModel.h" />
+    <ClInclude Include="StagingBuffer.h" />
     <ClInclude Include="SurfaceSupportDetails.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="SwapChainImage.h" />
@@ -49,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="CubeTextureImage.cpp" />
     <ClCompile Include="ModelBase.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -65,6 +68,7 @@
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="ShaderModule.cpp" />
     <ClCompile Include="SkyboxModel.cpp" />
+    <ClCompile Include="StagingBuffer.cpp" />
     <ClCompile Include="SurfaceSupportDetails.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="SwapChainImage.cpp" />

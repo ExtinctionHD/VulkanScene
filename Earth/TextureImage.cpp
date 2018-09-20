@@ -1,87 +1,15 @@
 #include "Logger.h"
 #include <algorithm>
+#include "StagingBuffer.h"
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "TextureImage.h"
 
 // public:
 
-TextureImage::TextureImage(Device *pDevice, std::string filename)
+TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers) :
+	TextureImage(pDevice, filenames, arrayLayers, false)
 {
-	device = pDevice->device;
-	format = VK_FORMAT_R8G8B8A8_UNORM;
-
-	// image bytes
-	stbi_uc *pixels = loadPixels(filename);
-
-	// staging image can be mapped
-	Image *pStagingImage = new Image(
-		pDevice,
-		extent,
-		1,
-		format,
-		VK_IMAGE_TILING_LINEAR,
-		VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
-		VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
-	);
-	pStagingImage->updateData(pixels, STBI_rgb_alpha);
-
-	stbi_image_free(pixels);
-
-	// texture image can't be mapped
-	mipLevels = static_cast<uint32_t>(std::ceil(
-		std::log2(std::max(extent.width, extent.height)))
-	);
-	createThisImage(
-		pDevice,
-		extent,
-		0,
-		mipLevels,
-		VK_FORMAT_R8G8B8A8_UNORM,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-	);
-
-	// before copying the layout of the staging image must be TRANSFER_SRC
-	VkImageSubresourceRange subresourceRange{
-		VK_IMAGE_ASPECT_COLOR_BIT,
-		0,
-		1,
-		0,
-		1
-	};
-	pStagingImage->transitLayout(
-		pDevice,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-		subresourceRange
-	);
-
-	// and texture image layout - TRANSFER_DST
-	subresourceRange.levelCount = mipLevels;
-	transitLayout(
-		pDevice,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		subresourceRange
-	);
-
-	// copy staging image to texture
-	VkImageSubresourceLayers subresourceLayers{
-		VK_IMAGE_ASPECT_COLOR_BIT,	// aspectMask;
-		0,							// mipLevel;
-		0,							// baseArrayLayer;
-		1,							// layerCount;
-	};
-	Image::copyImage(pDevice, *pStagingImage, *this, extent, subresourceLayers);
-
-	delete(pStagingImage);
-
-	// create other image objects
-	generateMipmaps(pDevice);
-	createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
-	createSampler();
 }
 
 TextureImage::~TextureImage()
@@ -92,7 +20,112 @@ TextureImage::~TextureImage()
 	}
 }
 
-// private:
+// protected:
+
+TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers, bool isCube)
+{
+	if (arrayLayers != filenames.size())
+	{
+		throw std::invalid_argument("Number of files must be equal to the array layer count");
+	}
+
+	device = pDevice->device;
+	format = VK_FORMAT_R8G8B8A8_UNORM;
+
+	// loads image bytes for each array layer
+	std::vector<stbi_uc*> pixels(arrayLayers);
+	for (int i = 0; i < arrayLayers; i++)
+	{
+		pixels[i] = loadPixels(filenames[i]);
+	}
+
+	// staging buffer to map its memory
+	VkDeviceSize arrayLayerSize = extent.width * extent.height * STBI_rgb_alpha;
+	StagingBuffer *pStagingBuffer = new StagingBuffer(pDevice, arrayLayerSize * arrayLayers);
+	for (int i = 0; i < arrayLayers; i++)
+	{
+		pStagingBuffer->updateData(pixels[i], arrayLayerSize, i * arrayLayerSize);
+		stbi_image_free(pixels[i]);
+	}
+
+	VkImageCreateFlags flags = 0;
+	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D;
+	if (arrayLayers > 1)
+	{
+		if (isCube)
+		{
+			if (arrayLayers < 6)
+			{
+				throw std::invalid_argument("For cube texture number of array layers can't be less than six");
+			}
+
+			flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+			viewType = VK_IMAGE_VIEW_TYPE_CUBE;
+		}
+		else
+		{
+			flags = VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT;
+			viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+		}
+	}
+
+	mipLevels = static_cast<uint32_t>(std::ceil(
+		std::log2(std::max(extent.width, extent.height)))
+	);
+
+	// texture image can't be mapped
+	createThisImage(
+		pDevice,
+		extent,
+		flags,
+		mipLevels,
+		format,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		arrayLayers
+	);
+
+	// before copying the layout of the texture image must be TRANSFER_DST
+	VkImageSubresourceRange subresourceRange{
+		VK_IMAGE_ASPECT_COLOR_BIT,
+		0,
+		mipLevels,
+		0,
+		arrayLayers
+	};
+	transitLayout(
+		pDevice,
+		VK_IMAGE_LAYOUT_UNDEFINED,
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		subresourceRange
+	);
+
+	std::vector<VkBufferImageCopy> regions(arrayLayers);
+	for (unsigned int i = 0; i < arrayLayers; i++)
+	{
+		regions[i] = VkBufferImageCopy{
+			i * arrayLayerSize,					// bufferOffset;
+			0,									// bufferRowLength;
+			0,									// bufferImageHeight;
+			{
+				VK_IMAGE_ASPECT_COLOR_BIT,
+				0,
+				i,
+				1
+			},									// imageSubresource;
+			{ 0, 0, 0 },						// imageOffset;
+			{ extent.width, extent.height, 1 }	// imageExtent;
+		};
+	}
+	pStagingBuffer->copyToImage(image, regions);
+	delete(pStagingBuffer);
+
+	// create other image objects
+	generateMipmaps(pDevice, arrayLayers);
+	createImageView(subresourceRange, viewType);
+	createSampler();
+}
 
 stbi_uc* TextureImage::loadPixels(std::string filename)
 {

@@ -28,10 +28,12 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
 
 	const uint32_t binding = 0;
-	// create DS and pipeline for rendering main objects
+
+	// create DS and pipeline for rendering main objects:
 	pMainDS = new DescriptorSet(pDevice);
 	initMainDS();
-	std::vector<ShaderModule*> shaderModules{
+
+	std::vector<ShaderModule*> mainShaderModules{
 		new ShaderModule(pDevice->device, MAIN_VERT_SHADER_PATH, VK_SHADER_STAGE_VERTEX_BIT),
 		new ShaderModule(pDevice->device, MAIN_FRAG_SHADER_PATH, VK_SHADER_STAGE_FRAGMENT_BIT),
 	};
@@ -39,13 +41,27 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 		pDevice->device, 
 		{ pMainDS->layout }, 
 		pRenderPass, 
-		shaderModules,
+		mainShaderModules,
 		Vertex::getBindingDescription(binding),
 		Vertex::getAttributeDescriptions(binding)
 	);
+
 	// create DS and pipeline for rendering skybox
 	pSkyboxDS = new DescriptorSet(pDevice);
 	initSkyboxDS();
+
+	std::vector<ShaderModule*> skyboxShaderModules{
+		new ShaderModule(pDevice->device, SKYBOX_VERT_SHADER_PATH, VK_SHADER_STAGE_VERTEX_BIT),
+		new ShaderModule(pDevice->device, SKYBOX_FRAG_SHADER_PATH, VK_SHADER_STAGE_FRAGMENT_BIT),
+	};
+	pSkyboxPipeline = new GraphicsPipeline(
+		pDevice->device,
+		{ pSkyboxDS->layout },
+		pRenderPass,
+		skyboxShaderModules,
+		Position::getBindingDescription(binding),
+		Position::getAttributeDescriptions(binding)
+	);
 
 	initGraphicCommands();
 
@@ -77,7 +93,7 @@ void Vulkan::drawFrame()
 	// update resources
 	float deltaSec = frameTimer.getDeltaSec();
 	pCamera->moveCamera(deltaSec);
-	updateMvpBuffer(deltaSec);
+	updateMvpBuffers(deltaSec);
 
 	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(
@@ -153,6 +169,7 @@ void Vulkan::resize(VkExtent2D newExtent)
 	pSwapChain = new SwapChain(pDevice, surface, newExtent);
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
 	pMainPipeline->recreate(pRenderPass);
+	pSkyboxPipeline->recreate(pRenderPass);
 
 	initGraphicCommands();
 
@@ -384,7 +401,7 @@ void Vulkan::initLighting()
 	};
 }
 
-void Vulkan::initMvpMatrices()
+void Vulkan::initEarthMvpMatrices()
 {
 	// attributes for view matrix
 	const glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -395,23 +412,21 @@ void Vulkan::initMvpMatrices()
 	const float zNear = 0.1f;
 	const float zFar = 50.0f;
 
-	mvp = MvpMatrices{
+	earthMvp = MvpMatrices{
 		glm::mat4(1),
 		glm::lookAt(pCamera->getPos(), pCamera->getTarget(), pCamera->getUp()),
 		glm::perspective(glm::radians(viewAngle), pSwapChain->getAspect(), zNear, zFar)
 	};
 
-	mvp.model = glm::rotate(mvp.model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	earthMvp.model = glm::rotate(earthMvp.model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 void Vulkan::initMainDS()
 {
-	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "textures/earth_texture.jpg";
-	const std::string EARTH_NORMAL_MAP_PATH = File::getExeDir() + "textures/earth_normal_map.jpg";
-	const std::string EARTH_SPECULAR_MAP_PATH = File::getExeDir() + "textures/earth_specular_map.jpg";
+	// create models:
+
 	const std::string EARTH_MODEL_PATH = File::getExeDir() + "models/sphere.obj";
 
-	// create models
 	pEarthModel = new GeneralModel(pDevice, EARTH_MODEL_PATH);
 	pEarthModel->normilize();
 
@@ -421,22 +436,27 @@ void Vulkan::initMainDS()
 
 	pLightingBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(lighting));
 	initLighting();
-	pLightingBuffer->updateData(&lighting);
+	pLightingBuffer->updateData(&lighting, sizeof(lighting), 0);
 
-	pMvpBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(mvp));
-	initMvpMatrices();
-	pMvpBuffer->updateData(&mvp);
+	pEarthMvpBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(earthMvp));
+	initEarthMvpMatrices();
+	pEarthMvpBuffer->updateData(&earthMvp, sizeof(earthMvp), 0);
 
-	// create textures
-	pEarthTexture = new TextureImage(pDevice, EARTH_TEXTURE_PATH);
-	pEarthNormalMap = new TextureImage(pDevice, EARTH_NORMAL_MAP_PATH);
-	pEarthSpecularMap = new TextureImage(pDevice, EARTH_SPECULAR_MAP_PATH);
+	// create textures:
+
+	const std::string EARTH_TEXTURE_PATH = File::getExeDir() + "textures/earth_texture.jpg";
+	const std::string EARTH_NORMAL_MAP_PATH = File::getExeDir() + "textures/earth_normal_map.jpg";
+	const std::string EARTH_SPECULAR_MAP_PATH = File::getExeDir() + "textures/earth_specular_map.jpg";
+
+	pEarthTexture = new TextureImage(pDevice, { EARTH_TEXTURE_PATH }, 1);
+	pEarthNormalMap = new TextureImage(pDevice, { EARTH_NORMAL_MAP_PATH }, 1);
+	pEarthSpecularMap = new TextureImage(pDevice, { EARTH_SPECULAR_MAP_PATH }, 1);
 
 	// load resources in descriptor set:
 
 	pMainDS->addModel(pEarthModel);
 
-	pMainDS->addBuffer(pMvpBuffer);
+	pMainDS->addBuffer(pEarthMvpBuffer);
 	pMainDS->addBuffer(pLightingBuffer);
 
 	pMainDS->addTexture(pEarthTexture);
@@ -447,8 +467,15 @@ void Vulkan::initMainDS()
 	pMainDS->update();
 }
 
+void Vulkan::initSkyboxMvpMatrices()
+{
+	skyboxMvp = earthMvp.proj * earthMvp.view * glm::translate(glm::mat4(1), pCamera->getPos());
+}
+
 void Vulkan::initSkyboxDS()
 {
+	// create models:
+
 	std::vector<Position> cubeVertices{
 		glm::vec3(-1.0f, -1.0f, -1.0f),
 		glm::vec3(-1.0f, 1.0f, -1.0f),
@@ -456,7 +483,7 @@ void Vulkan::initSkyboxDS()
 		glm::vec3(1.0f, 1.0f, -1.0f),
 		glm::vec3(1.0f, -1.0f, 1.0f),
 		glm::vec3(1.0f, 1.0f, 1.0f),
-		glm::vec3(-1.0f, -1.0f, -1.0f),
+		glm::vec3(-1.0f, -1.0f, 1.0f),
 		glm::vec3(-1.0f, 1.0f, 1.0f)
 	};
 	std::vector<uint32_t> cubeIndices{
@@ -473,9 +500,33 @@ void Vulkan::initSkyboxDS()
 		7, 5, 3,
 		7, 3, 1
 	};
+
 	pSkyboxModel = new SkyboxModel(pDevice, cubeVertices, cubeIndices);
 
+	// create buffers:
+
+	pSkyboxMvpBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(skyboxMvp));
+	initSkyboxMvpMatrices();
+	pSkyboxMvpBuffer->updateData(&skyboxMvp, sizeof(skyboxMvp), 0);
+
+	// create textures:
+
+	const std::array<std::string, CubeTextureImage::CUBE_SIDE_COUNT> SKYBOX_TEXTURE_PATHES{
+		File::getExeDir() + "textures/skybox/right.jpg",
+		File::getExeDir() + "textures/skybox/left.jpg",
+		File::getExeDir() + "textures/skybox/top.jpg",
+		File::getExeDir() + "textures/skybox/bottom.jpg",
+		File::getExeDir() + "textures/skybox/front.jpg",
+		File::getExeDir() + "textures/skybox/back.jpg"
+	};
+
+	pSkyboxTexture = new CubeTextureImage(pDevice, SKYBOX_TEXTURE_PATHES);
+
+	// load in descriptor set
+
 	pSkyboxDS->addModel(pSkyboxModel);
+	pSkyboxDS->addBuffer(pSkyboxMvpBuffer);
+	pSkyboxDS->addTexture(pSkyboxTexture);
 
 	pSkyboxDS->update();
 }
@@ -542,10 +593,15 @@ void Vulkan::initGraphicCommands()
 
 		vkCmdBeginRenderPass(graphicCommands[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+		// draw earth model
 		vkCmdBindPipeline(graphicCommands[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pMainPipeline->pipeline);
-
 		pMainDS->bind(graphicCommands[i], pMainPipeline->layout);
 		pMainDS->drawModels(graphicCommands[i]);
+
+		// draw skybox
+		vkCmdBindPipeline(graphicCommands[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pSkyboxPipeline->pipeline);
+		pSkyboxDS->bind(graphicCommands[i], pSkyboxPipeline->layout);
+		pSkyboxDS->drawModels(graphicCommands[i]);
 
 		vkCmdEndRenderPass(graphicCommands[i]);
 
@@ -577,19 +633,22 @@ void Vulkan::createSemaphore(VkDevice device, VkSemaphore& semaphore)
 	}
 }
 
-void Vulkan::updateMvpBuffer(float deltaSec)
+void Vulkan::updateMvpBuffers(float deltaSec)
 {
-	mvp.model = glm::rotate(mvp.model, glm::radians(30.0f) * deltaSec, glm::vec3(0.0f, 1.0f, 0.0f));
+	earthMvp.model = glm::rotate(earthMvp.model, glm::radians(30.0f) * deltaSec, glm::vec3(0.0f, 1.0f, 0.0f));
 
-	mvp.view = glm::lookAt(pCamera->getPos(), pCamera->getTarget(), pCamera->getUp());
+	earthMvp.view = glm::lookAt(pCamera->getPos(), pCamera->getTarget(), pCamera->getUp());
 
 	// init projection matrix
 	const float fov = 55.0f;
 	const float zNear = 0.1f;
 	const float zFar = 50.0f;
-	mvp.proj = glm::perspective(glm::radians(fov), pSwapChain->getAspect(), zNear, zFar);
+	earthMvp.proj = glm::perspective(glm::radians(fov), pSwapChain->getAspect(), zNear, zFar);
 
-	pMvpBuffer->updateData(&mvp);
+	pEarthMvpBuffer->updateData(&earthMvp, sizeof(earthMvp), 0);
+
+	initSkyboxMvpMatrices();
+	pSkyboxMvpBuffer->updateData(&skyboxMvp, sizeof(skyboxMvp), 0);
 }
 
 

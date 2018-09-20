@@ -67,6 +67,12 @@
     <Filter Include="Файлы заголовков\Vulkan\Rendering">
       <UniqueIdentifier>{22574b2c-f0d1-4a67-88da-42d2ea061b28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Vulkan\Buffer">
+      <UniqueIdentifier>{b4ce045f-5ede-4fcc-a436-8631e3a0ddad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Vulkan\Buffer">
+      <UniqueIdentifier>{2056c582-3376-4288-8a5a-303255d200ed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.h">
@@ -104,9 +110,6 @@
     </ClInclude>
     <ClInclude Include="TextureImage.h">
       <Filter>Файлы заголовков\Vulkan\Image</Filter>
-    </ClInclude>
-    <ClInclude Include="Buffer.h">
-      <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
     <ClInclude Include="DescriptorSet.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
@@ -150,6 +153,15 @@
     <ClInclude Include="GeneralModel.h">
       <Filter>Файлы заголовков\Vulkan\Model</Filter>
     </ClInclude>
+    <ClInclude Include="CubeTextureImage.h">
+      <Filter>Файлы заголовков\Vulkan\Image</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer.h">
+      <Filter>Файлы заголовков\Vulkan\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="StagingBuffer.h">
+      <Filter>Файлы заголовков\Vulkan\Buffer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -191,9 +203,6 @@
     <ClCompile Include="TextureImage.cpp">
       <Filter>Исходные файлы\Vulkan\Image</Filter>
     </ClCompile>
-    <ClCompile Include="Buffer.cpp">
-      <Filter>Исходные файлы\Vulkan\Other</Filter>
-    </ClCompile>
     <ClCompile Include="DescriptorSet.cpp">
       <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
@@ -226,6 +235,15 @@
     </ClCompile>
     <ClCompile Include="GeneralModel.cpp">
       <Filter>Исходные файлы\Vulkan\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeTextureImage.cpp">
+      <Filter>Исходные файлы\Vulkan\Image</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffer.cpp">
+      <Filter>Исходные файлы\Vulkan\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="StagingBuffer.cpp">
+      <Filter>Исходные файлы\Vulkan\Buffer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
