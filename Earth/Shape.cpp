@@ -1,8 +1,6 @@
-#include "SkyboxModel.h"
+#include "Shape.h"
 
-
-
-SkyboxModel::SkyboxModel(Device *pDevice, std::vector<Position> vertices, std::vector<uint32_t> indices)
+Shape::Shape(Device *pDevice, std::vector<Position> vertices, std::vector<uint32_t> indices)
 {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -10,7 +8,7 @@ SkyboxModel::SkyboxModel(Device *pDevice, std::vector<Position> vertices, std::v
 	initBuffers(pDevice);
 }
 
-void SkyboxModel::initBuffers(Device *pDevice)
+void Shape::initBuffers(Device *pDevice)
 {
 	VkDeviceSize size = vertices.size() * sizeof(vertices[0]);
 	pVertexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_SHADER_STAGE_ALL, size);

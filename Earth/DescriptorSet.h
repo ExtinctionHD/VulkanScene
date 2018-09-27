@@ -4,7 +4,7 @@
 #include <vector>
 #include "Buffer.h"
 #include "TextureImage.h"
-#include "ModelBase.h"
+#include "Mesh.h"
 #include "Vertex.h"
 
 // provides a pipeline with resources: uniform buffers and textures
@@ -30,13 +30,13 @@ public:
 
 	void removeTexture(TextureImage *pTexture);
 
-	void addModel(ModelBase *pModel);
+	void addMesh(Mesh *pMesh);
 
-	void removeModel(ModelBase *pModel);
+	void removeMesh(Mesh *pMesh);
 
 	void bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) const;
 
-	void drawModels(VkCommandBuffer commandBuffer) const;
+	void drawMeshes(VkCommandBuffer commandBuffer) const;
 
 private:
 	// device that provide descriptor set
@@ -50,7 +50,7 @@ private:
 	std::vector<Buffer*> uniformBuffers;
 	std::vector<TextureImage*> textures;
 
-	std::vector<ModelBase*> models;
+	std::vector<Mesh*> meshes;
 
 	// create layout of current resources
 	void createLayout();

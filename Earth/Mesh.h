@@ -3,11 +3,10 @@
 #include "Buffer.h"
 #include <vector>
 
-class ModelBase
+class Mesh
 {
 public:
-	ModelBase() {}
-	~ModelBase();
+	~Mesh();
 
 	Buffer *pVertexBuffer;
 	Buffer *pIndexBuffer;
@@ -16,6 +15,8 @@ public:
 	size_t getIndexCount() const;
 
 protected:
+	Mesh() {}
+
 	std::vector<uint32_t> indices;
 
 };

@@ -10,12 +10,12 @@
 #include "DescriptorSet.h"
 #include "Image.h"
 #include "TextureImage.h"
-#include "GeneralModel.h"
+#include "Model.h"
 #include "MvpMatrices.h"
 #include "Timer.h"
 #include "Lighting.h"
 #include "Camera.h"
-#include "SkyboxModel.h"
+#include "Shape.h"
 #include "CubeTextureImage.h"
 
 // graphic API class that create all necessary objects
@@ -107,10 +107,10 @@ private:
 	TextureImage *pEarthTexture;		// texture of earth surface
 	TextureImage *pEarthNormalMap;		// map of earth normals
 	TextureImage *pEarthSpecularMap;	// map of specular factor
-	GeneralModel *pEarthModel;			// model of earth
+	Model *pEarthModel;			// model of earth
 
 	CubeTextureImage *pSkyboxTexture;	// texture of sky
-	SkyboxModel *pSkyboxModel;			// model of skybox
+	Shape *pSkyboxModel;			// model of skybox
 
 	Buffer *pEarthMvpBuffer;  // buffer containing MVP(model, view, projection) matrices for earth model
 	MvpMatrices earthMvp;
@@ -120,7 +120,6 @@ private:
 
 	Buffer *pSkyboxMvpBuffer;  // buffer containing MVP(model, view, projection) matrices for skybox model
 	glm::mat4 skyboxMvp;
-
 
 	void createInstance();
 

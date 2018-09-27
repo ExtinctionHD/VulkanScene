@@ -7,14 +7,14 @@
 #include <glm/glm.hpp>
 #include "Buffer.h"
 #include "Device.h"
-#include "ModelBase.h"
+#include "Mesh.h"
 
 // model vertices and vertex indies
-class GeneralModel : public ModelBase
+class Model : public Mesh
 {
 public:
-	GeneralModel(Device *pDevice, std::string filename);
-	~GeneralModel() {}
+	Model(Device *pDevice, std::string filename);
+	~Model() {}
 
 	// model size in 3d
 	glm::vec3 size;

@@ -144,15 +144,6 @@
     <ClInclude Include="Position.h">
       <Filter>Файлы заголовков\Vulkan\Model</Filter>
     </ClInclude>
-    <ClInclude Include="SkyboxModel.h">
-      <Filter>Файлы заголовков\Vulkan\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelBase.h">
-      <Filter>Файлы заголовков\Vulkan\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneralModel.h">
-      <Filter>Файлы заголовков\Vulkan\Model</Filter>
-    </ClInclude>
     <ClInclude Include="CubeTextureImage.h">
       <Filter>Файлы заголовков\Vulkan\Image</Filter>
     </ClInclude>
@@ -161,6 +152,15 @@
     </ClInclude>
     <ClInclude Include="StagingBuffer.h">
       <Filter>Файлы заголовков\Vulkan\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Shape.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -227,15 +227,6 @@
     <ClCompile Include="Position.cpp">
       <Filter>Исходные файлы\Vulkan\Model</Filter>
     </ClCompile>
-    <ClCompile Include="SkyboxModel.cpp">
-      <Filter>Исходные файлы\Vulkan\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelBase.cpp">
-      <Filter>Исходные файлы\Vulkan\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneralModel.cpp">
-      <Filter>Исходные файлы\Vulkan\Model</Filter>
-    </ClCompile>
     <ClCompile Include="CubeTextureImage.cpp">
       <Filter>Исходные файлы\Vulkan\Image</Filter>
     </ClCompile>
@@ -244,6 +235,15 @@
     </ClCompile>
     <ClCompile Include="StagingBuffer.cpp">
       <Filter>Исходные файлы\Vulkan\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Shape.cpp">
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

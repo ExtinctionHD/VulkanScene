@@ -392,12 +392,12 @@ void Vulkan::initCamera()
 void Vulkan::initLighting()
 {
 	lighting = Lighting{
-		glm::vec3(1.0f, 1.0f, 1.0f),	// color
-		0.025f,							// ambientStrength
-		glm::vec3(1.0f, 0.0f, 1.0f),	// direction
-		1.0f,							// diffuseStrength
-		pCamera->getPos(),				// cameraPos
-		2.0f							// specularPower
+		glm::vec3(1.0f, 1.0f, 1.0f),		// color
+		0.025f,								// ambientStrength
+		glm::vec3(-0.89f, 0.4f, -0.21f),	// direction
+		1.0f,								// diffuseStrength
+		pCamera->getPos(),					// cameraPos
+		2.0f								// specularPower
 	};
 }
 
@@ -419,6 +419,7 @@ void Vulkan::initEarthMvpMatrices()
 	};
 
 	earthMvp.model = glm::rotate(earthMvp.model, glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
 }
 
 void Vulkan::initMainDS()
@@ -427,7 +428,7 @@ void Vulkan::initMainDS()
 
 	const std::string EARTH_MODEL_PATH = File::getExeDir() + "models/sphere.obj";
 
-	pEarthModel = new GeneralModel(pDevice, EARTH_MODEL_PATH);
+	pEarthModel = new Model(pDevice, EARTH_MODEL_PATH);
 	pEarthModel->normilize();
 
 	//create buffers:
@@ -454,7 +455,7 @@ void Vulkan::initMainDS()
 
 	// load resources in descriptor set:
 
-	pMainDS->addModel(pEarthModel);
+	pMainDS->addMesh(pEarthModel);
 
 	pMainDS->addBuffer(pEarthMvpBuffer);
 	pMainDS->addBuffer(pLightingBuffer);
@@ -501,7 +502,7 @@ void Vulkan::initSkyboxDS()
 		7, 3, 1
 	};
 
-	pSkyboxModel = new SkyboxModel(pDevice, cubeVertices, cubeIndices);
+	pSkyboxModel = new Shape(pDevice, cubeVertices, cubeIndices);
 
 	// create buffers:
 
@@ -512,19 +513,19 @@ void Vulkan::initSkyboxDS()
 	// create textures:
 
 	const std::array<std::string, CubeTextureImage::CUBE_SIDE_COUNT> SKYBOX_TEXTURE_PATHES{
-		File::getExeDir() + "textures/skybox/right.jpg",
-		File::getExeDir() + "textures/skybox/left.jpg",
-		File::getExeDir() + "textures/skybox/top.jpg",
-		File::getExeDir() + "textures/skybox/bottom.jpg",
-		File::getExeDir() + "textures/skybox/front.jpg",
-		File::getExeDir() + "textures/skybox/back.jpg"
+		File::getExeDir() + "textures/skybox1/right.jpg",
+		File::getExeDir() + "textures/skybox1/left.jpg",
+		File::getExeDir() + "textures/skybox1/top.jpg",
+		File::getExeDir() + "textures/skybox1/bottom.jpg",
+		File::getExeDir() + "textures/skybox1/front.jpg",
+		File::getExeDir() + "textures/skybox1/back.jpg"
 	};
 
 	pSkyboxTexture = new CubeTextureImage(pDevice, SKYBOX_TEXTURE_PATHES);
 
 	// load in descriptor set
 
-	pSkyboxDS->addModel(pSkyboxModel);
+	pSkyboxDS->addMesh(pSkyboxModel);
 	pSkyboxDS->addBuffer(pSkyboxMvpBuffer);
 	pSkyboxDS->addTexture(pSkyboxTexture);
 
@@ -596,12 +597,12 @@ void Vulkan::initGraphicCommands()
 		// draw earth model
 		vkCmdBindPipeline(graphicCommands[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pMainPipeline->pipeline);
 		pMainDS->bind(graphicCommands[i], pMainPipeline->layout);
-		pMainDS->drawModels(graphicCommands[i]);
+		pMainDS->drawMeshes(graphicCommands[i]);
 
 		// draw skybox
 		vkCmdBindPipeline(graphicCommands[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pSkyboxPipeline->pipeline);
 		pSkyboxDS->bind(graphicCommands[i], pSkyboxPipeline->layout);
-		pSkyboxDS->drawModels(graphicCommands[i]);
+		pSkyboxDS->drawMeshes(graphicCommands[i]);
 
 		vkCmdEndRenderPass(graphicCommands[i]);
 
@@ -649,6 +650,9 @@ void Vulkan::updateMvpBuffers(float deltaSec)
 
 	initSkyboxMvpMatrices();
 	pSkyboxMvpBuffer->updateData(&skyboxMvp, sizeof(skyboxMvp), 0);
+
+	lighting.cameraPos = pCamera->getPos();
+	pLightingBuffer->updateData(&lighting.cameraPos, sizeof(lighting.cameraPos), offsetof(Lighting, cameraPos));
 }
 
 

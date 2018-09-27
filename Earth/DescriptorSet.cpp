@@ -15,9 +15,9 @@ DescriptorSet::DescriptorSet(Device *pDevice)
 
 DescriptorSet::~DescriptorSet()
 {
-	for (int i = 0; i < models.size(); i++)
+	for (int i = 0; i < meshes.size(); i++)
 	{
-		delete(models[i]);
+		delete(meshes[i]);
 	}
 	for (int i = 0; i < uniformBuffers.size(); i++)
 	{
@@ -59,14 +59,14 @@ void DescriptorSet::removeTexture(TextureImage * pTexture)
 	std::remove(textures.begin(), textures.end(), pTexture);
 }
 
-void DescriptorSet::addModel(ModelBase * pModel)
+void DescriptorSet::addMesh(Mesh * pMesh)
 {
-	models.push_back(pModel);
+	meshes.push_back(pMesh);
 }
 
-void DescriptorSet::removeModel(ModelBase * pModel)
+void DescriptorSet::removeMesh(Mesh * pMesh)
 {
-	std::remove(models.begin(), models.end(), pModel);
+	std::remove(meshes.begin(), meshes.end(), pMesh);
 }
 
 void DescriptorSet::bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelineLayout) const
@@ -74,15 +74,15 @@ void DescriptorSet::bind(VkCommandBuffer commandBuffer, VkPipelineLayout pipelin
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &set, 0, nullptr);
 }
 
-void DescriptorSet::drawModels(VkCommandBuffer commandBuffer) const
+void DescriptorSet::drawMeshes(VkCommandBuffer commandBuffer) const
 {
-	for (ModelBase *pModel : models)
+	for (Mesh *pMesh : meshes)
 	{
-		VkBuffer vertexBuffers[] = { pModel->pVertexBuffer->getBuffer() };
+		VkBuffer vertexBuffers[] = { pMesh->pVertexBuffer->getBuffer() };
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		vkCmdBindIndexBuffer(commandBuffer, pModel->pIndexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
-		vkCmdDrawIndexed(commandBuffer, pModel->getIndexCount(), 1, 0, 0, 0);
+		vkCmdBindIndexBuffer(commandBuffer, pMesh->pIndexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+		vkCmdDrawIndexed(commandBuffer, pMesh->getIndexCount(), 1, 0, 0, 0);
 	}
 }
 

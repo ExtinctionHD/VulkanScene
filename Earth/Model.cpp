@@ -2,11 +2,11 @@
 #include "File.h"
 #include "Logger.h"
 
-#include "GeneralModel.h"
+#include "Model.h"
 
 // public:
 
-GeneralModel::GeneralModel(Device *pDevice, std::string filename)
+Model::Model(Device *pDevice, std::string filename)
 {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
@@ -30,7 +30,7 @@ GeneralModel::GeneralModel(Device *pDevice, std::string filename)
 
 // private:
 
-void GeneralModel::normilize()
+void Model::normilize()
 {
 	glm::vec3 delta = glm::vec3(
 		size.x / 2 - maxVertex.x,
@@ -49,7 +49,7 @@ void GeneralModel::normilize()
 	pVertexBuffer->updateData(vertices.data(), vertices.size() * sizeof(vertices[0]), 0);
 }
 
-void GeneralModel::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> shapes)
+void Model::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> shapes)
 {
 	minVertex = glm::vec3(max, max, max);
 	maxVertex = glm::vec3(min, min, min);
@@ -82,7 +82,7 @@ void GeneralModel::initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::sh
 	initTangents();	// initialize tangent attribute of each vertex
 }
 
-void GeneralModel::findMaxMin(Vertex vertex)
+void Model::findMaxMin(Vertex vertex)
 {
 
 	// find min vertex components
@@ -114,7 +114,7 @@ void GeneralModel::findMaxMin(Vertex vertex)
 	}
 }
 
-void GeneralModel::initNormals()
+void Model::initNormals()
 {
 	for (uint32_t i = 0; i < indices.size(); i += 3)
 	{
@@ -137,7 +137,7 @@ void GeneralModel::initNormals()
 	}
 }
 
-void GeneralModel::initTangents()
+void Model::initTangents()
 {
 	for (uint32_t i = 0; i < indices.size(); i += 3) 
 	{
@@ -172,14 +172,14 @@ void GeneralModel::initTangents()
 	}
 }
 
-void GeneralModel::initSize(glm::vec3 minVertex, glm::vec3 maxVertex)
+void Model::initSize(glm::vec3 minVertex, glm::vec3 maxVertex)
 {
 	size.x = maxVertex.x - minVertex.x;
 	size.y = maxVertex.y - minVertex.y;
 	size.z = maxVertex.z - minVertex.z;
 }
 
-void GeneralModel::initBuffers(Device *pDevice)
+void Model::initBuffers(Device *pDevice)
 {
 	VkDeviceSize size = vertices.size() * sizeof(vertices[0]);
 	pVertexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_SHADER_STAGE_ALL, size);
