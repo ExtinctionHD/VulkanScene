@@ -162,6 +162,15 @@
     <ClInclude Include="Model.h">
       <Filter>Файлы заголовков\Vulkan\Model</Filter>
     </ClInclude>
+    <ClInclude Include="AssimpModel.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="AssimpMesh.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="AssimpMaterial.h">
+      <Filter>Файлы заголовков\Vulkan\Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -243,6 +252,15 @@
       <Filter>Исходные файлы\Vulkan\Model</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="AssimpModel.cpp">
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="AssimpMesh.cpp">
+      <Filter>Исходные файлы\Vulkan\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="AssimpMaterial.cpp">
       <Filter>Исходные файлы\Vulkan\Model</Filter>
     </ClCompile>
   </ItemGroup>

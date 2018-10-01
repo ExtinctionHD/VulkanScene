@@ -238,7 +238,7 @@ void DescriptorSet::createDescriptorSet()
 			0,												// dstArrayElement;
 			1,												// descriptorCount;
 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,		// descriptorType;
-			&imagesInfo[i],	// pImageInfo;
+			&imagesInfo[i],									// pImageInfo;
 			nullptr,										// pBufferInfo;
 			nullptr,										// pTexelBufferView;
 		};

@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "ShaderModule.h"
+#include "AssimpModel.h"
 
 #include "Vulkan.h"
 
@@ -23,50 +24,53 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 		VALIDATION_LAYERS : std::vector<const char*>();
 
 	pDevice = new Device(instance, surface, requiredLayers);
-	pSwapChain = new SwapChain(pDevice, surface, frameExtent);
 
-	pRenderPass = new RenderPass(pDevice, pSwapChain);
+	AssimpModel model = AssimpModel(pDevice, File::getExeDir() + "av/gt/mustang_GT.obj");
 
-	const uint32_t binding = 0;
+	//pSwapChain = new SwapChain(pDevice, surface, frameExtent);
 
-	// create DS and pipeline for rendering main objects:
-	pMainDS = new DescriptorSet(pDevice);
-	initMainDS();
+	//pRenderPass = new RenderPass(pDevice, pSwapChain);
 
-	std::vector<ShaderModule*> mainShaderModules{
-		new ShaderModule(pDevice->device, MAIN_VERT_SHADER_PATH, VK_SHADER_STAGE_VERTEX_BIT),
-		new ShaderModule(pDevice->device, MAIN_FRAG_SHADER_PATH, VK_SHADER_STAGE_FRAGMENT_BIT),
-	};
-	pMainPipeline = new GraphicsPipeline(
-		pDevice->device, 
-		{ pMainDS->layout }, 
-		pRenderPass, 
-		mainShaderModules,
-		Vertex::getBindingDescription(binding),
-		Vertex::getAttributeDescriptions(binding)
-	);
+	//const uint32_t binding = 0;
 
-	// create DS and pipeline for rendering skybox
-	pSkyboxDS = new DescriptorSet(pDevice);
-	initSkyboxDS();
+	//// create DS and pipeline for rendering main objects:
+	//pMainDS = new DescriptorSet(pDevice);
+	//initMainDS();
 
-	std::vector<ShaderModule*> skyboxShaderModules{
-		new ShaderModule(pDevice->device, SKYBOX_VERT_SHADER_PATH, VK_SHADER_STAGE_VERTEX_BIT),
-		new ShaderModule(pDevice->device, SKYBOX_FRAG_SHADER_PATH, VK_SHADER_STAGE_FRAGMENT_BIT),
-	};
-	pSkyboxPipeline = new GraphicsPipeline(
-		pDevice->device,
-		{ pSkyboxDS->layout },
-		pRenderPass,
-		skyboxShaderModules,
-		Position::getBindingDescription(binding),
-		Position::getAttributeDescriptions(binding)
-	);
+	//std::vector<ShaderModule*> mainShaderModules{
+	//	new ShaderModule(pDevice->device, MAIN_VERT_SHADER_PATH, VK_SHADER_STAGE_VERTEX_BIT),
+	//	new ShaderModule(pDevice->device, MAIN_FRAG_SHADER_PATH, VK_SHADER_STAGE_FRAGMENT_BIT),
+	//};
+	//pMainPipeline = new GraphicsPipeline(
+	//	pDevice->device, 
+	//	{ pMainDS->layout }, 
+	//	pRenderPass, 
+	//	mainShaderModules,
+	//	Vertex::getBindingDescription(binding),
+	//	Vertex::getAttributeDescriptions(binding)
+	//);
 
-	initGraphicCommands();
+	//// create DS and pipeline for rendering skybox
+	//pSkyboxDS = new DescriptorSet(pDevice);
+	//initSkyboxDS();
 
-	createSemaphore(pDevice->device, imageAvailable);
-	createSemaphore(pDevice->device, renderingFinished);
+	//std::vector<ShaderModule*> skyboxShaderModules{
+	//	new ShaderModule(pDevice->device, SKYBOX_VERT_SHADER_PATH, VK_SHADER_STAGE_VERTEX_BIT),
+	//	new ShaderModule(pDevice->device, SKYBOX_FRAG_SHADER_PATH, VK_SHADER_STAGE_FRAGMENT_BIT),
+	//};
+	//pSkyboxPipeline = new GraphicsPipeline(
+	//	pDevice->device,
+	//	{ pSkyboxDS->layout },
+	//	pRenderPass,
+	//	skyboxShaderModules,
+	//	Position::getBindingDescription(binding),
+	//	Position::getAttributeDescriptions(binding)
+	//);
+
+	//initGraphicCommands();
+
+	//createSemaphore(pDevice->device, imageAvailable);
+	//createSemaphore(pDevice->device, renderingFinished);
 }
 
 Vulkan::~Vulkan()

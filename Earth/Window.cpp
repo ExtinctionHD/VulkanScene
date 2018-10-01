@@ -24,7 +24,7 @@ void Window::mainLoop()
 	{
 		glfwPollEvents();
 
-		getVulkanPointer(window)->drawFrame();
+		// getVulkanPointer(window)->drawFrame();
 	}
 }
 
@@ -63,19 +63,19 @@ void Window::framebufferSizeCallback(GLFWwindow *window, int width, int height)
 		(uint32_t)height
 	};
 
-	getVulkanPointer(window)->resize(extent);
+	// getVulkanPointer(window)->resize(extent);
 }
 
 void Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
-	getVulkanPointer(window)->onKeyAction(key, action);
+	// getVulkanPointer(window)->onKeyAction(key, action);
 }
 
 void Window::cursorPosCallback(GLFWwindow * window, double x, double y)
 {
-	getVulkanPointer(window)->onMouseMove(x, y);
+	// getVulkanPointer(window)->onMouseMove(x, y);
 
-	setCursorInCenter(window);
+	// setCursorInCenter(window);
 }
 
 void Window::setCursorInCenter(GLFWwindow * window)
