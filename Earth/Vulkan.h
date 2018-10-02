@@ -3,6 +3,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vector>
+#include "Instance.h"
 #include "Device.h"
 #include "SwapChain.h"
 #include "RenderPass.h"
@@ -62,10 +63,7 @@ private:
 	const std::string SKYBOX_VERT_SHADER_PATH = File::getExeDir() + "shaders/skyboxVert.spv";
 	const std::string SKYBOX_FRAG_SHADER_PATH = File::getExeDir() + "shaders/skyboxFrag.spv";
 
-	VkInstance instance;
-
-	// validation layers callback
-	VkDebugReportCallbackEXT callback;
+	Instance *pInstance;
 
 	// surface object for presentation
 	VkSurfaceKHR surface;
@@ -120,28 +118,6 @@ private:
 
 	Buffer *pSkyboxMvpBuffer;  // buffer containing MVP(model, view, projection) matrices for skybox model
 	glm::mat4 skyboxMvp;
-
-	void createInstance();
-
-	static bool checkInstanceLayerSupport(std::vector<const char *> requiredLayers);
-	static bool checkInstanceExtensionSupport(std::vector<const char *> requiredExtensions);
-
-	std::vector<const char *> getRequiredExtensions();
-
-	// functions from extensions (EXT) need to get before use
-	static VkResult vkCreateDebugReportCallbackEXT(
-		VkInstance instance,
-		const VkDebugReportCallbackCreateInfoEXT *pCreateInfo,
-		const VkAllocationCallbacks *pAllocator,
-		VkDebugReportCallbackEXT *pCallback
-	);
-	static void vkDestroyDebugReportCallbackEXT(
-		VkInstance instance,
-		VkDebugReportCallbackEXT callback,
-		const VkAllocationCallbacks *pAllocator
-	);
-
-	void createDebugCallback();
 
 	void createSurface(GLFWwindow *window);
 

@@ -1,5 +1,4 @@
 #include <set>
-#include "Logger.h"
 #include <array>
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -16,14 +15,14 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 {
 	glfwSetWindowUserPointer(window, this);
 
-	createInstance();
-	createDebugCallback();
-	createSurface(window);
-	
-	std::vector<const char*> requiredLayers = ENABLE_VALIDATION_LAYERS ? 
+	std::vector<const char*> requiredLayers = ENABLE_VALIDATION_LAYERS ?
 		VALIDATION_LAYERS : std::vector<const char*>();
 
-	pDevice = new Device(instance, surface, requiredLayers);
+	pInstance = new Instance(requiredLayers);
+
+	createSurface(window);
+
+	pDevice = new Device(pInstance->getInstance(), surface, requiredLayers);
 
 	AssimpModel model = AssimpModel(pDevice, File::getExeDir() + "av/gt/mustang_GT.obj");
 
@@ -87,9 +86,9 @@ Vulkan::~Vulkan()
 	delete(pSwapChain);
 	delete(pDevice);
 
-	vkDestroySurfaceKHR(instance, surface, nullptr);
-	vkDestroyDebugReportCallbackEXT(instance, callback, nullptr);
-	vkDestroyInstance(instance, nullptr);
+	vkDestroySurfaceKHR(pInstance->getInstance(), surface, nullptr);
+
+	delete(pInstance);
 }
 
 void Vulkan::drawFrame()
@@ -115,7 +114,7 @@ void Vulkan::drawFrame()
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_ACQUIRE_NEXT_FRAME);
+		throw std::runtime_error("Failed to acquire next frame");
 	}
 
 	std::vector<VkSemaphore> waitSemaphores{ imageAvailable };
@@ -136,7 +135,7 @@ void Vulkan::drawFrame()
 	result = vkQueueSubmit(pDevice->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_SUBMIT_COMMANDS);
+		throw std::runtime_error("Failed to submit graphics commands");
 	}
 
 	std::vector<VkSwapchainKHR> swapChains{ pSwapChain->swapChain };
@@ -159,7 +158,7 @@ void Vulkan::drawFrame()
 	}
 	else if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_PRESENT_FRAME);
+		throw std::runtime_error("Failed to present next frame");
 	}
 }
 
@@ -201,181 +200,13 @@ void Vulkan::onMouseMove(float x, float y)
 
 // private:
 
-void Vulkan::createInstance()
-{
-	// validation layers
-	Logger::infoValidationLayers(ENABLE_VALIDATION_LAYERS);
-	if (ENABLE_VALIDATION_LAYERS)
-	{
-		if (!checkInstanceLayerSupport(VALIDATION_LAYERS))
-		{
-			LOGGER_FATAL(Logger::VALIDATION_LAYERS_NOT_AVAILABLE);
-		}
-	}
-
-	// required extenstions
-	std::vector<const char *> extensions = getRequiredExtensions();
-	if (!checkInstanceExtensionSupport(extensions))
-	{
-		LOGGER_FATAL(Logger::INSTANCE_EXTENSIONS_NOT_AVAILABLE);
-	}
-
-	// infoabout application for vulkan
-	VkApplicationInfo appInfo =
-	{
-		VK_STRUCTURE_TYPE_APPLICATION_INFO,	// sType
-		nullptr,							// pNext
-		"Earth",							// pApplicationName
-		VK_MAKE_VERSION(1, 0, 0),			// applicationVersion
-		"No Engine",						// pEngineName
-		VK_MAKE_VERSION(1, 0, 0),			// engineVersion
-		VK_API_VERSION_1_0					// apiVersion
-	};
-
-	// info for vulkan instance
-	VkInstanceCreateInfo createInfo =
-	{
-		VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,	// sType
-		nullptr,								// pNext
-		0,										// flags
-		&appInfo,								// pApplicationInfo
-		0,										// enabledLayerCount
-		nullptr,								// ppEnabledLayerNames
-		extensions.size(),						// enabledExtensionCount
-		extensions.data()						// ppEnabledExtensionNames
-	};
-
-	// add validation layers if they are enabled
-	if (ENABLE_VALIDATION_LAYERS)
-	{
-		createInfo.enabledLayerCount = VALIDATION_LAYERS.size();
-		createInfo.ppEnabledLayerNames = VALIDATION_LAYERS.data();
-	}
-
-	VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
-	if (result != VK_SUCCESS)
-	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_INSTANCE);
-	}
-}
-
-bool Vulkan::checkInstanceLayerSupport(std::vector<const char*> requiredLayers)
-{
-	uint32_t layerCount;
-	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);  // get count
-
-	std::vector<VkLayerProperties> availableLayers(layerCount);
-	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());  // get layers
-
-	std::set<std::string> requiredLayerSet(requiredLayers.begin(), requiredLayers.end());
-
-	for (const auto& layer : availableLayers)
-	{
-		requiredLayerSet.erase(layer.layerName);
-	}
-
-	// empty if all required layers are supported by instance
-	return requiredLayerSet.empty();
-}
-
-bool Vulkan::checkInstanceExtensionSupport(std::vector<const char*> requiredExtensions)
-{
-	uint32_t extensionCount;
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);  // get count
-
-	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.data());  // get extensions
-
-	std::set<std::string> requiredExtensionSet(requiredExtensions.begin(), requiredExtensions.end());
-
-	for (const auto& layer : availableExtensions)
-	{
-		requiredExtensionSet.erase(layer.extensionName);
-	}
-
-	// empty if all required extensions are supported by instance
-	return requiredExtensionSet.empty();
-}
-
-std::vector<const char*> Vulkan::getRequiredExtensions()
-{
-	std::vector<const char*> extensions;
-
-	// glfw extensions, at least VK_KHR_surface
-	unsigned int glfwExtensionCount = 0;
-	const char **glfwExtensions;
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-	for (int i = 0; i < glfwExtensionCount; i++)
-	{
-		extensions.push_back(glfwExtensions[i]);
-	}
-
-	// extension for validation layers callback
-	if (ENABLE_VALIDATION_LAYERS)
-	{
-		extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-	}
-
-	return extensions;
-}
-
-VkResult Vulkan::vkCreateDebugReportCallbackEXT(VkInstance instance, const VkDebugReportCallbackCreateInfoEXT * pCreateInfo, const VkAllocationCallbacks * pAllocator, VkDebugReportCallbackEXT * pCallback)
-{
-	auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(
-		instance, "vkCreateDebugReportCallbackEXT"
-	);
-
-	if (func != nullptr)
-	{
-		return func(instance, pCreateInfo, pAllocator, pCallback);
-	}
-	else
-	{
-		return VK_ERROR_EXTENSION_NOT_PRESENT;
-	}
-}
-
-void Vulkan::vkDestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks * pAllocator)
-{
-	auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
-	if (func != nullptr)
-	{
-		func(instance, callback, pAllocator);
-	}
-}
-
-void Vulkan::createDebugCallback()
-{
-	// don't need callback if validation layers are not enabled
-	if (!ENABLE_VALIDATION_LAYERS)
-	{
-		return;
-	}
-
-	VkDebugReportCallbackCreateInfoEXT createInfo = 
-	{
-		VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,			// sType
-		nullptr,															// pNext
-		VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT,	// flags
-		Logger::validationLayerCallback,									// pfnCallback
-		nullptr																// pUserData
-	};
-
-	VkResult result = vkCreateDebugReportCallbackEXT(instance, &createInfo, nullptr, &callback);
-	if (result != VK_SUCCESS)
-	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_CALLBACK);
-	}
-}
-
 void Vulkan::createSurface(GLFWwindow *window)
 {
 	// glfw library create surface by it self
-	VkResult result = glfwCreateWindowSurface(instance, window, nullptr, &surface);
+	VkResult result = glfwCreateWindowSurface(pInstance->getInstance(), window, nullptr, &surface);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_SURFACE);
+		throw std::runtime_error("Failed to create surface");
 	}
 }
 
@@ -557,7 +388,7 @@ void Vulkan::initGraphicCommands()
 	VkResult result = vkAllocateCommandBuffers(pDevice->device, &allocInfo, graphicCommands.data());
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_ALLOC_COMMAND_BUFFERS);
+		throw std::runtime_error("Failed to allocate graphics command buffers");
 	}
 
 	// clear values for each frame
@@ -583,7 +414,7 @@ void Vulkan::initGraphicCommands()
 		result = vkBeginCommandBuffer(graphicCommands[i], &beginInfo);
 		if (result != VK_SUCCESS)
 		{
-			LOGGER_FATAL(Logger::FAILED_TO_BEGIN_COMMAND_BUFFER);
+			std::runtime_error("Failed to begin graphics command buffers");
 		}
 
 		VkRenderPassBeginInfo renderPassBeginInfo{
@@ -613,7 +444,7 @@ void Vulkan::initGraphicCommands()
 		result = vkEndCommandBuffer(graphicCommands[i]);
 		if (result != VK_SUCCESS)
 		{
-			LOGGER_FATAL(Logger::FAILED_TO_END_COMMAND_BUFFER);
+			std::runtime_error("Failed to end graphics command buffers");
 		}
 	}
 }
@@ -634,7 +465,7 @@ void Vulkan::createSemaphore(VkDevice device, VkSemaphore& semaphore)
 	VkResult result = vkCreateSemaphore(device, &createInfo, nullptr, &semaphore);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_SEMAPHORE);
+		throw std::runtime_error("Failed to create semaphore");
 	}
 }
 

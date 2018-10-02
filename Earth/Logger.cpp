@@ -65,22 +65,6 @@ void Logger::fatal(string message, string file, int line)
 	throw runtime_error("\nFATAL: " + message + ". In " + File::getFilename(file) + " at line " + to_string(line));
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL Logger::validationLayerCallback(
-	VkDebugReportFlagsEXT flags,
-	VkDebugReportObjectTypeEXT objType,
-	uint64_t obj, 
-	size_t location, 
-	int32_t code, 
-	const char * layerPrefix, 
-	const char * msg, 
-	void * userData
-)
-{
-	cerr << "Validation layer: " << msg << "." << endl;
-
-	return VK_FALSE;
-}
-
 string Logger::getFileOpeningErrMsg(string filename)
 {
 	return "Failed to open file: " + filename;

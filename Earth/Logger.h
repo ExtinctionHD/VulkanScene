@@ -55,17 +55,6 @@ public:
 
 	static void fatal(std::string message, std::string file, int line);  // log fatal errors
 
-	// log messages from vulkan validation layers
-	static VKAPI_ATTR VkBool32 VKAPI_CALL validationLayerCallback(
-		VkDebugReportFlagsEXT flags,
-		VkDebugReportObjectTypeEXT objType,
-		uint64_t obj,
-		size_t location,
-		int32_t code,
-		const char *layerPrefix,
-		const char *msg,
-		void *userData
-	);
 
 	static std::string getFileOpeningErrMsg(std::string filename);
 

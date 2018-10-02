@@ -6,12 +6,11 @@ int main()
 	try
 	{
 		Application app;
-
 		app.run();
 	}
-	catch (const std::runtime_error& e)
+	catch (const std::exception& ex)
 	{
-		std::cerr << e.what() << std::endl;
+		std::cerr << ex.what() << std::endl;
 		getchar();
 	}
 }

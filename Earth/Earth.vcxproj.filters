@@ -171,6 +171,9 @@
     <ClInclude Include="AssimpMaterial.h">
       <Filter>Файлы заголовков\Vulkan\Model</Filter>
     </ClInclude>
+    <ClInclude Include="Instance.h">
+      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -262,6 +265,9 @@
     </ClCompile>
     <ClCompile Include="AssimpMaterial.cpp">
       <Filter>Исходные файлы\Vulkan\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Instance.cpp">
+      <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
