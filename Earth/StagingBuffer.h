@@ -8,14 +8,14 @@ class StagingBuffer
 {
 public:
 	StagingBuffer(Device *pDevice, VkDeviceSize size);
-	~StagingBuffer();
+	virtual ~StagingBuffer();
 
 	// load data in this buffer
 	virtual void updateData(void *data, VkDeviceSize size, VkDeviceSize offset);
 
 	void copyToImage(VkImage image, std::vector<VkBufferImageCopy> regions) const;
 
-	virtual VkBuffer getBuffer() const;
+	VkBuffer getBuffer() const;
 
 	VkDeviceSize getSize() const;
 

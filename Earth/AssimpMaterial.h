@@ -5,10 +5,21 @@
 #include <glm/glm.hpp>
 #include <string>
 #include <assimp/scene.h>
+#include <unordered_map>
+#include "Buffer.h"
 
 class AssimpMaterial
 {
 public:
+	AssimpMaterial(Device *pDevice);
+
+	~AssimpMaterial();
+
+	// order of textures for each material
+	static const std::vector<aiTextureType> TEXTURES_ORDER;
+
+	uint32_t index;
+
 	struct MaterialColors
 	{
 		glm::vec4 ambientColor;
@@ -18,20 +29,22 @@ public:
 		glm::vec4 specularColor;
 
 		float opacity;
-	};
+	} colors;
 
-	uint32_t index;
+	std::vector<TextureImage*> getTextures() const;
 
-	TextureImage *pTexture;
+	// loads colors data in buffer
+	void updateColorsBuffer();
 
-	TextureImage *pOpacityMap;
+	// adds texture of this type
+	void addTexture(aiTextureType type, TextureImage *pTexture);
 
-	TextureImage *pSpecularMap;
-
-	TextureImage *pNormalMap;
-
-	MaterialColors colors;
 
 	static std::string getDefaultTexturePath(aiTextureType type);
+
+private:
+	std::unordered_map<aiTextureType, TextureImage*> textures;
+
+	Buffer *pColorsBuffer;
 };
 

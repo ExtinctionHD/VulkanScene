@@ -10,7 +10,9 @@ class TextureImage :
 public:
 	TextureImage() {}
 
-	TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers);
+	// array layer count must be equal to filenames count
+	// images must have same extent
+	TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers, bool isCube = false);
 
 	~TextureImage();
 
@@ -21,10 +23,6 @@ public:
 	VkSampler sampler;
 
 protected:
-	// array layer count must be equal to filenames count
-	// images must have same extent
-	TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers, bool isCube);
-
 	// returns pixel bytes and save image extent
 	stbi_uc* loadPixels(std::string filename);
 

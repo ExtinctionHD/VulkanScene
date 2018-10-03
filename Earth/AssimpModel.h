@@ -7,38 +7,38 @@
 #include "AssimpMesh.h"
 #include <vector>
 #include <map>
-#include "Device.h"
+#include "Model.h"
 
 #pragma comment(lib, "assimp-vc140-mt.lib")
 
-class AssimpModel
+class AssimpModel : public Model
 {
 public:
 	AssimpModel(Device *pDevice, const std::string& filename);
 	~AssimpModel();
 
 private:
-	Device *pDevice;
-
 	std::string directory;
 
-	std::vector<AssimpMesh> meshes;
+	std::vector<AssimpMesh<Vertex>*> meshes;
 
 	std::map<uint32_t, AssimpMaterial*> materials;
 
 	std::map<std::string, TextureImage*> textures;
 
-	void processNode(aiNode *pNode, const aiScene *pScene);
+	// methods:
 
-	AssimpMesh processMesh(aiMesh *pMesh, const aiScene *pScene);
+	void processNode(aiNode *pAiNode, const aiScene *pAiScene);
 
-	AssimpMaterial* getMeshMaterial(uint32_t index, aiMaterial **aiMaterials);
+	AssimpMesh<Vertex>* processMesh(aiMesh *pAiMesh, const aiScene *pAiScene);
 
-	glm::vec4 getMaterialColor(aiMaterial *pMaterial, const char *key);
+	AssimpMaterial* getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial);
 
-	void getTexture(aiTextureType type, aiMaterial *pMaterial, TextureImage*& pOutTexture);
+	glm::vec4 getMaterialColor(aiMaterial *pAiMaterial, const char *key);
 
-	TextureImage* loadMaterialTexture(aiMaterial *pMaterial, aiTextureType type);
+	void getMaterialTexture(aiTextureType type, aiMaterial *pAiMaterial, AssimpMaterial *pMaterial);
+
+	TextureImage* loadMaterialTexture(aiMaterial *pAiMaterial, aiTextureType type);
 
 	TextureImage* loadDefaultTexture(std::string path);
 };

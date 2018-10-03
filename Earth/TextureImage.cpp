@@ -7,22 +7,7 @@
 
 // public:
 
-TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers) :
-	TextureImage(pDevice, filenames, arrayLayers, false)
-{
-}
-
-TextureImage::~TextureImage()
-{
-	if (sampler != VK_NULL_HANDLE)
-	{
-		vkDestroySampler(device, sampler, nullptr);
-	}
-}
-
-// protected:
-
-TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers, bool isCube)
+TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers, bool isCube = false)
 {
 	if (arrayLayers != filenames.size())
 	{
@@ -71,7 +56,7 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 
 	mipLevels = static_cast<uint32_t>(std::ceil(
 		std::log2(std::max(extent.width, extent.height)))
-	);
+		);
 
 	// texture image can't be mapped
 	createThisImage(
@@ -108,14 +93,14 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 			i * arrayLayerSize,					// bufferOffset;
 			0,									// bufferRowLength;
 			0,									// bufferImageHeight;
-			{
-				VK_IMAGE_ASPECT_COLOR_BIT,
-				0,
-				i,
-				1
-			},									// imageSubresource;
-			{ 0, 0, 0 },						// imageOffset;
-			{ extent.width, extent.height, 1 }	// imageExtent;
+		{
+			VK_IMAGE_ASPECT_COLOR_BIT,
+			0,
+			i,
+			1
+		},									// imageSubresource;
+		{ 0, 0, 0 },						// imageOffset;
+		{ extent.width, extent.height, 1 }	// imageExtent;
 		};
 	}
 	pStagingBuffer->copyToImage(image, regions);
@@ -126,6 +111,16 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 	createImageView(subresourceRange, viewType);
 	createSampler();
 }
+
+TextureImage::~TextureImage()
+{
+	if (sampler != VK_NULL_HANDLE)
+	{
+		vkDestroySampler(device, sampler, nullptr);
+	}
+}
+
+// protected:
 
 stbi_uc* TextureImage::loadPixels(std::string filename)
 {

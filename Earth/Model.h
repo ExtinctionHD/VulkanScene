@@ -1,48 +1,32 @@
 #pragma once
 
-#include <vector>
-#include <iostream>
-#include "Vertex.h"
-#include <tiny_obj_loader.h>
-#include <glm/glm.hpp>
+#include "MvpMatrices.h"
 #include "Buffer.h"
 #include "Device.h"
-#include "Mesh.h"
+#include <glm/glm.hpp>
 
-// model vertices and vertex indies
-class Model : public Mesh
+class Model
 {
 public:
-	Model(Device *pDevice, std::string filename);
-	~Model() {}
+	virtual ~Model();
 
-	// model size in 3d
-	glm::vec3 size;
+	glm::mat4 getModelMatrix();
 
-	// vertices with extreme values of x, y, z
-	glm::vec3 minVertex = glm::vec3(max, max, max);
-	glm::vec3 maxVertex = glm::vec3(min, min, min);
+	void setModelMatrix(glm::mat4 model);
 
-	// translate model center in 0, 0, 0
-	void normilize();
+	void setViewMatrix(glm::mat4 view);
 
-private:
-	const float min = std::numeric_limits<float>::min();
-	const float max = std::numeric_limits<float>::max();
+	void setProjectionMatrix(glm::mat4 proj);
 
-	std::vector<Vertex> vertices;
+	void setMvpMatrices(MvpMatrices mvp);
 
-	// initialize vertex array and extreme values
-	void initVectors(tinyobj::attrib_t attrib, std::vector<tinyobj::shape_t> shapes);
+protected:
+	Model(Device *pDevice);
 
-	void findMaxMin(Vertex vertex);
+	Device *pDevice;
 
-	void initNormals();
+	MvpMatrices mvp;
 
-	void initTangents();
-
-	void initSize(glm::vec3 minVertex, glm::vec3 maxVertex);
-
-	void initBuffers(Device *pDevice);
+	Buffer *pMvpBuffer;
 };
 

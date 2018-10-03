@@ -15,7 +15,7 @@ public:
 	// shader stage on which the buffer is used
 	VkShaderStageFlagBits shaderStage;
 
-	virtual VkBuffer getBuffer() const override;
+	VkBuffer getBuffer() const;
 
 	virtual void updateData(void *pData, VkDeviceSize dataSize, VkDeviceSize offset) override;
 

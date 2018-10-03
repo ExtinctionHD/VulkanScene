@@ -16,8 +16,6 @@
 #include "Timer.h"
 #include "Lighting.h"
 #include "Camera.h"
-#include "Shape.h"
-#include "CubeTextureImage.h"
 
 // graphic API class that create all necessary objects
 // and set this as window user pointer
@@ -57,11 +55,17 @@ private:
 	// color that clear each frame
 	const VkClearColorValue clearColor = { 0, 0, 0, 1 };
 
+	enum Shaders
+	{
+		mainVert, mainFrag, skyboxVert, skyboxFrag
+	};
 	// files with shaders code
-	const std::string MAIN_VERT_SHADER_PATH = File::getExeDir() + "shaders/mainVert.spv";
-	const std::string MAIN_FRAG_SHADER_PATH = File::getExeDir() + "shaders/mainFrag.spv";
-	const std::string SKYBOX_VERT_SHADER_PATH = File::getExeDir() + "shaders/skyboxVert.spv";
-	const std::string SKYBOX_FRAG_SHADER_PATH = File::getExeDir() + "shaders/skyboxFrag.spv";
+	const std::vector<std::string> SHADERS_PATHES = {
+		File::getExeDir() + "shaders/mainVert.spv",
+		File::getExeDir() + "shaders/mainFrag.spv",
+		File::getExeDir() + "shaders/skyboxVert.spv",
+		File::getExeDir() + "shaders/skyboxFrag.spv"
+	};
 
 	Instance *pInstance;
 
@@ -94,55 +98,11 @@ private:
 	VkSemaphore imageAvailable = VK_NULL_HANDLE;
 	VkSemaphore renderingFinished = VK_NULL_HANDLE;
 
-	// camera attributes
-	Camera *pCamera;
-
-	// timer for animations
-	Timer frameTimer;
-
-	// resources:
-
-	TextureImage *pEarthTexture;		// texture of earth surface
-	TextureImage *pEarthNormalMap;		// map of earth normals
-	TextureImage *pEarthSpecularMap;	// map of specular factor
-	Model *pEarthModel;			// model of earth
-
-	CubeTextureImage *pSkyboxTexture;	// texture of sky
-	Shape *pSkyboxModel;			// model of skybox
-
-	Buffer *pEarthMvpBuffer;  // buffer containing MVP(model, view, projection) matrices for earth model
-	MvpMatrices earthMvp;
-
-	Buffer *pLightingBuffer;  // buffer containing lighting attributes
-	Lighting lighting;
-
-	Buffer *pSkyboxMvpBuffer;  // buffer containing MVP(model, view, projection) matrices for skybox model
-	glm::mat4 skyboxMvp;
-
 	void createSurface(GLFWwindow *window);
-
-	void initCamera();
-
-	void initEarthMvpMatrices();
-
-	void initLighting();
-
-	void initSkyboxMvpMatrices();
-
-	// creates textures, buffers, models, for main pipeline 
-	// and adds it to main DS
-	void initMainDS();
-
-	// creates textures and models for skybox pipeline 
-	// and adds it to skybox DS
-	void initSkyboxDS();
 
 	// initialize rendering commands
 	void initGraphicCommands();
 
 	static void createSemaphore(VkDevice device, VkSemaphore& semaphore);
-
-	// changes mvp and load it in buffer
-	void updateMvpBuffers(float deltaSec);
 };
 

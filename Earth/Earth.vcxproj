@@ -23,9 +23,7 @@
     <ClInclude Include="AssimpMaterial.h" />
     <ClInclude Include="AssimpMesh.h" />
     <ClInclude Include="AssimpModel.h" />
-    <ClInclude Include="CubeTextureImage.h" />
     <ClInclude Include="Instance.h" />
-    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DescriptorSet.h" />
@@ -40,8 +38,9 @@
     <ClInclude Include="Position.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderModule.h" />
-    <ClInclude Include="Shape.h" />
+    <ClInclude Include="SkyboxModel.h" />
     <ClInclude Include="StagingBuffer.h" />
     <ClInclude Include="SurfaceSupportDetails.h" />
     <ClInclude Include="SwapChain.h" />
@@ -58,9 +57,7 @@
     <ClCompile Include="AssimpMaterial.cpp" />
     <ClCompile Include="AssimpMesh.cpp" />
     <ClCompile Include="AssimpModel.cpp" />
-    <ClCompile Include="CubeTextureImage.cpp" />
     <ClCompile Include="Instance.cpp" />
-    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DescriptorSet.cpp" />
@@ -74,8 +71,9 @@
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="QueueFamilyIndices.cpp" />
     <ClCompile Include="RenderPass.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderModule.cpp" />
-    <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="SkyboxModel.cpp" />
     <ClCompile Include="StagingBuffer.cpp" />
     <ClCompile Include="SurfaceSupportDetails.cpp" />
     <ClCompile Include="SwapChain.cpp" />

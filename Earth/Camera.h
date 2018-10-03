@@ -45,13 +45,6 @@ private:
 		positive = 1
 	};
 
-	struct Movement
-	{
-		Direction forward = Direction::none;
-		Direction right = Direction::none;
-		Direction up = Direction::none;
-	};
-
 	// step of camera movement
 	const float SPEED = 1.0f;
 
@@ -71,7 +64,12 @@ private:
 	VkExtent2D extent;
 
 	// asix movement states
-	Movement movement;
+	struct Movement
+	{
+		Direction forward = Direction::none;
+		Direction right = Direction::none;
+		Direction up = Direction::none;
+	} movement;
 
 	// horizontal angle
 	// angle 0.0f directed towards z axis
