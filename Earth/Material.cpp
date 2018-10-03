@@ -1,27 +1,27 @@
-#include "AssimpMaterial.h"
+#include "Material.h"
 #include "File.h"
 #include <iostream>
 
 // public:
 
-AssimpMaterial::AssimpMaterial(Device *pDevice)
+Material::Material(Device *pDevice)
 {
 	pColorsBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(MaterialColors));
 }
 
-AssimpMaterial::~AssimpMaterial()
+Material::~Material()
 {
 	delete(pColorsBuffer);
 }
 
-const std::vector<aiTextureType> AssimpMaterial::TEXTURES_ORDER = {
+const std::vector<aiTextureType> Material::TEXTURES_ORDER = {
 	aiTextureType_DIFFUSE,
 	aiTextureType_SPECULAR,
 	aiTextureType_NORMALS,
 	aiTextureType_OPACITY
 };
 
-std::vector<TextureImage*> AssimpMaterial::getTextures() const
+std::vector<TextureImage*> Material::getTextures() const
 {
 	std::vector<TextureImage*> result;
 
@@ -33,17 +33,17 @@ std::vector<TextureImage*> AssimpMaterial::getTextures() const
 	return result;
 }
 
-void AssimpMaterial::updateColorsBuffer()
+void Material::updateColorsBuffer()
 {
 	pColorsBuffer->updateData(&colors, sizeof(MaterialColors), 0);
 }
 
-void AssimpMaterial::addTexture(aiTextureType type, TextureImage * pTexture)
+void Material::addTexture(aiTextureType type, TextureImage * pTexture)
 {
 	textures.insert(std::pair<aiTextureType, TextureImage*>(type, pTexture));
 }
 
-std::string AssimpMaterial::getDefaultTexturePath(aiTextureType type)
+std::string Material::getDefaultTexturePath(aiTextureType type)
 {
 	std::string DEFAULT_TEXTURE_DIR = File::getExeDir() + "textures/default/";
 

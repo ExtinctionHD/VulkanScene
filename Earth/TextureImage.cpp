@@ -7,7 +7,7 @@
 
 // public:
 
-TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers, bool isCube = false)
+TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers, bool isCube)
 {
 	if (arrayLayers != filenames.size())
 	{

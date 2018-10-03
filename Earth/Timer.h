@@ -13,7 +13,7 @@ public:
 
 	// returns difference between last time point and current time in seconds
 	// and save current time as last time point
-	float getDeltaSec();
+	double getDeltaSec();
 
 private:
 	time_point<steady_clock> lastTimePoint = time_point<steady_clock>::max();

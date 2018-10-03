@@ -20,13 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
-    <ClInclude Include="AssimpMaterial.h" />
-    <ClInclude Include="AssimpMesh.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="AssimpModel.h" />
+    <ClInclude Include="DescriptorPool.h" />
     <ClInclude Include="Instance.h" />
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="DescriptorSet.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="GraphicsPipeline.h" />
@@ -54,13 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
-    <ClCompile Include="AssimpMaterial.cpp" />
-    <ClCompile Include="AssimpMesh.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="AssimpModel.cpp" />
+    <ClCompile Include="DescriptorPool.cpp" />
     <ClCompile Include="Instance.cpp" />
     <ClCompile Include="Buffer.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="DescriptorSet.cpp" />
     <ClCompile Include="Device.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="GraphicsPipeline.cpp" />

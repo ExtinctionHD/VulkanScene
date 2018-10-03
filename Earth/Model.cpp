@@ -4,6 +4,14 @@
 
 Model::~Model()
 {
+	objectCount--;
+
+	if (objectCount == 0 && mvpDSLayout != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorSetLayout(pDevice->device, mvpDSLayout, nullptr);
+		mvpDSLayout = VK_NULL_HANDLE;
+	}
+
 	delete(pMvpBuffer);
 }
 
@@ -36,6 +44,13 @@ void Model::setMvpMatrices(MvpMatrices mvp)
 	pMvpBuffer->updateData(&mvp, sizeof(mvp), 0);
 }
 
+void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
+{
+	mvpDescriptorSet = pDescriptorPool->getDescriptorSet({ pMvpBuffer }, { }, Model::mvpDSLayout == VK_NULL_HANDLE, Model::mvpDSLayout);
+
+	initMeshDescriptorSets(pDescriptorPool);
+}
+
 // protected:
 
 Model::Model(Device *pDevice)
@@ -44,5 +59,13 @@ Model::Model(Device *pDevice)
 
 	pMvpBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(MvpMatrices));
 	setMvpMatrices({ glm::mat4(1.0f), glm::mat4(1.0f), glm::mat4(1.0f) });
+
+	objectCount++;
 }
+
+// private:
+
+uint32_t Model::objectCount = 0;
+
+VkDescriptorSetLayout Model::mvpDSLayout = VK_NULL_HANDLE;
 

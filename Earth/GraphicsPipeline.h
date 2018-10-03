@@ -20,7 +20,7 @@ public:
 		VkDevice device, 
 		std::vector<VkDescriptorSetLayout> descriptorSetLayouts, 
 		RenderPass *pRenderPass, 
-		std::vector<ShaderModule*> shaderModules,
+		std::vector<ShaderModule*> shaderModules,	// TODO: replace to std::map
 		VkVertexInputBindingDescription bindingDescription,
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions
 	);

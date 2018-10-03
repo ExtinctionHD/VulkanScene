@@ -24,13 +24,11 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 
 	pDevice = new Device(pInstance->getInstance(), surface, requiredLayers);
 
-	AssimpModel model = AssimpModel(pDevice, File::getExeDir() + "av/gt/mustang_GT.obj");
+	pSwapChain = new SwapChain(pDevice, surface, frameExtent);
 
-	//pSwapChain = new SwapChain(pDevice, surface, frameExtent);
+	pRenderPass = new RenderPass(pDevice, pSwapChain);
 
-	//pRenderPass = new RenderPass(pDevice, pSwapChain);
-
-	//const uint32_t binding = 0;
+	// const uint32_t binding = 0;
 
 	//// create DS and pipeline for rendering main objects:
 	//pMainDS = new DescriptorSet(pDevice);
@@ -78,9 +76,9 @@ Vulkan::~Vulkan()
 	vkDestroySemaphore(pDevice->device, imageAvailable, nullptr);
 	vkDestroySemaphore(pDevice->device, renderingFinished, nullptr);
 
+	delete(pSkyboxPipeline);
 	delete(pMainPipeline);
-	delete(pMainDS);
-	delete(pSkyboxDS);
+	delete(pScene);
 	delete(pSwapChain);
 	delete(pDevice);
 
@@ -245,14 +243,6 @@ void Vulkan::initGraphicCommands()
 		vkCmdBeginRenderPass(graphicCommands[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		// draw earth model
-		vkCmdBindPipeline(graphicCommands[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pMainPipeline->pipeline);
-		pMainDS->bind(graphicCommands[i], pMainPipeline->layout);
-		pMainDS->drawMeshes(graphicCommands[i]);
-
-		// draw skybox
-		vkCmdBindPipeline(graphicCommands[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pSkyboxPipeline->pipeline);
-		pSkyboxDS->bind(graphicCommands[i], pSkyboxPipeline->layout);
-		pSkyboxDS->drawMeshes(graphicCommands[i]);
 
 		vkCmdEndRenderPass(graphicCommands[i]);
 

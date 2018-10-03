@@ -8,12 +8,12 @@
 #include <unordered_map>
 #include "Buffer.h"
 
-class AssimpMaterial
+class Material
 {
 public:
-	AssimpMaterial(Device *pDevice);
+	Material(Device *pDevice);
 
-	~AssimpMaterial();
+	~Material();
 
 	// order of textures for each material
 	static const std::vector<aiTextureType> TEXTURES_ORDER;
@@ -33,6 +33,8 @@ public:
 
 	std::vector<TextureImage*> getTextures() const;
 
+	Buffer *pColorsBuffer;
+
 	// loads colors data in buffer
 	void updateColorsBuffer();
 
@@ -44,7 +46,5 @@ public:
 
 private:
 	std::unordered_map<aiTextureType, TextureImage*> textures;
-
-	Buffer *pColorsBuffer;
 };
 

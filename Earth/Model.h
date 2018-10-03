@@ -4,6 +4,8 @@
 #include "Buffer.h"
 #include "Device.h"
 #include <glm/glm.hpp>
+#include "DescriptorPool.h"
+#include <array>
 
 class Model
 {
@@ -20,13 +22,30 @@ public:
 
 	void setMvpMatrices(MvpMatrices mvp);
 
+	void initDescriptorSets(DescriptorPool *pDescriptorPool);
+
+	// virtual void draw() = 0;
+
 protected:
 	Model(Device *pDevice);
 
 	Device *pDevice;
 
+	// descriptor sets for each mesh
+	std::vector<VkDescriptorSet> meshDescriptorSets;
+
+	void virtual initMeshDescriptorSets(DescriptorPool *pDescriptorPool) = 0;
+
+private:
+	static uint32_t objectCount;
+
+	static VkDescriptorSetLayout mvpDSLayout;
+
 	MvpMatrices mvp;
 
 	Buffer *pMvpBuffer;
+
+	// descritpor set for mvp buffer
+	VkDescriptorSet mvpDescriptorSet;
 };
 

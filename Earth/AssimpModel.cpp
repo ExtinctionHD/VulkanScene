@@ -1,5 +1,5 @@
 #include "File.h"
-#include "AssimpMaterial.h"
+#include "Material.h"
 #include <algorithm>
 #include <functional>
 
@@ -25,10 +25,20 @@ AssimpModel::AssimpModel(Device *pDevice, const std::string& filename) :
 	}
 
 	processNode(pScene->mRootNode, pScene);
+
+	objectCount++;
 }
 
 AssimpModel::~AssimpModel()
 {
+	objectCount--;
+
+	if (objectCount == 0 && meshDSLayout != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorSetLayout(pDevice->device, meshDSLayout, nullptr);
+		meshDSLayout = VK_NULL_HANDLE;
+	}
+
 	// cleanup materials
 	for (auto it = meshes.begin(); it != meshes.end(); ++it)
 	{
@@ -48,7 +58,28 @@ AssimpModel::~AssimpModel()
 	}
 }
 
+void AssimpModel::initMeshDescriptorSets(DescriptorPool * pDescriptorPool)
+{
+	for (uint32_t i = 0; i < meshes.size(); i++)
+	{
+		Mesh<Vertex> *pMesh = meshes[i];
+
+		meshDescriptorSets.push_back(
+			pDescriptorPool->getDescriptorSet(
+				{ pMesh->getMaterialColorBuffer() }, 
+				pMesh->getMaterialTextures(), 
+				meshDSLayout == VK_NULL_HANDLE, 
+				meshDSLayout
+			)
+		);
+	}
+}
+
 // private:
+
+uint32_t AssimpModel::objectCount = 0;
+
+VkDescriptorSetLayout AssimpModel::meshDSLayout = VK_NULL_HANDLE;
 
 void AssimpModel::processNode(aiNode *pAiNode, const aiScene *pAiScene)
 {
@@ -64,7 +95,7 @@ void AssimpModel::processNode(aiNode *pAiNode, const aiScene *pAiScene)
 	}
 }
 
-AssimpMesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScene)
+Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScene)
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
@@ -111,14 +142,14 @@ AssimpMesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * p
 		}
 	}
 
-	AssimpMaterial *pMaterial = getMeshMaterial(pAiMesh->mMaterialIndex, pAiScene->mMaterials);
+	Material *pMaterial = getMeshMaterial(pAiMesh->mMaterialIndex, pAiScene->mMaterials);
 
-	return new AssimpMesh<Vertex>(pDevice, vertices, indices, pMaterial);
+	return new Mesh<Vertex>(pDevice, vertices, indices, pMaterial);
 }
 
-AssimpMaterial* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial)
+Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial)
 {
-	AssimpMaterial *pMaterial = new AssimpMaterial(pDevice);
+	Material *pMaterial = new Material(pDevice);
 
 	if (materials.find(index) == materials.end())
 	{
@@ -130,12 +161,12 @@ AssimpMaterial* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMa
 		aiGetMaterialFloat(pAiMaterial, AI_MATKEY_OPACITY, &pMaterial->colors.opacity);
 		pMaterial->updateColorsBuffer();
 
-		for (aiTextureType type : AssimpMaterial::TEXTURES_ORDER)
+		for (aiTextureType type : Material::TEXTURES_ORDER)
 		{
 			getMaterialTexture(type, pAiMaterial, pMaterial);
 		}
 
-		materials.insert(std::pair<uint32_t, AssimpMaterial*>(index, pMaterial));
+		materials.insert(std::pair<uint32_t, Material*>(index, pMaterial));
 	}
 	else
 	{
@@ -152,7 +183,7 @@ glm::vec4 AssimpModel::getMaterialColor(aiMaterial *pAiMaterial, const char * ke
 	return glm::vec4(color.r, color.g, color.b, color.a);
 }
 
-void AssimpModel::getMaterialTexture(aiTextureType type, aiMaterial *pAiMaterial, AssimpMaterial *pMaterial)
+void AssimpModel::getMaterialTexture(aiTextureType type, aiMaterial *pAiMaterial, Material *pMaterial)
 {
 	if (pAiMaterial->GetTextureCount(type))
 	{
@@ -160,7 +191,7 @@ void AssimpModel::getMaterialTexture(aiTextureType type, aiMaterial *pAiMaterial
 	}
 	else
 	{
-		pMaterial->addTexture(type, loadDefaultTexture(AssimpMaterial::getDefaultTexturePath(type)));
+		pMaterial->addTexture(type, loadDefaultTexture(Material::getDefaultTexturePath(type)));
 	}
 }
 

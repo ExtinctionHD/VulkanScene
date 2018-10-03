@@ -73,6 +73,9 @@
     <Filter Include="Исходные файлы\Scene\Model">
       <UniqueIdentifier>{0ead2906-725d-4a3b-9995-112bde4769e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\Scene\Struct">
+      <UniqueIdentifier>{9810e5ab-46f2-4ecd-8590-94e3b693476a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.h">
@@ -111,22 +114,13 @@
     <ClInclude Include="TextureImage.h">
       <Filter>Файлы заголовков\Vulkan\Image</Filter>
     </ClInclude>
-    <ClInclude Include="DescriptorSet.h">
-      <Filter>Файлы заголовков\Vulkan\Other</Filter>
-    </ClInclude>
     <ClInclude Include="SwapChain.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
     <ClInclude Include="VkDeleter.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
-    <ClInclude Include="MvpMatrices.h">
-      <Filter>Файлы заголовков\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Timer.h">
-      <Filter>Файлы заголовков\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Lighting.h">
       <Filter>Файлы заголовков\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
@@ -153,12 +147,6 @@
     <ClInclude Include="AssimpModel.h">
       <Filter>Файлы заголовков\Scene\Model</Filter>
     </ClInclude>
-    <ClInclude Include="AssimpMesh.h">
-      <Filter>Файлы заголовков\Scene\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="AssimpMaterial.h">
-      <Filter>Файлы заголовков\Scene\Model</Filter>
-    </ClInclude>
     <ClInclude Include="Instance.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
@@ -169,6 +157,21 @@
       <Filter>Файлы заголовков\Scene\Model</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
+      <Filter>Файлы заголовков\Scene\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="DescriptorPool.h">
+      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighting.h">
+      <Filter>Файлы заголовков\Scene\Struct</Filter>
+    </ClInclude>
+    <ClInclude Include="MvpMatrices.h">
+      <Filter>Файлы заголовков\Scene\Struct</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Файлы заголовков\Scene\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
       <Filter>Файлы заголовков\Scene\Model</Filter>
     </ClInclude>
   </ItemGroup>
@@ -212,9 +215,6 @@
     <ClCompile Include="TextureImage.cpp">
       <Filter>Исходные файлы\Vulkan\Image</Filter>
     </ClCompile>
-    <ClCompile Include="DescriptorSet.cpp">
-      <Filter>Исходные файлы\Vulkan\Other</Filter>
-    </ClCompile>
     <ClCompile Include="SwapChain.cpp">
       <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
@@ -245,12 +245,6 @@
     <ClCompile Include="AssimpModel.cpp">
       <Filter>Исходные файлы\Scene\Model</Filter>
     </ClCompile>
-    <ClCompile Include="AssimpMesh.cpp">
-      <Filter>Исходные файлы\Scene\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="AssimpMaterial.cpp">
-      <Filter>Исходные файлы\Scene\Model</Filter>
-    </ClCompile>
     <ClCompile Include="Instance.cpp">
       <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
@@ -261,6 +255,12 @@
       <Filter>Исходные файлы\Scene\Model</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
+      <Filter>Исходные файлы\Scene\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorPool.cpp">
+      <Filter>Исходные файлы\Vulkan\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
       <Filter>Исходные файлы\Scene\Model</Filter>
     </ClCompile>
   </ItemGroup>

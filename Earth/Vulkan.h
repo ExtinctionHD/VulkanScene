@@ -8,14 +8,7 @@
 #include "SwapChain.h"
 #include "RenderPass.h"
 #include "GraphicsPipeline.h"
-#include "DescriptorSet.h"
-#include "Image.h"
-#include "TextureImage.h"
-#include "Model.h"
-#include "MvpMatrices.h"
-#include "Timer.h"
-#include "Lighting.h"
-#include "Camera.h"
+#include "Scene.h"
 
 // graphic API class that create all necessary objects
 // and set this as window user pointer
@@ -33,12 +26,6 @@ public:
 
 	// rebuild swapchain and all dependent objects for new extension
 	void resize(VkExtent2D newExtent);
-
-	// moves camera on key press
-	void onKeyAction(int key, int action);
-
-	// moves camera on mouse move
-	void onMouseMove(float x, float y);
 
 private:
 	const std::vector<const char *> VALIDATION_LAYERS =
@@ -78,13 +65,10 @@ private:
 	// swapchain object and its images
 	SwapChain *pSwapChain;
 
-	// resources for main graphics pipeline
-	DescriptorSet *pMainDS;
-
-	// resources for skybox graphics pipeline
-	DescriptorSet *pSkyboxDS;
-
 	RenderPass *pRenderPass;
+
+	// drawing scene
+	Scene *pScene;
 
 	// graphics pipelines for rendering main objects
 	GraphicsPipeline *pMainPipeline;

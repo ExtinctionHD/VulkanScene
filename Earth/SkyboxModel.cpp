@@ -2,10 +2,18 @@
 
 // public:
 
-SkyboxModel::SkyboxModel(Device *pDevice, std::array<std::string, CUBE_SIDE_COUNT> textureFilenames) :
+SkyboxModel::SkyboxModel(Device *pDevice, std::string texturesDir, std::string extension) :
 	Model(pDevice)
 {
-	std::vector<std::string> filenames = std::vector<std::string>(textureFilenames.begin(), textureFilenames.end());
+	std::vector<std::string> filenames = {
+		texturesDir + "right" + extension,
+		texturesDir + "left" + extension,
+		texturesDir + "top" + extension,
+		texturesDir + "bottom" + extension,
+		texturesDir + "front" + extension,
+		texturesDir + "back" + extension,
+	};
+
 	pTexture = new TextureImage(pDevice, filenames, CUBE_SIDE_COUNT, true);
 
 	std::vector<Position> cubeVertices{
@@ -32,11 +40,42 @@ SkyboxModel::SkyboxModel(Device *pDevice, std::array<std::string, CUBE_SIDE_COUN
 		7, 5, 3,
 		7, 3, 1
 	};
-	pMesh = new AssimpMesh<Position>(pDevice, cubeVertices, cubeIndices, nullptr);
+	pMesh = new Mesh<Position>(pDevice, cubeVertices, cubeIndices, nullptr);
+
+	objectCount++;
 }
 
 SkyboxModel::~SkyboxModel()
 {
+	objectCount--;
+
+	if (objectCount == 0 && meshDSLayout != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorSetLayout(pDevice->device, meshDSLayout, nullptr);
+		meshDSLayout = VK_NULL_HANDLE;
+	}
+
 	delete(pMesh);
 	delete(pTexture);
 }
+
+// protected:
+
+void SkyboxModel::initMeshDescriptorSets(DescriptorPool * pDescriptorPool)
+{
+	meshDescriptorSets.push_back(
+		pDescriptorPool->getDescriptorSet(
+			{ pMesh->getMaterialColorBuffer() }, 
+			pMesh->getMaterialTextures(), 
+			meshDSLayout == VK_NULL_HANDLE, 
+			meshDSLayout
+		)
+	);
+}
+
+// private:
+
+uint32_t SkyboxModel::objectCount = 0;
+
+VkDescriptorSetLayout SkyboxModel::meshDSLayout = VK_NULL_HANDLE;
+
