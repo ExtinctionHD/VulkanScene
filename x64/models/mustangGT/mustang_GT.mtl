@@ -1,0 +1,2012 @@
+# 
+# Wavefront material file
+# Converted by the DEEP Exploration  Deep Exploration 6.3 x64 6.3.5.8307
+# Right Hemisphere, LTD
+# http://www.righthemisphere.com/
+# 
+
+newmtl body
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd body.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl mustang_misc__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd mustang_misc.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl misc_body__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd misc_body.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF0C0C0C__spec_
+Ka 0.2 0.2 0.2
+Kd 0.152941 0.152941 0.152941
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FFFF0000__spec_
+Ka 0.2 0.2 0.2
+Kd 1 0 0
+Ks 1 1 1
+illum 2
+Ns 55
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl undercarriage__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd undercarriage.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF0F0F0F__spec_
+Ka 0.2 0.2 0.2
+Kd 0.06 0.06 0.06
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl lights_lod0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.29 0.29 0.29
+illum 2
+Ns 8
+map_Kd vehiclelights.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl vehiclelights128
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd vehiclelights.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl vehiclelights128__RR_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd vehiclelights.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__36
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl resh__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd resh.png
+map_bump 
+bump 
+map_opacity resh.png
+map_d resh.png
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF0F0F0F__spec_0
+Ka 0.2 0.2 0.2
+Kd 0.06 0.06 0.06
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl lights_lod00
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.29 0.29 0.29
+illum 2
+Ns 8
+map_Kd vehiclelights.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl nodamage_lod0__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 90.5097
+map_Kd nodamage_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF1E1E1E__spec_
+Ka 0.2 0.2 0.2
+Kd 0.12 0.12 0.12
+Ks 0.38 0.38 0.38
+illum 2
+Ns 7.38906
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl vehiclelights1280
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd vehiclelights.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl vehiclelights128__FR_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd vehiclelights.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__47
+Ka 0.2 0.2 0.2
+Kd 0.06 0.06 0.06
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__66666666__trans_
+Ka 0.25098 0.25098 0.25098
+Kd 0.25098 0.25098 0.25098
+Ks 1 1 1
+illum 2
+Ns 17.1484
+d 0.54
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl HL_Glass
+Ka 0.121569 0.121569 0.121569
+Kd 0.121569 0.121569 0.121569
+Ks 1 1 1
+illum 2
+Ns 17.1484
+d 0.4
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl mustang_misc__spec_0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd mustang_misc.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF0C0C0C__spec_0
+Ka 0.2 0.2 0.2
+Kd 0.152941 0.152941 0.152941
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF0F0F0F__spec_1
+Ka 0.2 0.2 0.2
+Kd 0.06 0.06 0.06
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF676767__spec_
+Ka 0.2 0.2 0.2
+Kd 0.4 0.4 0.4
+Ks 0.52 0.52 0.52
+illum 2
+Ns 222.861
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF4D4D4D__spec_
+Ka 0.2 0.2 0.2
+Kd 0.788235 0.788235 0.788235
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic_black__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic_black.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic_black02
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic_black02.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF868686__spec_
+Ka 0.2 0.2 0.2
+Kd 0.529412 0.529412 0.529412
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl leather__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd leather.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic_dash
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 48.5029
+map_Kd plastic_dash.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl cloth_brightgrey
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd cloth_brightgrey.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_lod0__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_emissive_lod0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_emissive_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl digital_gauge
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd digital_gauge.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__63
+Ka 0.2 0.2 0.2
+Kd 0.59 0.59 0.59
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF676767__spec_0
+Ka 0.2 0.2 0.2
+Kd 0.4 0.4 0.4
+Ks 0.52 0.52 0.52
+illum 2
+Ns 222.861
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic_black__spec_0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic_black.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_lod0__spec_0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF2D2D2D
+Ka 0.2 0.2 0.2
+Kd 0.18 0.18 0.18
+Ks 1 1 1
+illum 2
+Ns 32
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__74
+Ka 0.2 0.2 0.2
+Kd 0.4 0.4 0.4
+Ks 0.52 0.52 0.52
+illum 2
+Ns 222.861
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_lod0__spec_1
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_lod0__spec_trans_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__85
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__51595959__trans_
+Ka 0.2 0.2 0.2
+Kd 0.35 0.35 0.35
+Ks 1 1 1
+illum 2
+Ns 45.2548
+d 0.23
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_emissive_lod00
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_emissive_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl body0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd body.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic1
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__96
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl body1
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd body.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic2
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF0F0F0F__spec_2
+Ka 0.2 0.2 0.2
+Kd 0.06 0.06 0.06
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl vehiclelights128__RR_0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd vehiclelights.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl nodamage_lod0__spec_0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 90.5097
+map_Kd nodamage_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FFCCCCCC__spec_
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__107
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl windshield
+Ka 0.0470588 0.105882 0.172549
+Kd 0.0470588 0.105882 0.172549
+Ks 1 1 1
+illum 2
+Ns 16
+d 0.42
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl body2
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd body.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic3
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl mustang_misc__spec_1
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd mustang_misc.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF4D4D4D__spec_0
+Ka 0.2 0.2 0.2
+Kd 0.788235 0.788235 0.788235
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic_dash0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 48.5029
+map_Kd plastic_dash.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_lod0__spec_2
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl windshield0
+Ka 0.0470588 0.105882 0.172549
+Kd 0.0470588 0.105882 0.172549
+Ks 1 1 1
+illum 2
+Ns 16
+d 0.42
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl leather_stripey_black
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd leather_stripey_black.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__118
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl body3
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd body.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic4
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl mustang_misc__spec_2
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd mustang_misc.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF4D4D4D__spec_1
+Ka 0.2 0.2 0.2
+Kd 0.788235 0.788235 0.788235
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic_dash1
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 48.5029
+map_Kd plastic_dash.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_lod0__spec_3
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl windshield1
+Ka 0.0470588 0.105882 0.172549
+Kd 0.0470588 0.105882 0.172549
+Ks 1 1 1
+illum 2
+Ns 16
+d 0.42
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl leather_stripey_black0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd leather_stripey_black.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__129
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl body4
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd body.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic5
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl resh__spec_0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd resh.png
+map_bump 
+bump 
+map_opacity resh.png
+map_d resh.png
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl vehiclelights128__FR_0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd vehiclelights.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FFCCCCCC__spec_0
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__140
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl body5
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd body.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic6
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF1E1E1E__spec_0
+Ka 0.2 0.2 0.2
+Kd 0.12 0.12 0.12
+Ks 0.38 0.38 0.38
+illum 2
+Ns 7.38906
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FFCCCCCC__spec_1
+Ka 0.2 0.2 0.2
+Kd 0.8 0.8 0.8
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl vehiclelights__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 0.65 0.82 1
+illum 2
+Ns 8
+map_Kd vehiclelights.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl carpback__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd carpback.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl carplate__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd carplate.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__151
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl body6
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd body.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic7
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__162
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl body7
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd body.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic8
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__173
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF676767__spec_1
+Ka 0.2 0.2 0.2
+Kd 0.4 0.4 0.4
+Ks 0.52 0.52 0.52
+illum 2
+Ns 222.861
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic_black__spec_1
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic_black.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl leather__spec_0
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd leather.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_lod0__spec_4
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__184
+Ka 0.2 0.2 0.2
+Kd 0.4 0.4 0.4
+Ks 0.52 0.52 0.52
+illum 2
+Ns 222.861
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl plastic9
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd plastic.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_lod0__spec_5
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_emissive_lod01
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_emissive_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__195
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl interior_lod0__spec_6
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd interior_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl mustang_tyre
+Ka 0.8 0.8 0.8
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 103.968
+map_Kd tyre.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FFA0A0A0__spec_
+Ka 0.521569 0.521569 0.521569
+Kd 0.521569 0.521569 0.521569
+Ks 1 1 1
+illum 2
+Ns 7.46426
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF0000FF__spec_
+Ka 0.2 0.2 0.2
+Kd 0.231373 0.231373 0.235294
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__206
+Ka 0.8 0.8 0.8
+Kd 0.8 0.8 0.8
+Ks 1 1 1
+illum 2
+Ns 103.968
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl mustang_tyre0
+Ka 0.8 0.8 0.8
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 103.968
+map_Kd tyre.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FFA0A0A0__spec_0
+Ka 0.521569 0.521569 0.521569
+Kd 0.521569 0.521569 0.521569
+Ks 1 1 1
+illum 2
+Ns 7.46426
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF0000FF__spec_0
+Ka 0.2 0.2 0.2
+Kd 0.231373 0.231373 0.235294
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__217
+Ka 0.8 0.8 0.8
+Kd 0.8 0.8 0.8
+Ks 1 1 1
+illum 2
+Ns 103.968
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl brembo_spt2__spec_
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 8
+map_Kd brembo_spt2.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl mustang_tyre1
+Ka 0.8 0.8 0.8
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 103.968
+map_Kd tyre.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FFA0A0A0__spec_1
+Ka 0.521569 0.521569 0.521569
+Kd 0.521569 0.521569 0.521569
+Ks 1 1 1
+illum 2
+Ns 7.46426
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF0000FF__spec_1
+Ka 0.2 0.2 0.2
+Kd 0.231373 0.231373 0.235294
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__228
+Ka 0.8 0.8 0.8
+Kd 0.8 0.8 0.8
+Ks 1 1 1
+illum 2
+Ns 103.968
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl mustang_tyre2
+Ka 0.8 0.8 0.8
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 103.968
+map_Kd tyre.tga
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FFA0A0A0__spec_2
+Ka 0.521569 0.521569 0.521569
+Kd 0.521569 0.521569 0.521569
+Ks 1 1 1
+illum 2
+Ns 7.46426
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Matte__FF0000FF__spec_2
+Ka 0.2 0.2 0.2
+Kd 0.231373 0.231373 0.235294
+Ks 1 1 1
+illum 2
+Ns 50
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl Material__239
+Ka 0.8 0.8 0.8
+Kd 0.8 0.8 0.8
+Ks 1 1 1
+illum 2
+Ns 103.968
+map_Kd 
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
+
+newmtl nodamage_lod0__spec_1
+Ka 0.2 0.2 0.2
+Kd 1 1 1
+Ks 1 1 1
+illum 2
+Ns 90.5097
+map_Kd nodamage_lod0.png
+map_bump 
+bump 
+map_opacity 
+map_d 
+refl 
+map_kS 
+map_kA 
+map_Ns 
