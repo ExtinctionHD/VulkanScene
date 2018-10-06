@@ -19,6 +19,7 @@ AssimpModel::AssimpModel(Device *pDevice, const std::string& filename) :
 		aiProcess_GenNormals |
 		aiProcess_FlipUVs
 	);
+	importer.ApplyPostProcessing(aiProcess_CalcTangentSpace);
 	if (!pScene)
 	{
 		throw std::runtime_error(importer.GetErrorString());
@@ -33,16 +34,13 @@ AssimpModel::~AssimpModel()
 {
 	objectCount--;
 
-	if (objectCount == 0 && meshDSLayout != VK_NULL_HANDLE)
+	if (objectCount == 0)
 	{
-		vkDestroyDescriptorSetLayout(pDevice->device, meshDSLayout, nullptr);
-		meshDSLayout = VK_NULL_HANDLE;
-	}
-
-	// cleanup materials
-	for (auto it = meshes.begin(); it != meshes.end(); ++it)
-	{
-		delete(*it);
+		if (meshDSLayout != VK_NULL_HANDLE)
+		{
+			vkDestroyDescriptorSetLayout(pDevice->device, meshDSLayout, nullptr);
+			meshDSLayout = VK_NULL_HANDLE;
+		}
 	}
 
 	// cleanup materials
@@ -58,35 +56,82 @@ AssimpModel::~AssimpModel()
 	}
 }
 
-void AssimpModel::initMeshDescriptorSets(DescriptorPool * pDescriptorPool)
+void AssimpModel::createPipeline(Device *pDevice, std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass)
 {
-	for (uint32_t i = 0; i < meshes.size(); i++)
-	{
-		Mesh<Vertex> *pMesh = meshes[i];
+	layouts.push_back(mvpDSLayout);
+	layouts.push_back(meshDSLayout);
 
-		meshDescriptorSets.push_back(
-			pDescriptorPool->getDescriptorSet(
-				{ pMesh->getMaterialColorBuffer() }, 
-				pMesh->getMaterialTextures(), 
-				meshDSLayout == VK_NULL_HANDLE, 
-				meshDSLayout
-			)
-		);
+	if (pPipeline == nullptr)
+	{
+		delete(pPipeline);
+	}
+
+	const uint32_t inputBinding = 0;
+
+	pPipeline = new GraphicsPipeline(
+		pDevice->device,
+		layouts,
+		pRenderPass,
+		{
+			new ShaderModule(pDevice->device, SHADER_FILES[ShaderTypes::vert], VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, SHADER_FILES[ShaderTypes::frag], VK_SHADER_STAGE_FRAGMENT_BIT)
+		},
+		Vertex::getBindingDescription(inputBinding),
+		Vertex::getAttributeDescriptions(inputBinding)
+	);
+}
+
+void AssimpModel::recreatePipeline(RenderPass * pRenderPass)
+{
+	if (pPipeline == nullptr)
+	{
+		throw std::runtime_error("Pipeline not created yet");
+	}
+
+	pPipeline->recreate(pRenderPass);
+}
+
+void AssimpModel::destroyPipeline()
+{
+	if (pPipeline != nullptr)
+	{
+		delete(pPipeline);
+		pPipeline = nullptr;
 	}
 }
 
+// protected:
+
+VkDescriptorSetLayout& AssimpModel::getMeshDSLayout()
+{
+	return meshDSLayout;
+}
+
+GraphicsPipeline * AssimpModel::getPipeline()
+{
+	return pPipeline;
+}
+
+
 // private:
+
+const std::vector<std::string> AssimpModel::SHADER_FILES = {
+	File::getExeDir() + "shaders/main/vert.spv",
+	File::getExeDir() + "shaders/main/frag.spv"
+};
 
 uint32_t AssimpModel::objectCount = 0;
 
 VkDescriptorSetLayout AssimpModel::meshDSLayout = VK_NULL_HANDLE;
 
+GraphicsPipeline* AssimpModel::pPipeline = nullptr;
+
 void AssimpModel::processNode(aiNode *pAiNode, const aiScene *pAiScene)
 {
 	for (unsigned int i = 0; i < pAiNode->mNumMeshes; i++)
 	{
-		aiMesh *pMesh = pAiScene->mMeshes[pAiNode->mMeshes[i]];
-		meshes.push_back(processMesh(pMesh, pAiScene));
+		aiMesh *pAiMesh = pAiScene->mMeshes[pAiNode->mMeshes[i]];
+		meshes.push_back(processMesh(pAiMesh, pAiScene));
 	}
 
 	for (unsigned int i = 0; i < pAiNode->mNumChildren; i++)
@@ -115,6 +160,11 @@ Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScen
 			pAiMesh->mNormals[i].x,
 			pAiMesh->mNormals[i].y,
 			pAiMesh->mNormals[i].z
+		);
+		vertex.tangent = glm::vec3(
+			pAiMesh->mTangents[i].x,
+			pAiMesh->mTangents[i].y,
+			pAiMesh->mTangents[i].z
 		);
 
 		if (pAiMesh->mTextureCoords[0])
@@ -155,9 +205,9 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 	{
 		aiMaterial *pAiMaterial = ppAiMaterial[index];
 
-		pMaterial->colors.ambientColor = getMaterialColor(pAiMaterial, "COLOR_AMBIENT");
-		pMaterial->colors.diffuseColor = getMaterialColor(pAiMaterial, "COLOR_DIFFUSE");
-		pMaterial->colors.specularColor = getMaterialColor(pAiMaterial, "COLOR_SPECULAR");
+		pMaterial->colors.ambientColor = getMaterialColor(pAiMaterial, "$clr.ambient");
+		pMaterial->colors.diffuseColor = getMaterialColor(pAiMaterial, "$clr.diffuse");
+		pMaterial->colors.specularColor = getMaterialColor(pAiMaterial, "$clr.specular");
 		aiGetMaterialFloat(pAiMaterial, AI_MATKEY_OPACITY, &pMaterial->colors.opacity);
 		pMaterial->updateColorsBuffer();
 
@@ -179,7 +229,10 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 glm::vec4 AssimpModel::getMaterialColor(aiMaterial *pAiMaterial, const char * key)
 {
 	aiColor4D color;
-	aiGetMaterialColor(pAiMaterial, key, 0, 0, &color);
+	if (aiGetMaterialColor(pAiMaterial, key, 0, 0, &color) != aiReturn_SUCCESS)
+	{
+		throw std::runtime_error("Failed to get material color");
+	}
 	return glm::vec4(color.r, color.g, color.b, color.a);
 }
 
@@ -198,7 +251,10 @@ void AssimpModel::getMaterialTexture(aiTextureType type, aiMaterial *pAiMaterial
 TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextureType type)
 {
 	aiString path;
-	pAiMaterial->GetTexture(type, 0, &path);
+	if (pAiMaterial->GetTexture(type, 0, &path) != aiReturn_SUCCESS)
+	{
+		throw std::runtime_error("Failed to get material texture");
+	}
 
 	TextureImage *pTexture;
 	if (textures.find(path.C_Str()) == textures.end())

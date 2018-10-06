@@ -19,54 +19,20 @@ Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
 		VALIDATION_LAYERS : std::vector<const char*>();
 
 	pInstance = new Instance(requiredLayers);
-
 	createSurface(window);
-
 	pDevice = new Device(pInstance->getInstance(), surface, requiredLayers);
-
 	pSwapChain = new SwapChain(pDevice, surface, frameExtent);
-
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
+	pScene = new Scene(pDevice, pSwapChain->extent);
+	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDecriptorSetCount());
 
-	// const uint32_t binding = 0;
+	pScene->initDescriptorSets(pDescriptorPool);
+	pScene->createPipelines(pRenderPass);
 
-	//// create DS and pipeline for rendering main objects:
-	//pMainDS = new DescriptorSet(pDevice);
-	//initMainDS();
-	/*std::vector<ShaderModule*> mainShaderModules{
-		new ShaderModule(pDevice->device, SHADERS_PATHES[Shaders::mainVert], VK_SHADER_STAGE_VERTEX_BIT),
-		new ShaderModule(pDevice->device, SHADERS_PATHES[Shaders::mainFrag], VK_SHADER_STAGE_FRAGMENT_BIT),
-	};
-	pMainPipeline = new GraphicsPipeline(
-		pDevice->device, 
-		{ pMainDS->layout }, 
-		pRenderPass, 
-		mainShaderModules,
-		Vertex::getBindingDescription(binding),
-		Vertex::getAttributeDescriptions(binding)
-	);*/
+	initGraphicCommands();
 
-	//// create DS and pipeline for rendering skybox
-	//pSkyboxDS = new DescriptorSet(pDevice);
-	//initSkyboxDS();
-
-	/*std::vector<ShaderModule*> skyboxShaderModules{
-		new ShaderModule(pDevice->device, SHADERS_PATHES[Shaders::skyboxVert], VK_SHADER_STAGE_VERTEX_BIT),
-		new ShaderModule(pDevice->device, SHADERS_PATHES[Shaders::skyboxFrag], VK_SHADER_STAGE_FRAGMENT_BIT),
-	};
-	pSkyboxPipeline = new GraphicsPipeline(
-		pDevice->device,
-		{ pSkyboxDS->layout },
-		pRenderPass,
-		skyboxShaderModules,
-		Position::getBindingDescription(binding),
-		Position::getAttributeDescriptions(binding)
-	);*/
-
-	//initGraphicCommands();
-
-	//createSemaphore(pDevice->device, imageAvailable);
-	//createSemaphore(pDevice->device, renderingFinished);
+	createSemaphore(pDevice->device, imageAvailable);
+	createSemaphore(pDevice->device, renderingFinished);
 }
 
 Vulkan::~Vulkan()
@@ -76,9 +42,8 @@ Vulkan::~Vulkan()
 	vkDestroySemaphore(pDevice->device, imageAvailable, nullptr);
 	vkDestroySemaphore(pDevice->device, renderingFinished, nullptr);
 
-	delete(pSkyboxPipeline);
-	delete(pMainPipeline);
 	delete(pScene);
+	delete(pDescriptorPool);
 	delete(pSwapChain);
 	delete(pDevice);
 
@@ -89,6 +54,8 @@ Vulkan::~Vulkan()
 
 void Vulkan::drawFrame()
 {
+	pScene->updateScene();
+
 	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(
 		pDevice->device,
@@ -162,8 +129,7 @@ void Vulkan::resize(VkExtent2D newExtent)
 
 	pSwapChain = new SwapChain(pDevice, surface, newExtent);
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
-	pMainPipeline->recreate(pRenderPass);
-	pSkyboxPipeline->recreate(pRenderPass);
+	pScene->resizeExtent(pRenderPass);
 
 	initGraphicCommands();
 }
@@ -243,6 +209,7 @@ void Vulkan::initGraphicCommands()
 		vkCmdBeginRenderPass(graphicCommands[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		// draw earth model
+		pScene->draw(graphicCommands[i]);
 
 		vkCmdEndRenderPass(graphicCommands[i]);
 

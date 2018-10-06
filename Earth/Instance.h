@@ -3,6 +3,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
+// core object of vulkan api
 class Instance
 {
 public:

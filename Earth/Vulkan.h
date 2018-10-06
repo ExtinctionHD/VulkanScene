@@ -9,6 +9,8 @@
 #include "RenderPass.h"
 #include "GraphicsPipeline.h"
 #include "Scene.h"
+#include "DescriptorPool.h"
+#include "Controller.h"
 
 // graphic API class that create all necessary objects
 // and set this as window user pointer
@@ -42,18 +44,6 @@ private:
 	// color that clear each frame
 	const VkClearColorValue clearColor = { 0, 0, 0, 1 };
 
-	enum Shaders
-	{
-		mainVert, mainFrag, skyboxVert, skyboxFrag
-	};
-	// files with shaders code
-	const std::vector<std::string> SHADERS_PATHES = {
-		File::getExeDir() + "shaders/mainVert.spv",
-		File::getExeDir() + "shaders/mainFrag.spv",
-		File::getExeDir() + "shaders/skyboxVert.spv",
-		File::getExeDir() + "shaders/skyboxFrag.spv"
-	};
-
 	Instance *pInstance;
 
 	// surface object for presentation
@@ -70,11 +60,7 @@ private:
 	// drawing scene
 	Scene *pScene;
 
-	// graphics pipelines for rendering main objects
-	GraphicsPipeline *pMainPipeline;
-
-	// graphics pipeline for rendering skybox
-	GraphicsPipeline *pSkyboxPipeline;
+	DescriptorPool *pDescriptorPool;
 
 	std::vector<VkCommandBuffer> graphicCommands;
 

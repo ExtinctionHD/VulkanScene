@@ -2,7 +2,7 @@
 
 // public:
 
-DescriptorPool::DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t textureCount)
+DescriptorPool::DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t textureCount, uint32_t setCount)
 {
 	this->pDevice = pDevice;
 
@@ -21,9 +21,9 @@ DescriptorPool::DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t t
 		VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,	// sType;
 		nullptr,										// pNext;
 		0,												// flags;
-		1,												// maxSets;
+		setCount,										// maxSets;
 		poolSizes.size(),								// poolSizeCount;
-		poolSizes.data(),								// pPoolSizes;
+		poolSizes.data(),								// pDescriptorPoolSizes;
 	};
 
 	VkResult result = vkCreateDescriptorPool(pDevice->device, &createInfo, nullptr, &pool);
@@ -38,7 +38,7 @@ DescriptorPool::~DescriptorPool()
 	vkDestroyDescriptorPool(pDevice->device, pool, nullptr);
 }
 
-VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, std::vector<TextureImage*> textures, bool createLayout, VkDescriptorSetLayout layout)
+VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, std::vector<TextureImage*> textures, bool createLayout, VkDescriptorSetLayout& layout)
 {
 	if (createLayout)
 	{

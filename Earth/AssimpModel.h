@@ -11,23 +11,36 @@
 
 #pragma comment(lib, "assimp-vc140-mt.lib")
 
+// model that loaded from file using Assimp
 class AssimpModel : public Model
 {
 public:
 	AssimpModel(Device *pDevice, const std::string& filename);
 	~AssimpModel();
 
+	// creates pipeline for rendering models of this class
+	static void createPipeline(Device *pDevice, std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass);
+
+	static void recreatePipeline(RenderPass *pRenderPass);
+
+	static void destroyPipeline();
+
 protected:
-	void virtual initMeshDescriptorSets(DescriptorPool *pPool) override;
+	virtual VkDescriptorSetLayout& getMeshDSLayout() override;
+
+	virtual GraphicsPipeline *getPipeline() override;
 
 private:
+	enum ShaderTypes { vert, frag };
+	static const std::vector<std::string> SHADER_FILES;
+
 	static uint32_t objectCount;
 
 	static VkDescriptorSetLayout meshDSLayout;
 
-	std::string directory;
+	static GraphicsPipeline *pPipeline;
 
-	std::vector<Mesh<Vertex>*> meshes;
+	std::string directory;
 
 	std::map<uint32_t, Material*> materials;
 

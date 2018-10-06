@@ -6,6 +6,9 @@
 #include <glm/glm.hpp>
 #include "DescriptorPool.h"
 #include <array>
+#include "GraphicsPipeline.h"
+#include "RenderPass.h"
+#include "MeshBase.h"
 
 class Model
 {
@@ -22,24 +25,34 @@ public:
 
 	void setMvpMatrices(MvpMatrices mvp);
 
+	uint32_t getBufferCount() const;
+
+	uint32_t getTextureCount() const;
+
+	uint32_t getMeshCount() const;
+
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
-	// virtual void draw() = 0;
+	virtual void draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
 
 protected:
 	Model(Device *pDevice);
 
 	Device *pDevice;
 
+	std::vector<MeshBase*> meshes;
+
+	static VkDescriptorSetLayout mvpDSLayout;
+
 	// descriptor sets for each mesh
 	std::vector<VkDescriptorSet> meshDescriptorSets;
 
-	void virtual initMeshDescriptorSets(DescriptorPool *pDescriptorPool) = 0;
+	virtual VkDescriptorSetLayout& getMeshDSLayout() = 0;
+
+	virtual GraphicsPipeline* getPipeline() = 0;
 
 private:
 	static uint32_t objectCount;
-
-	static VkDescriptorSetLayout mvpDSLayout;
 
 	MvpMatrices mvp;
 

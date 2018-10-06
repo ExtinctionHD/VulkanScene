@@ -5,9 +5,11 @@
 #include "Material.h"
 #include "Buffer.h"
 #include <vulkan/vulkan.h>
+#include "MeshBase.h"
 
+// mesh builded from vertices of T type
 template <class T>
-class Mesh
+class Mesh : public MeshBase
 {
 public:
 	Mesh(Device *pDevice, std::vector<T> vertices, std::vector<uint32_t> indices, Material *pMaterial)
@@ -19,47 +21,10 @@ public:
 		initBuffers(pDevice);
 	}
 
-	~Mesh()
-	{
-		delete(pVertexBuffer);
-		delete(pIndexBuffer);
-	}
-
-	VkBuffer getVertexBuffer() const
-	{
-		return pVertexBuffer->getBuffer();
-	}
-
-	VkBuffer getIndexBuffer() const
-	{
-		return pIndexBuffer->getBuffer();
-	}
-
-	uint32_t getIndexCount() const
-	{
-		return indices.size();
-	}
-
-	Buffer* getMaterialColorBuffer() const
-	{
-		return pMaterial->pColorsBuffer;
-	}
-
-	std::vector<TextureImage*> getMaterialTextures() const
-	{
-		return pMaterial->getTextures();
-	}
+	~Mesh() {}
 
 private:
 	std::vector<T> vertices;
-
-	std::vector<uint32_t> indices;
-
-	Material *pMaterial;
-
-	Buffer *pVertexBuffer;
-
-	Buffer *pIndexBuffer;
 
 	void initBuffers(Device *pDevice)
 	{

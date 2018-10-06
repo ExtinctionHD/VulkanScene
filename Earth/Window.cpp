@@ -12,10 +12,6 @@ Window::Window(int width, int height)
 	window = glfwCreateWindow(width, height, "Vulkan API", nullptr, nullptr);
 
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
-	glfwSetKeyCallback(window, keyCallback);
-	glfwSetCursorPosCallback(window, cursorPosCallback);
-
-	setCursorInCenter(window);
 }
 
 void Window::mainLoop()
@@ -64,25 +60,5 @@ void Window::framebufferSizeCallback(GLFWwindow *window, int width, int height)
 	};
 
 	getVulkanPointer(window)->resize(extent);
-}
-
-void Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mode)
-{
-	//getVulkanPointer(window)->onKeyAction(key, action);
-}
-
-void Window::cursorPosCallback(GLFWwindow * window, double x, double y)
-{
-	//getVulkanPointer(window)->onMouseMove(x, y);
-
-	//setCursorInCenter(window);
-}
-
-void Window::setCursorInCenter(GLFWwindow * window)
-{
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
-
-	glfwSetCursorPos(window, width / 2.0, height / 2.0);
 }
 

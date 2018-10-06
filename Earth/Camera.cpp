@@ -45,76 +45,6 @@ glm::vec3 Camera::getUp() const
 	return up;
 }
 
-void Camera::onKeyDown(int key)
-{
-	switch (key)
-	{
-	case GLFW_KEY_W:
-		movement.forward = Direction::positive;
-		break;
-
-	case GLFW_KEY_S:
-		movement.forward = Direction::negative;
-		break;
-
-	case GLFW_KEY_A:
-		movement.right = Direction::negative;
-		break;
-
-	case GLFW_KEY_D:
-		movement.right = Direction::positive;
-		break;
-
-	case GLFW_KEY_SPACE:
-		movement.up = Direction::positive;
-		break;
-
-	case GLFW_KEY_LEFT_CONTROL:
-		movement.up = Direction::negative;
-		break;
-
-	default:
-		break;
-	}
-}
-
-void Camera::onKeyUp(int key)
-{
-	switch (key)
-	{
-	case GLFW_KEY_W:
-		movement.forward = Direction::none;
-		break;
-
-	case GLFW_KEY_S:
-		movement.forward = Direction::none;
-		break;
-
-	case GLFW_KEY_A:
-	{
-		movement.right = Direction::none;
-		break;
-	}
-
-	case GLFW_KEY_D:
-	{
-		movement.right = Direction::none;
-		break;
-	}
-
-	case GLFW_KEY_SPACE:
-		movement.up = Direction::none;
-		break;
-
-	case GLFW_KEY_LEFT_CONTROL:
-		movement.up = Direction::none;
-		break;
-
-	default:
-		break;
-	}
-}
-
 void Camera::moveCamera(float deltaSec)
 {
 	const float DISTANCE = SPEED * deltaSec;
@@ -134,16 +64,16 @@ void Camera::moveCamera(float deltaSec)
 	pos += direction * DISTANCE;
 }
 
-void Camera::onMouseMove(float x, float y)
+void Camera::rotateCamera(glm::vec2 pos)
 {
 	const float MAX_DELTA = 100.0f;
 	const float VERT_ANGLE_LIMIT = 90.0f;
 
-	float deltaX = x - getCenter().x;
+	float deltaX = pos.x - getCenter().x;
 	deltaX = abs(deltaX) < MAX_DELTA ? deltaX : MAX_DELTA * deltaX / abs(deltaX);
 	angleH += (deltaX * SENSITIVITY);
 
-	float deltaY = y - getCenter().y;
+	float deltaY = pos.y - getCenter().y;
 	deltaY = abs(deltaY) < MAX_DELTA ? deltaY : MAX_DELTA * deltaY / abs(deltaY);
 	angleV += (deltaY * SENSITIVITY);
 	// set vertical angle limits: -VERT_ANGLE_LIMIT and VERT_ANGLE_LIMIT degrees
@@ -165,6 +95,26 @@ void Camera::onMouseMove(float x, float y)
 	forward = glm::normalize(view);
 	up = glm::cross(forward, hAxis);
 	up = glm::normalize(up);
+}
+
+void Camera::setCameraExtent(VkExtent2D extent)
+{
+	this->extent = extent;
+}
+
+glm::mat4 Camera::getViewMatrix() const
+{
+	return glm::lookAt(getPos(), getTarget(), getUp());
+}
+
+glm::mat4 Camera::getProjectionMatrix() const
+{
+	const float viewAngle = 45.0f;
+	const float aspect = extent.width / (float)extent.height;
+	const float zNear = 0.1f;
+	const float zFar = 500.0f;
+
+	return glm::perspective(glm::radians(viewAngle), aspect, zNear, zFar);
 }
 
 // private:

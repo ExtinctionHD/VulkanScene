@@ -15,10 +15,11 @@ Material::~Material()
 }
 
 const std::vector<aiTextureType> Material::TEXTURES_ORDER = {
+	aiTextureType_AMBIENT,
 	aiTextureType_DIFFUSE,
 	aiTextureType_SPECULAR,
-	aiTextureType_NORMALS,
-	aiTextureType_OPACITY
+	aiTextureType_OPACITY,
+	aiTextureType_NORMALS
 };
 
 std::vector<TextureImage*> Material::getTextures() const
@@ -27,7 +28,11 @@ std::vector<TextureImage*> Material::getTextures() const
 
 	for (aiTextureType type : TEXTURES_ORDER)
 	{
-		result.push_back(textures.at(type));
+		try
+		{
+			result.push_back(textures.at(type));
+		}
+		catch (std::out_of_range ex) {}
 	}
 
 	return result;
@@ -49,14 +54,16 @@ std::string Material::getDefaultTexturePath(aiTextureType type)
 
 	switch (type)
 	{
+	case aiTextureType_AMBIENT:
+		return DEFAULT_TEXTURE_DIR + "ambient.jpg";
 	case aiTextureType_DIFFUSE:
-		return DEFAULT_TEXTURE_DIR + "texture.jpg";
+		return DEFAULT_TEXTURE_DIR + "diffuse.jpg";
 	case aiTextureType_SPECULAR:
-		return DEFAULT_TEXTURE_DIR + "texture.jpg";
-	case aiTextureType_NORMALS:
-		return DEFAULT_TEXTURE_DIR + "texture.jpg";
+		return DEFAULT_TEXTURE_DIR + "specular.jpg";
 	case aiTextureType_OPACITY:
-		return DEFAULT_TEXTURE_DIR + "texture.jpg";
+		return DEFAULT_TEXTURE_DIR + "opacity.jpg";
+	case aiTextureType_NORMALS:
+		return DEFAULT_TEXTURE_DIR + "normals.jpg";
 	default:
 		throw std::invalid_argument("For this type no default texture");
 	}

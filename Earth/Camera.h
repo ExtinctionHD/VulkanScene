@@ -17,27 +17,6 @@ public:
 
 	~Camera();
 
-	// returns camera position
-	glm::vec3 getPos() const;
-
-	// returns camera target position
-	glm::vec3 getTarget() const;
-
-	// returns camera up vector
-	glm::vec3 getUp() const;
-
-	// begins camera movement
-	void onKeyDown(int key);
-
-	// ends camera movement
-	void onKeyUp(int key);
-
-	void moveCamera(float deltaSec);
-
-	// rotate camera on mouse movement
-	void onMouseMove(float x, float y);
-
-private:
 	enum Direction
 	{
 		negative = -1,
@@ -45,8 +24,36 @@ private:
 		positive = 1
 	};
 
+	// asix movement states
+	struct Movement
+	{
+		Direction forward = Direction::none;
+		Direction right = Direction::none;
+		Direction up = Direction::none;
+	} movement;
+
+	glm::vec2 getCenter() const;
+
+	glm::vec3 getPos() const;
+
+	glm::vec3 getTarget() const;
+
+	glm::vec3 getUp() const;
+
+	void moveCamera(float deltaSec);
+
+	void rotateCamera(glm::vec2 pos);
+
+	void setCameraExtent(VkExtent2D extent);
+
+	glm::mat4 getViewMatrix() const;
+
+	glm::mat4 getProjectionMatrix() const;
+
+private:
+
 	// step of camera movement
-	const float SPEED = 1.0f;
+	const float SPEED = 10.0f;
 
 	// camera rotation sensitivity
 	const float SENSITIVITY = 0.3f;
@@ -63,14 +70,6 @@ private:
 	// surface extent
 	VkExtent2D extent;
 
-	// asix movement states
-	struct Movement
-	{
-		Direction forward = Direction::none;
-		Direction right = Direction::none;
-		Direction up = Direction::none;
-	} movement;
-
 	// horizontal angle
 	// angle 0.0f directed towards z axis
 	float angleH;
@@ -80,8 +79,5 @@ private:
 
 	// initializes camera angles
 	void init();
-
-	// returns x, y coordinates extent center
-	glm::vec2 getCenter() const;
 };
 

@@ -6,7 +6,10 @@
 Instance::Instance(std::vector<const char *> requiredLayers)
 {
 	createInstance(requiredLayers);
-	createDebugCallback();
+	if (!requiredLayers.empty())
+	{
+		createDebugCallback();
+	}
 }
 
 Instance::~Instance()

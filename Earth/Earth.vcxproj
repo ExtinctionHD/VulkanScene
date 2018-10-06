@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="AssimpModel.h" />
@@ -33,6 +34,7 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="Lighting.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="MeshBase.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MvpMatrices.h" />
     <ClInclude Include="Position.h" />
@@ -54,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="AssimpModel.cpp" />
     <ClCompile Include="DescriptorPool.cpp" />
@@ -66,6 +69,7 @@
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MeshBase.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="QueueFamilyIndices.cpp" />
