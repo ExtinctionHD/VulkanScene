@@ -116,6 +116,14 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		pVulkan->resize(getClientExtent(hWnd));
 		break;
 
+	case WM_KEYDOWN:
+		pVulkan->keyDownCallback(wParam);
+		break;
+
+	case WM_KEYUP:
+		pVulkan->keyUpCallback(wParam);
+		break;
+
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;

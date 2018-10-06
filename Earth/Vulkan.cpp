@@ -136,6 +136,16 @@ void Vulkan::resize(VkExtent2D newExtent)
 	initGraphicCommands();
 }
 
+void Vulkan::keyDownCallback(int key)
+{
+	pScene->getController()->keyDownCallback(key);
+}
+
+void Vulkan::keyUpCallback(int key)
+{
+	pScene->getController()->keyUpCallback(key);
+}
+
 // private:
 
 void Vulkan::initGraphicCommands()

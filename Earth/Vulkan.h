@@ -33,6 +33,10 @@ public:
 	// rebuild swapchain and all dependent objects for new extension
 	void resize(VkExtent2D newExtent);
 
+	void keyDownCallback(int key);
+
+	void keyUpCallback(int key);
+
 private:
 	const std::vector<const char *> VALIDATION_LAYERS =
 	{

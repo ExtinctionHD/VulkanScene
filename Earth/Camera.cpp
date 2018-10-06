@@ -64,16 +64,14 @@ void Camera::moveCamera(float deltaSec)
 	pos += direction * DISTANCE;
 }
 
-void Camera::rotateCamera(glm::vec2 pos)
+void Camera::rotateCamera(float deltaX, float deltaY)
 {
 	const float MAX_DELTA = 100.0f;
 	const float VERT_ANGLE_LIMIT = 90.0f;
 
-	float deltaX = pos.x - getCenter().x;
 	deltaX = abs(deltaX) < MAX_DELTA ? deltaX : MAX_DELTA * deltaX / abs(deltaX);
 	angleH += (deltaX * SENSITIVITY);
 
-	float deltaY = pos.y - getCenter().y;
 	deltaY = abs(deltaY) < MAX_DELTA ? deltaY : MAX_DELTA * deltaY / abs(deltaY);
 	angleV += (deltaY * SENSITIVITY);
 	// set vertical angle limits: -VERT_ANGLE_LIMIT and VERT_ANGLE_LIMIT degrees
@@ -117,6 +115,11 @@ glm::mat4 Camera::getProjectionMatrix() const
 	return glm::perspective(glm::radians(viewAngle), aspect, zNear, zFar);
 }
 
+glm::vec2 Camera::getCenter() const
+{
+	return glm::vec2(extent.width / 2, extent.height / 2);
+}
+
 // private:
 
 void Camera::init()
@@ -154,9 +157,4 @@ void Camera::init()
 
 	// vertical camera angle
 	angleV = -glm::degrees(glm::asin(forward.y));
-}
-
-glm::vec2 Camera::getCenter() const
-{
-	return glm::vec2(extent.width / 2.0f, extent.height / 2.0f);
 }

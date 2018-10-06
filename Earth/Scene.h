@@ -16,11 +16,13 @@ public:
 	Scene(Device *pDevice, VkExtent2D cameraExtent);
 	~Scene();
 
-	uint32_t getBufferCount();
+	Controller* getController() const;
 
-	uint32_t getTextureCount();
+	uint32_t getBufferCount() const;;
 
-	uint32_t getDecriptorSetCount();
+	uint32_t getTextureCount() const;;
+
+	uint32_t getDecriptorSetCount() const;;
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
@@ -39,7 +41,7 @@ private:
 
 	Device *pDevice;
 
-	Controller controller;
+	Controller *pController;
 
 	// camera attributes
 	Camera *pCamera;

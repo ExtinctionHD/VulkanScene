@@ -32,8 +32,6 @@ public:
 		Direction up = Direction::none;
 	} movement;
 
-	glm::vec2 getCenter() const;
-
 	glm::vec3 getPos() const;
 
 	glm::vec3 getTarget() const;
@@ -42,7 +40,7 @@ public:
 
 	void moveCamera(float deltaSec);
 
-	void rotateCamera(glm::vec2 pos);
+	void rotateCamera(float deltaX, float deltaY);
 
 	void setCameraExtent(VkExtent2D extent);
 
@@ -50,13 +48,15 @@ public:
 
 	glm::mat4 getProjectionMatrix() const;
 
+	glm::vec2 getCenter() const;
+
 private:
 
 	// step of camera movement
 	const float SPEED = 10.0f;
 
 	// camera rotation sensitivity
-	const float SENSITIVITY = 0.3f;
+	const float SENSITIVITY = 0.25f;
 
 	// position of camera
 	glm::vec3 pos;

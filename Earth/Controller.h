@@ -6,20 +6,27 @@
 class Controller
 {
 public:
-	Controller();
+	Controller(Camera *pCamera);
 	~Controller();
 
-	struct Keys
+	enum Keys
 	{
-		int moveForward = 0x57;		// W
-		int moveLeft = 0x41;		// A
-		int moveBack = 0x53;		// S
-		int moveRight = 0x44;		// D
-		int moveUp = VK_SPACE;		// Space
-		int moveDown = VK_LCONTROL; // Ctrl
-	} keys;
+		moveForward = 0x57,		// W
+		moveLeft = 0x41,		// A
+		moveBack = 0x53,		// S
+		moveRight = 0x44,		// D
+		moveUp = VK_SPACE,		// Space
+		moveDown = VK_CONTROL,	// Ctrl
+	};
 
 	// moves and rotates camera
-	void controlCamera(Camera *pCamera, float deltaSec);
+	void controlCamera(float deltaSec);
+
+	void keyDownCallback(int key);
+
+	void keyUpCallback(int key);
+
+private:
+	Camera *pCamera;
 };
 

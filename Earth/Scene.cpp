@@ -13,6 +13,8 @@ Scene::Scene(Device *pDevice, VkExtent2D cameraExtent)
 	initCamera(cameraExtent);
 	initLighting();
 	initModels();
+
+	pController = new Controller(pCamera);
 }
 
 Scene::~Scene()
@@ -29,9 +31,15 @@ Scene::~Scene()
 
 	delete(pLightingBuffer);
 	delete(pCamera);
+	delete(pController);
 }
 
-uint32_t Scene::getBufferCount()
+Controller* Scene::getController() const
+{
+	return pController;
+}
+
+uint32_t Scene::getBufferCount() const
 {
 	uint32_t bufferCount = 0;
 
@@ -43,7 +51,7 @@ uint32_t Scene::getBufferCount()
 	return 1 + bufferCount;
 }
 
-uint32_t Scene::getTextureCount()
+uint32_t Scene::getTextureCount() const
 {
 	uint32_t textureCount = 0;
 
@@ -55,7 +63,7 @@ uint32_t Scene::getTextureCount()
 	return textureCount;
 }
 
-uint32_t Scene::getDecriptorSetCount()
+uint32_t Scene::getDecriptorSetCount() const
 {
 	uint32_t setCount = 1;
 
@@ -87,7 +95,7 @@ void Scene::updateScene()
 {
 	double deltaSec = frameTimer.getDeltaSec();
 
-	controller.controlCamera(pCamera, deltaSec);
+	pController->controlCamera(deltaSec);
 
 	pSkybox->setModelMatrix(glm::translate(glm::mat4(1.0f), pCamera->getPos()));
 
