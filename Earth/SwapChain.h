@@ -25,7 +25,7 @@ public:
 	~SwapChain();
 
 private:
-	// try to found this surface format
+	// try to found this pSurface format
 	const VkSurfaceFormatKHR PRESENT_FORMAT = { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
 
 	// try to found this present mode
@@ -34,7 +34,7 @@ private:
 	// device that provide swapchain
 	VkDevice device;
 
-	// swapchain display frames on surface, so exactly swapchain sets format of surface
+	// swapchain display frames on pSurface, so exactly swapchain sets format of pSurface
 	VkSurfaceFormatKHR chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats) const;
 
 	// choose order of displaying framebuffers

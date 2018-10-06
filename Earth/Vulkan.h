@@ -1,9 +1,8 @@
 #pragma once
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
 #include <vector>
 #include "Instance.h"
+#include "Surface.h"
 #include "Device.h"
 #include "SwapChain.h"
 #include "RenderPass.h"
@@ -11,6 +10,9 @@
 #include "Scene.h"
 #include "DescriptorPool.h"
 #include "Controller.h"
+#include <Windows.h>
+#define VK_USE_PLATFORM_WIN32_KHR
+#include <vulkan/vulkan.h>
 
 // graphic API class that create all necessary objects
 // and set this as window user pointer
@@ -18,12 +20,14 @@ class Vulkan
 {
 public:
 	// create all required objects
-	Vulkan(GLFWwindow *window, VkExtent2D frameExtent);
+	Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent);
 
-	// destroy objects: surface, callback, instance
+	// destroy objects: pSurface, callback, instance
 	~Vulkan();
 
-	// executes graphics commands and present result image on window surface
+	bool minimized = false;
+
+	// executes graphics commands and present result image on window pSurface
 	void drawFrame();
 
 	// rebuild swapchain and all dependent objects for new extension
@@ -41,13 +45,19 @@ private:
 	const bool ENABLE_VALIDATION_LAYERS = false;
 #endif
 
+	const std::vector<const char *> EXTENTIONS = 
+	{
+		VK_KHR_SURFACE_EXTENSION_NAME,
+		"VK_KHR_win32_surface"
+	};
+
 	// color that clear each frame
 	const VkClearColorValue clearColor = { 0, 0, 0, 1 };
 
 	Instance *pInstance;
 
-	// surface object for presentation
-	VkSurfaceKHR surface;
+	// pSurface object for presentation
+	Surface *pSurface;
 
 	// logical and physical device
 	Device *pDevice;
@@ -67,8 +77,6 @@ private:
 	// synchronizing objects
 	VkSemaphore imageAvailable = VK_NULL_HANDLE;
 	VkSemaphore renderingFinished = VK_NULL_HANDLE;
-
-	void createSurface(GLFWwindow *window);
 
 	// initialize rendering commands
 	void initGraphicCommands();

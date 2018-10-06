@@ -1,25 +1,44 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include <Windows.h>
 #include <vulkan/vulkan.h>
 #include "Vulkan.h"
+#include <iostream>
 
 class Window
 {
 public:
-	GLFWwindow *window;  // window descriptor
+	Window() {}
 
-	Window(int width, int height);  // initialize library and create window
+	Window(HINSTANCE hInstance, int width, int height);
 
-	~Window();  // detroy window
+	void setUserPointer(void *pointer);
 
-	void mainLoop();
+	VkExtent2D getClientExtent() const;
 
-	VkExtent2D getFrameExtent() const;  // window width and height in VKExtent2D structure
+	static VkExtent2D getClientExtent(HWND hWnd);
+
+	HINSTANCE getHInstance() const;
+
+	HWND getHWnd() const;
+
+	int mainLoop();
 
 private:
-	static Vulkan* getVulkanPointer(GLFWwindow *window);
+	const std::string WINDOW_CLASS = "Vulkan API";
+	const std::string WINDOW_TITLE = "Vulkan scene";
 
-	static void framebufferSizeCallback(GLFWwindow *window, int width, int height);
+	HINSTANCE hInstance;	// instance handler
+	HWND hWnd;				// window handler
+
+	ATOM registerWindowClass();
+
+	// create window
+	void createWindow(int width, int height);
+
+	void showWindow();
+
+	// function of window messages processing
+	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
 

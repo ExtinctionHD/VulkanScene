@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
@@ -44,18 +43,17 @@
     <ClInclude Include="ShaderModule.h" />
     <ClInclude Include="SkyboxModel.h" />
     <ClInclude Include="StagingBuffer.h" />
+    <ClInclude Include="Surface.h" />
     <ClInclude Include="SurfaceSupportDetails.h" />
     <ClInclude Include="SwapChain.h" />
     <ClInclude Include="SwapChainImage.h" />
     <ClInclude Include="TextureImage.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vertex.h" />
-    <ClInclude Include="VkDeleter.h" />
     <ClInclude Include="Vulkan.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp" />
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="AssimpModel.cpp" />
@@ -78,6 +76,7 @@
     <ClCompile Include="ShaderModule.cpp" />
     <ClCompile Include="SkyboxModel.cpp" />
     <ClCompile Include="StagingBuffer.cpp" />
+    <ClCompile Include="Surface.cpp" />
     <ClCompile Include="SurfaceSupportDetails.cpp" />
     <ClCompile Include="SwapChain.cpp" />
     <ClCompile Include="SwapChainImage.cpp" />

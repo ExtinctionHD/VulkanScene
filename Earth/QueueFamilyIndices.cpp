@@ -29,7 +29,7 @@ QueueFamilyIndices::QueueFamilyIndices(VkPhysicalDevice device, VkSurfaceKHR sur
 		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
 		if (queueFamilies[i].queueCount > 0 && presentSupport)
 		{
-			present = i;  // this family can present it on surface
+			present = i;  // this family can present it on pSurface
 		}
 
 		if (isComplete())

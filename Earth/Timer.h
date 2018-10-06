@@ -16,6 +16,6 @@ public:
 	double getDeltaSec();
 
 private:
-	time_point<steady_clock> lastTimePoint = time_point<steady_clock>::max();
+	time_point<steady_clock> lastTimePoint = (time_point<steady_clock>::max)();
 };
 

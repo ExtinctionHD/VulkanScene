@@ -1,11 +1,15 @@
 #include "Instance.h"
 #include <set>
-#include <GLFW/glfw3.h>
 #include <iostream>
 
-Instance::Instance(std::vector<const char *> requiredLayers)
+Instance::Instance(std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions)
 {
-	createInstance(requiredLayers);
+	if (!requiredLayers.empty())
+	{
+		requiredExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+	}
+
+	createInstance(requiredLayers, requiredExtensions);
 	if (!requiredLayers.empty())
 	{
 		createDebugCallback();
@@ -25,7 +29,7 @@ VkInstance Instance::getInstance()
 
 // private:
 
-void Instance::createInstance(std::vector<const char *> requiredLayers)
+void Instance::createInstance(std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions)
 {
 	// required layers
 	if (!checkInstanceLayerSupport(requiredLayers))
@@ -34,8 +38,7 @@ void Instance::createInstance(std::vector<const char *> requiredLayers)
 	}
 
 	// required extenstions
-	std::vector<const char *> extensions = getRequiredExtensions(!requiredLayers.empty());
-	if (!checkInstanceExtensionSupport(extensions))
+	if (!checkInstanceExtensionSupport(requiredExtensions))
 	{
 		throw std::runtime_error("Required extensions not available");
 	}
@@ -61,8 +64,8 @@ void Instance::createInstance(std::vector<const char *> requiredLayers)
 		&appInfo,								// pApplicationInfo
 		requiredLayers.size(),					// enabledLayerCount
 		requiredLayers.data(),					// ppEnabledLayerNames
-		extensions.size(),						// enabledExtensionCount
-		extensions.data()						// ppEnabledExtensionNames
+		requiredExtensions.size(),				// enabledExtensionCount
+		requiredExtensions.data()				// ppEnabledExtensionNames
 	};
 
 	VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
@@ -108,29 +111,6 @@ bool Instance::checkInstanceExtensionSupport(std::vector<const char*> requiredEx
 
 	// empty if all required extensions are supported by instance
 	return requiredExtensionSet.empty();
-}
-
-std::vector<const char*> Instance::getRequiredExtensions(bool enableDebugExtension)
-{
-	std::vector<const char*> extensions;
-
-	// glfw extensions, at least VK_KHR_surface
-	unsigned int glfwExtensionCount = 0;
-	const char **glfwExtensions;
-	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-	for (int i = 0; i < glfwExtensionCount; i++)
-	{
-		extensions.push_back(glfwExtensions[i]);
-	}
-
-	// extension for validation layers callback
-	if (enableDebugExtension)
-	{
-		extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
-	}
-
-	return extensions;
 }
 
 VkResult Instance::vkCreateDebugReportCallbackEXT(VkInstance instance, const VkDebugReportCallbackCreateInfoEXT * pCreateInfo, const VkAllocationCallbacks * pAllocator, VkDebugReportCallbackEXT * pCallback)

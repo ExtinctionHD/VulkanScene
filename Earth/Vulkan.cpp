@@ -1,9 +1,5 @@
 #include <set>
 #include <array>
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "ShaderModule.h"
 #include "AssimpModel.h"
 
@@ -11,17 +7,15 @@
 
 // public:
 
-Vulkan::Vulkan(GLFWwindow *window, VkExtent2D frameExtent)
+Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 {
-	glfwSetWindowUserPointer(window, this);
-
 	std::vector<const char*> requiredLayers = ENABLE_VALIDATION_LAYERS ?
 		VALIDATION_LAYERS : std::vector<const char*>();
 
-	pInstance = new Instance(requiredLayers);
-	createSurface(window);
-	pDevice = new Device(pInstance->getInstance(), surface, requiredLayers);
-	pSwapChain = new SwapChain(pDevice, surface, frameExtent);
+	pInstance = new Instance(requiredLayers, EXTENTIONS);
+	pSurface = new Surface(pInstance->getInstance(),hInstance, hWnd);
+	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers);
+	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
 	pScene = new Scene(pDevice, pSwapChain->extent);
 	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDecriptorSetCount());
@@ -46,15 +40,18 @@ Vulkan::~Vulkan()
 	delete(pDescriptorPool);
 	delete(pSwapChain);
 	delete(pDevice);
-
-	vkDestroySurfaceKHR(pInstance->getInstance(), surface, nullptr);
-
+	delete(pSurface);
 	delete(pInstance);
 }
 
 void Vulkan::drawFrame()
 {
 	pScene->updateScene();
+
+	if (minimized)
+	{
+		return;
+	}
 
 	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(
@@ -122,12 +119,17 @@ void Vulkan::drawFrame()
 
 void Vulkan::resize(VkExtent2D newExtent)
 {
+	if (minimized)
+	{
+		return;
+	}
+
 	vkDeviceWaitIdle(pDevice->device);
 
 	delete(pRenderPass);
 	delete(pSwapChain);
 
-	pSwapChain = new SwapChain(pDevice, surface, newExtent);
+	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), newExtent);
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
 	pScene->resizeExtent(pRenderPass);
 
@@ -135,16 +137,6 @@ void Vulkan::resize(VkExtent2D newExtent)
 }
 
 // private:
-
-void Vulkan::createSurface(GLFWwindow *window)
-{
-	// glfw library create surface by it self
-	VkResult result = glfwCreateWindowSurface(pInstance->getInstance(), window, nullptr, &surface);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create surface");
-	}
-}
 
 void Vulkan::initGraphicCommands()
 {

@@ -25,7 +25,7 @@ SwapChain::SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceEx
 		VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,	// sType
 		nullptr,										// pNext
 		0,										        // flags
-		surface,										// surface
+		surface,										// pSurface
 		imageCount,										// minImageCount
 		surfaceFormat.format,							// imageFormat
 		surfaceFormat.colorSpace,						// imageColorSpace

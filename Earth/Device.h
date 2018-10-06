@@ -25,7 +25,7 @@ public:
 	~Device();
 
 	VkQueue graphicsQueue;	// for drawing graphics
-	VkQueue presentQueue;	// for presenting it on surface
+	VkQueue presentQueue;	// for presenting it on pSurface
 
 	// returns index of memory type with such properties (for this physical device)
 	uint32_t findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
@@ -55,7 +55,7 @@ private:
 
 	std::vector<const char*> layers;
 
-	VkSurfaceKHR surface;  // properties of the device are calculated for this surface
+	VkSurfaceKHR surface;  // properties of the device are calculated for this pSurface
 
 	void pickPhysicalDevice(
 		VkInstance instance, 
@@ -63,7 +63,7 @@ private:
 	);
 
 	// has all required queue families,
-	// support this surface (capabilities, formats, present modes)
+	// support this pSurface (capabilities, formats, present modes)
 	// all required extensions and layers are available
 	static bool isPhysicalDeviceSuitable(
 		VkPhysicalDevice device, 

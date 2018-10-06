@@ -7,7 +7,7 @@
 class Instance
 {
 public:
-	Instance(std::vector<const char *> requiredLayers);
+	Instance(std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions);
 	~Instance();
 
 	VkInstance getInstance();
@@ -18,12 +18,10 @@ private:
 	// validation layers callback
 	VkDebugReportCallbackEXT callback;
 
-	void createInstance(std::vector<const char *> requiredLayers);
+	void createInstance(std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions);
 
 	static bool checkInstanceLayerSupport(std::vector<const char *> requiredLayers);
 	static bool checkInstanceExtensionSupport(std::vector<const char *> requiredExtensions);
-
-	std::vector<const char *> getRequiredExtensions(bool enableDebugExtension);
 
 	// functions from extensions (EXT) need to get before use
 	static VkResult vkCreateDebugReportCallbackEXT(

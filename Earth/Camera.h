@@ -67,7 +67,7 @@ private:
 	// up vector of camera 
 	glm::vec3 up;
 
-	// surface extent
+	// pSurface extent
 	VkExtent2D extent;
 
 	// horizontal angle

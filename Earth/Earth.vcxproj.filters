@@ -96,9 +96,6 @@
     <ClInclude Include="SwapChainImage.h">
       <Filter>Файлы заголовков\Vulkan\Image</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
-      <Filter>Файлы заголовков\App</Filter>
-    </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Файлы заголовков\App</Filter>
     </ClInclude>
@@ -115,9 +112,6 @@
       <Filter>Файлы заголовков\Vulkan\Image</Filter>
     </ClInclude>
     <ClInclude Include="SwapChain.h">
-      <Filter>Файлы заголовков\Vulkan\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="VkDeleter.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
@@ -180,11 +174,11 @@
     <ClInclude Include="Controller.h">
       <Filter>Файлы заголовков\App</Filter>
     </ClInclude>
+    <ClInclude Include="Surface.h">
+      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="Device.cpp">
       <Filter>Исходные файлы\Vulkan\Device</Filter>
     </ClCompile>
@@ -202,9 +196,6 @@
     </ClCompile>
     <ClCompile Include="SwapChainImage.cpp">
       <Filter>Исходные файлы\Vulkan\Image</Filter>
-    </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>Исходные файлы\App</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Исходные файлы\App</Filter>
@@ -274,6 +265,12 @@
     </ClCompile>
     <ClCompile Include="Controller.cpp">
       <Filter>Исходные файлы\App</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Исходные файлы\App</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface.cpp">
+      <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

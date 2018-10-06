@@ -133,9 +133,9 @@ void Scene::initLighting()
 {
 	lighting = Lighting{
 		glm::vec3(1.0f, 1.0f, 1.0f),		// color
-		0.9f,								// ambientStrength
+		0.6f,								// ambientStrength
 		glm::vec3(-0.89f, 0.4f, -0.21f),	// direction
-		0.7f,								// diffuseStrength
+		0.6f,								// diffuseStrength
 		pCamera->getPos(),					// cameraPos
 		2.0f								// specularPower
 	};
@@ -147,8 +147,8 @@ void Scene::initLighting()
 void Scene::initModels()
 {
 	pMustang = new AssimpModel(pDevice, MUSTANG_FILE);
-	glm::mat4 modelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
+	glm::mat4 modelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.04f, 0.04f, 0.04f));
 	pMustang->setModelMatrix(modelMatrix);
 
 	pSkybox = new SkyboxModel(pDevice, SKYBOX_DIR, ".jpg");

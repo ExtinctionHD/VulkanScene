@@ -1,20 +1,21 @@
 #include "Controller.h"
+#include <ctime>
 
 Controller::Controller()
 {
-	ShowCursor(false);
 }
 
 Controller::~Controller()
 {
-	ShowCursor(true);
 }
 
 void Controller::controlCamera(Camera * pCamera, float deltaSec)
 {
+
 	POINT pos;
 	GetCursorPos(&pos);
 	pCamera->rotateCamera(glm::vec2(pos.x, pos.y));
+
 	glm::vec2 center = pCamera->getCenter();
 	SetCursorPos(center.x, center.y);
 

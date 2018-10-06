@@ -1,16 +1,28 @@
-#include "Application.h"
 #include <iostream>
+#include "Window.h"
 
-int main()
+int APIENTRY wWinMain(
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPWSTR    lpCmdLine,
+	_In_ int       nCmdShow
+)
 {
+	Window *pWindow = nullptr;
+	Vulkan *pVulkan = nullptr;
+
 	try
 	{
-		Application app;
-		app.run();
+		pWindow = new Window(hInstance, 1280, 720);
+		pVulkan = new Vulkan(pWindow->getHInstance(), pWindow->getHWnd(), pWindow->getClientExtent());
+		pWindow->setUserPointer(pVulkan);
+		pWindow->mainLoop();
 	}
 	catch (const std::exception& ex)
 	{
-		std::cerr << ex.what() << std::endl;
-		getchar();
+		MessageBox(pWindow->getHWnd(), ex.what(), "Error", MB_ICONERROR);
 	}
+
+	delete(pWindow);
+	delete(pVulkan);
 }

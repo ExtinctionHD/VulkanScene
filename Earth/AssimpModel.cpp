@@ -231,7 +231,7 @@ glm::vec4 AssimpModel::getMaterialColor(aiMaterial *pAiMaterial, const char * ke
 	aiColor4D color;
 	if (aiGetMaterialColor(pAiMaterial, key, 0, 0, &color) != aiReturn_SUCCESS)
 	{
-		throw std::runtime_error("Failed to get material color");
+		return glm::vec4(1.0f);
 	}
 	return glm::vec4(color.r, color.g, color.b, color.a);
 }
