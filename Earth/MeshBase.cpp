@@ -26,6 +26,11 @@ Buffer* MeshBase::getMaterialColorBuffer() const
 	return pMaterial->pColorsBuffer;
 }
 
+float MeshBase::getOpacity() const
+{
+	return pMaterial->colors.opacity;
+}
+
 std::vector<TextureImage*> MeshBase::getMaterialTextures() const
 {
 	return pMaterial->getTextures();

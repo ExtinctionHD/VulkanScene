@@ -19,6 +19,8 @@ public:
 
 	Buffer* getMaterialColorBuffer() const;
 
+	float getOpacity() const;
+
 	std::vector<TextureImage*> getMaterialTextures() const;
 
 protected:

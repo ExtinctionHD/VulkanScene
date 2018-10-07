@@ -66,7 +66,7 @@ void main()
 	vec3 direction = normalize(light.direction);
 	vec3 normal = calculateBumpedNormal();
 
-	vec3 ambient = light.color * light.ambientStrength;
+	vec3 ambient = light.color * light.ambientStrength * colors.ambient.rgb;
 
 	vec3 diffuse = vec3(0.0f, 0.0f, 0.0f);
 	vec3 specular = vec3(0.0f, 0.0f, 0.0f);

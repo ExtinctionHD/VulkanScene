@@ -98,9 +98,9 @@ void Window::createWindow(int width, int height)
 
 void Window::showWindow()
 {
-	// SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP);
-	// SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
-	ShowWindow(hWnd, SW_SHOW);
+	SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP);
+	SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
+	ShowWindow(hWnd, SW_SHOWMAXIMIZED);
 
 	UpdateWindow(hWnd);
 }

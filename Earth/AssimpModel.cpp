@@ -112,7 +112,6 @@ GraphicsPipeline * AssimpModel::getPipeline()
 	return pPipeline;
 }
 
-
 // private:
 
 const std::vector<std::string> AssimpModel::SHADER_FILES = {
@@ -131,7 +130,17 @@ void AssimpModel::processNode(aiNode *pAiNode, const aiScene *pAiScene)
 	for (unsigned int i = 0; i < pAiNode->mNumMeshes; i++)
 	{
 		aiMesh *pAiMesh = pAiScene->mMeshes[pAiNode->mMeshes[i]];
-		meshes.push_back(processMesh(pAiMesh, pAiScene));
+
+		MeshBase* pMesh = processMesh(pAiMesh, pAiScene);
+
+		if (pMesh->getOpacity() == 1.0f)
+		{
+			meshes.insert(meshes.begin(), { pMesh });
+		}
+		else
+		{
+			meshes.push_back(pMesh);
+		}
 	}
 
 	for (unsigned int i = 0; i < pAiNode->mNumChildren; i++)
@@ -144,6 +153,8 @@ Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScen
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
+
+	bool needInitTangets = false;
 
 	// add mesh vertices
 	for (unsigned int i = 0; i < pAiMesh->mNumVertices; i++)
@@ -161,11 +172,19 @@ Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScen
 			pAiMesh->mNormals[i].y,
 			pAiMesh->mNormals[i].z
 		);
-		vertex.tangent = glm::vec3(
-			pAiMesh->mTangents[i].x,
-			pAiMesh->mTangents[i].y,
-			pAiMesh->mTangents[i].z
-		);
+
+		if (pAiMesh->mTangents != nullptr)
+		{
+			vertex.tangent = glm::vec3(
+				pAiMesh->mTangents[i].x,
+				pAiMesh->mTangents[i].y,
+				pAiMesh->mTangents[i].z
+			);
+		}
+		else
+		{
+			needInitTangets = true;
+		}
 
 		if (pAiMesh->mTextureCoords[0])
 		{
@@ -192,9 +211,49 @@ Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScen
 		}
 	}
 
+	if (needInitTangets)
+	{
+		initTangents(vertices, indices);
+	}
+
 	Material *pMaterial = getMeshMaterial(pAiMesh->mMaterialIndex, pAiScene->mMaterials);
 
 	return new Mesh<Vertex>(pDevice, vertices, indices, pMaterial);
+}
+
+void AssimpModel::initTangents(std::vector<Vertex>& vertices, std::vector<uint32_t> indices)
+{
+	for (uint32_t i = 0; i < indices.size(); i += 3)
+	{
+		Vertex& v0 = vertices[indices[i]];
+		Vertex& v1 = vertices[indices[i + 1]];
+		Vertex& v2 = vertices[indices[i + 2]];
+
+		glm::vec3 edge1 = v1.pos - v0.pos;
+		glm::vec3 edge2 = v2.pos - v0.pos;
+
+		float deltaU1 = v1.tex.x - v0.tex.x;
+		float deltaV1 = v1.tex.y - v0.tex.y;
+		float deltaU2 = v2.tex.x - v0.tex.x;
+		float deltaV2 = v2.tex.y - v0.tex.y;
+
+		float f = 1.0f / (deltaU1 * deltaV2 - deltaU2 * deltaV1);
+
+		glm::vec3 tangent;
+
+		tangent.x = f * (deltaV2 * edge1.x - deltaV1 * edge2.x);
+		tangent.y = f * (deltaV2 * edge1.y - deltaV1 * edge2.y);
+		tangent.z = f * (deltaV2 * edge1.z - deltaV1 * edge2.z);
+
+		v0.tangent += tangent;
+		v1.tangent += tangent;
+		v2.tangent += tangent;
+	}
+
+	for (uint32_t i = 0; i < vertices.size(); i++)
+	{
+		vertices[i].tangent = glm::normalize(vertices[i].tangent);
+	}
 }
 
 Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial)

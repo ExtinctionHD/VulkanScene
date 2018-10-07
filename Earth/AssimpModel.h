@@ -50,6 +50,8 @@ private:
 
 	Mesh<Vertex>* processMesh(aiMesh *pAiMesh, const aiScene *pAiScene);
 
+	void initTangents(std::vector<Vertex>& vertices, std::vector<uint32_t> indices);
+
 	Material* getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial);
 
 	glm::vec4 getMaterialColor(aiMaterial *pAiMaterial, const char *key);

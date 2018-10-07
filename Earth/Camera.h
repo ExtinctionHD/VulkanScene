@@ -53,10 +53,10 @@ public:
 private:
 
 	// step of camera movement
-	const float SPEED = 10.0f;
+	const float SPEED = 15.0f;
 
 	// camera rotation sensitivity
-	const float SENSITIVITY = 0.25f;
+	const float SENSITIVITY = 0.2f;
 
 	// position of camera
 	glm::vec3 pos;
