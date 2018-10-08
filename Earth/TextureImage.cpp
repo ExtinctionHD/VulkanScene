@@ -1,4 +1,3 @@
-#include "Logger.h"
 #include <algorithm>
 #include "StagingBuffer.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -134,7 +133,7 @@ stbi_uc* TextureImage::loadPixels(std::string filename)
 	);
 	if (!pixels)
 	{
-		LOGGER_FATAL(Logger::getTextureLoadingErrMsg(filename));
+		throw std::runtime_error("Failed to load texture from file: " + filename);
 	}
 
 	return pixels;
@@ -147,7 +146,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers)
 
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
 	{
-		LOGGER_FATAL(Logger::IMAGE_FORMAT_DOES_NOT_SUPPORT_LINEAR_BLITTING);
+		throw std::runtime_error("Image format does not support linear blitting");
 	}
 
 	VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
@@ -283,6 +282,6 @@ void TextureImage::createSampler()
 	VkResult result = vkCreateSampler(device, &createInfo, nullptr, &sampler);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_TEXTURE_SAMPLER);
+		throw std::runtime_error("Failed to create texture sampler");
 	}
 }

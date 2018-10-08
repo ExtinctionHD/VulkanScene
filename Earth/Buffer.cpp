@@ -1,5 +1,3 @@
-#include "Logger.h"
-
 #include "Buffer.h"
 
 // public:

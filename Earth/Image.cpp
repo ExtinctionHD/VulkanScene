@@ -1,5 +1,3 @@
-#include "Logger.h"
-
 #include "Image.h"
 
 // public:
@@ -51,7 +49,7 @@ void Image::createImageView(VkImageSubresourceRange subresourceRange, VkImageVie
 	VkResult result = vkCreateImageView(device, &createInfo, nullptr, &view);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_IMAGE_VIEW);
+		throw std::runtime_error("Failed to create image view");
 	}
 }
 
@@ -109,7 +107,7 @@ void Image::transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayou
 	}
 	else
 	{
-		LOGGER_FATAL(Logger::UNSUPPORTED_LAYOUT_TRANSITION);
+		throw std::invalid_argument("Unsupported image layout transition");
 	}
 
 	vkCmdPipelineBarrier(
@@ -233,7 +231,7 @@ void Image::createThisImage(
 	VkResult result = vkCreateImage(device, &imageInfo, nullptr, &image);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_IMAGE);
+		throw std::runtime_error("Failed to create image");
 	}
 
 	allocateMemory(pDevice, properties);
@@ -264,6 +262,6 @@ void Image::allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties)
 	VkResult result = vkAllocateMemory(device, &allocInfo, nullptr, &stagingMemory);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_ALLOC_IMAGE_MEMORY);
+		throw std::runtime_error("Failed to allocate image memory");
 	}
 }

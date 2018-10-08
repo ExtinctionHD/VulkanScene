@@ -1,5 +1,3 @@
-#include "Logger.h"
-
 #include "RenderPass.h"
 
 // public:
@@ -123,7 +121,7 @@ void RenderPass::createRenderPass(VkFormat colorAttachmentFormat, VkFormat depth
 	VkResult result = vkCreateRenderPass(device, &createInfo, nullptr, &renderPass);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_RENDER_PASS);
+		throw std::runtime_error("Failed to create renderpass");
 	}
 }
 
@@ -193,7 +191,7 @@ void RenderPass::createFramebuffers(std::vector<VkImageView> swapChainImageViews
 		VkResult result = vkCreateFramebuffer(device, &createInfo, nullptr, &framebuffers[i]);
 		if (result != VK_SUCCESS)
 		{
-			LOGGER_FATAL(Logger::FAILED_TO_CREATE_FRAMEBUFFER);
+			throw std::runtime_error("Failed to create framebuffers");
 		}
 	}
 }

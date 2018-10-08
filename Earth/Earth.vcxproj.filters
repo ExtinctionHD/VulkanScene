@@ -102,9 +102,6 @@
     <ClInclude Include="File.h">
       <Filter>Файлы заголовков\Static</Filter>
     </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Файлы заголовков\Static</Filter>
-    </ClInclude>
     <ClInclude Include="Vertex.h">
       <Filter>Файлы заголовков\Scene\Model</Filter>
     </ClInclude>
@@ -199,9 +196,6 @@
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Исходные файлы\App</Filter>
-    </ClCompile>
-    <ClCompile Include="Logger.cpp">
-      <Filter>Исходные файлы\Static</Filter>
     </ClCompile>
     <ClCompile Include="File.cpp">
       <Filter>Исходные файлы\Static</Filter>

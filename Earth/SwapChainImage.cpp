@@ -1,6 +1,6 @@
-#include "SwapChainImage.h"
+#include <iostream>
 
-#include "Logger.h"
+#include "SwapChainImage.h"
 
 SwapChainImage::SwapChainImage(VkDevice device, VkImage image, VkFormat format)
 {
@@ -27,7 +27,7 @@ VkImageView SwapChainImage::getImageView(VkImageSubresourceRange subresourceRang
 	VkResult result = vkCreateImageView(device, &createInfo, nullptr, &imageView);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_IMAGE_VIEW);
+		throw std::runtime_error("Failed to create image view");
 	}
 
 	return imageView;

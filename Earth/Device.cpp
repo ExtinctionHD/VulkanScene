@@ -1,5 +1,4 @@
 #include <vector>
-#include "Logger.h"
 #include <set>
 
 #include "Device.h"
@@ -36,7 +35,7 @@ uint32_t Device::findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags 
 		}
 	}
 
-	LOGGER_FATAL(Logger::FAILED_TO_FIND_MEMORY_TYPE);
+	throw std::runtime_error("Failed to find suitable memory type");
 }
 
 VkFormat Device::findSupportedFormat(std::vector<VkFormat> requestedFormats, VkImageTiling tiling, VkFormatFeatureFlags features) const
@@ -58,7 +57,7 @@ VkFormat Device::findSupportedFormat(std::vector<VkFormat> requestedFormats, VkI
 			return format;
 		}
 
-		LOGGER_FATAL(Logger::FAILED_TO_FIND_SUPPORTED_FORMAT);
+		throw std::runtime_error("Failed to find suitable image format");
 	}
 }
 
@@ -87,7 +86,7 @@ VkCommandBuffer Device::beginOneTimeCommands()
 	VkResult result = vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_ALLOC_COMMAND_BUFFERS);
+		throw std::runtime_error("Failed to allocate one time command buffer");
 	}
 
 	VkCommandBufferBeginInfo beginInfo{
@@ -100,7 +99,7 @@ VkCommandBuffer Device::beginOneTimeCommands()
 	result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_BEGIN_COMMAND_BUFFER);
+		throw std::runtime_error("Failed to begin one time command buffer");
 	}
 
 	return commandBuffer;
@@ -111,7 +110,7 @@ void Device::endOneTimeCommands(VkCommandBuffer commandBuffer)
 	VkResult result = vkEndCommandBuffer(commandBuffer);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_END_COMMAND_BUFFER);
+		throw std::runtime_error("Failed to end one time command buffer");
 	}
 
 	VkSubmitInfo submitInfo{
@@ -129,7 +128,7 @@ void Device::endOneTimeCommands(VkCommandBuffer commandBuffer)
 	result = vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_SUBMIT_COMMANDS);
+		throw std::runtime_error("Failed to submit one time command buffer");
 	}
 
 	vkQueueWaitIdle(graphicsQueue);  // TODO: replace wait idle to signal semophore
@@ -146,7 +145,7 @@ void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 
 	if (deviceCount == 0)
 	{
-		LOGGER_FATAL(Logger::NO_GPU_WITH_VULKAN_SUPPORT);
+		std::runtime_error("Failed to find device with vulkan support");
 	}
 
 	std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
@@ -163,7 +162,7 @@ void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 
 	if (physicalDevice == VK_NULL_HANDLE)
 	{
-		LOGGER_FATAL(Logger::NO_SUITABLE_GPU);
+		std::runtime_error("Failed to find suitable device");
 	}
 }
 
@@ -263,7 +262,7 @@ void Device::createLogicalDevice(VkSurfaceKHR surface)
 	VkResult result = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_LOGICAL_DEVICE);
+		throw std::runtime_error("Failed to create logical device");
 	}
 
 	// save queue handlers
@@ -283,6 +282,6 @@ void Device::createCommandPool(VkPhysicalDevice physicalDevice)
 	VkResult result = vkCreateCommandPool(device, &createInfo, nullptr, &commandPool);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_COMMAND_POOL);
+		throw std::runtime_error("Failed to create command pool");
 	}
 }

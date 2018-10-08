@@ -1,4 +1,3 @@
-#include "Logger.h"
 #include "Vertex.h"
 
 #include "GraphicsPipeline.h"
@@ -57,7 +56,7 @@ void GraphicsPipeline::createLayout(std::vector<VkDescriptorSetLayout> descripto
 	VkResult result = vkCreatePipelineLayout(device, &createInfo, nullptr, &layout);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_PIPELINE_LAYOUT);
+		throw std::runtime_error("Failed to create pipeline layout");
 	}
 }
 
@@ -230,7 +229,7 @@ void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewpo
 	VkResult result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &createInfo, nullptr, &pipeline);
 	if (result != VK_SUCCESS)
 	{
-		LOGGER_FATAL(Logger::FAILED_TO_CREATE_GRAPHICS_PIPELINE);
+		throw std::runtime_error("Failed to create graphics pipeline");
 	}
 }
 

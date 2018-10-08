@@ -268,6 +268,7 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 		pMaterial->colors.diffuseColor = getMaterialColor(pAiMaterial, "$clr.diffuse");
 		pMaterial->colors.specularColor = getMaterialColor(pAiMaterial, "$clr.specular");
 		aiGetMaterialFloat(pAiMaterial, AI_MATKEY_OPACITY, &pMaterial->colors.opacity);
+		pMaterial->colors.opacity = pMaterial->colors.opacity == 0.0f ? 1.0f : pMaterial->colors.opacity;
 		pMaterial->updateColorsBuffer();
 
 		for (aiTextureType type : Material::TEXTURES_ORDER)

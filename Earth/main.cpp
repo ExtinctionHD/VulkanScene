@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include "Window.h"
 
 int APIENTRY wWinMain(
@@ -13,6 +14,9 @@ int APIENTRY wWinMain(
 
 	try
 	{
+		std::ofstream logFile("VL.log");
+		std::cerr.rdbuf(logFile.rdbuf());
+
 		pWindow = new Window(hInstance, 1280, 720);
 		pVulkan = new Vulkan(pWindow->getHInstance(), pWindow->getHWnd(), pWindow->getClientExtent());
 		pWindow->setUserPointer(pVulkan);

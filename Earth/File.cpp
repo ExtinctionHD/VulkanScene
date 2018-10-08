@@ -1,5 +1,4 @@
 #include <fstream>
-#include "Logger.h"
 #include <Windows.h>
 #include <algorithm>
 
@@ -13,7 +12,7 @@ std::vector<char> File::getFileBytes(std::string filename)
 
 	if (!file.is_open())
 	{
-		LOGGER_FATAL(Logger::getFileOpeningErrMsg(filename));
+		throw std::runtime_error("Failed to open file: " + filename);
 	}
 
 	size_t fileSize = (size_t)file.tellg();

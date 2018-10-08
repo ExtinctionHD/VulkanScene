@@ -167,7 +167,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Instance::validationLayerCallback(
 	void * userData
 )
 {
-	std::cerr << "VALIDATION LAYER: " << msg << std::endl;
+	std::cerr << "VALIDATION LAYER | " << msg << std::endl;
 
 	return VK_FALSE;
 }
