@@ -87,9 +87,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{df490d79-c7f6-455a-a5a9-6c4574bea960}</ProjectGuid>
-    <RootNamespace>Earth</RootNamespace>
+    <RootNamespace>VulkanScene</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
-    <ProjectName>Earth</ProjectName>
+    <ProjectName>VulkanScene</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
