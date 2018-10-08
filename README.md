@@ -1,2 +1,2 @@
-# Earth
-3d scene of Earth using Vulkan API
+# VulkanScene
+3d scene rendered using Vulkan API
