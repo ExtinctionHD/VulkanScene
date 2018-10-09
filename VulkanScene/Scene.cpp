@@ -99,6 +99,9 @@ void Scene::updateScene()
 
 	pSkybox->setModelMatrix(glm::translate(glm::mat4(1.0f), pCamera->getPos()));
 
+	lighting.cameraPos = pCamera->getPos();
+	pLightingBuffer->updateData(&lighting.cameraPos, sizeof(lighting.cameraPos), offsetof(Lighting, cameraPos));
+
 	for (Model *pModel : models)
 	{
 		pModel->setViewMatrix(pCamera->getViewMatrix());
@@ -141,11 +144,11 @@ void Scene::initLighting()
 {
 	lighting = Lighting{
 		glm::vec3(1.0f, 1.0f, 1.0f),		// color
-		0.6f,								// ambientStrength
+		0.8f,								// ambientStrength
 		glm::vec3(-0.89f, 0.4f, -0.21f),	// direction
-		0.9f,								// diffuseStrength
+		0.8f,								// diffuseStrength
 		pCamera->getPos(),					// cameraPos
-		1.0f								// specularPower
+		2.0f								// specularPower
 	};
 
 	pLightingBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(Lighting));

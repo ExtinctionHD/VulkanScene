@@ -14,9 +14,6 @@ int APIENTRY wWinMain(
 
 	try
 	{
-		std::ofstream logFile("VL.log");
-		std::cerr.rdbuf(logFile.rdbuf());
-
 		pWindow = new Window(hInstance, 1280, 720);
 		pVulkan = new Vulkan(pWindow->getHInstance(), pWindow->getHWnd(), pWindow->getClientExtent());
 		pWindow->setUserPointer(pVulkan);
@@ -24,7 +21,7 @@ int APIENTRY wWinMain(
 	}
 	catch (const std::exception& ex)
 	{
-		MessageBox(pWindow->getHWnd(), ex.what(), "Error", MB_ICONERROR);
+		MessageBox(pWindow->getHWnd(), std::string("FATAL | " + std::string(ex.what())).c_str(), "Error", MB_ICONERROR);
 	}
 
 	delete(pWindow);

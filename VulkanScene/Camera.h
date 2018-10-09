@@ -56,7 +56,7 @@ private:
 	const float SPEED = 15.0f;
 
 	// camera rotation sensitivity
-	const float SENSITIVITY = 0.2f;
+	const float SENSITIVITY = 0.1f;
 
 	// position of camera
 	glm::vec3 pos;

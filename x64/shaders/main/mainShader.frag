@@ -81,7 +81,7 @@ void main()
 		float specularFactor = dot(fragToCamera, lightReflect);
 		if (specularFactor > 0)
 		{
-			specular = light.color * pow(specularFactor, light.specularPower) * colors.specular.rgb * texture(specularMap, fragTexCoord).rgb;
+			specular = light.color * pow(specularFactor, light.specularPower) * colors.specular.r * texture(specularMap, fragTexCoord).r;
 		}
 	}
 

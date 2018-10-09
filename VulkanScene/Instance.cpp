@@ -1,6 +1,9 @@
-#include "Instance.h"
 #include <set>
 #include <iostream>
+#include <fstream>
+#include "File.h"
+
+#include "Instance.h"
 
 Instance::Instance(std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions)
 {
@@ -10,8 +13,13 @@ Instance::Instance(std::vector<const char *> requiredLayers, std::vector<const c
 	}
 
 	createInstance(requiredLayers, requiredExtensions);
+
 	if (!requiredLayers.empty())
 	{
+		// will write error messages to file
+		std::ofstream logFile(File::getExeDir() + "ValidationLayers.log");
+		std::cerr.rdbuf(logFile.rdbuf());
+
 		createDebugCallback();
 	}
 }
@@ -48,7 +56,7 @@ void Instance::createInstance(std::vector<const char *> requiredLayers, std::vec
 	{
 		VK_STRUCTURE_TYPE_APPLICATION_INFO,	// sType
 		nullptr,							// pNext
-		"Earth",							// pApplicationName
+		"VulkanScene",						// pApplicationName
 		VK_MAKE_VERSION(1, 0, 0),			// applicationVersion
 		"No Engine",						// pEngineName
 		VK_MAKE_VERSION(1, 0, 0),			// engineVersion
