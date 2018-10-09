@@ -37,6 +37,7 @@ public:
 
 private:
 	const std::string AVENTADOR_FILE = File::getExeDir() + "models/aventador/lamborghini_aventador.fbx";
+	const std::string MUSTANG_FILE = File::getExeDir() + "models/mustangGT/mustang_GT.obj";
 	const std::string FORD_FILE = File::getExeDir() + "models/fordGT/Ford GT 2017.obj";
 
 	const std::string SKYBOX_DIR = File::getExeDir() + "textures/skybox1/";
