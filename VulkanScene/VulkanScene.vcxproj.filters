@@ -156,9 +156,6 @@
     <ClInclude Include="Lighting.h">
       <Filter>Файлы заголовков\Scene\Struct</Filter>
     </ClInclude>
-    <ClInclude Include="MvpMatrices.h">
-      <Filter>Файлы заголовков\Scene\Struct</Filter>
-    </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Файлы заголовков\Scene\Model</Filter>
     </ClInclude>
@@ -173,6 +170,9 @@
     </ClInclude>
     <ClInclude Include="Surface.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewProjMatrices.h">
+      <Filter>Файлы заголовков\Scene\Struct</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

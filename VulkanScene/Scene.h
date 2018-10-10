@@ -7,6 +7,7 @@
 #include "SkyboxModel.h"
 #include "File.h"
 #include "Controller.h"
+#include "ViewProjMatrices.h"
 
 // provides scene for rendering
 // contains: camera, lighting, models
@@ -56,8 +57,11 @@ private:
 	Lighting lighting;
 	Buffer *pLightingBuffer;
 
-	VkDescriptorSet lightingDescriptorSet;
-	VkDescriptorSetLayout lightingDSLayout;
+	ViewProjMatrices viewProj;
+	Buffer *pViewProjBuffer;
+
+	VkDescriptorSet sceneDescriptorSet;
+	VkDescriptorSetLayout sceneDSLayout;
 
 	// models
 	AssimpModel *pMustang;

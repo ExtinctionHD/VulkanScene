@@ -3,13 +3,14 @@
 
 // binding from application:
 
-// uniform buffer with mvp matrices
-// that positioning vertices in scene space
-layout(set = 1, binding = 0) uniform ModelViewProjection {
-    mat4 model;
+layout(set = 0, binding = 0) uniform ViewProj {
     mat4 view;
     mat4 proj;
-} mvp;
+} vp;
+
+layout(set = 1, binding = 0) uniform ModelMatrix {
+	mat4 model;
+} m;
 
 // input and output values:
 
@@ -34,15 +35,15 @@ out gl_PerVertex {
 void main() 
 {	
     // position of fragment in world coordinates
-    fragPos = (mvp.model * vec4(inPosition, 1.0f)).xyz;
+    fragPos = (m.model * vec4(inPosition, 1.0f)).xyz;
     // texture coordinates without changes
     fragTexCoord = inTexCoord;
     // vertex normal vector in world coordinates
-    fragNormal = (mvp.model * vec4(inNormal, 0.0f)).xyz;
+    fragNormal = (m.model * vec4(inNormal, 0.0f)).xyz;
     // tangent vector of vertex in world coordinates
-    fragTangent = (mvp.model * vec4(inTangent, 0.0f)).xyz;
+    fragTangent = (m.model * vec4(inTangent, 0.0f)).xyz;
 
-    gl_Position = mvp.proj * mvp.view * mvp.model * vec4(inPosition, 1.0f);
+    gl_Position = vp.proj * vp.view * m.model * vec4(inPosition, 1.0f);
 
     // fixes difference from opengl
     gl_Position.y = -gl_Position.y;

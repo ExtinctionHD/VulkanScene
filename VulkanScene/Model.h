@@ -1,6 +1,5 @@
 #pragma once
 
-#include "MvpMatrices.h"
 #include "Buffer.h"
 #include "Device.h"
 #include <glm/glm.hpp>
@@ -17,13 +16,7 @@ public:
 
 	glm::mat4 getModelMatrix();
 
-	void setModelMatrix(glm::mat4 model);
-
-	void setViewMatrix(glm::mat4 view);
-
-	void setProjectionMatrix(glm::mat4 proj);
-
-	void setMvpMatrices(MvpMatrices mvp);
+	void setModelMatrix(glm::mat4 matrix);
 
 	uint32_t getBufferCount() const;
 
@@ -42,7 +35,7 @@ protected:
 
 	std::vector<MeshBase*> meshes;
 
-	static VkDescriptorSetLayout mvpDSLayout;
+	static VkDescriptorSetLayout modelMatrixDSLayout;
 
 	// descriptor sets for each mesh
 	std::vector<VkDescriptorSet> meshDescriptorSets;
@@ -54,11 +47,11 @@ protected:
 private:
 	static uint32_t objectCount;
 
-	MvpMatrices mvp;
+	glm::mat4 modelMatrix;
 
-	Buffer *pMvpBuffer;
+	Buffer *pModelMatrixBuffer;
 
 	// descritpor set for mvp buffer
-	VkDescriptorSet mvpDescriptorSet;
+	VkDescriptorSet modelMatrixDescriptorSet;
 };
 

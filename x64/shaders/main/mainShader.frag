@@ -3,7 +3,7 @@
 
 // bindings from application:
 
-layout(set = 0, binding = 0) uniform Lighting {
+layout(set = 0, binding = 1) uniform Lighting {
 	vec3 color;
 	float ambientStrength;
 	vec3 direction;
@@ -12,7 +12,7 @@ layout(set = 0, binding = 0) uniform Lighting {
 	float specularPower;
 } light;
 
-layout(set = 2, binding = 0) uniform Colors{
+layout(set = 2, binding = 0) uniform Colors {
 	vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;

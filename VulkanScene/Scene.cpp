@@ -27,7 +27,7 @@ Scene::~Scene()
 		delete(pModel);
 	}
 
-	vkDestroyDescriptorSetLayout(pDevice->device, lightingDSLayout, nullptr);
+	vkDestroyDescriptorSetLayout(pDevice->device, sceneDSLayout, nullptr);
 
 	delete(pLightingBuffer);
 	delete(pCamera);
@@ -77,7 +77,7 @@ uint32_t Scene::getDecriptorSetCount() const
 
 void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool)
 {
-	lightingDescriptorSet = pDescriptorPool->getDescriptorSet({ pLightingBuffer }, { }, true, lightingDSLayout);
+	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pViewProjBuffer, pLightingBuffer, }, { }, true, sceneDSLayout);
 
 	for (Model *pModel : models)
 	{
@@ -87,8 +87,8 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool)
 
 void Scene::createPipelines(RenderPass * pRenderPass)
 {
-	AssimpModel::createPipeline(pDevice, { lightingDSLayout }, pRenderPass);
-	SkyboxModel::createPipeline(pDevice, { lightingDSLayout }, pRenderPass);
+	AssimpModel::createPipeline(pDevice, { sceneDSLayout }, pRenderPass);
+	SkyboxModel::createPipeline(pDevice, { sceneDSLayout }, pRenderPass);
 }
 
 void Scene::updateScene()
@@ -102,17 +102,15 @@ void Scene::updateScene()
 	lighting.cameraPos = pCamera->getPos();
 	pLightingBuffer->updateData(&lighting.cameraPos, sizeof(lighting.cameraPos), offsetof(Lighting, cameraPos));
 
-	for (Model *pModel : models)
-	{
-		pModel->setViewMatrix(pCamera->getViewMatrix());
-	}
+	viewProj.view = pCamera->getViewMatrix();
+	pViewProjBuffer->updateData(&viewProj.view, sizeof(viewProj.view), offsetof(ViewProjMatrices, view));
 }
 
 void Scene::draw(VkCommandBuffer commandBuffer)
 {
 	for (Model *pModel : models)
 	{
-		pModel->draw(commandBuffer, { lightingDescriptorSet });
+		pModel->draw(commandBuffer, { sceneDescriptorSet });
 	}
 }
 
@@ -120,10 +118,8 @@ void Scene::resizeExtent(RenderPass * pRenderPass)
 {
 	pCamera->setCameraExtent(pRenderPass->attachmentsExtent);
 
-	for (Model *pModel : models)
-	{
-		pModel->setProjectionMatrix(pCamera->getProjectionMatrix());
-	}
+	viewProj.projection = pCamera->getProjectionMatrix();
+	pViewProjBuffer->updateData(&viewProj.projection, sizeof(viewProj.projection), offsetof(ViewProjMatrices, projection));
 
 	AssimpModel::recreatePipeline(pRenderPass);
 	SkyboxModel::recreatePipeline(pRenderPass);
@@ -170,6 +166,8 @@ void Scene::initModels()
 
 	for (Model *pModel : models)
 	{
-		pModel->setMvpMatrices({ pModel->getModelMatrix(), pCamera->getViewMatrix(), pCamera->getProjectionMatrix() });
+		pModel->setModelMatrix(pModel->getModelMatrix());
 	}
+
+	pViewProjBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(viewProj));
 }

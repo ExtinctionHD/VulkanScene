@@ -67,7 +67,7 @@ SkyboxModel::~SkyboxModel()
 
 void SkyboxModel::createPipeline(Device * pDevice, std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass)
 {
-	layouts.push_back(mvpDSLayout);
+	layouts.push_back(modelMatrixDSLayout);
 	layouts.push_back(meshDSLayout);
 
 	if (pPipeline == nullptr)

@@ -34,7 +34,6 @@
     <ClInclude Include="Lighting.h" />
     <ClInclude Include="MeshBase.h" />
     <ClInclude Include="Model.h" />
-    <ClInclude Include="MvpMatrices.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="RenderPass.h" />
@@ -49,6 +48,7 @@
     <ClInclude Include="TextureImage.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="ViewProjMatrices.h" />
     <ClInclude Include="Vulkan.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
