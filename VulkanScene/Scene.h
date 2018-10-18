@@ -64,7 +64,7 @@ private:
 	VkDescriptorSetLayout sceneDSLayout;
 
 	// models
-	AssimpModel *pMustang;
+	AssimpModel *pCar;
 	SkyboxModel *pSkybox;
 	std::vector<Model*> models;
 

@@ -87,4 +87,8 @@ void main()
 
 	float opacity = colors.opacity * texture(opacityMap, fragTexCoord).r;
 	outColor = vec4(ambient + diffuse + specular, opacity) * texture(diffuseTexture, fragTexCoord);
+
+	// gamma correction
+	//float gamma = 2.2f;	
+    //outColor.rgb = pow(outColor.rgb, vec3(1.0f / gamma));
 }

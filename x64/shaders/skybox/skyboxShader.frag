@@ -11,7 +11,7 @@ layout(set = 2, binding = 0) uniform Colors {
 	float opacity;
 } colors;
 
-// texture sampler with earth texture
+// skybox cupe texture
 layout(set = 2, binding = 1) uniform samplerCube textureSampler;
 
 // input and output values:
@@ -25,5 +25,10 @@ layout(location = 0) out vec4 outColor;
 // fragment shader code:
 void main() 
 {
+
     outColor = texture(textureSampler, fragTexCoord);
+
+    // gamma correction
+	//float gamma = 2.2f;
+    //outColor.rgb = pow(outColor.rgb, vec3(1.0f / gamma));
 }

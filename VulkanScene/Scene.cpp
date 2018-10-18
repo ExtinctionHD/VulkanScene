@@ -129,8 +129,8 @@ void Scene::resizeExtent(RenderPass * pRenderPass)
 
 void Scene::initCamera(VkExtent2D cameraExtent)
 {
-	glm::vec3 pos{ 0.0f, 0.0f, -30.0f };
-	glm::vec3 forward{ 0.0f, 0.0f, 1.0f };
+	glm::vec3 pos{ 0.0f, -40.0f, -80.0f };
+	glm::vec3 forward{ 0.0f, -0.8f, 1.0f };
 	glm::vec3 up{ 0.0f, -1.0f, 0.0f };
 
 	pCamera = new Camera(pos, forward, up, cameraExtent);
@@ -142,7 +142,7 @@ void Scene::initLighting()
 		glm::vec3(1.0f, 1.0f, 1.0f),		// color
 		0.8f,								// ambientStrength
 		glm::vec3(-0.89f, 0.4f, -0.21f),	// direction
-		0.8f,								// diffuseStrength
+		0.7f,								// diffuseStrength
 		pCamera->getPos(),					// cameraPos
 		2.0f								// specularPower
 	};
@@ -153,16 +153,15 @@ void Scene::initLighting()
 
 void Scene::initModels()
 {
-	pMustang = new AssimpModel(pDevice, FORD_FILE);
+	pCar = new AssimpModel(pDevice, FORD_FILE);
 	glm::mat4 modelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.15f, 0.15f, 0.15f));
-	pMustang->setModelMatrix(modelMatrix);
+	pCar->setModelMatrix(modelMatrix);
 
 	pSkybox = new SkyboxModel(pDevice, SKYBOX_DIR, ".jpg");
 
-	//models.push_back(pMustang);
 	models.push_back(pSkybox);
-	models.push_back(pMustang);
+	models.push_back(pCar);
 
 	for (Model *pModel : models)
 	{

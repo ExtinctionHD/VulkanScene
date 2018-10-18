@@ -210,7 +210,7 @@ void Vulkan::initGraphicCommands()
 
 		vkCmdBeginRenderPass(graphicCommands[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-		// draw earth model
+		// draw each model
 		pScene->draw(graphicCommands[i]);
 
 		vkCmdEndRenderPass(graphicCommands[i]);
