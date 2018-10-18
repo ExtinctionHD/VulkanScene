@@ -6,10 +6,10 @@ Model::~Model()
 {
 	objectCount--;
 
-	if (objectCount == 0 && modelMatrixDSLayout != VK_NULL_HANDLE)
+	if (objectCount == 0 && transformDSLayout != VK_NULL_HANDLE)
 	{
-		vkDestroyDescriptorSetLayout(pDevice->device, modelMatrixDSLayout, nullptr);
-		modelMatrixDSLayout = VK_NULL_HANDLE;
+		vkDestroyDescriptorSetLayout(pDevice->device, transformDSLayout, nullptr);
+		transformDSLayout = VK_NULL_HANDLE;
 	}
 
 	// cleanup materials
@@ -18,18 +18,18 @@ Model::~Model()
 		delete(*it);
 	}
 
-	delete(pModelMatrixBuffer);
+	delete(pTransformBuffer);
 }
 
-glm::mat4 Model::getModelMatrix()
+glm::mat4 Model::getTransform()
 {
-	return modelMatrix;
+	return transform;
 }
 
-void Model::setModelMatrix(glm::mat4 matrix)
+void Model::setTransform(glm::mat4 matrix)
 {
-	modelMatrix = matrix;
-	pModelMatrixBuffer->updateData(&modelMatrix, sizeof(modelMatrix), 0);
+	transform = matrix;
+	pTransformBuffer->updateData(&transform, sizeof(transform), 0);
 }
 
 uint32_t Model::getBufferCount() const 
@@ -56,7 +56,7 @@ uint32_t Model::getMeshCount() const
 
 void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 {
-	modelMatrixDescriptorSet = pDescriptorPool->getDescriptorSet({ pModelMatrixBuffer }, { }, Model::modelMatrixDSLayout == VK_NULL_HANDLE, Model::modelMatrixDSLayout);
+	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, Model::transformDSLayout == VK_NULL_HANDLE, Model::transformDSLayout);
 
 	for (MeshBase *pMesh : meshes)
 	{
@@ -73,7 +73,7 @@ void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 
 void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
 {
-	descriptorSets.push_back(modelMatrixDescriptorSet);
+	descriptorSets.push_back(transformDescriptorSet);
 
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, getPipeline()->pipeline);
 
@@ -102,13 +102,13 @@ Model::Model(Device *pDevice)
 {
 	this->pDevice = pDevice;
 
-	pModelMatrixBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(modelMatrix));
-	setModelMatrix(glm::mat4(1.0f));
+	pTransformBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(transform));
+	setTransform(glm::mat4(1.0f));
 
 	objectCount++;
 }
 
-VkDescriptorSetLayout Model::modelMatrixDSLayout = VK_NULL_HANDLE;
+VkDescriptorSetLayout Model::transformDSLayout = VK_NULL_HANDLE;
 
 // private:
 

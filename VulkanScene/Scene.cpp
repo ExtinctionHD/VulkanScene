@@ -97,7 +97,7 @@ void Scene::updateScene()
 
 	pController->controlCamera(deltaSec);
 
-	pSkybox->setModelMatrix(glm::translate(glm::mat4(1.0f), pCamera->getPos()));
+	pSkybox->setTransform(glm::translate(glm::mat4(1.0f), pCamera->getPos()));
 
 	lighting.cameraPos = pCamera->getPos();
 	pLightingBuffer->updateData(&lighting.cameraPos, sizeof(lighting.cameraPos), offsetof(Lighting, cameraPos));
@@ -154,9 +154,9 @@ void Scene::initLighting()
 void Scene::initModels()
 {
 	pCar = new AssimpModel(pDevice, FORD_FILE);
-	glm::mat4 modelMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(0.15f, 0.15f, 0.15f));
-	pCar->setModelMatrix(modelMatrix);
+	glm::mat4 transform = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	transform = glm::scale(transform, glm::vec3(0.15f, 0.15f, 0.15f));
+	pCar->setTransform(transform);
 
 	pSkybox = new SkyboxModel(pDevice, SKYBOX_DIR, ".jpg");
 
@@ -165,7 +165,7 @@ void Scene::initModels()
 
 	for (Model *pModel : models)
 	{
-		pModel->setModelMatrix(pModel->getModelMatrix());
+		pModel->setTransform(pModel->getTransform());
 	}
 
 	pViewProjBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(viewProj));

@@ -14,9 +14,9 @@ class Model
 public:
 	virtual ~Model();
 
-	glm::mat4 getModelMatrix();
+	glm::mat4 getTransform();
 
-	void setModelMatrix(glm::mat4 matrix);
+	void setTransform(glm::mat4 matrix);
 
 	uint32_t getBufferCount() const;
 
@@ -35,7 +35,7 @@ protected:
 
 	std::vector<MeshBase*> meshes;
 
-	static VkDescriptorSetLayout modelMatrixDSLayout;
+	static VkDescriptorSetLayout transformDSLayout;
 
 	// descriptor sets for each mesh
 	std::vector<VkDescriptorSet> meshDescriptorSets;
@@ -47,11 +47,11 @@ protected:
 private:
 	static uint32_t objectCount;
 
-	glm::mat4 modelMatrix;
+	glm::mat4 transform;
 
-	Buffer *pModelMatrixBuffer;
+	Buffer *pTransformBuffer;
 
 	// descritpor set for mvp buffer
-	VkDescriptorSet modelMatrixDescriptorSet;
+	VkDescriptorSet transformDescriptorSet;
 };
 
