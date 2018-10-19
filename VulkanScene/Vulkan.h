@@ -83,7 +83,7 @@ private:
 	VkSemaphore renderingFinished = VK_NULL_HANDLE;
 
 	// initialize rendering commands
-	void initGraphicCommands();
+	void initGraphicsCommands();
 
 	static void createSemaphore(VkDevice device, VkSemaphore& semaphore);
 };

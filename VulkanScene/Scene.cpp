@@ -19,8 +19,10 @@ Scene::Scene(Device *pDevice, VkExtent2D cameraExtent)
 
 Scene::~Scene()
 {
-	AssimpModel::destroyPipeline();
-	SkyboxModel::destroyPipeline();
+	for (GraphicsPipeline* pPipeline : pipelines)
+	{
+		delete(pPipeline);
+	}
 
 	for (Model *pModel : models)
 	{
@@ -87,8 +89,26 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool)
 
 void Scene::createPipelines(RenderPass * pRenderPass)
 {
-	AssimpModel::createPipeline(pDevice, { sceneDSLayout }, pRenderPass);
-	SkyboxModel::createPipeline(pDevice, { sceneDSLayout }, pRenderPass);
+	const std::string CAR_SHADERS_DIR = File::getExeDir() + "shaders/car/";
+	const std::string SKY_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
+
+	pipelines.push_back(pCar->createPipeline(
+		{ sceneDSLayout }, 
+		pRenderPass, 
+		{
+			new ShaderModule(pDevice->device, CAR_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, CAR_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+		}
+	));
+
+	pipelines.push_back(pSkybox->createPipeline(
+		{ sceneDSLayout },
+		pRenderPass,
+		{
+			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+		}
+	));
 }
 
 void Scene::updateScene()
@@ -116,13 +136,16 @@ void Scene::draw(VkCommandBuffer commandBuffer)
 
 void Scene::resizeExtent(RenderPass * pRenderPass)
 {
-	pCamera->setCameraExtent(pRenderPass->attachmentsExtent);
+	pCamera->setCameraExtent(pRenderPass->framebuffersExtent);
 
 	viewProj.projection = pCamera->getProjectionMatrix();
 	pViewProjBuffer->updateData(&viewProj.projection, sizeof(viewProj.projection), offsetof(ViewProjMatrices, projection));
 
-	AssimpModel::recreatePipeline(pRenderPass);
-	SkyboxModel::recreatePipeline(pRenderPass);
+
+	for (GraphicsPipeline* pPipeline : pipelines)
+	{
+		pPipeline->recreate(pRenderPass);
+	}
 }
 
 // private:
@@ -153,6 +176,11 @@ void Scene::initLighting()
 
 void Scene::initModels()
 {
+	const std::string AVENTADOR_FILE = File::getExeDir() + "models/aventador/lamborghini_aventador.fbx";
+	const std::string MUSTANG_FILE = File::getExeDir() + "models/mustangGT/mustang_GT.obj";
+	const std::string FORD_FILE = File::getExeDir() + "models/fordGT/Ford GT 2017.obj";
+	const std::string SKYBOX_DIR = File::getExeDir() + "textures/skybox1/";
+
 	pCar = new AssimpModel(pDevice, FORD_FILE);
 	glm::mat4 transform = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	transform = glm::scale(transform, glm::vec3(0.15f, 0.15f, 0.15f));

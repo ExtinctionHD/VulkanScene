@@ -27,7 +27,11 @@ public:
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
-	virtual void draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
+	GraphicsPipeline* createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
+
+	void setPipeline(GraphicsPipeline *pPipeline);
+
+	void draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
 
 protected:
 	Model(Device *pDevice);
@@ -38,12 +42,14 @@ protected:
 
 	std::map<uint32_t, Material*> materials;
 
-	static VkDescriptorSetLayout transformDSLayout;
+	virtual VkVertexInputBindingDescription getVertexInputBindingDescription(uint32_t inputBinding) = 0;
 
-	virtual GraphicsPipeline* getPipeline() = 0;
+	virtual std::vector<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions(uint32_t inputBinding) = 0;
 
 private:
 	static uint32_t objectCount;
+
+	GraphicsPipeline *pPipeline;
 
 	glm::mat4 transform;
 
@@ -51,5 +57,7 @@ private:
 
 	// descritpor set for mvp buffer
 	VkDescriptorSet transformDescriptorSet;
+
+	static VkDescriptorSetLayout transformDSLayout;
 };
 

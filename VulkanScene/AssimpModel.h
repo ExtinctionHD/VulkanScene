@@ -18,22 +18,12 @@ public:
 	AssimpModel(Device *pDevice, const std::string& filename);
 	~AssimpModel();
 
-	// creates pipeline for rendering models of this class
-	static void createPipeline(Device *pDevice, std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass);
-
-	static void recreatePipeline(RenderPass *pRenderPass);
-
-	static void destroyPipeline();
-
 protected:
-	virtual GraphicsPipeline *getPipeline() override;
+	virtual VkVertexInputBindingDescription  getVertexInputBindingDescription(uint32_t inputBinding) override;
+
+	virtual std::vector<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions(uint32_t inputBinding) override;
 
 private:
-	enum ShaderTypes { vert, frag };
-	static const std::vector<std::string> SHADER_FILES;
-
-	static GraphicsPipeline *pPipeline;
-
 	std::string directory;
 
 	std::map<std::string, TextureImage*> textures;

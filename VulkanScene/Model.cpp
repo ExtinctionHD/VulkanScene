@@ -70,18 +70,43 @@ void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 	}
 }
 
+GraphicsPipeline * Model::createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules)
+{
+	layouts.push_back(transformDSLayout);
+	layouts.push_back(Material::getDSLayout());
+
+	const uint32_t inputBinding = 0;
+
+	pPipeline = new GraphicsPipeline(
+		pDevice->device,
+		layouts,
+		pRenderPass,
+		shaderModules,
+		getVertexInputBindingDescription(inputBinding),
+		getVertexInputAttributeDescriptions(inputBinding)
+	);
+
+	return pPipeline;
+}
+
+void Model::setPipeline(GraphicsPipeline * pPipeline)
+{
+	this->pPipeline = pPipeline;
+}
+
+
 void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
 {
 	descriptorSets.push_back(transformDescriptorSet);
 
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, getPipeline()->pipeline);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->pipeline);
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, getPipeline()->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
 
 	for (int i = 0; i < meshes.size(); i++)
 	{
 		VkDescriptorSet materialDescriptorSet = meshes[i]->pMaterial->getDesriptorSet();
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, getPipeline()->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
 
 		VkBuffer vertexBuffer = meshes[i]->getVertexBuffer();
 		VkDeviceSize offset = 0;
@@ -107,10 +132,10 @@ Model::Model(Device *pDevice)
 	objectCount++;
 }
 
-VkDescriptorSetLayout Model::transformDSLayout = VK_NULL_HANDLE;
-
 // private:
 
 uint32_t Model::objectCount = 0;
+
+VkDescriptorSetLayout Model::transformDSLayout = VK_NULL_HANDLE;
 
 

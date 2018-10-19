@@ -53,63 +53,18 @@ SkyboxModel::~SkyboxModel()
 	delete(pTexture);
 }
 
-void SkyboxModel::createPipeline(Device * pDevice, std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass)
-{
-	layouts.push_back(transformDSLayout);
-	layouts.push_back(Material::getDSLayout());
-
-	if (pPipeline == nullptr)
-	{
-		delete(pPipeline);
-	}
-
-	const uint32_t inputBinding = 0;
-
-	pPipeline = new GraphicsPipeline(
-		pDevice->device,
-		layouts,
-		pRenderPass,
-		{
-			new ShaderModule(pDevice->device, SHADER_FILES[ShaderTypes::vert], VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, SHADER_FILES[ShaderTypes::frag], VK_SHADER_STAGE_FRAGMENT_BIT)
-		},
-		Position::getBindingDescription(inputBinding),
-		Position::getAttributeDescriptions(inputBinding)
-	);
-}
-
-void SkyboxModel::recreatePipeline(RenderPass * pRenderPass)
-{
-	if (pPipeline == nullptr)
-	{
-		throw std::runtime_error("Pipeline not created yet");
-	}
-
-	pPipeline->recreate(pRenderPass);
-}
-
-void SkyboxModel::destroyPipeline()
-{
-	if (pPipeline != nullptr)
-	{
-		delete(pPipeline);
-		pPipeline = nullptr;
-	}
-}
-
 // protected:
 
-GraphicsPipeline * SkyboxModel::getPipeline()
+VkVertexInputBindingDescription SkyboxModel::getVertexInputBindingDescription(uint32_t inputBinding)
 {
-	return pPipeline;
+	return Position::getBindingDescription(inputBinding);
+}
+
+std::vector<VkVertexInputAttributeDescription> SkyboxModel::getVertexInputAttributeDescriptions(uint32_t inputBinding)
+{
+	return Position::getAttributeDescriptions(inputBinding);
 }
 
 // private:
 
-const std::vector<std::string> SkyboxModel::SHADER_FILES = {
-	File::getExeDir() + "shaders/skybox/vert.spv",
-	File::getExeDir() + "shaders/skybox/frag.spv"
-};
-
-GraphicsPipeline* SkyboxModel::pPipeline = nullptr;
 

@@ -23,7 +23,7 @@ Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 	pScene->initDescriptorSets(pDescriptorPool);
 	pScene->createPipelines(pRenderPass);
 
-	initGraphicCommands();
+	initGraphicsCommands();
 
 	createSemaphore(pDevice->device, imageAvailable);
 	createSemaphore(pDevice->device, renderingFinished);
@@ -133,7 +133,7 @@ void Vulkan::resize(VkExtent2D newExtent)
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
 	pScene->resizeExtent(pRenderPass);
 
-	initGraphicCommands();
+	initGraphicsCommands();
 }
 
 void Vulkan::keyDownCallback(int key)
@@ -148,7 +148,7 @@ void Vulkan::keyUpCallback(int key)
 
 // private:
 
-void Vulkan::initGraphicCommands()
+void Vulkan::initGraphicsCommands()
 {
 	// return old command buffers to pool
 	if (!graphicCommands.empty())

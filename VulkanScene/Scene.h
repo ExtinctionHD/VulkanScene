@@ -27,7 +27,6 @@ public:
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
-	// creates pipelines for each model class
 	void createPipelines(RenderPass *pRenderPass);
 
 	void updateScene();
@@ -37,12 +36,6 @@ public:
 	void resizeExtent(RenderPass *pRenderPass);
 
 private:
-	const std::string AVENTADOR_FILE = File::getExeDir() + "models/aventador/lamborghini_aventador.fbx";
-	const std::string MUSTANG_FILE = File::getExeDir() + "models/mustangGT/mustang_GT.obj";
-	const std::string FORD_FILE = File::getExeDir() + "models/fordGT/Ford GT 2017.obj";
-
-	const std::string SKYBOX_DIR = File::getExeDir() + "textures/skybox1/";
-
 	Device *pDevice;
 
 	Controller *pController;
@@ -57,6 +50,7 @@ private:
 	Lighting lighting;
 	Buffer *pLightingBuffer;
 
+	// scene
 	ViewProjMatrices viewProj;
 	Buffer *pViewProjBuffer;
 
@@ -67,6 +61,8 @@ private:
 	AssimpModel *pCar;
 	SkyboxModel *pSkybox;
 	std::vector<Model*> models;
+
+	std::vector<GraphicsPipeline*> pipelines;
 
 	void initCamera(VkExtent2D cameraExtent);
 

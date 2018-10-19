@@ -5,7 +5,7 @@
 RenderPass::RenderPass(Device *pDevice, SwapChain *pSwapChain)
 {
 	device = pDevice->device;
-	attachmentsExtent = pSwapChain->extent;
+	framebuffersExtent = pSwapChain->extent;
 
 	VkFormat depthAttachmentFormat = pDevice->findSupportedFormat(
 		DEPTH_FORMATS,

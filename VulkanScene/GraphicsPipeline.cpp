@@ -20,7 +20,7 @@ GraphicsPipeline::GraphicsPipeline(
 
 	createLayout(descriptorSetLayouts);
 
-	createPipeline(pRenderPass->renderPass, pRenderPass->attachmentsExtent);
+	createPipeline(pRenderPass->renderPass, pRenderPass->framebuffersExtent);
 }
 
 GraphicsPipeline::~GraphicsPipeline()
@@ -36,7 +36,7 @@ GraphicsPipeline::~GraphicsPipeline()
 void GraphicsPipeline::recreate(RenderPass *pRenderPass)
 {
 	vkDestroyPipeline(device, pipeline, nullptr);
-	createPipeline(pRenderPass->renderPass, pRenderPass->attachmentsExtent);
+	createPipeline(pRenderPass->renderPass, pRenderPass->framebuffersExtent);
 }
 
 // private:

@@ -13,7 +13,7 @@ public:
 
 	VkRenderPass renderPass;
 
-	VkExtent2D attachmentsExtent;
+	VkExtent2D framebuffersExtent;
 
 	// destination images for rendering, 
 	// framebuffer attachments: image view and depth image
