@@ -1,6 +1,7 @@
 #include <fstream>
 #include <Windows.h>
 #include <algorithm>
+#include <cassert>
 
 #include "File.h"
 
@@ -10,10 +11,7 @@ std::vector<char> File::getFileBytes(std::string filename)
 {
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
-	if (!file.is_open())
-	{
-		throw std::runtime_error("Failed to open file: " + filename);
-	}
+	assert(file.is_open());
 
 	size_t fileSize = (size_t)file.tellg();
 	std::vector<char> stagingBuffer(fileSize);

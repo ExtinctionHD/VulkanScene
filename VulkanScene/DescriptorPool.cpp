@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "DescriptorPool.h"
 
 // public:
@@ -27,10 +29,7 @@ DescriptorPool::DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t t
 	};
 
 	VkResult result = vkCreateDescriptorPool(pDevice->device, &createInfo, nullptr, &pool);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create descriptor pool");
-	}
+	assert(result == VK_SUCCESS);
 }
 
 DescriptorPool::~DescriptorPool()
@@ -55,10 +54,7 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, s
 
 	VkDescriptorSet set;
 	VkResult result = vkAllocateDescriptorSets(pDevice->device, &allocateInfo, &set);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to allocate descriptor set");
-	}
+	assert(result == VK_SUCCESS);
 
 	// write buffers in descriptor set
 	std::vector<VkWriteDescriptorSet> buffersWrites;
@@ -172,10 +168,7 @@ VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(std::vector<Buff
 
 	VkDescriptorSetLayout layout;
 	VkResult result = vkCreateDescriptorSetLayout(pDevice->device, &createInfo, nullptr, &layout);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create descriptor set layout");
-	}
+	assert(result == VK_SUCCESS);
 
 	return layout;
 }

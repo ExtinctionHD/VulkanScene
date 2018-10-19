@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "StagingBuffer.h"
 
 // public:
@@ -25,10 +27,7 @@ StagingBuffer::~StagingBuffer()
 
 void StagingBuffer::updateData(void * data, VkDeviceSize dataSize, VkDeviceSize offset)
 {
-	if (offset + dataSize > size)
-	{
-		throw std::invalid_argument("Data size with offset can't be greate than buffer size");
-	}
+	assert(offset + dataSize <= size);
 
 	// update staging buffer
 	void *bufferData;
@@ -72,10 +71,7 @@ void StagingBuffer::createBuffer(Device * pDevice, VkDeviceSize size, VkBufferUs
 	};
 
 	VkResult result = vkCreateBuffer(pDevice->device, &createInfo, nullptr, pBuffer);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create buffer");
-	}
+	assert(result == VK_SUCCESS);
 
 	allocateMemory(pDevice, pBuffer, pMemory, properties);
 
@@ -101,8 +97,5 @@ void StagingBuffer::allocateMemory(Device * pDevice, VkBuffer * pBuffer, VkDevic
 	};
 
 	VkResult result = vkAllocateMemory(pDevice->device, &allocInfo, nullptr, pMemory);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to allocate buffer memory");
-	}
+	assert(result == VK_SUCCESS);
 }

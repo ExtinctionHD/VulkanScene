@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "File.h"
+#include <cassert>
 
 #include "Instance.h"
 
@@ -40,16 +41,10 @@ VkInstance Instance::getInstance()
 void Instance::createInstance(std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions)
 {
 	// required layers
-	if (!checkInstanceLayerSupport(requiredLayers))
-	{
-		throw std::runtime_error("Required layers not available");
-	}
+	assert(checkInstanceLayerSupport(requiredLayers));
 
 	// required extenstions
-	if (!checkInstanceExtensionSupport(requiredExtensions))
-	{
-		throw std::runtime_error("Required extensions not available");
-	}
+	assert(checkInstanceExtensionSupport(requiredExtensions));
 
 	// infoabout application for vulkan
 	VkApplicationInfo appInfo =
@@ -77,10 +72,7 @@ void Instance::createInstance(std::vector<const char *> requiredLayers, std::vec
 	};
 
 	VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create vulkan instance");
-	}
+	assert(result == VK_SUCCESS);
 }
 
 bool Instance::checkInstanceLayerSupport(std::vector<const char*> requiredLayers)
@@ -158,10 +150,7 @@ void Instance::createDebugCallback()
 	};
 
 	VkResult result = vkCreateDebugReportCallbackEXT(instance, &createInfo, nullptr, &callback);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create debug report callback");
-	}
+	assert(result == VK_SUCCESS);
 }
 
 VKAPI_ATTR VkBool32 VKAPI_CALL Instance::validationLayerCallback(

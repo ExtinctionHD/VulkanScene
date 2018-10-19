@@ -1,4 +1,5 @@
 #include <iostream>
+#include <assert.h>
 
 #include "Surface.h"
 
@@ -32,8 +33,5 @@ void Surface::createSurface(HINSTANCE hInstance, HWND hWnd)
 	};
 
 	VkResult result = vkCreateWin32SurfaceKHR(instance, &createInfo, nullptr, &surface);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create Win32 surface");
-	}
+	assert(result == VK_SUCCESS);
 }

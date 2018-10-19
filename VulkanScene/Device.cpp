@@ -1,5 +1,6 @@
 #include <vector>
 #include <set>
+#include <cassert>
 
 #include "Device.h"
 
@@ -84,10 +85,7 @@ VkCommandBuffer Device::beginOneTimeCommands()
 	};
 
 	VkResult result = vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to allocate one time command buffer");
-	}
+	assert(result == VK_SUCCESS);
 
 	VkCommandBufferBeginInfo beginInfo{
 		VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,	// sType;
@@ -97,10 +95,7 @@ VkCommandBuffer Device::beginOneTimeCommands()
 	};
 
 	result = vkBeginCommandBuffer(commandBuffer, &beginInfo);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to begin one time command buffer");
-	}
+	assert(result == VK_SUCCESS);
 
 	return commandBuffer;
 }
@@ -108,10 +103,7 @@ VkCommandBuffer Device::beginOneTimeCommands()
 void Device::endOneTimeCommands(VkCommandBuffer commandBuffer)
 {
 	VkResult result = vkEndCommandBuffer(commandBuffer);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to end one time command buffer");
-	}
+	assert(result == VK_SUCCESS);
 
 	VkSubmitInfo submitInfo{
 		VK_STRUCTURE_TYPE_SUBMIT_INFO,	// sType;
@@ -126,10 +118,7 @@ void Device::endOneTimeCommands(VkCommandBuffer commandBuffer)
 	};
 
 	result = vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to submit one time command buffer");
-	}
+	assert(result == VK_SUCCESS);
 
 	vkQueueWaitIdle(graphicsQueue);  // TODO: replace wait idle to signal semophore
 
@@ -260,10 +249,7 @@ void Device::createLogicalDevice(VkSurfaceKHR surface)
 	};
 
 	VkResult result = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create logical device");
-	}
+	assert(result == VK_SUCCESS);
 
 	// save queue handlers
 	vkGetDeviceQueue(device, indices.graphics, 0, &graphicsQueue);
@@ -280,8 +266,5 @@ void Device::createCommandPool(VkPhysicalDevice physicalDevice)
 	};
 
 	VkResult result = vkCreateCommandPool(device, &createInfo, nullptr, &commandPool);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create command pool");
-	}
+	assert(result == VK_SUCCESS);
 }

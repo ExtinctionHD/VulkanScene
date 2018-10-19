@@ -8,10 +8,7 @@
 
 TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers, bool isCube)
 {
-	if (arrayLayers != filenames.size())
-	{
-		throw std::invalid_argument("Number of files must be equal to the array layer count");
-	}
+	assert(arrayLayers == filenames.size());
 
 	device = pDevice->device;
 	format = VK_FORMAT_R8G8B8A8_UNORM;
@@ -38,10 +35,7 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 	{
 		if (isCube)
 		{
-			if (arrayLayers < 6)
-			{
-				throw std::invalid_argument("For cube texture number of array layers can't be less than six");
-			}
+			assert(arrayLayers >= 6);
 
 			flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
 			viewType = VK_IMAGE_VIEW_TYPE_CUBE;
@@ -131,10 +125,8 @@ stbi_uc* TextureImage::loadPixels(std::string filename)
 		nullptr,
 		STBI_rgb_alpha
 	);
-	if (!pixels)
-	{
-		throw std::runtime_error("Failed to load texture from file: " + filename);
-	}
+
+	assert(pixels);
 
 	return pixels;
 }
@@ -144,10 +136,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers)
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(pDevice->physicalDevice, format, &formatProperties);
 
-	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
-	{
-		throw std::runtime_error("Image format does not support linear blitting");
-	}
+	assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT);
 
 	VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
 
@@ -280,8 +269,5 @@ void TextureImage::createSampler()
 	};
 
 	VkResult result = vkCreateSampler(device, &createInfo, nullptr, &sampler);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create texture sampler");
-	}
+	assert(result == VK_SUCCESS);
 }

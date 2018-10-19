@@ -20,10 +20,8 @@ AssimpModel::AssimpModel(Device *pDevice, const std::string& filename) :
 		aiProcess_FlipUVs
 	);
 	importer.ApplyPostProcessing(aiProcess_CalcTangentSpace);
-	if (!pScene)
-	{
-		throw std::runtime_error(importer.GetErrorString());
-	}
+
+	assert(pScene);
 
 	processNode(pScene->mRootNode, pScene);
 }
@@ -230,10 +228,7 @@ glm::vec4 AssimpModel::getMaterialColor(aiMaterial *pAiMaterial, const char * ke
 TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextureType type)
 {
 	aiString path;
-	if (pAiMaterial->GetTexture(type, 0, &path) != aiReturn_SUCCESS)
-	{
-		throw std::runtime_error("Failed to get material texture");
-	}
+	assert(pAiMaterial->GetTexture(type, 0, &path) == aiReturn_SUCCESS);
 
 	TextureImage *pTexture;
 	if (textures.find(path.C_Str()) == textures.end())

@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "RenderPass.h"
 
 // public:
@@ -119,10 +121,7 @@ void RenderPass::createRenderPass(VkFormat colorAttachmentFormat, VkFormat depth
 	};
 
 	VkResult result = vkCreateRenderPass(device, &createInfo, nullptr, &renderPass);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create renderpass");
-	}
+	assert(result == VK_SUCCESS);
 }
 
 void RenderPass::createDepthResources(Device *pDevice, VkExtent2D depthImageExtent, VkFormat depthImagetFormat)
@@ -189,10 +188,7 @@ void RenderPass::createFramebuffers(std::vector<VkImageView> swapChainImageViews
 		};
 
 		VkResult result = vkCreateFramebuffer(device, &createInfo, nullptr, &framebuffers[i]);
-		if (result != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to create framebuffers");
-		}
+		assert(result == VK_SUCCESS);
 	}
 }
 

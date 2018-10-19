@@ -54,10 +54,7 @@ void GraphicsPipeline::createLayout(std::vector<VkDescriptorSetLayout> descripto
 	};
 
 	VkResult result = vkCreatePipelineLayout(device, &createInfo, nullptr, &layout);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create pipeline layout");
-	}
+	assert(result == VK_SUCCESS);
 }
 
 void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewportExtent)
@@ -227,9 +224,6 @@ void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewpo
 	};
 
 	VkResult result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &createInfo, nullptr, &pipeline);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create graphics pipeline");
-	}
+	assert(result == VK_SUCCESS);
 }
 

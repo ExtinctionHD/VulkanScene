@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "Image.h"
 
 // public:
@@ -47,10 +49,7 @@ void Image::createImageView(VkImageSubresourceRange subresourceRange, VkImageVie
 	};
 
 	VkResult result = vkCreateImageView(device, &createInfo, nullptr, &view);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create image view");
-	}
+	assert(result == VK_SUCCESS);
 }
 
 void Image::transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange)
@@ -229,10 +228,7 @@ void Image::createThisImage(
 	}
 
 	VkResult result = vkCreateImage(device, &imageInfo, nullptr, &image);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create image");
-	}
+	assert(result == VK_SUCCESS);
 
 	allocateMemory(pDevice, properties);
 
@@ -260,8 +256,5 @@ void Image::allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties)
 	};
 
 	VkResult result = vkAllocateMemory(device, &allocInfo, nullptr, &stagingMemory);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to allocate image memory");
-	}
+	assert(result == VK_SUCCESS);
 }

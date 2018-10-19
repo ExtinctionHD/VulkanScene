@@ -2,6 +2,7 @@
 #include "SurfaceSupportDetails.h"
 #include "Device.h"
 #include "SwapChainImage.h"
+#include <cassert>
 
 #include "SwapChain.h"
 
@@ -55,10 +56,7 @@ SwapChain::SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceEx
 	}
 
 	VkResult result = vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create swapchain");
-	}
+	assert(result == VK_SUCCESS);
 
 	// save swapchain images 
 	initImages();

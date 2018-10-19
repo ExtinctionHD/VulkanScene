@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 
 #include "SwapChainImage.h"
 
@@ -25,10 +26,7 @@ VkImageView SwapChainImage::getImageView(VkImageSubresourceRange subresourceRang
 	};
 
 	VkResult result = vkCreateImageView(device, &createInfo, nullptr, &imageView);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create image view");
-	}
+	assert(result == VK_SUCCESS);
 
 	return imageView;
 }

@@ -1,5 +1,6 @@
 #include <vector>
 #include "File.h"
+#include <assert.h>
 
 #include "ShaderModule.h"
 
@@ -21,10 +22,7 @@ ShaderModule::ShaderModule(VkDevice device, std::string filename, VkShaderStageF
 	};
 
 	VkResult result = vkCreateShaderModule(device, &createInfo, nullptr, &module);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create shader module from file: " + filename);
-	}
+	assert(result == VK_SUCCESS);
 }
 
 ShaderModule::~ShaderModule()

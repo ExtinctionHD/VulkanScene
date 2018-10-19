@@ -67,9 +67,9 @@ void Vulkan::drawFrame()
 		resize(pSwapChain->extent);
 		return;
 	}
-	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+	else
 	{
-		throw std::runtime_error("Failed to acquire next frame");
+		assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
 	}
 
 	std::vector<VkSemaphore> waitSemaphores{ imageAvailable };
@@ -88,10 +88,7 @@ void Vulkan::drawFrame()
 	};
 
 	result = vkQueueSubmit(pDevice->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to submit graphics commands");
-	}
+	assert(result == VK_SUCCESS);
 
 	std::vector<VkSwapchainKHR> swapChains{ pSwapChain->swapChain };
 	VkPresentInfoKHR presentInfo{
@@ -111,9 +108,9 @@ void Vulkan::drawFrame()
 		resize(pSwapChain->extent);
 		return;
 	}
-	else if (result != VK_SUCCESS)
+	else
 	{
-		throw std::runtime_error("Failed to present next frame");
+		assert(result == VK_SUCCESS);
 	}
 }
 
@@ -167,10 +164,7 @@ void Vulkan::initGraphicsCommands()
 	};
 
 	VkResult result = vkAllocateCommandBuffers(pDevice->device, &allocInfo, graphicCommands.data());
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to allocate graphics command buffers");
-	}
+	assert(result == VK_SUCCESS);
 
 	// clear values for each frame
 	std::array<VkClearValue, 2> clearValues = {};
@@ -193,10 +187,7 @@ void Vulkan::initGraphicsCommands()
 		};
 
 		result = vkBeginCommandBuffer(graphicCommands[i], &beginInfo);
-		if (result != VK_SUCCESS)
-		{
-			std::runtime_error("Failed to begin graphics command buffers");
-		}
+		assert(result == VK_SUCCESS);
 
 		VkRenderPassBeginInfo renderPassBeginInfo{
 			VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	// sType;
@@ -216,10 +207,7 @@ void Vulkan::initGraphicsCommands()
 		vkCmdEndRenderPass(graphicCommands[i]);
 
 		result = vkEndCommandBuffer(graphicCommands[i]);
-		if (result != VK_SUCCESS)
-		{
-			std::runtime_error("Failed to end graphics command buffers");
-		}
+		assert(result == VK_SUCCESS);
 	}
 }
 
@@ -237,10 +225,7 @@ void Vulkan::createSemaphore(VkDevice device, VkSemaphore& semaphore)
 	};
 
 	VkResult result = vkCreateSemaphore(device, &createInfo, nullptr, &semaphore);
-	if (result != VK_SUCCESS)
-	{
-		throw std::runtime_error("Failed to create semaphore");
-	}
+	assert(result == VK_SUCCESS);
 }
 
 

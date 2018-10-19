@@ -53,7 +53,7 @@ int Window::mainLoop()
 	{
 		if (result == -1)
 		{
-			throw std::runtime_error("Failed to get window message");
+			break;
 		}
 
 		Vulkan *pVulkan = reinterpret_cast<Vulkan*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
@@ -61,6 +61,8 @@ int Window::mainLoop()
 
 		DispatchMessage(&msg);
 	}
+
+	return result;
 }
 
 // private:
@@ -73,7 +75,7 @@ ATOM Window::registerWindowClass()
 		WndProc,						// lpfnWndProc   
 		0,								// cbClsExtra    
 		0,								// cbWndExtra    
-		hInstance,							// hInstance     
+		hInstance,						// hInstance     
 		0,								// hIcon         
 		LoadCursor(nullptr, IDC_ARROW),	// hCursor       
 		(HBRUSH)(COLOR_WINDOW + 1),		// hbrBackground 
@@ -90,10 +92,7 @@ void Window::createWindow(int width, int height)
 	hWnd = CreateWindow(WINDOW_CLASS.data(), WINDOW_TITLE.data(), WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, width, height, nullptr, nullptr, hInstance, nullptr);
 
-	if (!hWnd)
-	{
-		throw std::runtime_error("Failed to create window");
-	}
+	assert(hWnd);
 }
 
 void Window::showWindow()

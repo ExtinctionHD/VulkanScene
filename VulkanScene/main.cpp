@@ -9,20 +9,11 @@ int APIENTRY wWinMain(
 	_In_ int       nCmdShow
 )
 {
-	Window *pWindow = nullptr;
-	Vulkan *pVulkan = nullptr;
+	Window *pWindow = new Window(hInstance, 1280, 720);
+	Vulkan *pVulkan = new Vulkan(pWindow->getHInstance(), pWindow->getHWnd(), pWindow->getClientExtent());
 
-	try
-	{
-		pWindow = new Window(hInstance, 1280, 720);
-		pVulkan = new Vulkan(pWindow->getHInstance(), pWindow->getHWnd(), pWindow->getClientExtent());
-		pWindow->setUserPointer(pVulkan);
-		pWindow->mainLoop();
-	}
-	catch (const std::exception& ex)
-	{
-		MessageBox(pWindow->getHWnd(), std::string("FATAL | " + std::string(ex.what())).c_str(), "Error", MB_ICONERROR);
-	}
+	pWindow->setUserPointer(pVulkan);
+	pWindow->mainLoop();
 
 	delete(pWindow);
 	delete(pVulkan);
