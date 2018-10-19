@@ -17,18 +17,12 @@ public:
 
 	uint32_t getIndexCount() const;
 
-	Buffer* getMaterialColorBuffer() const;
-
-	float getOpacity() const;
-
-	std::vector<TextureImage*> getMaterialTextures() const;
+	Material *pMaterial;
 
 protected:
 	MeshBase() {}
 
 	std::vector<uint32_t> indices;
-
-	Material *pMaterial;
 
 	Buffer *pVertexBuffer;
 

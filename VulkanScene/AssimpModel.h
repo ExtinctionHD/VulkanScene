@@ -26,23 +26,15 @@ public:
 	static void destroyPipeline();
 
 protected:
-	virtual VkDescriptorSetLayout& getMeshDSLayout() override;
-
 	virtual GraphicsPipeline *getPipeline() override;
 
 private:
 	enum ShaderTypes { vert, frag };
 	static const std::vector<std::string> SHADER_FILES;
 
-	static uint32_t objectCount;
-
-	static VkDescriptorSetLayout meshDSLayout;
-
 	static GraphicsPipeline *pPipeline;
 
 	std::string directory;
-
-	std::map<uint32_t, Material*> materials;
 
 	std::map<std::string, TextureImage*> textures;
 
@@ -56,10 +48,6 @@ private:
 
 	glm::vec4 getMaterialColor(aiMaterial *pAiMaterial, const char *key);
 
-	void getMaterialTexture(aiTextureType type, aiMaterial *pAiMaterial, Material *pMaterial);
-
 	TextureImage* loadMaterialTexture(aiMaterial *pAiMaterial, aiTextureType type);
-
-	TextureImage* loadDefaultTexture(std::string path);
 };
 

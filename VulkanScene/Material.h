@@ -7,6 +7,7 @@
 #include <assimp/scene.h>
 #include <unordered_map>
 #include "Buffer.h"
+#include "DescriptorPool.h"
 
 class Material
 {
@@ -44,7 +45,25 @@ public:
 	// returns path to default texture of this type
 	static std::string getDefaultTexturePath(aiTextureType type);
 
+	void initDescritorSet(DescriptorPool *pDescriptorPool);
+
+	VkDescriptorSet getDesriptorSet() const;
+
+	static VkDescriptorSetLayout getDSLayout();
+
+	static void initDefaultTextures(Device *pDevice);
+
 private:
+	Device *pDevice;
+
+	static uint32_t objectCount;
+
 	std::unordered_map<aiTextureType, TextureImage*> textures;
+
+	VkDescriptorSet descriptorSet;
+
+	static VkDescriptorSetLayout dsLayout;
+
+	static std::vector<TextureImage*> defaultTextures;
 };
 

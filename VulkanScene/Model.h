@@ -8,6 +8,7 @@
 #include "GraphicsPipeline.h"
 #include "RenderPass.h"
 #include "MeshBase.h"
+#include <map>
 
 class Model
 {
@@ -35,12 +36,9 @@ protected:
 
 	std::vector<MeshBase*> meshes;
 
+	std::map<uint32_t, Material*> materials;
+
 	static VkDescriptorSetLayout transformDSLayout;
-
-	// descriptor sets for each mesh
-	std::vector<VkDescriptorSet> meshDescriptorSets;
-
-	virtual VkDescriptorSetLayout& getMeshDSLayout() = 0;
 
 	virtual GraphicsPipeline* getPipeline() = 0;
 

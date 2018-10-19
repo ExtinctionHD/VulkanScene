@@ -6,12 +6,35 @@
 
 Material::Material(Device *pDevice)
 {
+	this->pDevice = pDevice;
 	pColorsBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(MaterialColors));
+
+	// create static vector with default textures
+	if (defaultTextures.empty())
+	{
+		initDefaultTextures(pDevice);
+	}
+
+	// initialize current material with default textures
+	for (int i = 0; i < TEXTURES_ORDER.size(); i++)
+	{
+		textures.insert(std::pair<aiTextureType, TextureImage*>(TEXTURES_ORDER[i], defaultTextures[i]));
+	}
+
+	objectCount++;
 }
 
 Material::~Material()
 {
+	objectCount--;
+
 	delete(pColorsBuffer);
+
+	if (objectCount == 0 && dsLayout != VK_NULL_HANDLE)
+	{
+		vkDestroyDescriptorSetLayout(pDevice->device, dsLayout, nullptr);
+		dsLayout = VK_NULL_HANDLE;
+	}
 }
 
 const std::vector<aiTextureType> Material::TEXTURES_ORDER = {
@@ -28,11 +51,7 @@ std::vector<TextureImage*> Material::getTextures() const
 
 	for (aiTextureType type : TEXTURES_ORDER)
 	{
-		try
-		{
-			result.push_back(textures.at(type));
-		}
-		catch (std::out_of_range ex) {}
+		result.push_back(textures.at(type));
 	}
 
 	return result;
@@ -45,7 +64,7 @@ void Material::updateColorsBuffer()
 
 void Material::addTexture(aiTextureType type, TextureImage * pTexture)
 {
-	textures.insert(std::pair<aiTextureType, TextureImage*>(type, pTexture));
+	textures.at(type) = pTexture;
 }
 
 std::string Material::getDefaultTexturePath(aiTextureType type)
@@ -68,3 +87,34 @@ std::string Material::getDefaultTexturePath(aiTextureType type)
 		throw std::invalid_argument("For this type no default texture");
 	}
 }
+
+void Material::initDescritorSet(DescriptorPool * pDescriptorPool)
+{
+	descriptorSet = pDescriptorPool->getDescriptorSet({ pColorsBuffer }, getTextures(), dsLayout == VK_NULL_HANDLE, dsLayout);
+}
+
+VkDescriptorSet Material::getDesriptorSet() const
+{
+	return descriptorSet;
+}
+
+VkDescriptorSetLayout Material::getDSLayout()
+{
+	return dsLayout;
+}
+
+void Material::initDefaultTextures(Device *pDevice)
+{
+	for (aiTextureType type : TEXTURES_ORDER)
+	{
+		defaultTextures.push_back(new TextureImage(pDevice, { getDefaultTexturePath(type) }, 1));
+	}
+}
+
+// private:
+
+uint32_t Material::objectCount = 0;
+
+VkDescriptorSetLayout Material::dsLayout = VK_NULL_HANDLE;
+
+std::vector<TextureImage*> Material::defaultTextures;

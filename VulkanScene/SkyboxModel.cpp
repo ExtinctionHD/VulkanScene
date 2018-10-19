@@ -40,35 +40,23 @@ SkyboxModel::SkyboxModel(Device *pDevice, std::string texturesDir, std::string e
 		7, 3, 1
 	};
 
-	pMaterial = new Material(pDevice);
+	Material *pMaterial = new Material(pDevice);
 	pMaterial->addTexture(aiTextureType_AMBIENT, pTexture);
 
-	meshes.push_back(new Mesh<Position>(pDevice, cubeVertices, cubeIndices, pMaterial));
+	materials.insert(std::pair<uint32_t, Material*>(0, pMaterial));
 
-	objectCount++;
+	meshes.push_back(new Mesh<Position>(pDevice, cubeVertices, cubeIndices, pMaterial));
 }
 
 SkyboxModel::~SkyboxModel()
 {
-	objectCount--;
-
-	if (objectCount == 0)
-	{
-		if (meshDSLayout != VK_NULL_HANDLE)
-		{
-			vkDestroyDescriptorSetLayout(pDevice->device, meshDSLayout, nullptr);
-			meshDSLayout = VK_NULL_HANDLE;
-		}
-	}
-
-	delete(pMaterial);
 	delete(pTexture);
 }
 
 void SkyboxModel::createPipeline(Device * pDevice, std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass)
 {
 	layouts.push_back(transformDSLayout);
-	layouts.push_back(meshDSLayout);
+	layouts.push_back(Material::getDSLayout());
 
 	if (pPipeline == nullptr)
 	{
@@ -111,11 +99,6 @@ void SkyboxModel::destroyPipeline()
 
 // protected:
 
-VkDescriptorSetLayout& SkyboxModel::getMeshDSLayout()
-{
-	return meshDSLayout;
-}
-
 GraphicsPipeline * SkyboxModel::getPipeline()
 {
 	return pPipeline;
@@ -127,10 +110,6 @@ const std::vector<std::string> SkyboxModel::SHADER_FILES = {
 	File::getExeDir() + "shaders/skybox/vert.spv",
 	File::getExeDir() + "shaders/skybox/frag.spv"
 };
-
-uint32_t SkyboxModel::objectCount = 0;
-
-VkDescriptorSetLayout SkyboxModel::meshDSLayout = VK_NULL_HANDLE;
 
 GraphicsPipeline* SkyboxModel::pPipeline = nullptr;
 

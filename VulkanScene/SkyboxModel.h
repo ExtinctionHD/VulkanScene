@@ -22,21 +22,13 @@ public:
 	static void destroyPipeline();
 
 protected:
-	virtual VkDescriptorSetLayout& getMeshDSLayout() override;
-
 	virtual GraphicsPipeline * getPipeline() override;
 
 private:
 	enum ShaderTypes { vert, frag };
 	static const std::vector<std::string> SHADER_FILES;
 
-	static uint32_t objectCount;
-
-	static VkDescriptorSetLayout meshDSLayout;
-
 	static GraphicsPipeline *pPipeline;
-
-	Material *pMaterial;
 
 	TextureImage *pTexture;
 };

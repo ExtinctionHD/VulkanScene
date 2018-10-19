@@ -26,29 +26,10 @@ AssimpModel::AssimpModel(Device *pDevice, const std::string& filename) :
 	}
 
 	processNode(pScene->mRootNode, pScene);
-
-	objectCount++;
 }
 
 AssimpModel::~AssimpModel()
 {
-	objectCount--;
-
-	if (objectCount == 0)
-	{
-		if (meshDSLayout != VK_NULL_HANDLE)
-		{
-			vkDestroyDescriptorSetLayout(pDevice->device, meshDSLayout, nullptr);
-			meshDSLayout = VK_NULL_HANDLE;
-		}
-	}
-
-	// cleanup materials
-	for (auto it = materials.begin(); it != materials.end(); ++it)
-	{
-		delete((*it).second);
-	}
-
 	// cleanup textures
 	for (auto it = textures.begin(); it != textures.end(); ++it)
 	{
@@ -59,7 +40,7 @@ AssimpModel::~AssimpModel()
 void AssimpModel::createPipeline(Device *pDevice, std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass)
 {
 	layouts.push_back(transformDSLayout);
-	layouts.push_back(meshDSLayout);
+	layouts.push_back(Material::getDSLayout());
 
 	if (pPipeline == nullptr)
 	{
@@ -102,11 +83,6 @@ void AssimpModel::destroyPipeline()
 
 // protected:
 
-VkDescriptorSetLayout& AssimpModel::getMeshDSLayout()
-{
-	return meshDSLayout;
-}
-
 GraphicsPipeline * AssimpModel::getPipeline()
 {
 	return pPipeline;
@@ -119,10 +95,6 @@ const std::vector<std::string> AssimpModel::SHADER_FILES = {
 	File::getExeDir() + "shaders/main/frag.spv"
 };
 
-uint32_t AssimpModel::objectCount = 0;
-
-VkDescriptorSetLayout AssimpModel::meshDSLayout = VK_NULL_HANDLE;
-
 GraphicsPipeline* AssimpModel::pPipeline = nullptr;
 
 void AssimpModel::processNode(aiNode *pAiNode, const aiScene *pAiScene)
@@ -133,7 +105,7 @@ void AssimpModel::processNode(aiNode *pAiNode, const aiScene *pAiScene)
 
 		MeshBase* pMesh = processMesh(pAiMesh, pAiScene);
 
-		if (pMesh->getOpacity() == 1.0f)
+		if (pMesh->pMaterial->colors.opacity == 1.0f)
 		{
 			meshes.insert(meshes.begin(), { pMesh });
 		}
@@ -275,7 +247,10 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 
 		for (aiTextureType type : Material::TEXTURES_ORDER)
 		{
-			getMaterialTexture(type, pAiMaterial, pMaterial);
+			if (pAiMaterial->GetTextureCount(type))
+			{
+				pMaterial->addTexture(type, loadMaterialTexture(pAiMaterial, type));
+			}
 		}
 
 		materials.insert(std::pair<uint32_t, Material*>(index, pMaterial));
@@ -298,18 +273,6 @@ glm::vec4 AssimpModel::getMaterialColor(aiMaterial *pAiMaterial, const char * ke
 	return glm::vec4(color.r, color.g, color.b, color.a);
 }
 
-void AssimpModel::getMaterialTexture(aiTextureType type, aiMaterial *pAiMaterial, Material *pMaterial)
-{
-	if (pAiMaterial->GetTextureCount(type))
-	{
-		pMaterial->addTexture(type, loadMaterialTexture(pAiMaterial, type));
-	}
-	else
-	{
-		pMaterial->addTexture(type, loadDefaultTexture(Material::getDefaultTexturePath(type)));
-	}
-}
-
 TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextureType type)
 {
 	aiString path;
@@ -327,22 +290,6 @@ TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextur
 	else
 	{
 		pTexture = textures[path.C_Str()];
-	}
-
-	return pTexture;
-}
-
-TextureImage * AssimpModel::loadDefaultTexture(std::string path)
-{
-	TextureImage *pTexture;
-	if (textures.find(path) == textures.end())
-	{
-		pTexture = new TextureImage(pDevice, { path }, 1);
-		textures.insert(std::pair<std::string, TextureImage*>(path, pTexture));
-	}
-	else
-	{
-		pTexture = textures[path];
 	}
 
 	return pTexture;

@@ -13,6 +13,12 @@ Model::~Model()
 	}
 
 	// cleanup materials
+	for (auto it = materials.begin(); it != materials.end(); ++it)
+	{
+		delete((*it).second);
+	}
+
+	// cleanup meshes
 	for (auto it = meshes.begin(); it != meshes.end(); ++it)
 	{
 		delete(*it);
@@ -43,7 +49,7 @@ uint32_t Model::getTextureCount() const
 
 	for (MeshBase *pMesh : meshes)
 	{
-		textureCount += pMesh->getMaterialTextures().size();
+		textureCount += pMesh->pMaterial->getTextures().size();
 	}
 
 	return textureCount;
@@ -56,18 +62,11 @@ uint32_t Model::getMeshCount() const
 
 void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 {
-	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, Model::transformDSLayout == VK_NULL_HANDLE, Model::transformDSLayout);
+	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, transformDSLayout == VK_NULL_HANDLE, transformDSLayout);
 
-	for (MeshBase *pMesh : meshes)
+	for (std::pair<uint32_t, Material*> pair : materials)
 	{
-		meshDescriptorSets.push_back(
-			pDescriptorPool->getDescriptorSet(
-				{ pMesh->getMaterialColorBuffer() },
-				pMesh->getMaterialTextures(),
-				getMeshDSLayout() == VK_NULL_HANDLE,
-				getMeshDSLayout()
-			)
-		);
+		pair.second->initDescritorSet(pDescriptorPool);
 	}
 }
 
@@ -81,8 +80,8 @@ void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> des
 
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		VkDescriptorSet meshDescriptorSet = meshDescriptorSets[i];
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, getPipeline()->layout, descriptorSets.size(), 1, &meshDescriptorSet, 0, nullptr);
+		VkDescriptorSet materialDescriptorSet = meshes[i]->pMaterial->getDesriptorSet();
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, getPipeline()->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
 
 		VkBuffer vertexBuffer = meshes[i]->getVertexBuffer();
 		VkDeviceSize offset = 0;
