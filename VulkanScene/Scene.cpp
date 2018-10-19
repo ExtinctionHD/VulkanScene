@@ -79,7 +79,7 @@ uint32_t Scene::getDecriptorSetCount() const
 
 void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool)
 {
-	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pViewProjBuffer, pLightingBuffer, }, { }, true, sceneDSLayout);
+	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingBuffer, }, { }, true, sceneDSLayout);
 
 	for (Model *pModel : models)
 	{
@@ -121,9 +121,6 @@ void Scene::updateScene()
 
 	lighting.cameraPos = pCamera->getPos();
 	pLightingBuffer->updateData(&lighting.cameraPos, sizeof(lighting.cameraPos), offsetof(Lighting, cameraPos));
-
-	viewProj.view = pCamera->getViewMatrix();
-	pViewProjBuffer->updateData(&viewProj.view, sizeof(viewProj.view), offsetof(ViewProjMatrices, view));
 }
 
 void Scene::draw(VkCommandBuffer commandBuffer)
@@ -136,11 +133,7 @@ void Scene::draw(VkCommandBuffer commandBuffer)
 
 void Scene::resizeExtent(RenderPass * pRenderPass)
 {
-	pCamera->setCameraExtent(pRenderPass->framebuffersExtent);
-
-	viewProj.projection = pCamera->getProjectionMatrix();
-	pViewProjBuffer->updateData(&viewProj.projection, sizeof(viewProj.projection), offsetof(ViewProjMatrices, projection));
-
+	pCamera->setExtent(pRenderPass->framebuffersExtent);
 
 	for (GraphicsPipeline* pPipeline : pipelines)
 	{
@@ -156,7 +149,7 @@ void Scene::initCamera(VkExtent2D cameraExtent)
 	glm::vec3 forward{ 0.0f, -0.8f, 1.0f };
 	glm::vec3 up{ 0.0f, -1.0f, 0.0f };
 
-	pCamera = new Camera(pos, forward, up, cameraExtent);
+	pCamera = new Camera(pDevice, pos, forward, up, cameraExtent);
 }
 
 void Scene::initLighting()
@@ -196,5 +189,4 @@ void Scene::initModels()
 		pModel->setTransform(pModel->getTransform());
 	}
 
-	pViewProjBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(viewProj));
 }

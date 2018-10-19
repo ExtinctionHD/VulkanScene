@@ -5,15 +5,17 @@
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
+#include "ViewProjMatrices.h"
+#include "Buffer.h"
 
 // provides camera attributes
 // and movement functions
 class Camera
 {
 public:
-	Camera(VkExtent2D extent);
+	Camera(Device *pDevice, VkExtent2D extent);
 
-	Camera(glm::vec3 pos, glm::vec3 forward, glm::vec3 up, VkExtent2D extent);
+	Camera(Device *pDevice, glm::vec3 pos, glm::vec3 forward, glm::vec3 up, VkExtent2D extent);
 
 	~Camera();
 
@@ -38,20 +40,19 @@ public:
 
 	glm::vec3 getUp() const;
 
-	void moveCamera(float deltaSec);
-
-	void rotateCamera(float deltaX, float deltaY);
-
-	void setCameraExtent(VkExtent2D extent);
-
-	glm::mat4 getViewMatrix() const;
-
-	glm::mat4 getProjectionMatrix() const;
+	Buffer* getViewProjBuffer() const;
 
 	glm::vec2 getCenter() const;
 
-private:
+	void move(float deltaSec);
 
+	void rotate(float deltaX, float deltaY);
+
+	void setExtent(VkExtent2D extent);
+
+	void updateView();
+
+private:
 	// step of camera movement
 	const float SPEED = 15.0f;
 
@@ -61,7 +62,7 @@ private:
 	// position of camera
 	glm::vec3 pos;
 
-	// vector of camera diraction
+	// vector of camera direction
 	glm::vec3 forward;
 
 	// up vector of camera 
@@ -77,7 +78,17 @@ private:
 	// vertical angle
 	float angleV;
 
+	// camera view and projection matrices
+	ViewProjMatrices viewProj;
+	Buffer *pViewProjBuffer;
+
 	// initializes camera angles
-	void init();
+	void initAngles();
+
+	void initViewProj(Device *pDevice);
+
+	glm::mat4 getViewMatrix() const;
+
+	glm::mat4 getProjectionMatrix() const;
 };
 

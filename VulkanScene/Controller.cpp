@@ -17,11 +17,13 @@ void Controller::controlCamera(float deltaSec)
 
 	glm::vec2 center = pCamera->getCenter();
 
-	pCamera->rotateCamera(pos.x - center.x, pos.y - center.y);
+	pCamera->rotate(pos.x - center.x, pos.y - center.y);
 
 	SetCursorPos(center.x, center.y);
 
-	pCamera->moveCamera(deltaSec);
+	pCamera->move(deltaSec);
+
+	pCamera->updateView();
 }
 
 void Controller::keyDownCallback(int key)

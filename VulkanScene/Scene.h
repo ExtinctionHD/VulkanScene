@@ -51,9 +51,6 @@ private:
 	Buffer *pLightingBuffer;
 
 	// scene
-	ViewProjMatrices viewProj;
-	Buffer *pViewProjBuffer;
-
 	VkDescriptorSet sceneDescriptorSet;
 	VkDescriptorSetLayout sceneDSLayout;
 

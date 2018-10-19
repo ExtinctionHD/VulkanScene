@@ -5,29 +5,31 @@
 
 // public:
 
-Camera::Camera(VkExtent2D extent)
+Camera::Camera(Device *pDevice, VkExtent2D extent)
 {
 	pos = glm::vec3(0.0f, 0.0f, 0.0f);
 	forward = glm::vec3(0.0f, 0.0f, 1.0f);
 	up = glm::vec3(0.0f, -1.0f, 0.0f);
 	this->extent = extent;
 
-	init();
+	initAngles();
+	initViewProj(pDevice);
 }
 
-Camera::Camera(glm::vec3 pos, glm::vec3 target, glm::vec3 up, VkExtent2D extent)
+Camera::Camera(Device *pDevice, glm::vec3 pos, glm::vec3 target, glm::vec3 up, VkExtent2D extent)
 {
 	this->pos = pos;
 	this->forward = glm::normalize(target);
 	this->up = glm::normalize(up);
 	this->extent = extent;
 
-	init();
+	initAngles();
+	initViewProj(pDevice);
 }
 
 Camera::~Camera()
 {
-
+	delete(pViewProjBuffer);
 }
 
 glm::vec3 Camera::getPos() const
@@ -45,7 +47,17 @@ glm::vec3 Camera::getUp() const
 	return up;
 }
 
-void Camera::moveCamera(float deltaSec)
+Buffer * Camera::getViewProjBuffer() const
+{
+	return pViewProjBuffer;
+}
+
+glm::vec2 Camera::getCenter() const
+{
+	return glm::vec2(extent.width / 2, extent.height / 2);
+}
+
+void Camera::move(float deltaSec)
 {
 	const float DISTANCE = SPEED * deltaSec;
 
@@ -64,7 +76,7 @@ void Camera::moveCamera(float deltaSec)
 	pos += direction * DISTANCE;
 }
 
-void Camera::rotateCamera(float deltaX, float deltaY)
+void Camera::rotate(float deltaX, float deltaY)
 {
 	const float MAX_DELTA = 100.0f;
 	const float VERT_ANGLE_LIMIT = 90.0f;
@@ -95,34 +107,24 @@ void Camera::rotateCamera(float deltaX, float deltaY)
 	up = glm::normalize(up);
 }
 
-void Camera::setCameraExtent(VkExtent2D extent)
+void Camera::setExtent(VkExtent2D extent)
 {
 	this->extent = extent;
+
+	viewProj.projection = getProjectionMatrix();
+	pViewProjBuffer->updateData(&viewProj.projection, sizeof(viewProj.projection), offsetof(ViewProjMatrices, projection));
 }
 
-glm::mat4 Camera::getViewMatrix() const
+void Camera::updateView()
 {
-	return glm::lookAt(getPos(), getTarget(), getUp());
+	viewProj.view = getViewMatrix();
+	pViewProjBuffer->updateData(&viewProj.view, sizeof(viewProj.view), offsetof(ViewProjMatrices, view));
 }
 
-glm::mat4 Camera::getProjectionMatrix() const
-{
-	const float viewAngle = 45.0f;
-	const float aspect = extent.width / (float)extent.height;
-	const float zNear = 0.1f;
-	const float zFar = 500.0f;
-
-	return glm::perspective(glm::radians(viewAngle), aspect, zNear, zFar);
-}
-
-glm::vec2 Camera::getCenter() const
-{
-	return glm::vec2(extent.width / 2, extent.height / 2);
-}
 
 // private:
 
-void Camera::init()
+void Camera::initAngles()
 {
 	glm::vec3 horizontal{ forward.x, 0.0f, forward.z };
 	horizontal = glm::normalize(horizontal);
@@ -157,4 +159,28 @@ void Camera::init()
 
 	// vertical camera angle
 	angleV = -glm::degrees(glm::asin(forward.y));
+}
+
+void Camera::initViewProj(Device *pDevice)
+{
+	viewProj.view = getViewMatrix();
+	viewProj.projection = getProjectionMatrix();
+
+	pViewProjBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(viewProj));
+	pViewProjBuffer->updateData(&viewProj, sizeof(viewProj), 0);
+}
+
+glm::mat4 Camera::getViewMatrix() const
+{
+	return glm::lookAt(getPos(), getTarget(), getUp());
+}
+
+glm::mat4 Camera::getProjectionMatrix() const
+{
+	const float viewAngle = 45.0f;
+	const float aspect = extent.width / (float)extent.height;
+	const float zNear = 0.1f;
+	const float zFar = 500.0f;
+
+	return glm::perspective(glm::radians(viewAngle), aspect, zNear, zFar);
 }
