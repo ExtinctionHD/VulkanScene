@@ -175,7 +175,7 @@ void Scene::initModels()
 	const std::string AVENTADOR_FILE = File::getExeDir() + "models/aventador/lamborghini_aventador.fbx";
 	const std::string MUSTANG_FILE = File::getExeDir() + "models/mustangGT/mustang_GT.obj";
 	const std::string FORD_FILE = File::getExeDir() + "models/fordGT/Ford GT 2017.obj";
-	const std::string SKYBOX_DIR = File::getExeDir() + "textures/skybox1/";
+	const std::string SKYBOX_DIR = File::getExeDir() + "textures/skyboxClouds/";
 	const std::string TERRAIN_DIR = File::getExeDir() + "textures/asphaltBricks/";
 
 	// initialize car model
