@@ -2,10 +2,10 @@
 
 // public:
 
-SkyboxModel::SkyboxModel(Device *pDevice, std::string texturesDir, std::string extension) :
+SkyboxModel::SkyboxModel(Device *pDevice, std::string texturesDir, std::string extension) : 
 	Model(pDevice)
 {
-	std::vector<std::string> filenames = {
+	const std::vector<std::string> filenames = {
 		texturesDir + "right" + extension,
 		texturesDir + "left" + extension,
 		texturesDir + "top" + extension,
@@ -15,7 +15,7 @@ SkyboxModel::SkyboxModel(Device *pDevice, std::string texturesDir, std::string e
 	};
 	pTexture = new TextureImage(pDevice, filenames, CUBE_SIDE_COUNT, true);
 
-	std::vector<Position> cubeVertices{
+	const std::vector<Position> cubeVertices{
 		glm::vec3(-1.0f, -1.0f, -1.0f),
 		glm::vec3(-1.0f, 1.0f, -1.0f),
 		glm::vec3(1.0f, -1.0f, -1.0f),
@@ -25,7 +25,7 @@ SkyboxModel::SkyboxModel(Device *pDevice, std::string texturesDir, std::string e
 		glm::vec3(-1.0f, -1.0f, 1.0f),
 		glm::vec3(-1.0f, 1.0f, 1.0f)
 	};
-	std::vector<uint32_t> cubeIndices{
+	const std::vector<uint32_t> cubeIndices{
 		0, 1, 2,
 		2, 1, 3,
 		2, 3, 4,
@@ -41,9 +41,8 @@ SkyboxModel::SkyboxModel(Device *pDevice, std::string texturesDir, std::string e
 	};
 
 	Material *pMaterial = new Material(pDevice);
-	pMaterial->addTexture(aiTextureType_AMBIENT, pTexture);
-
 	materials.insert(std::pair<uint32_t, Material*>(0, pMaterial));
+	pMaterial->addTexture(aiTextureType_AMBIENT, pTexture);
 
 	meshes.push_back(new Mesh<Position>(pDevice, cubeVertices, cubeIndices, pMaterial));
 }

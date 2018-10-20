@@ -46,3 +46,9 @@ std::string File::getFilename(std::string path)
 
 	return path.substr(path.find_last_of('/') + 1);
 }
+
+bool File::exists(std::string filename)
+{
+	std::ifstream f(filename.c_str());
+	return f.good();
+}

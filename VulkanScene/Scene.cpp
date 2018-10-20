@@ -87,7 +87,7 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool)
 	}
 }
 
-void Scene::createPipelines(RenderPass * pRenderPass)
+void Scene::initPipelines(RenderPass * pRenderPass)
 {
 	const std::string CAR_SHADERS_DIR = File::getExeDir() + "shaders/car/";
 	const std::string SKY_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
@@ -101,6 +101,8 @@ void Scene::createPipelines(RenderPass * pRenderPass)
 		}
 	));
 
+	pTerrain->setPipeline(pipelines[0]);
+
 	pipelines.push_back(pSkybox->createPipeline(
 		{ sceneDSLayout },
 		pRenderPass,
@@ -109,6 +111,7 @@ void Scene::createPipelines(RenderPass * pRenderPass)
 			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
 		}
 	));
+
 }
 
 void Scene::updateScene()
@@ -173,20 +176,21 @@ void Scene::initModels()
 	const std::string MUSTANG_FILE = File::getExeDir() + "models/mustangGT/mustang_GT.obj";
 	const std::string FORD_FILE = File::getExeDir() + "models/fordGT/Ford GT 2017.obj";
 	const std::string SKYBOX_DIR = File::getExeDir() + "textures/skybox1/";
+	const std::string TERRAIN_DIR = File::getExeDir() + "textures/asphaltBricks/";
 
+	// initialize car model
 	pCar = new AssimpModel(pDevice, FORD_FILE);
 	glm::mat4 transform = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 	transform = glm::scale(transform, glm::vec3(0.15f, 0.15f, 0.15f));
 	pCar->setTransform(transform);
 
+	// initalize skybox model
 	pSkybox = new SkyboxModel(pDevice, SKYBOX_DIR, ".jpg");
 
+	// initialize terrain model
+	pTerrain = new TerrainModel(pDevice, { 20000, 20000 }, { 1000, 1000 }, TERRAIN_DIR, ".jpg");
+
 	models.push_back(pSkybox);
+	models.push_back(pTerrain);
 	models.push_back(pCar);
-
-	for (Model *pModel : models)
-	{
-		pModel->setTransform(pModel->getTransform());
-	}
-
 }

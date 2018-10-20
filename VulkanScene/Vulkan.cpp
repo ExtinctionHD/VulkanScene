@@ -21,7 +21,7 @@ Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDecriptorSetCount());
 
 	pScene->initDescriptorSets(pDescriptorPool);
-	pScene->createPipelines(pRenderPass);
+	pScene->initPipelines(pRenderPass);
 
 	initGraphicsCommands();
 

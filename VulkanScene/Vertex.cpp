@@ -2,12 +2,6 @@
 
 // public:
 
-Vertex::Vertex(glm::vec3 pos, glm::vec2 tex)
-{
-	this->pos = pos;
-	this->tex = tex;
-}
-
 VkVertexInputBindingDescription Vertex::getBindingDescription(uint32_t binding)
 {
 	return VkVertexInputBindingDescription{

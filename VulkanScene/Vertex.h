@@ -6,13 +6,8 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 
-class Vertex
+struct Vertex
 {
-public:
-	Vertex() {}
-	Vertex(glm::vec3 pos, glm::vec2 tex);
-	~Vertex() {}
-
 	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);		// position of vertex (x, y, z)
 	glm::vec2 tex = glm::vec3(0.0f, 0.0f, 0.0f);		// position of texture on this vertex (u, v)
 	glm::vec3 normal = glm::vec3(0.0f, 0.0f, 0.0f);		// average normal for triangles that include this vertex (x, y, z)

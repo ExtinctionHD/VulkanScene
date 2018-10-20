@@ -7,7 +7,8 @@
 #include "SkyboxModel.h"
 #include "File.h"
 #include "Controller.h"
-#include "ViewProjMatrices.h"
+#include "TerrainModel.h"
+
 
 // provides scene for rendering
 // contains: camera, lighting, models
@@ -27,7 +28,7 @@ public:
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
-	void createPipelines(RenderPass *pRenderPass);
+	void initPipelines(RenderPass *pRenderPass);
 
 	void updateScene();
 
@@ -57,6 +58,7 @@ private:
 	// models
 	AssimpModel *pCar;
 	SkyboxModel *pSkybox;
+	TerrainModel *pTerrain;
 	std::vector<Model*> models;
 
 	std::vector<GraphicsPipeline*> pipelines;

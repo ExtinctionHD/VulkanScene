@@ -15,6 +15,9 @@ public:
 	static std::string getFileDir(std::string path);
 
 	// get only filename from full path
-	static std::string getFilename(std::string path);   
+	static std::string getFilename(std::string path);  
+
+	// returns true if file exists
+	static bool exists(std::string path);
 };
 

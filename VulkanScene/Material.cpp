@@ -7,7 +7,6 @@
 Material::Material(Device *pDevice)
 {
 	this->pDevice = pDevice;
-	pColorsBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(MaterialColors));
 
 	// create static vector with default textures
 	if (defaultTextures.empty())
@@ -20,6 +19,16 @@ Material::Material(Device *pDevice)
 	{
 		textures.insert(std::pair<aiTextureType, TextureImage*>(TEXTURES_ORDER[i], defaultTextures[i]));
 	}
+
+	colors = MaterialColors{
+		glm::vec4(1.0f),	// ambient
+		glm::vec4(1.0f),	// diffuse
+		glm::vec4(1.0f),	// specular
+		1.0f				// opacity
+	};
+
+	pColorsBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(MaterialColors));
+	updateColorsBuffer();
 
 	objectCount++;
 }

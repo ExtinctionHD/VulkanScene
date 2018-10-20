@@ -180,7 +180,7 @@ glm::mat4 Camera::getProjectionMatrix() const
 	const float viewAngle = 45.0f;
 	const float aspect = extent.width / (float)extent.height;
 	const float zNear = 0.1f;
-	const float zFar = 500.0f;
+	const float zFar = 10000.0f;
 
 	return glm::perspective(glm::radians(viewAngle), aspect, zNear, zFar);
 }
