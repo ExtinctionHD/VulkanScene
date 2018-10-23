@@ -8,9 +8,9 @@ public:
 	~TerrainModel();
 
 protected:
-	virtual VkVertexInputBindingDescription getVertexInputBindingDescription(uint32_t inputBinding) override;
+	VkVertexInputBindingDescription getVertexInputBindingDescription(uint32_t inputBinding) override;
 
-	virtual std::vector<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions(uint32_t inputBinding) override;
+	std::vector<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions(uint32_t inputBinding) override;
 
 private:
 	VkExtent2D size;

@@ -1,9 +1,6 @@
 #pragma once
 
-#include <assimp/Importer.hpp>
 #include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include <iostream>
 #include "Mesh.h"
 #include <vector>
 #include <map>
@@ -19,9 +16,9 @@ public:
 	~AssimpModel();
 
 protected:
-	virtual VkVertexInputBindingDescription  getVertexInputBindingDescription(uint32_t inputBinding) override;
+	VkVertexInputBindingDescription  getVertexInputBindingDescription(uint32_t inputBinding) override;
 
-	virtual std::vector<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions(uint32_t inputBinding) override;
+	std::vector<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions(uint32_t inputBinding) override;
 
 private:
 	std::string directory;

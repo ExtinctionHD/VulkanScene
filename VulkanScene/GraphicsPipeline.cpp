@@ -83,7 +83,7 @@ void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewpo
 		0,															// flags;
 		1,															// vertexBindingDescriptionCount;
 		&bindingDescription,										// pVertexBindingDescriptions;
-		(uint32_t)attributeDescriptions.size(),						// vertexAttributeDescriptionCount;
+		uint32_t(attributeDescriptions.size()),						// vertexAttributeDescriptionCount;
 		attributeDescriptions.data()								// pVertexAttributeDescriptions;
 	};
 

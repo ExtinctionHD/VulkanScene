@@ -103,19 +103,19 @@ void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> des
 
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
 
-	for (int i = 0; i < meshes.size(); i++)
+	for (auto &mesh : meshes)
 	{
-		VkDescriptorSet materialDescriptorSet = meshes[i]->pMaterial->getDesriptorSet();
+		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDesriptorSet();
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
 
-		VkBuffer vertexBuffer = meshes[i]->getVertexBuffer();
+		VkBuffer vertexBuffer = mesh->getVertexBuffer();
 		VkDeviceSize offset = 0;
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer, &offset);
 
-		VkBuffer indexBuffer = meshes[i]->getIndexBuffer();
+		VkBuffer indexBuffer = mesh->getIndexBuffer();
 		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-		uint32_t indexCount = meshes[i]->getIndexCount();
+		uint32_t indexCount = mesh->getIndexCount();
 		vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
 	}
 }

@@ -1,6 +1,6 @@
 #include <vector>
 #include "File.h"
-#include <assert.h>
+#include <cassert>
 
 #include "ShaderModule.h"
 
@@ -18,7 +18,7 @@ ShaderModule::ShaderModule(VkDevice device, std::string filename, VkShaderStageF
 		nullptr,										// pNext;
 		0,												// flags;
 		code.size(),									// codeSize;
-		(uint32_t*)code.data()							// pCode;
+		reinterpret_cast<uint32_t*>(code.data())		// pCode;
 	};
 
 	VkResult result = vkCreateShaderModule(device, &createInfo, nullptr, &module);

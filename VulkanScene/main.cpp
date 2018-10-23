@@ -1,5 +1,3 @@
-#include <iostream>
-#include <fstream>
 #include "Window.h"
 
 int APIENTRY wWinMain(
@@ -9,12 +7,14 @@ int APIENTRY wWinMain(
 	_In_ int       nCmdShow
 )
 {
-	Window *pWindow = new Window(hInstance, 1280, 720);
-	Vulkan *pVulkan = new Vulkan(pWindow->getHInstance(), pWindow->getHWnd(), pWindow->getClientExtent());
+	auto pWindow = new Window(hInstance, 1280, 720);
+	auto pVulkan = new Vulkan(pWindow->getHInstance(), pWindow->getHWnd(), pWindow->getClientExtent());
 
 	pWindow->setUserPointer(pVulkan);
 	pWindow->mainLoop();
 
 	delete(pWindow);
 	delete(pVulkan);
+
+	return 0;
 }

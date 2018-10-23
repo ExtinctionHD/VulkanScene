@@ -115,9 +115,9 @@ bool Instance::checkInstanceExtensionSupport(std::vector<const char*> requiredEx
 
 VkResult Instance::vkCreateDebugReportCallbackEXT(VkInstance instance, const VkDebugReportCallbackCreateInfoEXT * pCreateInfo, const VkAllocationCallbacks * pAllocator, VkDebugReportCallbackEXT * pCallback)
 {
-	auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(
+	auto func = PFN_vkCreateDebugReportCallbackEXT(vkGetInstanceProcAddr(
 		instance, "vkCreateDebugReportCallbackEXT"
-	);
+	));
 
 	if (func != nullptr)
 	{
@@ -131,7 +131,7 @@ VkResult Instance::vkCreateDebugReportCallbackEXT(VkInstance instance, const VkD
 
 void Instance::vkDestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks * pAllocator)
 {
-	auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
+	auto func = PFN_vkDestroyDebugReportCallbackEXT(vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT"));
 	if (func != nullptr)
 	{
 		func(instance, callback, pAllocator);

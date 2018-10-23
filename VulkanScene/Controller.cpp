@@ -1,13 +1,8 @@
 #include "Controller.h"
-#include <ctime>
 
 Controller::Controller(Camera *pCamera)
 {
 	this->pCamera = pCamera;
-}
-
-Controller::~Controller()
-{
 }
 
 void Controller::controlCamera(float deltaSec)

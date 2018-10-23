@@ -7,7 +7,6 @@ class Controller
 {
 public:
 	Controller(Camera *pCamera);
-	~Controller();
 
 	enum Keys
 	{

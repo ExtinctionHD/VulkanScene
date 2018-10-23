@@ -59,7 +59,7 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, s
 	// write buffers in descriptor set
 	std::vector<VkWriteDescriptorSet> buffersWrites;
 	std::vector<VkDescriptorBufferInfo> buffersInfo(buffers.size());
-	for (int i = 0; i < buffers.size(); i++)
+	for (size_t i = 0; i < buffers.size(); i++)
 	{
 		buffersInfo[i] = {
 			buffers[i]->getBuffer(),	// buffer;
@@ -86,7 +86,7 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, s
 	// write textures in descriptor set
 	std::vector<VkWriteDescriptorSet> texturesWrites;
 	std::vector<VkDescriptorImageInfo> imagesInfo(textures.size());
-	for (int i = 0; i < textures.size(); i++)
+	for (size_t i = 0; i < textures.size(); i++)
 	{
 		imagesInfo[i] = {
 			textures[i]->sampler,						// sampler;
@@ -117,7 +117,7 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, s
 
 	vkUpdateDescriptorSets(pDevice->device, buffersWrites.size(), buffersWrites.data(), 0, nullptr);
 
-	for (int i = 0; i < texturesWrites.size(); i++)
+	for (size_t i = 0; i < texturesWrites.size(); i++)
 	{
 		vkUpdateDescriptorSets(pDevice->device, 1, &texturesWrites[i], 0, nullptr);
 	}
@@ -126,12 +126,12 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, s
 	return set;
 }
 
-VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(std::vector<Buffer*> buffers, std::vector<TextureImage*> textures)
+VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(std::vector<Buffer*> buffers, const std::vector<TextureImage*> &textures)
 {
 	std::vector<VkDescriptorSetLayoutBinding> bindings;
 
 	// add layout bindings of uniform buffers
-	for (int i = 0; i < buffers.size(); i++)
+	for (size_t i = 0; i < buffers.size(); i++)
 	{
 		VkDescriptorSetLayoutBinding uniformBufferLayoutBinding{
 			i,									// binding;
@@ -145,7 +145,7 @@ VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(std::vector<Buff
 	}
 
 	// add layout bindings of textures
-	for (int i = 0; i < textures.size(); i++)
+	for (size_t i = 0; i < textures.size(); i++)
 	{
 		VkDescriptorSetLayoutBinding textureLayoutBinding{
 			buffers.size() + i,							// binding;

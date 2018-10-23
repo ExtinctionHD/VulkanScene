@@ -3,12 +3,11 @@
 #include <Windows.h>
 #include <vulkan/vulkan.h>
 #include "Vulkan.h"
-#include <iostream>
 
 class Window
 {
 public:
-	Window() {}
+	Window();
 
 	Window(HINSTANCE hInstance, int width, int height);
 
@@ -39,6 +38,6 @@ private:
 	void showWindow();
 
 	// function of window messages processing
-	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
 

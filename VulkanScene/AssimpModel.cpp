@@ -1,7 +1,8 @@
 #include "File.h"
 #include "Material.h"
-#include <algorithm>
 #include <functional>
+#include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
 
 #include "AssimpModel.h"
 

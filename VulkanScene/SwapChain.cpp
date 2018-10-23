@@ -45,8 +45,8 @@ SwapChain::SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceEx
 	// concurrent sharing mode only when using different queue families
 	std::vector<uint32_t> indices =
 	{
-		(uint32_t)pDevice->getQueueFamilyIndices().graphics,
-		(uint32_t)pDevice->getQueueFamilyIndices().present
+		uint32_t(pDevice->getQueueFamilyIndices().graphics),
+		uint32_t(pDevice->getQueueFamilyIndices().present)
 	};
 	if (indices[0] != indices[1])
 	{

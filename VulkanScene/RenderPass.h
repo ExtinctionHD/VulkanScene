@@ -37,7 +37,7 @@ private:
 	void createRenderPass(VkFormat colorAttachmentFormat, VkFormat depthAttachmentFormat);
 
 	// create depth image, its view and execute its layout transition
-	void createDepthResources(Device *pDevice, VkExtent2D extent, VkFormat depthImagetFormat);
+	void createDepthResources(Device *pDevice, VkExtent2D depthImageExtent, VkFormat depthImageFormat);
 
 	void createFramebuffers(std::vector<VkImageView> swapChainImageViews);
 };

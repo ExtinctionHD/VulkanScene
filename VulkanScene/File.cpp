@@ -13,7 +13,7 @@ std::vector<char> File::getFileBytes(std::string filename)
 
 	assert(file.is_open());
 
-	size_t fileSize = (size_t)file.tellg();
+	size_t fileSize = size_t(file.tellg());
 	std::vector<char> stagingBuffer(fileSize);
 
 	file.seekg(0);
@@ -35,9 +35,9 @@ std::string File::getExeDir()
 	return getFileDir(path);
 }
 
-std::string File::getFileDir(std::string path)
+std::string File::getFileDir(const std::string &path)
 {
-	return path.substr(0, path.find_last_of("/") + 1);
+	return path.substr(0, path.find_last_of('/') + 1);
 }
 
 std::string File::getFilename(std::string path)
@@ -47,7 +47,7 @@ std::string File::getFilename(std::string path)
 	return path.substr(path.find_last_of('/') + 1);
 }
 
-bool File::exists(std::string filename)
+bool File::exists(const std::string &filename)
 {
 	std::ifstream f(filename.c_str());
 	return f.good();

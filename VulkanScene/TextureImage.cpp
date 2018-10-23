@@ -120,8 +120,8 @@ stbi_uc* TextureImage::loadPixels(std::string filename)
 	extent.depth = 1;
 	stbi_uc *pixels = stbi_load(
 		filename.c_str(),
-		(int*)&extent.width,
-		(int*)&extent.height,
+		reinterpret_cast<int*>(&extent.width),
+		reinterpret_cast<int*>(&extent.height),
 		nullptr,
 		STBI_rgb_alpha
 	);

@@ -4,7 +4,6 @@
 #include "Device.h"
 #include <glm/glm.hpp>
 #include "DescriptorPool.h"
-#include <array>
 #include "GraphicsPipeline.h"
 #include "RenderPass.h"
 #include "MeshBase.h"
@@ -56,7 +55,7 @@ private:
 	Buffer *pTransformBuffer;
 
 	// descritpor set for mvp buffer
-	VkDescriptorSet transformDescriptorSet;
+	VkDescriptorSet transformDescriptorSet{};
 
 	static VkDescriptorSetLayout transformDSLayout;
 };

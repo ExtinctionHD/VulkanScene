@@ -24,9 +24,9 @@ RenderPass::RenderPass(Device *pDevice, SwapChain *pSwapChain)
 
 RenderPass::~RenderPass()
 {
-	for (int i = 0; i < framebuffers.size(); i++)
+	for (VkFramebuffer framebuffer : framebuffers)
 	{
-		vkDestroyFramebuffer(device, framebuffers[i], nullptr);
+		vkDestroyFramebuffer(device, framebuffer, nullptr);
 	}
 
 	delete(pDepthImage);
@@ -49,7 +49,7 @@ void RenderPass::createRenderPass(VkFormat colorAttachmentFormat, VkFormat depth
 		VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// stencilLoadOp;
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,	// stencilStoreOp;
 		VK_IMAGE_LAYOUT_UNDEFINED,			// initialLayout;
-		VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// finalLayout;
+		VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,    // finalLayout;
 	};
 
 	VkAttachmentDescription depthAttachment{
@@ -139,7 +139,7 @@ void RenderPass::createRenderPass(VkFormat colorAttachmentFormat, VkFormat depth
 	assert(result == VK_SUCCESS);
 }
 
-void RenderPass::createDepthResources(Device *pDevice, VkExtent2D depthImageExtent, VkFormat depthImagetFormat)
+void RenderPass::createDepthResources(Device *pDevice, VkExtent2D depthImageExtent, VkFormat depthImageFormat)
 {
 	VkExtent3D extent{
 		depthImageExtent.width,
@@ -152,7 +152,7 @@ void RenderPass::createDepthResources(Device *pDevice, VkExtent2D depthImageExte
 		extent,
 		0,
 		1,
-		depthImagetFormat,
+		depthImageFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -183,7 +183,7 @@ void RenderPass::createFramebuffers(std::vector<VkImageView> swapChainImageViews
 
 	VkExtent3D extent = pDepthImage->extent;
 
-	for (int i = 0; i < swapChainImageViews.size(); i++)
+	for (size_t i = 0; i < swapChainImageViews.size(); i++)
 	{
 		std::vector<VkImageView> attachments{
 			swapChainImageViews[i],

@@ -2,6 +2,10 @@
 
 // public:
 
+Window::Window(): hInstance(nullptr)
+{
+}
+
 Window::Window(HINSTANCE hInstance, int width, int height)
 {
 	this->hInstance = hInstance;
@@ -13,7 +17,7 @@ Window::Window(HINSTANCE hInstance, int width, int height)
 
 void Window::setUserPointer(void * pointer)
 {
-	SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pointer);
+	SetWindowLongPtr(hWnd, GWLP_USERDATA, LONG_PTR(pointer));
 }
 
 VkExtent2D Window::getClientExtent() const
@@ -27,8 +31,8 @@ VkExtent2D Window::getClientExtent(HWND hWnd)
 	GetClientRect(hWnd, &rect);
 
 	return { 
-		(uint32_t)(rect.left - rect.right),  
-		(uint32_t)(rect.bottom - rect.top) 
+		uint32_t(rect.left - rect.right),  
+		uint32_t(rect.bottom - rect.top) 
 	};
 }
 
@@ -49,14 +53,14 @@ int Window::mainLoop()
 	MSG msg;
 	BOOL result;
 
-	while (result = GetMessage(&msg, hWnd, 0, 0))
+	while ((result = GetMessage(&msg, hWnd, 0, 0)))
 	{
 		if (result == -1)
 		{
 			break;
 		}
 
-		Vulkan *pVulkan = reinterpret_cast<Vulkan*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+		auto pVulkan = reinterpret_cast<Vulkan*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 		pVulkan->drawFrame();
 
 		DispatchMessage(&msg);
@@ -72,13 +76,13 @@ ATOM Window::registerWindowClass()
 	WNDCLASSEX cex{
 		sizeof(WNDCLASSEX),				// cbSize 
 		CS_HREDRAW | CS_VREDRAW,		// style         
-		WndProc,						// lpfnWndProc   
+		wndProc,						// lpfnWndProc   
 		0,								// cbClsExtra    
 		0,								// cbWndExtra    
 		hInstance,						// hInstance     
 		0,								// hIcon         
 		LoadCursor(nullptr, IDC_ARROW),	// hCursor       
-		(HBRUSH)(COLOR_WINDOW + 1),		// hbrBackground 
+		HBRUSH(COLOR_WINDOW + 1),		// hbrBackground 
 		0,								// lpszMenuName  
 		WINDOW_CLASS.data(),			// lpszClassName 
 		0								// hIconSm      
@@ -104,9 +108,9 @@ void Window::showWindow()
 	UpdateWindow(hWnd);
 }
 
-LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT Window::wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	Vulkan *pVulkan = reinterpret_cast<Vulkan*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+	auto pVulkan = reinterpret_cast<Vulkan*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
 	switch (message)
 	{

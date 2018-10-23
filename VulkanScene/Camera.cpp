@@ -61,13 +61,13 @@ void Camera::move(float deltaSec)
 {
 	const float DISTANCE = SPEED * deltaSec;
 
-	glm::vec3 direction = forward * (float)movement.forward;
+	glm::vec3 direction = forward * float(movement.forward);
 
 	glm::vec3 right = glm::cross(forward, up);
 	right = glm::normalize(right);
-	direction += right * (float)movement.right;
+	direction += right * float(movement.right);
 
-	direction += up * (float)movement.up;
+	direction += up * float(movement.up);
 
 	if (glm::length(direction) != 0.0f)
 	{
@@ -178,7 +178,7 @@ glm::mat4 Camera::getViewMatrix() const
 glm::mat4 Camera::getProjectionMatrix() const
 {
 	const float viewAngle = 45.0f;
-	const float aspect = extent.width / (float)extent.height;
+	const float aspect = extent.width / float(extent.height);
 	const float zNear = 0.1f;
 	const float zFar = 10000.0f;
 
