@@ -96,14 +96,29 @@ void RenderPass::createRenderPass(VkFormat colorAttachmentFormat, VkFormat depth
 		nullptr								// pPreserveAttachments;
 	};
 
-	VkSubpassDependency dependency{
+	VkSubpassDependency inputDependency{
 		VK_SUBPASS_EXTERNAL,														// srcSubpass;
 		0,																			// dstSubpass;
-		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,								// srcStageMask;
+		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,										// srcStageMask;
 		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,								// dstStageMask;
-		0,																			// srcAccessMask;
+		VK_ACCESS_MEMORY_READ_BIT,													// srcAccessMask;
 		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	// dstAccessMask;
-		0,																			// dependencyFlags;
+		VK_DEPENDENCY_BY_REGION_BIT,												// dependencyFlags;
+	};
+
+	VkSubpassDependency outputDependency{
+		0,																			// srcSubpass;
+		VK_SUBPASS_EXTERNAL,														// dstSubpass;
+		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,								// srcStageMask;
+		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,										// dstStageMask;
+		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	// srcAccessMask;
+		VK_ACCESS_MEMORY_READ_BIT,													// dstAccessMask;
+		VK_DEPENDENCY_BY_REGION_BIT,												// dependencyFlags;
+	};
+
+	std::vector<VkSubpassDependency> dependencies{
+		inputDependency,
+		outputDependency
 	};
 
 	// render pass (contain descriptions)
@@ -116,8 +131,8 @@ void RenderPass::createRenderPass(VkFormat colorAttachmentFormat, VkFormat depth
 		attachments.data(),							// pAttachments;
 		1,											// subpassCount;
 		&subpass,									// pSubpasses;
-		1,											// dependencyCount;
-		&dependency,								// pDependencies;
+		dependencies.size(),						// dependencyCount;
+		dependencies.data(),						// pDependencies;
 	};
 
 	VkResult result = vkCreateRenderPass(device, &createInfo, nullptr, &renderPass);
