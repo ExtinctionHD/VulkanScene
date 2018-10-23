@@ -19,6 +19,8 @@ public:
 	// framebuffer attachments: image view and depth image
 	std::vector<VkFramebuffer> framebuffers;
 
+	Image* getShadowInputAttachment() const;
+
 private:
 	// possible formats of depth attachment
 	const std::vector<VkFormat> DEPTH_FORMATS =
@@ -31,13 +33,16 @@ private:
 	// device that provide renderPass
 	VkDevice device;
 
+	// depth image for shadows rendering
+	Image *pShadowImage;
+
 	// depth image and its view
 	Image *pDepthImage;
 
 	void createRenderPass(VkFormat colorAttachmentFormat, VkFormat depthAttachmentFormat);
 
 	// create depth image, its view and execute its layout transition
-	void createDepthResources(Device *pDevice, VkExtent2D extent, VkFormat depthImagetFormat);
+	Image* createDepthImage(Device *pDevice, VkExtent2D depthImageExtent, VkFormat depthImagetFormat, VkImageUsageFlags usage);
 
 	void createFramebuffers(std::vector<VkImageView> swapChainImageViews);
 };

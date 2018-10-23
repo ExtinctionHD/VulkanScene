@@ -7,20 +7,23 @@
 GraphicsPipeline::GraphicsPipeline(
 	VkDevice device, 
 	std::vector<VkDescriptorSetLayout> descriptorSetLayouts, 
-	RenderPass *pRenderPass, 
+	RenderPass *pRenderPass,
+	uint32_t subpassIndex,
 	std::vector<ShaderModule*> shaderModules,
 	VkVertexInputBindingDescription bindingDescription,
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions
 )
 {
 	this->device = device;
+	this->renderPass = pRenderPass->renderPass;
+	this->subpassIndex = subpassIndex;
 	this->shaderModules = shaderModules;
 	this->bindingDescription = bindingDescription;
 	this->attributeDescriptions = attributeDescriptions;
 
 	createLayout(descriptorSetLayouts);
 
-	createPipeline(pRenderPass->renderPass, pRenderPass->framebuffersExtent);
+	createPipeline(pRenderPass->framebuffersExtent);
 }
 
 GraphicsPipeline::~GraphicsPipeline()
@@ -33,10 +36,10 @@ GraphicsPipeline::~GraphicsPipeline()
 	vkDestroyPipelineLayout(device, layout, nullptr);
 }
 
-void GraphicsPipeline::recreate(RenderPass *pRenderPass)
+void GraphicsPipeline::recreate(VkExtent2D newExtent)
 {
 	vkDestroyPipeline(device, pipeline, nullptr);
-	createPipeline(pRenderPass->renderPass, pRenderPass->framebuffersExtent);
+	createPipeline(newExtent);
 }
 
 // private:
@@ -57,7 +60,7 @@ void GraphicsPipeline::createLayout(std::vector<VkDescriptorSetLayout> descripto
 	assert(result == VK_SUCCESS);
 }
 
-void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewportExtent)
+void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 {
 	// shader stages info:
 
@@ -218,7 +221,7 @@ void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewpo
 		nullptr,					// pDynamicState;
 		layout,						// layout;
 		renderPass,					// renderPass;
-		0,							// subpass;
+		subpassIndex,				// subpass;
 		VK_NULL_HANDLE,				// basePipelineHandle;
 		-1,							// basePipelineIndex;
 	};

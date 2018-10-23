@@ -40,29 +40,27 @@ void Model::setTransform(glm::mat4 matrix)
 
 uint32_t Model::getBufferCount() const 
 {
-	return 1 + meshes.size();
+	return 1 + materials.size();
 }
 
 uint32_t Model::getTextureCount() const
 {
-	uint32_t textureCount = 0;
-
-	for (MeshBase *pMesh : meshes)
-	{
-		textureCount += pMesh->pMaterial->getTextures().size();
-	}
-
-	return textureCount;
+	return Material::TEXTURES_ORDER.size() * materials.size();
 }
 
-uint32_t Model::getMeshCount() const
+uint32_t Model::getDescriptorSetCount() const
 {
-	return meshes.size();
+	return 1 + materials.size();
+}
+
+VkDescriptorSetLayout Model::getTransformDSLayout()
+{
+	return transformDSLayout;
 }
 
 void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 {
-	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, transformDSLayout == VK_NULL_HANDLE, transformDSLayout);
+	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, { }, transformDSLayout == VK_NULL_HANDLE, transformDSLayout);
 
 	for (std::pair<uint32_t, Material*> pair : materials)
 	{
@@ -70,7 +68,7 @@ void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 	}
 }
 
-GraphicsPipeline * Model::createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules)
+GraphicsPipeline * Model::createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, uint32_t subpassIndex, std::vector<ShaderModule*> shaderModules)
 {
 	layouts.push_back(transformDSLayout);
 	layouts.push_back(Material::getDSLayout());
@@ -81,6 +79,7 @@ GraphicsPipeline * Model::createPipeline(std::vector<VkDescriptorSetLayout> layo
 		pDevice->device,
 		layouts,
 		pRenderPass,
+		subpassIndex,
 		shaderModules,
 		getVertexInputBindingDescription(inputBinding),
 		getVertexInputAttributeDescriptions(inputBinding)
@@ -94,6 +93,27 @@ void Model::setPipeline(GraphicsPipeline * pPipeline)
 	this->pPipeline = pPipeline;
 }
 
+void Model::drawShadow(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, GraphicsPipeline *pShadowPipline)
+{
+	descriptorSets.push_back(transformDescriptorSet);
+
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pShadowPipline->pipeline);
+
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pShadowPipline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		VkBuffer vertexBuffer = meshes[i]->getVertexBuffer();
+		VkDeviceSize offset = 0;
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer, &offset);
+
+		VkBuffer indexBuffer = meshes[i]->getIndexBuffer();
+		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
+		uint32_t indexCount = meshes[i]->getIndexCount();
+		vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+	}
+}
 
 void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
 {

@@ -18,10 +18,9 @@ Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
 	pScene = new Scene(pDevice, pSwapChain->extent);
-	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDecriptorSetCount());
+	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getInputAttachmentCount(), pScene->getDecriptorSetCount());
 
-	pScene->initDescriptorSets(pDescriptorPool);
-	pScene->initPipelines(pRenderPass);
+	pScene->prepareSceneRendering(pDescriptorPool, pRenderPass);
 
 	initGraphicsCommands();
 
@@ -128,7 +127,7 @@ void Vulkan::resize(VkExtent2D newExtent)
 
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), newExtent);
 	pRenderPass = new RenderPass(pDevice, pSwapChain);
-	pScene->resizeExtent(pRenderPass);
+	pScene->resizeExtent(pRenderPass->framebuffersExtent);
 
 	initGraphicsCommands();
 }
@@ -168,9 +167,8 @@ void Vulkan::initGraphicsCommands()
 
 	// clear values for each frame
 	std::array<VkClearValue, 2> clearValues = {};
-	clearValues[0].color = clearColor;
-	clearValues[1].depthStencil = { 1, 0 };
-
+	clearValues[0].color = { 0.0f, 0.0f, 1.0f, 1.0f };
+	clearValues[1].depthStencil = { 1.0f, 0 };
 	// render area for each frame
 	VkRect2D renderArea{
 		{ 0, 0 },			// offset
@@ -199,12 +197,8 @@ void Vulkan::initGraphicsCommands()
 			clearValues.data()							// pClearValues;
 		};
 
-		vkCmdBeginRenderPass(graphicCommands[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
 		// draw each model
-		pScene->draw(graphicCommands[i]);
-
-		vkCmdEndRenderPass(graphicCommands[i]);
+		pScene->draw(graphicCommands[i], renderPassBeginInfo);
 
 		result = vkEndCommandBuffer(graphicCommands[i]);
 		assert(result == VK_SUCCESS);

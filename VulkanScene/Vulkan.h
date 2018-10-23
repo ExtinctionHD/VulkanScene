@@ -55,9 +55,6 @@ private:
 		"VK_KHR_win32_surface"
 	};
 
-	// color that clear each frame
-	const VkClearColorValue clearColor = { 0, 0, 0, 1 };
-
 	Instance *pInstance;
 
 	// pSurface object for presentation

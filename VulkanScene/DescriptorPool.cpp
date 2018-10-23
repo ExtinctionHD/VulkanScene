@@ -4,20 +4,24 @@
 
 // public:
 
-DescriptorPool::DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t textureCount, uint32_t setCount)
+DescriptorPool::DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t textureCount, uint32_t inputAttachmentCount, uint32_t setCount)
 {
 	this->pDevice = pDevice;
 
 	VkDescriptorPoolSize uniformBuffersSize{
 		VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,	// type;
-		bufferCount,						// descriptorCount;
+		bufferCount							// descriptorCount;
 	};
 	VkDescriptorPoolSize texturesSize{
 		VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	// type;
-		textureCount,								// descriptorCount;
+		textureCount								// descriptorCount;
+	};
+	VkDescriptorPoolSize inputAttachmentSize{
+		VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,	// type;
+		inputAttachmentCount					// descriptorCount;
 	};
 
-	std::vector<VkDescriptorPoolSize> poolSizes{ uniformBuffersSize, texturesSize };
+	std::vector<VkDescriptorPoolSize> poolSizes{ uniformBuffersSize, texturesSize, inputAttachmentSize };
 
 	VkDescriptorPoolCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,	// sType;
@@ -37,11 +41,11 @@ DescriptorPool::~DescriptorPool()
 	vkDestroyDescriptorPool(pDevice->device, pool, nullptr);
 }
 
-VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, std::vector<TextureImage*> textures, bool createLayout, VkDescriptorSetLayout& layout)
+VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, std::vector<TextureImage*> textures, std::vector<Image*> inputAttachments, bool createLayout, VkDescriptorSetLayout& layout)
 {
 	if (createLayout)
 	{
-		layout = createDescriptorSetLayout(buffers, textures);
+		layout = createDescriptorSetLayout(buffers, textures, inputAttachments);
 	}
 
 	VkDescriptorSetAllocateInfo allocateInfo{
@@ -110,23 +114,42 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, s
 		texturesWrites.push_back(textureWrite);
 	}
 
-	// update descriptor set
-	std::vector<VkWriteDescriptorSet> descriptorWrites(buffersWrites.begin(), buffersWrites.end());
-	descriptorWrites.insert(descriptorWrites.end(), texturesWrites.begin(), texturesWrites.end());
-
-
-	vkUpdateDescriptorSets(pDevice->device, buffersWrites.size(), buffersWrites.data(), 0, nullptr);
-
-	for (int i = 0; i < texturesWrites.size(); i++)
+	// write input attachments in descriptor set
+	std::vector<VkWriteDescriptorSet> inputAttachmentsWrites;
+	std::vector<VkDescriptorImageInfo> inputAttachmentsInfo(inputAttachments.size());
+	for (int i = 0; i < inputAttachments.size(); i++)
 	{
-		vkUpdateDescriptorSets(pDevice->device, 1, &texturesWrites[i], 0, nullptr);
+		inputAttachmentsInfo[i] = {
+			VK_NULL_HANDLE,								// sampler;
+			inputAttachments[i]->view,					// imageView;
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,	// imageLayout;
+		};
+
+		VkWriteDescriptorSet inputAttachmentWrite{
+			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,			// sType;
+			nullptr,										// pNext;
+			set,											// dstSet;
+			buffers.size() + textures.size() + i,			// dstBinding;
+			0,												// dstArrayElement;
+			1,												// descriptorCount;
+			VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,			// descriptorType;
+			&inputAttachmentsInfo[i],						// pImageInfo;
+			nullptr,										// pBufferInfo;
+			nullptr,										// pTexelBufferView;
+		};
+
+		inputAttachmentsWrites.push_back(inputAttachmentWrite);
 	}
-	//vkUpdateDescriptorSets(pDevice->device, descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
+
+	// update descriptor set
+	vkUpdateDescriptorSets(pDevice->device, buffersWrites.size(), buffersWrites.data(), 0, nullptr);
+	vkUpdateDescriptorSets(pDevice->device, texturesWrites.size(), texturesWrites.data(), 0, nullptr);
+	vkUpdateDescriptorSets(pDevice->device, inputAttachmentsWrites.size(), inputAttachmentsWrites.data(), 0, nullptr);
 
 	return set;
 }
 
-VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(std::vector<Buffer*> buffers, std::vector<TextureImage*> textures)
+VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(std::vector<Buffer*> buffers, std::vector<TextureImage*> textures, std::vector<Image*> inputAttachments)
 {
 	std::vector<VkDescriptorSetLayoutBinding> bindings;
 
@@ -156,6 +179,19 @@ VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(std::vector<Buff
 		};
 
 		bindings.push_back(textureLayoutBinding);
+	}
+
+	for (int i = 0; i < inputAttachments.size(); i++)
+	{
+		VkDescriptorSetLayoutBinding inputAttachmentLayoutBinding{
+			buffers.size() + textures.size() + i,		// binding;
+			VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,		// descriptorType;
+			1,											// descriptorCount;
+			VK_SHADER_STAGE_FRAGMENT_BIT,				// stageFlags;
+			nullptr										// pImmutableSamplers;
+		};
+
+		bindings.push_back(inputAttachmentLayoutBinding);
 	}
 
 	VkDescriptorSetLayoutCreateInfo createInfo{

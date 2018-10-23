@@ -23,13 +23,17 @@ public:
 
 	uint32_t getTextureCount() const;
 
-	uint32_t getMeshCount() const;
+	uint32_t getDescriptorSetCount() const;
+
+	static VkDescriptorSetLayout getTransformDSLayout();
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
-	GraphicsPipeline* createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
+	GraphicsPipeline* createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, uint32_t subpassIndex, std::vector<ShaderModule*> shaderModules);
 
 	void setPipeline(GraphicsPipeline *pPipeline);
+
+	void drawShadow(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, GraphicsPipeline *pShadowPipline);
 
 	void draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
 

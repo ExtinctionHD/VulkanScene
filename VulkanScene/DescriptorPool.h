@@ -9,13 +9,14 @@
 class DescriptorPool
 {
 public:
-	DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t texturesCount, uint32_t setCount);
+	DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t textureCount, uint32_t inputAttachmentCount, uint32_t setCount);
 	~DescriptorPool();
 
 	// returns set of descriptors and create the layout of this descriptor set
 	VkDescriptorSet getDescriptorSet(
 		std::vector<Buffer*> buffers,
 		std::vector<TextureImage*> textures,
+		std::vector<Image*> inputAttachments,
 		bool createLayout,
 		VkDescriptorSetLayout& layout
 	);
@@ -25,6 +26,6 @@ private:
 
 	VkDescriptorPool pool;
 
-	VkDescriptorSetLayout createDescriptorSetLayout(std::vector<Buffer*> buffers, std::vector<TextureImage*> textures);
+	VkDescriptorSetLayout createDescriptorSetLayout(std::vector<Buffer*> buffers, std::vector<TextureImage*> textures, std::vector<Image*> inputAttachments);
 };
 

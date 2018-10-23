@@ -13,6 +13,7 @@ Scene::Scene(Device *pDevice, VkExtent2D cameraExtent)
 	initCamera(cameraExtent);
 	initLighting();
 	initModels();
+	initShadows();
 
 	pController = new Controller(pCamera);
 }
@@ -28,9 +29,11 @@ Scene::~Scene()
 	{
 		delete(pModel);
 	}
-
+	
+	vkDestroyDescriptorSetLayout(pDevice->device, shadowDSLayout, nullptr);
 	vkDestroyDescriptorSetLayout(pDevice->device, sceneDSLayout, nullptr);
 
+	delete(pShadowViewProjBuffer);
 	delete(pLightingBuffer);
 	delete(pCamera);
 	delete(pController);
@@ -43,14 +46,14 @@ Controller* Scene::getController() const
 
 uint32_t Scene::getBufferCount() const
 {
-	uint32_t bufferCount = 0;
+	uint32_t bufferCount = 3;
 
 	for (Model *pModel : models)
 	{
 		bufferCount += pModel->getBufferCount();
 	}
 
-	return 1 + bufferCount;
+	return bufferCount;
 }
 
 uint32_t Scene::getTextureCount() const
@@ -65,53 +68,31 @@ uint32_t Scene::getTextureCount() const
 	return textureCount;
 }
 
-uint32_t Scene::getDecriptorSetCount() const
+uint32_t Scene::getInputAttachmentCount() const
 {
-	uint32_t setCount = 1;
-
-	for (Model *pModel : models)
-	{
-		setCount += 1 + pModel->getMeshCount();
-	}
-
-	return setCount;
+	return 1;
 }
 
-void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool)
+uint32_t Scene::getDecriptorSetCount() const
 {
-	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingBuffer, }, { }, true, sceneDSLayout);
+	return getBufferCount() + getTextureCount() + getInputAttachmentCount();
+}
 
+void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, RenderPass * pRenderPass)
+{
+	this->pRenderPass = pRenderPass;
+
+	// init shadow descriptor set
+	shadowDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer() }, { }, { }, true, shadowDSLayout);
+
+	// init main descriptor sets
+	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingBuffer, pShadowViewProjBuffer }, { }, { pRenderPass->getShadowInputAttachment() }, true, sceneDSLayout);
 	for (Model *pModel : models)
 	{
 		pModel->initDescriptorSets(pDescriptorPool);
 	}
-}
 
-void Scene::initPipelines(RenderPass * pRenderPass)
-{
-	const std::string CAR_SHADERS_DIR = File::getExeDir() + "shaders/car/";
-	const std::string SKY_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
-
-	pipelines.push_back(pCar->createPipeline(
-		{ sceneDSLayout }, 
-		pRenderPass, 
-		{
-			new ShaderModule(pDevice->device, CAR_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, CAR_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
-		}
-	));
-
-	pTerrain->setPipeline(pipelines[0]);
-
-	pipelines.push_back(pSkybox->createPipeline(
-		{ sceneDSLayout },
-		pRenderPass,
-		{
-			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
-		}
-	));
-
+	initPipelines(pRenderPass);
 }
 
 void Scene::updateScene()
@@ -126,21 +107,35 @@ void Scene::updateScene()
 	pLightingBuffer->updateData(&lighting.cameraPos, sizeof(lighting.cameraPos), offsetof(Lighting, cameraPos));
 }
 
-void Scene::draw(VkCommandBuffer commandBuffer)
+void Scene::draw(VkCommandBuffer commandBuffer, VkRenderPassBeginInfo renderPassBeginInfo)
 {
+	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	for (Model *pModel : models)
+	{
+		if (pModel != pSkybox)
+		{
+			pModel->drawShadow(commandBuffer, { shadowDescriptorSet }, pShadowPipeline);
+		}
+	}
+
+	vkCmdNextSubpass(commandBuffer, VK_SUBPASS_CONTENTS_INLINE);
+
 	for (Model *pModel : models)
 	{
 		pModel->draw(commandBuffer, { sceneDescriptorSet });
 	}
+
+	vkCmdEndRenderPass(commandBuffer);
 }
 
-void Scene::resizeExtent(RenderPass * pRenderPass)
+void Scene::resizeExtent(VkExtent2D newExtent)
 {
-	pCamera->setExtent(pRenderPass->framebuffersExtent);
+	pCamera->setExtent(newExtent);
 
 	for (GraphicsPipeline* pPipeline : pipelines)
 	{
-		pPipeline->recreate(pRenderPass);
+		pPipeline->recreate(newExtent);
 	}
 }
 
@@ -170,6 +165,20 @@ void Scene::initLighting()
 	pLightingBuffer->updateData(&lighting, sizeof(Lighting), 0);
 }
 
+void Scene::initShadows()
+{
+	const float zNear = 0.1f;
+	const float zFar = 10000.0f;
+
+	shadowViewProj = ViewProjMatrices{
+		glm::lookAt(glm::vec3(0.0f) - lighting.direction, glm::vec3(0.0f, 0.0f,  0.0f),  glm::vec3(0.0f, 1.0f,  0.0f)),
+		glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, zNear, zFar)
+	};
+
+	pShadowViewProjBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(ViewProjMatrices));
+	pShadowViewProjBuffer->updateData(&shadowViewProj, sizeof(ViewProjMatrices), 0);
+}
+
 void Scene::initModels()
 {
 	const std::string AVENTADOR_FILE = File::getExeDir() + "models/aventador/lamborghini_aventador.fbx";
@@ -193,4 +202,52 @@ void Scene::initModels()
 	models.push_back(pSkybox);
 	models.push_back(pTerrain);
 	models.push_back(pCar);
+}
+
+void Scene::initPipelines(RenderPass * pRenderPass)
+{
+	const std::string CAR_SHADERS_DIR = File::getExeDir() + "shaders/car/";
+	const std::string SKY_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
+	const std::string SHADOW_SHADERS_DIR = File::getExeDir() + "shaders/shadow/";
+
+	const uint32_t inputBinding = 0;
+
+	// create pipeline for shadows rendering
+	pShadowPipeline = new GraphicsPipeline(
+		pDevice->device,
+		{ shadowDSLayout, Model::getTransformDSLayout() },
+		pRenderPass,
+		0,
+		{
+			new ShaderModule(pDevice->device, SHADOW_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, SHADOW_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+		},
+		Vertex::getBindingDescription(inputBinding),
+		Vertex::getAttributeDescriptions(inputBinding)
+	);
+	pipelines.push_back(pShadowPipeline);
+
+	// create main pipeline
+	pipelines.push_back(pCar->createPipeline(
+		{ sceneDSLayout },
+		pRenderPass,
+		1,
+		{
+			new ShaderModule(pDevice->device, CAR_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, CAR_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+		}
+	));
+	pTerrain->setPipeline(pipelines[pipelines.size() - 1]);
+
+	// create pipeline for skybox rendering
+	pipelines.push_back(pSkybox->createPipeline(
+		{ sceneDSLayout },
+		pRenderPass,
+		1,
+		{
+			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+		}
+	));
+
 }

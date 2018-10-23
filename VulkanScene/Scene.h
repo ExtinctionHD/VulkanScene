@@ -8,6 +8,7 @@
 #include "File.h"
 #include "Controller.h"
 #include "TerrainModel.h"
+#include "ViewProjMatrices.h"
 
 
 // provides scene for rendering
@@ -24,17 +25,17 @@ public:
 
 	uint32_t getTextureCount() const;;
 
+	uint32_t getInputAttachmentCount() const;
+
 	uint32_t getDecriptorSetCount() const;;
 
-	void initDescriptorSets(DescriptorPool *pDescriptorPool);
-
-	void initPipelines(RenderPass *pRenderPass);
+	void prepareSceneRendering(DescriptorPool *pDescriptorPool, RenderPass * pRenderPass);
 
 	void updateScene();
 
-	void draw(VkCommandBuffer commandBuffer);
+	void draw(VkCommandBuffer commandBuffer, VkRenderPassBeginInfo renderPassBeginInfo);
 
-	void resizeExtent(RenderPass *pRenderPass);
+	void resizeExtent(VkExtent2D newExtent);
 
 private:
 	Device *pDevice;
@@ -51,7 +52,14 @@ private:
 	Lighting lighting;
 	Buffer *pLightingBuffer;
 
-	// scene
+	ViewProjMatrices shadowViewProj;
+	Buffer *pShadowViewProjBuffer;
+
+	// descriptors:
+
+	VkDescriptorSet shadowDescriptorSet;
+	VkDescriptorSetLayout shadowDSLayout;
+
 	VkDescriptorSet sceneDescriptorSet;
 	VkDescriptorSetLayout sceneDSLayout;
 
@@ -61,12 +69,19 @@ private:
 	TerrainModel *pTerrain;
 	std::vector<Model*> models;
 
+	RenderPass *pRenderPass;
+
+	GraphicsPipeline *pShadowPipeline;
 	std::vector<GraphicsPipeline*> pipelines;
 
 	void initCamera(VkExtent2D cameraExtent);
 
 	void initLighting();
 
+	void initShadows();
+
 	void initModels();
+
+	void initPipelines(RenderPass *pRenderPass);
 };
 

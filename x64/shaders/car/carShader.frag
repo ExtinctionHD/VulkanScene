@@ -12,6 +12,13 @@ layout(set = 0, binding = 1) uniform Lighting {
 	float specularPower;
 } light;
 
+layout(set = 0, binding = 2) uniform ShadowViewProj {
+    mat4 view;
+    mat4 proj;
+} vp;
+
+layout (input_attachment_index = 0, set = 0, binding = 3) uniform subpassInput inputShadow;
+
 layout(set = 2, binding = 0) uniform Colors {
 	vec4 ambient;
 	vec4 diffuse;
@@ -60,33 +67,44 @@ vec3 calculateBumpedNormal()
 	return resultNormal;
 }
 
+float LinearizeDepth(float depth)
+{
+  float n = 0.1f; // camera z near
+  float f = 10000.0f; // camera z far
+  float z = depth;
+  return (2.0 * n) / (f + n - z * (f - n));	
+}
+
 // fragment shader code:
 void main() 
 {
-	vec3 direction = normalize(light.direction);
-	vec3 normal = calculateBumpedNormal();
+	// vec3 direction = normalize(light.direction);
+	// vec3 normal = calculateBumpedNormal();
 
-	vec3 ambient = light.color * light.ambientStrength * colors.ambient.rgb * texture(ambientTexture, fragTexCoord).rgb;
+	// vec3 ambient = light.color * light.ambientStrength * colors.ambient.rgb * texture(ambientTexture, fragTexCoord).rgb;
 
-	vec3 diffuse = vec3(0.0f, 0.0f, 0.0f);
-	vec3 specular = vec3(0.0f, 0.0f, 0.0f);
+	// vec3 diffuse = vec3(0.0f, 0.0f, 0.0f);
+	// vec3 specular = vec3(0.0f, 0.0f, 0.0f);
 
-	float diffuseFactor = dot(normal, -direction);
-	if (diffuseFactor > 0)
-	{
-		diffuse = light.color * light.diffuseStrength * diffuseFactor * colors.diffuse.rgb;
+	// float diffuseFactor = dot(normal, -direction);
+	// if (diffuseFactor > 0)
+	// {
+	// 	diffuse = light.color * light.diffuseStrength * diffuseFactor * colors.diffuse.rgb;
 
-		vec3 fragToCamera = normalize(light.cameraPos - fragPos);
-		vec3 lightReflect = normalize(reflect(direction, normal));
-		float specularFactor = dot(fragToCamera, lightReflect);
-		if (specularFactor > 0)
-		{
-			specular = light.color * pow(specularFactor, light.specularPower) * colors.specular.r * texture(specularMap, fragTexCoord).r;
-		}
-	}
+	// 	vec3 fragToCamera = normalize(light.cameraPos - fragPos);
+	// 	vec3 lightReflect = normalize(reflect(direction, normal));
+	// 	float specularFactor = dot(fragToCamera, lightReflect);
+	// 	if (specularFactor > 0)
+	// 	{
+	// 		specular = light.color * pow(specularFactor, light.specularPower) * colors.specular.r * texture(specularMap, fragTexCoord).r;
+	// 	}
+	// }
 
-	float opacity = colors.opacity * texture(opacityMap, fragTexCoord).r;
-	outColor = vec4(ambient + diffuse + specular, opacity) * texture(diffuseTexture, fragTexCoord);
+	// float opacity = colors.opacity * texture(opacityMap, fragTexCoord).r;
+	// outColor = vec4(ambient + diffuse + specular, opacity) * texture(diffuseTexture, fragTexCoord);
+
+	float depth = subpassLoad(inputShadow).r;
+	outColor = vec4(vec3(1.0f - LinearizeDepth(depth)), 1.0f);
 
 	// gamma correction
 	//float gamma = 2.2f;	
