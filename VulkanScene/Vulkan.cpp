@@ -4,6 +4,7 @@
 #include "AssimpModel.h"
 
 #include "Vulkan.h"
+#include "FinalRenderPass.h"
 
 // public:
 
@@ -16,12 +17,14 @@ Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 	pSurface = new Surface(pInstance->getInstance(),hInstance, hWnd);
 	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers);
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);
-	pRenderPass = new RenderPass(pDevice, pSwapChain);
-	pScene = new Scene(pDevice, pSwapChain->extent);
-	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDecriptorSetCount());
+
+	createRenderPasses();
+
+	pScene = new Scene(pDevice, pSwapChain->getExtent());
+	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDescriptorSetCount());
 
 	pScene->initDescriptorSets(pDescriptorPool);
-	pScene->initPipelines(pRenderPass);
+	pScene->initPipelines(renderPasses[0]);
 
 	initGraphicsCommands();
 
@@ -38,6 +41,10 @@ Vulkan::~Vulkan()
 
 	delete(pScene);
 	delete(pDescriptorPool);
+    for (auto renderPass : renderPasses)
+    {
+		delete renderPass;
+    }
 	delete(pSwapChain);
 	delete(pDevice);
 	delete(pSurface);
@@ -56,7 +63,7 @@ void Vulkan::drawFrame()
 	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(
 		pDevice->device,
-		pSwapChain->swapChain,
+		pSwapChain->getSwapchain(),
 		(std::numeric_limits<uint64_t>::max)(),
 		imageAvailable,
 		VK_NULL_HANDLE,
@@ -64,7 +71,7 @@ void Vulkan::drawFrame()
 	);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
-		resize(pSwapChain->extent);
+		resize(pSwapChain->getExtent());
 		return;
 	}
 	else
@@ -90,7 +97,7 @@ void Vulkan::drawFrame()
 	result = vkQueueSubmit(pDevice->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 	assert(result == VK_SUCCESS);
 
-	std::vector<VkSwapchainKHR> swapChains{ pSwapChain->swapChain };
+	std::vector<VkSwapchainKHR> swapChains{ pSwapChain->getSwapchain() };
 	VkPresentInfoKHR presentInfo{
 		VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,	// sType;
 		nullptr,							// pNext;
@@ -105,7 +112,7 @@ void Vulkan::drawFrame()
 	result = vkQueuePresentKHR(pDevice->presentQueue, &presentInfo);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 	{
-		resize(pSwapChain->extent);
+		resize(pSwapChain->getExtent());
 		return;
 	}
 	else
@@ -123,12 +130,9 @@ void Vulkan::resize(VkExtent2D newExtent)
 
 	vkDeviceWaitIdle(pDevice->device);
 
-	delete(pRenderPass);
-	delete(pSwapChain);
-
-	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), newExtent);
-	pRenderPass = new RenderPass(pDevice, pSwapChain);
-	pScene->resizeExtent(pRenderPass);
+	pSwapChain->recreate(newExtent);
+	renderPasses[0]->recreate(pSwapChain->getExtent());
+	pScene->resizeExtent(pSwapChain->getExtent());
 
 	initGraphicsCommands();
 }
@@ -145,6 +149,13 @@ void Vulkan::keyUpCallback(int key)
 
 // private:
 
+void Vulkan::createRenderPasses()
+{
+	RenderPass *pRenderPass = new FinalRenderPass(pDevice, pSwapChain);
+	pRenderPass->create();
+	renderPasses.push_back(pRenderPass);
+}
+
 void Vulkan::initGraphicsCommands()
 {
 	// return old command buffers to pool
@@ -153,7 +164,7 @@ void Vulkan::initGraphicsCommands()
 		vkFreeCommandBuffers(pDevice->device, pDevice->commandPool, graphicCommands.size(), graphicCommands.data());
 	}
 
-	graphicCommands.resize(pSwapChain->imageCount);
+	graphicCommands.resize(pSwapChain->getImageCount());
 
 	VkCommandBufferAllocateInfo allocInfo{
 		VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,	// sType;
@@ -174,10 +185,10 @@ void Vulkan::initGraphicsCommands()
 	// render area for each frame
 	VkRect2D renderArea{
 		{ 0, 0 },			// offset
-		pSwapChain->extent	// extent
+		pSwapChain->getExtent()	// extent
 	};
 
-	for (int i = 0; i < graphicCommands.size(); i++)
+	for (size_t i = 0; i < graphicCommands.size(); i++)
 	{
 		VkCommandBufferBeginInfo beginInfo{
 			VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,	// sType;
@@ -192,8 +203,8 @@ void Vulkan::initGraphicsCommands()
 		VkRenderPassBeginInfo renderPassBeginInfo{
 			VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	// sType;
 			nullptr,									// pNext;
-			pRenderPass->renderPass,					// renderPass;
-			pRenderPass->framebuffers[i],				// framebuffer;
+			renderPasses[0]->getRenderPass(),			// renderPass;
+			renderPasses[0]->getFramebuffers()[i],		// framebuffer;
 			renderArea,									// renderArea;
 			clearValues.size(),							// clearValueCount;
 			clearValues.data()							// pClearValues;

@@ -6,23 +6,22 @@
 class SwapChain
 {
 public:
-	VkSwapchainKHR swapChain;
-
-	// properties
-	VkExtent2D extent;
-	uint32_t imageCount;
-	VkFormat imageFormat;
-
-	// images to rendering that swapchain provides
-	std::vector<VkImage> images;
-
-	// view of each swapchain image
-	std::vector<VkImageView> imageViews;
-
 	SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceExtent);
 
 	// destroy objects: swapchain, imageViews
 	~SwapChain();
+
+	VkSwapchainKHR getSwapchain() const;
+
+	std::vector<VkImageView> getImageViews() const;
+
+	VkExtent2D getExtent() const;
+
+	uint32_t getImageCount() const;
+
+	VkFormat getImageFormat() const;
+
+	void recreate(VkExtent2D newExtent);
 
 private:
 	// try to found this pSurface format
@@ -32,7 +31,23 @@ private:
 	const VkPresentModeKHR PREFERRED_PRESENT_MODE = VK_PRESENT_MODE_MAILBOX_KHR;
 
 	// device that provide swapchain
-	VkDevice device;
+	Device *pDevice;
+
+	VkSurfaceKHR surface;
+
+	VkSwapchainKHR swapChain;
+
+	// properties
+	VkExtent2D extent;
+	VkFormat imageFormat;
+
+	// images to rendering that swapchain provides
+	std::vector<VkImage> images;
+
+	// view of each swapchain image
+	std::vector<VkImageView> imageViews;
+
+	void create(VkExtent2D surfaceExtent);
 
 	// swapchain display frames on pSurface, so exactly swapchain sets format of pSurface
 	VkSurfaceFormatKHR chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats) const;
@@ -46,8 +61,10 @@ private:
 	static uint32_t chooseImageCount(VkSurfaceCapabilitiesKHR capabilities);
 
 	// get real image count and images themself
-	void initImages();
+	void getImages(uint32_t imageCount);
 
 	void createImageViews();
+
+	void cleanup();
 };
 

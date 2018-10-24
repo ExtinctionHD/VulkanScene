@@ -14,29 +14,30 @@ GraphicsPipeline::GraphicsPipeline(
 )
 {
 	this->device = device;
+	this->pRenderPass = pRenderPass;
 	this->shaderModules = shaderModules;
 	this->bindingDescription = bindingDescription;
 	this->attributeDescriptions = attributeDescriptions;
 
 	createLayout(descriptorSetLayouts);
 
-	createPipeline(pRenderPass->renderPass, pRenderPass->framebuffersExtent);
+	createPipeline(pRenderPass->getExtent());
 }
 
 GraphicsPipeline::~GraphicsPipeline()
 {
 	for (ShaderModule *pShaderModule : shaderModules)
 	{
-		delete(pShaderModule);
+		delete pShaderModule;
 	}
 	vkDestroyPipeline(device, pipeline, nullptr);
 	vkDestroyPipelineLayout(device, layout, nullptr);
 }
 
-void GraphicsPipeline::recreate(RenderPass *pRenderPass)
+void GraphicsPipeline::recreate()
 {
 	vkDestroyPipeline(device, pipeline, nullptr);
-	createPipeline(pRenderPass->renderPass, pRenderPass->framebuffersExtent);
+	createPipeline(pRenderPass->getExtent());
 }
 
 // private:
@@ -57,7 +58,7 @@ void GraphicsPipeline::createLayout(std::vector<VkDescriptorSetLayout> descripto
 	assert(result == VK_SUCCESS);
 }
 
-void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewportExtent)
+void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 {
 	// shader stages info:
 
@@ -203,24 +204,24 @@ void GraphicsPipeline::createPipeline(VkRenderPass renderPass, VkExtent2D viewpo
 
 	VkGraphicsPipelineCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,	// sType;
-		nullptr,					// pNext;
-		0,							// flags;
-		shaderStages.size(),		// stageCount;
-		shaderStages.data(),		// pStages;
-		&vertexInputState,			// pVertexInputState;
-		&inputAssemblyState,		// pInputAssemblyState;
-		nullptr,					// pTessellationState;
-		&viewportState,				// pViewportState;
-		&rasterizationState,		// pRasterizationState;
-		&multisampleState,			// pMultisampleState;
-		&depthStencilState,			// pDepthStencilState;
-		&colorBlendState,			// pColorBlendState;
-		nullptr,					// pDynamicState;
-		layout,						// layout;
-		renderPass,					// renderPass;
-		0,							// subpass;
-		VK_NULL_HANDLE,				// basePipelineHandle;
-		-1,							// basePipelineIndex;
+		nullptr,					    // pNext;
+		0,							    // flags;
+		shaderStages.size(),		    // stageCount;
+		shaderStages.data(),		    // pStages;
+		&vertexInputState,			    // pVertexInputState;
+		&inputAssemblyState,		    // pInputAssemblyState;
+		nullptr,					    // pTessellationState;
+		&viewportState,				    // pViewportState;
+		&rasterizationState,		    // pRasterizationState;
+		&multisampleState,			    // pMultisampleState;
+		&depthStencilState,			    // pDepthStencilState;
+		&colorBlendState,			    // pColorBlendState;
+		nullptr,					    // pDynamicState;
+		layout,						    // layout;
+		pRenderPass->getRenderPass(),   // renderPass;
+		0,							    // subpass;
+		VK_NULL_HANDLE,				    // basePipelineHandle;
+		-1,							    // basePipelineIndex;
 	};
 
 	VkResult result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &createInfo, nullptr, &pipeline);

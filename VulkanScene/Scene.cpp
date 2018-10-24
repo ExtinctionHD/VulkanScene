@@ -65,7 +65,7 @@ uint32_t Scene::getTextureCount() const
 	return textureCount;
 }
 
-uint32_t Scene::getDecriptorSetCount() const
+uint32_t Scene::getDescriptorSetCount() const
 {
 	uint32_t setCount = 1;
 
@@ -134,13 +134,13 @@ void Scene::draw(VkCommandBuffer commandBuffer)
 	}
 }
 
-void Scene::resizeExtent(RenderPass * pRenderPass)
+void Scene::resizeExtent(VkExtent2D newExtent)
 {
-	pCamera->setExtent(pRenderPass->framebuffersExtent);
+	pCamera->setExtent(newExtent);
 
 	for (GraphicsPipeline* pPipeline : pipelines)
 	{
-		pPipeline->recreate(pRenderPass);
+		pPipeline->recreate();
 	}
 }
 

@@ -69,7 +69,7 @@ private:
 	// swapchain object and its images
 	SwapChain *pSwapChain;
 
-	RenderPass *pRenderPass;
+	std::vector<RenderPass*> renderPasses;
 
 	// drawing scene
 	Scene *pScene;
@@ -81,6 +81,10 @@ private:
 	// synchronizing objects
 	VkSemaphore imageAvailable = VK_NULL_HANDLE;
 	VkSemaphore renderingFinished = VK_NULL_HANDLE;
+
+	void createRenderPasses();
+
+    void destroyRenderPasses();
 
 	// initialize rendering commands
 	void initGraphicsCommands();

@@ -120,9 +120,6 @@
     <ClInclude Include="GraphicsPipeline.h">
       <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="RenderPass.h">
-      <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderModule.h">
       <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
     </ClInclude>
@@ -177,6 +174,12 @@
     <ClInclude Include="TerrainModel.h">
       <Filter>Файлы заголовков\Scene\Model</Filter>
     </ClInclude>
+    <ClInclude Include="FinalRenderPass.h">
+      <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPass.h">
+      <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
@@ -219,9 +222,6 @@
       <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsPipeline.cpp">
-      <Filter>Исходные файлы\Vulkan\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPass.cpp">
       <Filter>Исходные файлы\Vulkan\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="ShaderModule.cpp">
@@ -271,6 +271,12 @@
     </ClCompile>
     <ClCompile Include="TerrainModel.cpp">
       <Filter>Исходные файлы\Scene\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="FinalRenderPass.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPass.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

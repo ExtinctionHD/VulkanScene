@@ -10,7 +10,6 @@ public:
 	Surface(VkInstance instance, HINSTANCE hInstance, HWND hWnd);
 	~Surface();
 
-
 	VkSurfaceKHR getSurface() const;
 
 private:

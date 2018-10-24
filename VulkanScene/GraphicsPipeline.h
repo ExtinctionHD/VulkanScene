@@ -31,12 +31,13 @@ public:
 	VkPipelineLayout layout;
 
 	// recreate with new render pass
-	void recreate(RenderPass *pRenderPass);
+	void recreate();
 
 private:
-
 	// device that provide pipeline
 	VkDevice device;
+
+	RenderPass *pRenderPass;
 
 	// shader modules for this pipeline
 	std::vector<ShaderModule*> shaderModules;
@@ -47,6 +48,6 @@ private:
 
 	void createLayout(std::vector<VkDescriptorSetLayout> descriptorSetLayouts);
 
-	void createPipeline(VkRenderPass renderPass, VkExtent2D viewportExtent);
+	void createPipeline(VkExtent2D viewportExtent);
 };
 

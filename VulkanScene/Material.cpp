@@ -15,7 +15,7 @@ Material::Material(Device *pDevice)
 	}
 
 	// initialize current material with default textures
-	for (int i = 0; i < TEXTURES_ORDER.size(); i++)
+	for (size_t i = 0; i < TEXTURES_ORDER.size(); i++)
 	{
 		textures.insert(std::pair<aiTextureType, TextureImage*>(TEXTURES_ORDER[i], defaultTextures[i]));
 	}
@@ -58,7 +58,7 @@ std::vector<TextureImage*> Material::getTextures() const
 {
 	std::vector<TextureImage*> result;
 
-	for (aiTextureType type : TEXTURES_ORDER)
+    for (aiTextureType type : TEXTURES_ORDER)
 	{
 		result.push_back(textures.at(type));
 	}
@@ -78,7 +78,7 @@ void Material::addTexture(aiTextureType type, TextureImage * pTexture)
 
 std::string Material::getDefaultTexturePath(aiTextureType type)
 {
-	std::string DEFAULT_TEXTURE_DIR = File::getExeDir() + "textures/default/";
+    const std::string DEFAULT_TEXTURE_DIR = File::getExeDir() + "textures/default/";
 
 	switch (type)
 	{

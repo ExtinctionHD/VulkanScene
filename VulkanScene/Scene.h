@@ -24,7 +24,7 @@ public:
 
 	uint32_t getTextureCount() const;;
 
-	uint32_t getDecriptorSetCount() const;;
+	uint32_t getDescriptorSetCount() const;;
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
@@ -34,7 +34,7 @@ public:
 
 	void draw(VkCommandBuffer commandBuffer);
 
-	void resizeExtent(RenderPass *pRenderPass);
+	void resizeExtent(VkExtent2D newExtent);
 
 private:
 	Device *pDevice;
