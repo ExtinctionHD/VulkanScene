@@ -57,10 +57,10 @@ private:
 
 	static VkExtent2D chooseExtent(VkSurfaceCapabilitiesKHR capabilities, VkExtent2D actualExtent);
 
-	// minimal image count, real count can be greate
+	// minimal image count, real count can be great
 	static uint32_t chooseImageCount(VkSurfaceCapabilitiesKHR capabilities);
 
-	// get real image count and images themself
+	// get real image count and images themselves
 	void getImages(uint32_t imageCount);
 
 	void createImageViews();

@@ -204,7 +204,7 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 			}
 		}
 
-		materials.insert(std::pair<uint32_t, Material*>(index, pMaterial));
+		materials.insert({ index, pMaterial });
 	}
 	else
 	{
@@ -233,7 +233,7 @@ TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextur
 	if (textures.find(path.C_Str()) == textures.end())
 	{
 		pTexture = new TextureImage(pDevice, { directory + path.C_Str() }, 1);
-		textures.insert(std::pair<std::string, TextureImage*>(path.C_Str(), pTexture));
+		textures.insert({ path.C_Str(), pTexture });
 	}
 	else
 	{

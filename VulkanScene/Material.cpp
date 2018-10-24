@@ -17,7 +17,7 @@ Material::Material(Device *pDevice)
 	// initialize current material with default textures
 	for (size_t i = 0; i < TEXTURES_ORDER.size(); i++)
 	{
-		textures.insert(std::pair<aiTextureType, TextureImage*>(TEXTURES_ORDER[i], defaultTextures[i]));
+		textures.insert({ TEXTURES_ORDER[i], defaultTextures[i] });
 	}
 
 	colors = MaterialColors{

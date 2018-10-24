@@ -6,10 +6,8 @@
 #include "Device.h"
 #include "SwapChain.h"
 #include "RenderPass.h"
-#include "GraphicsPipeline.h"
 #include "Scene.h"
 #include "DescriptorPool.h"
-#include "Controller.h"
 #include <Windows.h>
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
@@ -56,7 +54,7 @@ private:
 	};
 
 	// color that clear each frame
-	const VkClearColorValue clearColor = { 0, 0, 0, 1 };
+	const VkClearColorValue CLEAR_COLOR = { 0, 0, 0, 1 };
 
 	Instance *pInstance;
 
@@ -69,7 +67,11 @@ private:
 	// swapchain object and its images
 	SwapChain *pSwapChain;
 
-	std::vector<RenderPass*> renderPasses;
+    enum RenderPassType
+    {
+        final
+    };
+	std::unordered_map<RenderPassType, RenderPass*> renderPasses;
 
 	// drawing scene
 	Scene *pScene;
@@ -83,8 +85,6 @@ private:
 	VkSemaphore renderingFinished = VK_NULL_HANDLE;
 
 	void createRenderPasses();
-
-    void destroyRenderPasses();
 
 	// initialize rendering commands
 	void initGraphicsCommands();

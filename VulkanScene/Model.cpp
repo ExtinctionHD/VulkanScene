@@ -64,9 +64,9 @@ void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 {
 	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, transformDSLayout == VK_NULL_HANDLE, transformDSLayout);
 
-	for (std::pair<uint32_t, Material*> pair : materials)
+	for (auto material : materials)
 	{
-		pair.second->initDescritorSet(pDescriptorPool);
+		material.second->initDescritorSet(pDescriptorPool);
 	}
 }
 

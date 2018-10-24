@@ -24,7 +24,7 @@ Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDescriptorSetCount());
 
 	pScene->initDescriptorSets(pDescriptorPool);
-	pScene->initPipelines(renderPasses[0]);
+	pScene->initPipelines(renderPasses.at(final));
 
 	initGraphicsCommands();
 
@@ -43,7 +43,7 @@ Vulkan::~Vulkan()
 	delete(pDescriptorPool);
     for (auto renderPass : renderPasses)
     {
-		delete renderPass;
+		delete renderPass.second;
     }
 	delete(pSwapChain);
 	delete(pDevice);
@@ -131,7 +131,7 @@ void Vulkan::resize(VkExtent2D newExtent)
 	vkDeviceWaitIdle(pDevice->device);
 
 	pSwapChain->recreate(newExtent);
-	renderPasses[0]->recreate(pSwapChain->getExtent());
+	renderPasses.at(final)->recreate(pSwapChain->getExtent());
 	pScene->resizeExtent(pSwapChain->getExtent());
 
 	initGraphicsCommands();
@@ -151,9 +151,10 @@ void Vulkan::keyUpCallback(int key)
 
 void Vulkan::createRenderPasses()
 {
-	RenderPass *pRenderPass = new FinalRenderPass(pDevice, pSwapChain);
+    auto pRenderPass = new FinalRenderPass(pDevice, pSwapChain);
 	pRenderPass->create();
-	renderPasses.push_back(pRenderPass);
+
+	renderPasses.insert({ final, pRenderPass });
 }
 
 void Vulkan::initGraphicsCommands()
@@ -179,7 +180,7 @@ void Vulkan::initGraphicsCommands()
 
 	// clear values for each frame
 	std::array<VkClearValue, 2> clearValues = {};
-	clearValues[0].color = clearColor;
+	clearValues[0].color = CLEAR_COLOR;
 	clearValues[1].depthStencil = { 1, 0 };
 
 	// render area for each frame
@@ -203,8 +204,8 @@ void Vulkan::initGraphicsCommands()
 		VkRenderPassBeginInfo renderPassBeginInfo{
 			VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	// sType;
 			nullptr,									// pNext;
-			renderPasses[0]->getRenderPass(),			// renderPass;
-			renderPasses[0]->getFramebuffers()[i],		// framebuffer;
+			renderPasses.at(final)->getRenderPass(),			// renderPass;
+			renderPasses.at(final)->getFramebuffers()[i],		// framebuffer;
 			renderArea,									// renderArea;
 			clearValues.size(),							// clearValueCount;
 			clearValues.data()							// pClearValues;
