@@ -29,6 +29,8 @@ public:
 
 	void updateScene();
 
+	void drawShadows(VkCommandBuffer commandBuffer);
+
 	void draw(VkCommandBuffer commandBuffer);
 
 	void resizeExtent(VkExtent2D newExtent);

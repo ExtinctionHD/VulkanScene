@@ -6,17 +6,14 @@ MeshBase::~MeshBase()
 	delete(pIndexBuffer);
 }
 
-VkBuffer MeshBase::getVertexBuffer() const
+void MeshBase::draw(VkCommandBuffer commandBuffer) const
 {
-	return pVertexBuffer->getBuffer();
-}
+	VkBuffer vertexBuffer = pVertexBuffer->getBuffer();
+	VkDeviceSize offset = 0;
+	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer, &offset);
 
-VkBuffer MeshBase::getIndexBuffer() const
-{
-	return pIndexBuffer->getBuffer();
-}
+	VkBuffer indexBuffer = pIndexBuffer->getBuffer();
+	vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-uint32_t MeshBase::getIndexCount() const
-{
-	return indices.size();
+	vkCmdDrawIndexed(commandBuffer, indices.size(), 1, 0, 0, 0);
 }

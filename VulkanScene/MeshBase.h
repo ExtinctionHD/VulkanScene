@@ -11,11 +11,7 @@ class MeshBase
 public:
 	virtual ~MeshBase();
 
-	VkBuffer getVertexBuffer() const;
-
-	VkBuffer getIndexBuffer() const;
-
-	uint32_t getIndexCount() const;
+	void draw(VkCommandBuffer commandBuffer) const;
 
 	Material *pMaterial{};
 

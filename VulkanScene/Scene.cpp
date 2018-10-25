@@ -106,6 +106,14 @@ void Scene::updateScene()
 	pLightingBuffer->updateData(&lighting.cameraPos, sizeof(lighting.cameraPos), offsetof(Lighting, cameraPos));
 }
 
+void Scene::drawShadows(VkCommandBuffer commandBuffer)
+{
+	for (Model *pModel : models)
+	{
+		pModel->drawShadows(commandBuffer, { shadowDescriptorSet }, pShadowsPipeline);
+	}
+}
+
 void Scene::draw(VkCommandBuffer commandBuffer)
 {
 	for (Model *pModel : models)

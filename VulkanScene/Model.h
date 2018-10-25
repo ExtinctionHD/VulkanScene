@@ -34,6 +34,8 @@ public:
 
 	void setPipeline(GraphicsPipeline *pPipeline);
 
+	void drawShadows(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, GraphicsPipeline *pShadowsPipeline);
+
 	void draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
 
 protected:

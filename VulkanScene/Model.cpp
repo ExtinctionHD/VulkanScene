@@ -97,6 +97,24 @@ void Model::setPipeline(GraphicsPipeline * pPipeline)
 	this->pPipeline = pPipeline;
 }
 
+void Model::drawShadows(
+    VkCommandBuffer commandBuffer,
+    std::vector<VkDescriptorSet> descriptorSets,
+    GraphicsPipeline *pShadowsPipeline
+)
+{
+	descriptorSets.push_back(transformDescriptorSet);
+
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pShadowsPipeline->pipeline);
+
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pShadowsPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+
+	for (auto &mesh : meshes)
+	{
+		mesh->draw(commandBuffer);
+	}
+}
+
 
 void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
 {
@@ -111,15 +129,7 @@ void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> des
 		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDescriptorSet();
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
 
-		VkBuffer vertexBuffer = mesh->getVertexBuffer();
-		VkDeviceSize offset = 0;
-		vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer, &offset);
-
-		VkBuffer indexBuffer = mesh->getIndexBuffer();
-		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
-		uint32_t indexCount = mesh->getIndexCount();
-		vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+		mesh->draw(commandBuffer);
 	}
 }
 
