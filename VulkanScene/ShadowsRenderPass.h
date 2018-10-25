@@ -10,12 +10,14 @@ public:
 
 	~ShadowsRenderPass();
 
+	TextureImage* getShadowsMap() const;
+
 protected:
     void createRenderPass() override;
 
     void createFramebuffers() override;
 
 private:
-	TextureImage *pShadowTexture{};
+	TextureImage *pShadowsMap{};
     
 };

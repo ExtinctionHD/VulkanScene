@@ -24,8 +24,7 @@ Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 	pScene = new Scene(pDevice, pSwapChain->getExtent());
 	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDescriptorSetCount());
 
-	pScene->initDescriptorSets(pDescriptorPool);
-	pScene->initPipelines(renderPasses);
+	pScene->prepareSceneRendering(pDescriptorPool, renderPasses);
 
 	initGraphicsCommands();
 
@@ -149,9 +148,9 @@ void Vulkan::keyUpCallback(int key)
 
 void Vulkan::createRenderPasses()
 {
-	const VkExtent2D SHADOW_MAP_EXTENT = { 4096, 4096 };
+	const VkExtent2D SHADOWS_MAP_EXTENT = { 4096, 4096 };
 
-	renderPasses.insert({ shadows, new ShadowsRenderPass(pDevice, SHADOW_MAP_EXTENT) });
+	renderPasses.insert({ shadows, new ShadowsRenderPass(pDevice, SHADOWS_MAP_EXTENT) });
 	renderPasses.insert({ final, new FinalRenderPass(pDevice, pSwapChain) });
 
     for (auto renderPass : renderPasses)

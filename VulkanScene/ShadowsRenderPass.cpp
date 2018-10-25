@@ -9,7 +9,12 @@ ShadowsRenderPass::ShadowsRenderPass(Device *pDevice, VkExtent2D textureExtent) 
 
 ShadowsRenderPass::~ShadowsRenderPass()
 {
-	delete pShadowTexture;
+	delete pShadowsMap;
+}
+
+TextureImage * ShadowsRenderPass::getShadowsMap() const
+{
+	return pShadowsMap;
 }
 
 // protected:
@@ -101,8 +106,8 @@ void ShadowsRenderPass::createFramebuffers()
 		1
 	};
 
-	delete pShadowTexture;
-	pShadowTexture = new TextureImage(
+	delete pShadowsMap;
+	pShadowsMap = new TextureImage(
 		pDevice,
 	    textureExtent,
 	    0,
@@ -122,7 +127,7 @@ void ShadowsRenderPass::createFramebuffers()
 		0,											// flags;
 		renderPass,									// renderPass;
 		1,							                // attachmentCount;
-		&pShadowTexture->view,						// pAttachments;
+		&pShadowsMap->view,						// pAttachments;
 		extent.width,								// width;
 		extent.height,								// height;
 		1,											// layers;

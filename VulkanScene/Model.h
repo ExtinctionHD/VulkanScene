@@ -26,6 +26,8 @@ public:
 
 	uint32_t getMeshCount() const;
 
+	static VkDescriptorSetLayout getTransformDsLayout();
+
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
 	GraphicsPipeline* createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);

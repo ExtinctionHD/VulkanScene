@@ -58,6 +58,11 @@ uint32_t Model::getMeshCount() const
 	return meshes.size();
 }
 
+VkDescriptorSetLayout Model::getTransformDsLayout()
+{
+	return transformDsLayout;
+}
+
 void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 {
 	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, transformDsLayout == VK_NULL_HANDLE, transformDsLayout);

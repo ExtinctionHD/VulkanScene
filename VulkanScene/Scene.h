@@ -25,9 +25,7 @@ public:
 
 	uint32_t getDescriptorSetCount() const;;
 
-	void initDescriptorSets(DescriptorPool *pDescriptorPool);
-
-	void initPipelines(RenderPassesMap renderPasses);
+	void prepareSceneRendering(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses);
 
 	void updateScene();
 
@@ -66,6 +64,7 @@ private:
 	TerrainModel *pTerrain{};
 	std::vector<Model*> models;
 
+	GraphicsPipeline *pShadowsPipeline{};
 	std::vector<GraphicsPipeline*> pipelines;
 
 	void initCamera(VkExtent2D cameraExtent);
@@ -73,5 +72,7 @@ private:
 	void initLighting();
 
 	void initModels();
+
+	void initPipelines(RenderPassesMap renderPasses);
 };
 
