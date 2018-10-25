@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include "Device.h"
+#include <unordered_map>
 
 class RenderPass
 {
@@ -47,3 +48,12 @@ protected:
 private:
 	void cleanup();
 };
+
+
+enum RenderPassType
+{
+	shadows,
+	final
+};
+
+typedef std::unordered_map<RenderPassType, RenderPass*> RenderPassesMap;

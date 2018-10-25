@@ -9,7 +9,6 @@
 #include "Controller.h"
 #include "TerrainModel.h"
 
-
 // provides scene for rendering
 // contains: camera, lighting, models
 class Scene
@@ -28,7 +27,7 @@ public:
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
-	void initPipelines(RenderPass *pRenderPass);
+	void initPipelines(RenderPassesMap renderPasses);
 
 	void updateScene();
 
@@ -51,9 +50,15 @@ private:
 	Lighting lighting{};
 	Buffer *pLightingBuffer{};
 
-	// scene
+	// scene descriptors:
+
+    // shadows renderPass
+	VkDescriptorSet shadowDescriptorSet{};
+	VkDescriptorSetLayout shadowsDsLayout{};
+
+    // final renderPass
 	VkDescriptorSet sceneDescriptorSet{};
-	VkDescriptorSetLayout sceneDSLayout{};
+	VkDescriptorSetLayout sceneDsLayout{};
 
 	// models
 	AssimpModel *pCar{};

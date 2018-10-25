@@ -67,12 +67,7 @@ private:
 	// swapchain object and its images
 	SwapChain *pSwapChain;
 
-    enum RenderPassType
-    {
-        shadow,
-        final
-    };
-	std::unordered_map<RenderPassType, RenderPass*> renderPasses;
+	RenderPassesMap renderPasses;
 
 	// drawing scene
 	Scene *pScene;

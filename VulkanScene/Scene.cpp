@@ -21,19 +21,20 @@ Scene::~Scene()
 {
 	for (GraphicsPipeline* pPipeline : pipelines)
 	{
-		delete(pPipeline);
+		delete pPipeline;
 	}
 
 	for (Model *pModel : models)
 	{
-		delete(pModel);
+		delete pModel;
 	}
 
-	vkDestroyDescriptorSetLayout(pDevice->device, sceneDSLayout, nullptr);
+	vkDestroyDescriptorSetLayout(pDevice->device, shadowsDsLayout, nullptr);
+	vkDestroyDescriptorSetLayout(pDevice->device, sceneDsLayout, nullptr);
 
-	delete(pLightingBuffer);
-	delete(pCamera);
-	delete(pController);
+	delete pLightingBuffer;
+	delete pCamera;
+	delete pController;
 }
 
 Controller* Scene::getController() const
@@ -43,14 +44,14 @@ Controller* Scene::getController() const
 
 uint32_t Scene::getBufferCount() const
 {
-	uint32_t bufferCount = 0;
+	uint32_t bufferCount = 2;
 
 	for (Model *pModel : models)
 	{
 		bufferCount += pModel->getBufferCount();
 	}
 
-	return 1 + bufferCount;
+	return bufferCount;
 }
 
 uint32_t Scene::getTextureCount() const
@@ -67,11 +68,11 @@ uint32_t Scene::getTextureCount() const
 
 uint32_t Scene::getDescriptorSetCount() const
 {
-	uint32_t setCount = 1;
+	uint32_t setCount = 2;
 
 	for (Model *pModel : models)
 	{
-		setCount += 1 + pModel->getMeshCount();
+		setCount += pModel->getDescriptorSetCount();
 	}
 
 	return setCount;
@@ -79,7 +80,9 @@ uint32_t Scene::getDescriptorSetCount() const
 
 void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool)
 {
-	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingBuffer, }, { }, true, sceneDSLayout);
+	shadowDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer() }, { }, true, shadowsDsLayout);
+
+	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingBuffer, }, { }, true, sceneDsLayout);
 
 	for (Model *pModel : models)
 	{
@@ -87,25 +90,25 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool)
 	}
 }
 
-void Scene::initPipelines(RenderPass * pRenderPass)
+void Scene::initPipelines(RenderPassesMap renderPasses)
 {
+	const std::string SHADOWS_SHADERS_DIR = File::getExeDir() + "shaders/shadows/";
 	const std::string CAR_SHADERS_DIR = File::getExeDir() + "shaders/car/";
 	const std::string SKY_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
 
 	pipelines.push_back(pCar->createPipeline(
-		{ sceneDSLayout }, 
-		pRenderPass, 
+		{ sceneDsLayout },
+		renderPasses.at(final),
 		{
 			new ShaderModule(pDevice->device, CAR_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
 			new ShaderModule(pDevice->device, CAR_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
 		}
 	));
-
-	pTerrain->setPipeline(pipelines[0]);
+	pTerrain->setPipeline(*--pipelines.end());
 
 	pipelines.push_back(pSkybox->createPipeline(
-		{ sceneDSLayout },
-		pRenderPass,
+		{ sceneDsLayout },
+		renderPasses.at(final),
 		{
 			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
 			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)

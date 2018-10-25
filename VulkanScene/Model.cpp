@@ -6,10 +6,10 @@ Model::~Model()
 {
 	objectCount--;
 
-	if (objectCount == 0 && transformDSLayout != VK_NULL_HANDLE)
+	if (objectCount == 0 && transformDsLayout != VK_NULL_HANDLE)
 	{
-		vkDestroyDescriptorSetLayout(pDevice->device, transformDSLayout, nullptr);
-		transformDSLayout = VK_NULL_HANDLE;
+		vkDestroyDescriptorSetLayout(pDevice->device, transformDsLayout, nullptr);
+		transformDsLayout = VK_NULL_HANDLE;
 	}
 
 	// cleanup materials
@@ -27,7 +27,7 @@ Model::~Model()
 	delete(pTransformBuffer);
 }
 
-glm::mat4 Model::getTransform()
+glm::mat4 Model::getTransform() const
 {
 	return transform;
 }
@@ -40,19 +40,17 @@ void Model::setTransform(glm::mat4 matrix)
 
 uint32_t Model::getBufferCount() const 
 {
-	return 1 + meshes.size();
+	return 1 + materials.size();
 }
 
 uint32_t Model::getTextureCount() const
 {
-	uint32_t textureCount = 0;
+	return Material::TEXTURES_ORDER.size() * materials.size();
+}
 
-	for (MeshBase *pMesh : meshes)
-	{
-		textureCount += pMesh->pMaterial->getTextures().size();
-	}
-
-	return textureCount;
+uint32_t Model::getDescriptorSetCount() const
+{
+	return 1 + materials.size();
 }
 
 uint32_t Model::getMeshCount() const
@@ -62,18 +60,18 @@ uint32_t Model::getMeshCount() const
 
 void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 {
-	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, transformDSLayout == VK_NULL_HANDLE, transformDSLayout);
+	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, transformDsLayout == VK_NULL_HANDLE, transformDsLayout);
 
 	for (auto material : materials)
 	{
-		material.second->initDescritorSet(pDescriptorPool);
+		material.second->initDescriptorSet(pDescriptorPool);
 	}
 }
 
 GraphicsPipeline * Model::createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules)
 {
-	layouts.push_back(transformDSLayout);
-	layouts.push_back(Material::getDSLayout());
+	layouts.push_back(transformDsLayout);
+	layouts.push_back(Material::getDsLayout());
 
 	const uint32_t inputBinding = 0;
 
@@ -105,7 +103,7 @@ void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> des
 
 	for (auto &mesh : meshes)
 	{
-		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDesriptorSet();
+		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDescriptorSet();
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
 
 		VkBuffer vertexBuffer = mesh->getVertexBuffer();
@@ -136,6 +134,6 @@ Model::Model(Device *pDevice)
 
 uint32_t Model::objectCount = 0;
 
-VkDescriptorSetLayout Model::transformDSLayout = VK_NULL_HANDLE;
+VkDescriptorSetLayout Model::transformDsLayout = VK_NULL_HANDLE;
 
 

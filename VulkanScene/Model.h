@@ -14,13 +14,15 @@ class Model
 public:
 	virtual ~Model();
 
-	glm::mat4 getTransform();
+	glm::mat4 getTransform() const;
 
 	void setTransform(glm::mat4 matrix);
 
 	uint32_t getBufferCount() const;
 
 	uint32_t getTextureCount() const;
+
+	uint32_t getDescriptorSetCount() const;
 
 	uint32_t getMeshCount() const;
 
@@ -57,6 +59,6 @@ private:
 	// descritpor set for mvp buffer
 	VkDescriptorSet transformDescriptorSet{};
 
-	static VkDescriptorSetLayout transformDSLayout;
+	static VkDescriptorSetLayout transformDsLayout;
 };
 

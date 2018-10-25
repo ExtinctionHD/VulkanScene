@@ -45,11 +45,11 @@ public:
 	// returns path to default texture of this type
 	static std::string getDefaultTexturePath(aiTextureType type);
 
-	void initDescritorSet(DescriptorPool *pDescriptorPool);
+	void initDescriptorSet(DescriptorPool *pDescriptorPool);
 
-	VkDescriptorSet getDesriptorSet() const;
+	VkDescriptorSet getDescriptorSet() const;
 
-	static VkDescriptorSetLayout getDSLayout();
+	static VkDescriptorSetLayout getDsLayout();
 
 	static void initDefaultTextures(Device *pDevice);
 

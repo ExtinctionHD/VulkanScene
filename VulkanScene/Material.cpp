@@ -97,17 +97,17 @@ std::string Material::getDefaultTexturePath(aiTextureType type)
 	}
 }
 
-void Material::initDescritorSet(DescriptorPool * pDescriptorPool)
+void Material::initDescriptorSet(DescriptorPool * pDescriptorPool)
 {
 	descriptorSet = pDescriptorPool->getDescriptorSet({ pColorsBuffer }, getTextures(), dsLayout == VK_NULL_HANDLE, dsLayout);
 }
 
-VkDescriptorSet Material::getDesriptorSet() const
+VkDescriptorSet Material::getDescriptorSet() const
 {
 	return descriptorSet;
 }
 
-VkDescriptorSetLayout Material::getDSLayout()
+VkDescriptorSetLayout Material::getDsLayout()
 {
 	return dsLayout;
 }
