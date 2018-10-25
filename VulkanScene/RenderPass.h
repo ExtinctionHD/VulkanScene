@@ -38,6 +38,8 @@ protected:
 
 	VkExtent2D extent;
 
+	VkFormat depthAttachmentFormat;
+
 	virtual void createRenderPass() = 0;
 
 	virtual void createFramebuffers() = 0;

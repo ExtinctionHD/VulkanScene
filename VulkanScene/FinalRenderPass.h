@@ -20,8 +20,6 @@ protected:
 private:
     SwapChain *pSwapChain;
 
-	VkFormat depthAttachmentFormat;
-
 	// depth image and its view
 	Image *pDepthImage;
 

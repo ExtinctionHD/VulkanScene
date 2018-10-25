@@ -52,5 +52,11 @@ RenderPass::RenderPass(Device *pDevice, VkExtent2D extent)
 {
 	this->pDevice = pDevice;
 	this->extent = extent;
+
+	depthAttachmentFormat = pDevice->findSupportedFormat(
+		DEPTH_FORMATS,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+	);
 }
 

@@ -74,12 +74,10 @@ void Vulkan::drawFrame()
 		resize(pSwapChain->getExtent());
 		return;
 	}
-	else
-	{
-		assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
-	}
 
-	std::vector<VkSemaphore> waitSemaphores{ imageAvailable };
+    assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
+
+    std::vector<VkSemaphore> waitSemaphores{ imageAvailable };
 	std::vector<VkPipelineStageFlags> waitStages{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 	std::vector<VkSemaphore> signalSemaphores{ renderingFinished };
 	VkSubmitInfo submitInfo{
@@ -113,7 +111,6 @@ void Vulkan::drawFrame()
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 	{
 		resize(pSwapChain->getExtent());
-		return;
 	}
 	else
 	{

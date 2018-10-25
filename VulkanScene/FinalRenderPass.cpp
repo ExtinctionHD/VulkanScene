@@ -7,12 +7,6 @@
 FinalRenderPass::FinalRenderPass(Device *pDevice, SwapChain *pSwapChain) : RenderPass(pDevice, pSwapChain->getExtent())
 {
 	this->pSwapChain = pSwapChain;
-
-	depthAttachmentFormat = pDevice->findSupportedFormat(
-		DEPTH_FORMATS,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-	);
 }
 
 FinalRenderPass::~FinalRenderPass()
