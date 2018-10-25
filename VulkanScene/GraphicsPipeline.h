@@ -1,26 +1,21 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
-#include "File.h"
-#include "Image.h"
 #include <vector>
-#include "SwapChain.h"
 #include "RenderPass.h"
 #include "ShaderModule.h"
-
-#include "Device.h"
 
 class GraphicsPipeline
 {
 public:
 	// all stages of graphics pipeline
-	VkPipeline pipeline;
+	VkPipeline pipeline{};
 
 	GraphicsPipeline(
 		VkDevice device, 
 		std::vector<VkDescriptorSetLayout> descriptorSetLayouts, 
 		RenderPass *pRenderPass, 
-		std::vector<ShaderModule*> shaderModules,	// TODO: replace to std::map
+		std::vector<ShaderModule*> shaderModules,
 		VkVertexInputBindingDescription bindingDescription,
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions
 	);
@@ -28,7 +23,7 @@ public:
 	~GraphicsPipeline();
 
 	// layout of pipeline resources (descriptors)
-	VkPipelineLayout layout;
+	VkPipelineLayout layout{};
 
 	// recreate with new render pass
 	void recreate();
@@ -43,7 +38,7 @@ private:
 	std::vector<ShaderModule*> shaderModules;
 
 	// information about input vertices
-	VkVertexInputBindingDescription bindingDescription;
+	VkVertexInputBindingDescription bindingDescription{};
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
 
 	void createLayout(std::vector<VkDescriptorSetLayout> descriptorSetLayouts);

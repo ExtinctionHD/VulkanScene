@@ -48,9 +48,9 @@ protected:
 private:
 	static uint32_t objectCount;
 
-	GraphicsPipeline *pPipeline;
+	GraphicsPipeline *pPipeline{};
 
-	glm::mat4 transform;
+	glm::mat4 transform{};
 
 	Buffer *pTransformBuffer;
 

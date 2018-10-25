@@ -42,23 +42,23 @@ private:
 	Controller *pController;
 
 	// camera attributes
-	Camera *pCamera;
+	Camera *pCamera{};
 
 	// timer for animations
 	Timer frameTimer;
 
 	// scene lighting attributes
-	Lighting lighting;
-	Buffer *pLightingBuffer;
+	Lighting lighting{};
+	Buffer *pLightingBuffer{};
 
 	// scene
-	VkDescriptorSet sceneDescriptorSet;
-	VkDescriptorSetLayout sceneDSLayout;
+	VkDescriptorSet sceneDescriptorSet{};
+	VkDescriptorSetLayout sceneDSLayout{};
 
 	// models
-	AssimpModel *pCar;
-	SkyboxModel *pSkybox;
-	TerrainModel *pTerrain;
+	AssimpModel *pCar{};
+	SkyboxModel *pSkybox{};
+	TerrainModel *pTerrain{};
 	std::vector<Model*> models;
 
 	std::vector<GraphicsPipeline*> pipelines;

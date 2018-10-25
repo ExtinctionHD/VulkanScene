@@ -19,7 +19,7 @@ public:
 	// order of textures for each material
 	static const std::vector<aiTextureType> TEXTURES_ORDER;
 
-	uint32_t index;
+	uint32_t index{};
 
 	struct MaterialColors
 	{
@@ -30,7 +30,7 @@ public:
 		glm::vec4 specularColor;
 
 		float opacity;
-	} colors;
+	} colors{};
 
 	std::vector<TextureImage*> getTextures() const;
 
@@ -60,7 +60,7 @@ private:
 
 	std::unordered_map<aiTextureType, TextureImage*> textures;
 
-	VkDescriptorSet descriptorSet;
+	VkDescriptorSet descriptorSet{};
 
 	static VkDescriptorSetLayout dsLayout;
 

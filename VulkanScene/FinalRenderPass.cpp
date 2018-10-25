@@ -4,9 +4,10 @@
 
 // public:
 
-FinalRenderPass::FinalRenderPass(Device *pDevice, SwapChain *pSwapChain) : RenderPass(pDevice, pSwapChain->getExtent())
+FinalRenderPass::FinalRenderPass(Device *pDevice, SwapChain *pSwapChain)
+    : RenderPass(pDevice, pSwapChain->getExtent())
 {
-	this->pSwapChain = pSwapChain;
+    this->pSwapChain = pSwapChain;
 }
 
 FinalRenderPass::~FinalRenderPass()
@@ -160,6 +161,8 @@ void FinalRenderPass::createDepthResources()
 		extent.height,
 		1
 	};
+
+	delete pDepthImage;
 
 	pDepthImage = new Image(
 		pDevice,

@@ -6,7 +6,7 @@
 class SurfaceSupportDetails
 {
 public:
-	VkSurfaceCapabilitiesKHR capabilities;
+	VkSurfaceCapabilitiesKHR capabilities{} {};
 
 	std::vector<VkSurfaceFormatKHR> formats;
 

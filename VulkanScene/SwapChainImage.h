@@ -20,6 +20,6 @@ public:
 
 protected:
 	// device that provides this buffer and memory
-	VkDevice device;
+	VkDevice device{};
 };
 

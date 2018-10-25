@@ -17,16 +17,16 @@ public:
 
 	uint32_t getIndexCount() const;
 
-	Material *pMaterial;
+	Material *pMaterial{};
 
 protected:
 	MeshBase() {}
 
 	std::vector<uint32_t> indices;
 
-	Buffer *pVertexBuffer;
+	Buffer *pVertexBuffer{};
 
-	Buffer *pIndexBuffer;
+	Buffer *pIndexBuffer{};
 
 };
 

@@ -35,10 +35,10 @@ private:
 
 	VkSurfaceKHR surface;
 
-	VkSwapchainKHR swapChain;
+	VkSwapchainKHR swapChain{};
 
 	// properties
-	VkExtent2D extent;
+	VkExtent2D extent{};
 	VkFormat imageFormat;
 
 	// images to rendering that swapchain provides

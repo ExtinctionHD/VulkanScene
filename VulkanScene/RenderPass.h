@@ -31,16 +31,19 @@ protected:
 
 	Device *pDevice;
 
-	VkRenderPass renderPass;
+	VkRenderPass renderPass{};
 
 	// destination images for rendering
 	std::vector<VkFramebuffer> framebuffers;
 
-	VkExtent2D extent;
+	VkExtent2D extent{};
 
 	VkFormat depthAttachmentFormat;
 
 	virtual void createRenderPass() = 0;
 
 	virtual void createFramebuffers() = 0;
+
+private:
+	void cleanup();
 };

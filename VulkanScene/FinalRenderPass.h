@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
-#include <vector>
 #include "Image.h"
 #include "SwapChain.h"
 #include "RenderPass.h"
@@ -21,7 +19,7 @@ private:
     SwapChain *pSwapChain;
 
 	// depth image and its view
-	Image *pDepthImage;
+	Image *pDepthImage{};
 
 	// create depth image, its view and execute its layout transition
 	void createDepthResources();

@@ -28,7 +28,7 @@ private:
 	const std::string WINDOW_TITLE = "Vulkan scene";
 
 	HINSTANCE hInstance;	// instance handler
-	HWND hWnd;				// window handler
+	HWND hWnd{} {};				// window handler
 
 	ATOM registerWindowClass();
 

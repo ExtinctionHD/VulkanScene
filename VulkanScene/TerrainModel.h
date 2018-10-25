@@ -13,10 +13,10 @@ protected:
 	std::vector<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions(uint32_t inputBinding) override;
 
 private:
-	VkExtent2D size;
+	VkExtent2D size{};
 
 	// number of cells per side
-	VkExtent2D cellCount;
+	VkExtent2D cellCount{};
 
 	std::vector<TextureImage*> textures;
 

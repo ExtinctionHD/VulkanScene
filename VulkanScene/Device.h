@@ -8,11 +8,11 @@
 class Device
 {
 public:
-	VkDevice device;  // logical device (representation of GPU for vulkan)
+	VkDevice device{};  // logical device (representation of GPU for vulkan)
 
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;  // GPU
 		
-	VkCommandPool commandPool;  // pool of command buffers of this device
+	VkCommandPool commandPool{};  // pool of command buffers of this device
 
 	// pick physical and create logical device
 	Device(
@@ -24,8 +24,8 @@ public:
 	// destroy device
 	~Device();
 
-	VkQueue graphicsQueue;	// for drawing graphics
-	VkQueue presentQueue;	// for presenting it on pSurface
+	VkQueue graphicsQueue{};	// for drawing graphics
+	VkQueue presentQueue{};	// for presenting it on pSurface
 
 	// returns index of memory type with such properties (for this physical device)
 	uint32_t findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;

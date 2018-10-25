@@ -4,12 +4,7 @@
 
 RenderPass::~RenderPass()
 {
-	for (VkFramebuffer framebuffer : framebuffers)
-	{
-		vkDestroyFramebuffer(pDevice->device, framebuffer, nullptr);
-	}
-
-	vkDestroyRenderPass(pDevice->device, renderPass, nullptr);
+	cleanup();
 }
 
 VkRenderPass RenderPass::getRenderPass() const
@@ -37,26 +32,29 @@ void RenderPass::create()
 
 void RenderPass::recreate(VkExtent2D newExtent)
 {
-	for (VkFramebuffer framebuffer : framebuffers)
-	{
-		vkDestroyFramebuffer(pDevice->device, framebuffer, nullptr);
-	}
-
-	vkDestroyRenderPass(pDevice->device, renderPass, nullptr);
-
+	cleanup();
 	extent = newExtent;
 	create();
 }
 
 RenderPass::RenderPass(Device *pDevice, VkExtent2D extent)
 {
-	this->pDevice = pDevice;
-	this->extent = extent;
+    this->pDevice = pDevice;
+    this->extent = extent;
 
-	depthAttachmentFormat = pDevice->findSupportedFormat(
-		DEPTH_FORMATS,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-	);
+    depthAttachmentFormat = pDevice->findSupportedFormat(
+        DEPTH_FORMATS,
+        VK_IMAGE_TILING_OPTIMAL,
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+    );
+}
+
+void RenderPass::cleanup()
+{
+	for (VkFramebuffer framebuffer : framebuffers)
+	{
+		vkDestroyFramebuffer(pDevice->device, framebuffer, nullptr);
+	}
+	vkDestroyRenderPass(pDevice->device, renderPass, nullptr);
 }
 

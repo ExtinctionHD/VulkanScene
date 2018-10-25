@@ -21,9 +21,9 @@ public:
 
 private:
 	// main buffer object
-	VkBuffer buffer;
+	VkBuffer buffer{};
 
 	// main buffer memory
-	VkDeviceMemory memory;
+	VkDeviceMemory memory{};
 };
 

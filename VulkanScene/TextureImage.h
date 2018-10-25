@@ -17,10 +17,10 @@ public:
 	~TextureImage();
 
 	// count of mipmap levels
-	uint32_t mipLevels;
+	uint32_t mipLevels{};
 
 	// image in shader
-	VkSampler sampler;
+	VkSampler sampler{} {};
 
 protected:
 	// returns pixel bytes and save image extent
