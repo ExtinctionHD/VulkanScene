@@ -54,7 +54,7 @@ private:
 	};
 
 	// color that clear each frame
-	const VkClearColorValue CLEAR_COLOR = { 0, 0, 0, 1 };
+	const VkClearColorValue CLEAR_COLOR = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	Instance *pInstance;
 
@@ -69,6 +69,7 @@ private:
 
     enum RenderPassType
     {
+        shadow,
         final
     };
 	std::unordered_map<RenderPassType, RenderPass*> renderPasses;

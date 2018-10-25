@@ -13,7 +13,7 @@ public:
 	Position(glm::vec3 pos);
 	~Position() {}
 
-	glm::vec3 pos{} {};
+	glm::vec3 pos{};
 
 	// description of whole vertex
 	static VkVertexInputBindingDescription getBindingDescription(uint32_t binding);

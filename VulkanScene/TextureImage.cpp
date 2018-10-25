@@ -15,7 +15,7 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 
 	// loads image bytes for each array layer
 	std::vector<stbi_uc*> pixels(arrayLayers);
-	for (int i = 0; i < arrayLayers; i++)
+	for (uint32_t i = 0; i < arrayLayers; i++)
 	{
 		pixels[i] = loadPixels(filenames[i]);
 	}
@@ -23,7 +23,7 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 	// staging buffer to map its memory
 	VkDeviceSize arrayLayerSize = extent.width * extent.height * STBI_rgb_alpha;
 	StagingBuffer *pStagingBuffer = new StagingBuffer(pDevice, arrayLayerSize * arrayLayers);
-	for (int i = 0; i < arrayLayers; i++)
+	for (uint32_t i = 0; i < arrayLayers; i++)
 	{
 		pStagingBuffer->updateData(pixels[i], arrayLayerSize, i * arrayLayerSize);
 		stbi_image_free(pixels[i]);
@@ -49,7 +49,7 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 
 	mipLevels = static_cast<uint32_t>(std::ceil(
 		std::log2(std::max(extent.width, extent.height)))
-		);
+	);
 
 	// texture image can't be mapped
 	createThisImage(
@@ -100,10 +100,37 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 	delete(pStagingBuffer);
 
 	// create other image objects
-	generateMipmaps(pDevice, arrayLayers);
+	generateMipmaps(pDevice, arrayLayers, VK_IMAGE_ASPECT_COLOR_BIT);
 	createImageView(subresourceRange, viewType);
-	createSampler();
+	createSampler(VK_SAMPLER_ADDRESS_MODE_REPEAT);
 }
+
+TextureImage::TextureImage(
+    Device *pDevice,
+    VkExtent3D extent,
+    VkImageCreateFlags flags,
+    VkFormat format,
+    VkImageTiling tiling,
+    VkImageUsageFlags usage,
+    VkMemoryPropertyFlags properties,
+    VkImageAspectFlags aspectFlags,
+	VkImageViewType viewType,
+    uint32_t arrayLayers
+) : Image(pDevice, extent, flags, 1, format, tiling, usage, properties, arrayLayers)
+{
+	VkImageSubresourceRange subresourceRange{
+		VK_IMAGE_ASPECT_COLOR_BIT,
+		0,
+		mipLevels,
+		0,
+		arrayLayers
+	};
+
+	createImageView(subresourceRange, viewType);
+
+	createSampler(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+}
+
 
 TextureImage::~TextureImage()
 {
@@ -115,7 +142,7 @@ TextureImage::~TextureImage()
 
 // protected:
 
-stbi_uc* TextureImage::loadPixels(std::string filename)
+stbi_uc* TextureImage::loadPixels(const std::string &filename)
 {
 	extent.depth = 1;
 	stbi_uc *pixels = stbi_load(
@@ -131,7 +158,7 @@ stbi_uc* TextureImage::loadPixels(std::string filename)
 	return pixels;
 }
 
-void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers)
+void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImageAspectFlags aspectFlags)
 {
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(pDevice->physicalDevice, format, &formatProperties);
@@ -151,7 +178,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers)
 		VK_QUEUE_FAMILY_IGNORED,				// dstQueueFamilyIndex;
 		image,									// image;
 		{
-			VK_IMAGE_ASPECT_COLOR_BIT,	// aspectMask
+			aspectFlags,	            // aspectMask
 			0,							// baseMipLevel
 			1,							// levelCount
 			0,							// baseArrayLayer
@@ -162,7 +189,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers)
 	int32_t mipWidth = extent.width;
 	int32_t mipHeight = extent.height;
 
-	for (int i = 1; i < mipLevels; i++)
+	for (uint32_t i = 1; i < mipLevels; i++)
 	{   
 		// transit current miplevel layout to TRANSFER_SRC
 		barrier.subresourceRange.baseMipLevel = i - 1;
@@ -187,7 +214,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers)
 			mipHeight, 
 			1 
 		};
-		blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		blit.srcSubresource.aspectMask = aspectFlags;
 		blit.srcSubresource.mipLevel = i - 1;
 		blit.srcSubresource.baseArrayLayer = 0;
 		blit.srcSubresource.layerCount = arrayLayers;
@@ -198,7 +225,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers)
 			mipHeight > 1 ? mipHeight / 2 : 1, 
 			1 
 		};
-		blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		blit.dstSubresource.aspectMask = aspectFlags;
 		blit.dstSubresource.mipLevel = i;
 		blit.dstSubresource.baseArrayLayer = 0;
 		blit.dstSubresource.layerCount = arrayLayers;
@@ -245,7 +272,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers)
 	pDevice->endOneTimeCommands(commandBuffer);
 }
 
-void TextureImage::createSampler()
+void TextureImage::createSampler(VkSamplerAddressMode addressMode)
 {
 	VkSamplerCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,	// sType;
@@ -254,17 +281,17 @@ void TextureImage::createSampler()
 		VK_FILTER_LINEAR,						// magFilter;
 		VK_FILTER_LINEAR,						// minFilter;
 		VK_SAMPLER_MIPMAP_MODE_LINEAR,			// mipmapMode;
-		VK_SAMPLER_ADDRESS_MODE_REPEAT,			// addressModeU;
-		VK_SAMPLER_ADDRESS_MODE_REPEAT,			// addressModeV;
-		VK_SAMPLER_ADDRESS_MODE_REPEAT,			// addressModeW;
+		addressMode,			                // addressModeU;
+		addressMode,			                // addressModeV;
+		addressMode,			                // addressModeW;
 		0,										// mipLodBias;
 		VK_TRUE,								// anisotropyEnable;
-		16,										// maxAnisotropy;
+		4.0f,									// maxAnisotropy;
 		VK_FALSE,								// compareEnable;
 		VK_COMPARE_OP_ALWAYS,					// compareOp;
 		0,										// minLod;
 		mipLevels,								// maxLod;
-		VK_BORDER_COLOR_INT_OPAQUE_BLACK,		// borderColor;
+		VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,		// borderColor;
 		VK_FALSE,								// unnormalizedCoordinates;
 	};
 

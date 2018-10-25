@@ -10,9 +10,24 @@ class TextureImage :
 public:
 	TextureImage() {}
 
+    // loads texture from files
 	// array layer count must be equal to filenames count
 	// images must have same extent
 	TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers, bool isCube = false);
+
+    // creates device local texture
+	TextureImage(
+	    Device *pDevice,
+	    VkExtent3D extent,
+		VkImageCreateFlags flags,
+	    VkFormat format,
+		VkImageTiling tiling,
+		VkImageUsageFlags usage,
+		VkMemoryPropertyFlags properties,
+	    VkImageAspectFlags aspectFlags,
+        VkImageViewType viewType,
+	    uint32_t arrayLayers
+	);
 
 	~TextureImage();
 
@@ -20,15 +35,15 @@ public:
 	uint32_t mipLevels{};
 
 	// image in shader
-	VkSampler sampler{} {};
+	VkSampler sampler{};
 
 protected:
 	// returns pixel bytes and save image extent
-	stbi_uc* loadPixels(std::string filename);
+	stbi_uc* loadPixels(const std::string &filename);
 
 	// generate mipmap levels and transit image layout to SHADER_READ_ONLY
-	void generateMipmaps(Device *pDevice, uint32_t arrayLayers);
+	void generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImageAspectFlags aspectFlags);
 
-	void createSampler();
+	void createSampler(VkSamplerAddressMode addressMode);
 };
 

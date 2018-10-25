@@ -2,6 +2,7 @@
 #include "Mesh.h"
 
 #include "TerrainModel.h"
+#include "File.h"
 
 // public:
 

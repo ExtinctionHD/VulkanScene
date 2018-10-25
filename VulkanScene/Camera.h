@@ -60,27 +60,27 @@ private:
 	const float SENSITIVITY = 0.1f;
 
 	// position of camera
-	glm::vec3 pos{} {};
+	glm::vec3 pos{};
 
 	// vector of camera direction
-	glm::vec3 forward{} {};
+	glm::vec3 forward{};
 
 	// up vector of camera 
-	glm::vec3 up{} {};
+	glm::vec3 up{};
 
 	// pSurface extent
-	VkExtent2D extent{} {};
+	VkExtent2D extent{};
 
 	// horizontal angle
 	// angle 0.0f directed towards z axis
-	float angleH{} {};
+	float angleH{};
 
 	// vertical angle
-	float angleV{} {};
+	float angleV{};
 
 	// camera view and projection matrices
-	ViewProjMatrices viewProj{} {};
-	Buffer *pViewProjBuffer{} {};
+	ViewProjMatrices viewProj{};
+	Buffer *pViewProjBuffer{};
 
 	// initializes camera angles
 	void initAngles();
