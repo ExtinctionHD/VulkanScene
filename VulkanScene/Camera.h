@@ -42,6 +42,8 @@ public:
 
 	Buffer* getViewProjBuffer() const;
 
+	ViewProjMatrices getMatrices() const;
+
 	glm::vec2 getCenter() const;
 
 	void move(float deltaSec);

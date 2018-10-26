@@ -127,7 +127,7 @@ void ShadowsRenderPass::createFramebuffers()
 		0,											// flags;
 		renderPass,									// renderPass;
 		1,							                // attachmentCount;
-		&pShadowsMap->view,						// pAttachments;
+		&pShadowsMap->view,						    // pAttachments;
 		extent.width,								// width;
 		extent.height,								// height;
 		1,											// layers;

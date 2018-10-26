@@ -81,10 +81,10 @@ uint32_t Scene::getDescriptorSetCount() const
 
 void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
 {
-	shadowDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer() }, { }, true, shadowsDsLayout);
+	shadowDescriptorSet = pDescriptorPool->getDescriptorSet({ pLightingViewProjBuffer }, { }, true, shadowsDsLayout);
 
 	TextureImage *pShadowsMap = dynamic_cast<ShadowsRenderPass*>(renderPasses.at(shadows))->getShadowsMap();
-	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingBuffer, }, { pShadowsMap }, true, sceneDsLayout);
+	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingViewProjBuffer, pLightingBuffer, }, { pShadowsMap }, true, sceneDsLayout);
 
 	for (Model *pModel : models)
 	{
@@ -100,17 +100,25 @@ void Scene::updateScene()
 
 	pController->controlCamera(deltaSec);
 
-	pSkybox->setTransform(glm::translate(glm::mat4(1.0f), pCamera->getPos()));
+	pCar->setTransform(rotate(pCar->getTransform(), glm::radians(30.0f) * float(deltaSec), glm::vec3(0.0f, -1.0f, 0.0f)));
+
+	pSkybox->setTransform(translate(glm::mat4(1.0f), pCamera->getPos()));
 
 	lighting.cameraPos = pCamera->getPos();
 	pLightingBuffer->updateData(&lighting.cameraPos, sizeof(lighting.cameraPos), offsetof(Lighting, cameraPos));
+
+	lightingViewProj.view = lookAt(pCamera->getPos() - normalize(lighting.direction), pCamera->getPos(), glm::vec3(0.0f, -1.0f, 0.0f));
+	pLightingViewProjBuffer->updateData(&lightingViewProj.view, sizeof(lightingViewProj.view), offsetof(ViewProjMatrices, view));
 }
 
 void Scene::drawShadows(VkCommandBuffer commandBuffer)
 {
 	for (Model *pModel : models)
 	{
-		pModel->drawShadows(commandBuffer, { shadowDescriptorSet }, pShadowsPipeline);
+        if (pModel != pSkybox)
+        {
+			pModel->drawShadows(commandBuffer, { shadowDescriptorSet }, pShadowsPipeline);
+        }
 	}
 }
 
@@ -145,6 +153,7 @@ void Scene::initCamera(VkExtent2D cameraExtent)
 
 void Scene::initLighting()
 {
+    // init lighting attributes
 	lighting = Lighting{
 		glm::vec3(1.0f, 1.0f, 1.0f),		// color
 		0.8f,								// ambientStrength
@@ -153,9 +162,19 @@ void Scene::initLighting()
 		pCamera->getPos(),					// cameraPos
 		2.0f								// specularPower
 	};
-
 	pLightingBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(Lighting));
 	pLightingBuffer->updateData(&lighting, sizeof(Lighting), 0);
+
+    // init lighting view and projection matrices
+
+	lightingViewProj = ViewProjMatrices{
+		lookAt(pCamera->getPos() - normalize(lighting.direction), pCamera->getPos(), glm::vec3(0.0f, -1.0f,  0.0f)),
+		glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, -100.0f, 100.0f)
+	};
+	lightingViewProj.projection[1][1] *= -1;
+
+	pLightingViewProjBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(ViewProjMatrices));
+	pLightingViewProjBuffer->updateData(&lightingViewProj, sizeof(ViewProjMatrices), 0);
 }
 
 void Scene::initModels()

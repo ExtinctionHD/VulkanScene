@@ -52,6 +52,11 @@ Buffer * Camera::getViewProjBuffer() const
 	return pViewProjBuffer;
 }
 
+ViewProjMatrices Camera::getMatrices() const
+{
+	return ViewProjMatrices{ getViewMatrix(), getProjectionMatrix() };
+}
+
 glm::vec2 Camera::getCenter() const
 {
 	return glm::vec2(extent.width / 2, extent.height / 2);
@@ -172,7 +177,7 @@ void Camera::initViewProj(Device *pDevice)
 
 glm::mat4 Camera::getViewMatrix() const
 {
-	return glm::lookAt(getPos(), getTarget(), getUp());
+	return lookAt(getPos(), getTarget(), getUp());
 }
 
 glm::mat4 Camera::getProjectionMatrix() const
@@ -182,5 +187,8 @@ glm::mat4 Camera::getProjectionMatrix() const
 	const float zNear = 0.1f;
 	const float zFar = 10000.0f;
 
-	return glm::perspective(glm::radians(viewAngle), aspect, zNear, zFar);
+	glm::mat4 proj = glm::perspective(glm::radians(viewAngle), aspect, zNear, zFar);
+	proj[1][1] *= -1;
+
+	return proj;
 }

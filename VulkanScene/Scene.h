@@ -50,6 +50,9 @@ private:
 	Lighting lighting{};
 	Buffer *pLightingBuffer{};
 
+	ViewProjMatrices lightingViewProj{};
+	Buffer *pLightingViewProjBuffer;
+
 	// scene descriptors:
 
     // shadows renderPass

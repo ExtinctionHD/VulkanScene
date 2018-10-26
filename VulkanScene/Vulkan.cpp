@@ -148,7 +148,7 @@ void Vulkan::keyUpCallback(int key)
 
 void Vulkan::createRenderPasses()
 {
-	const VkExtent2D SHADOWS_MAP_EXTENT = { 4096, 4096 };
+	const VkExtent2D SHADOWS_MAP_EXTENT = { 2048, 2048 };
 
 	renderPasses.insert({ shadows, new ShadowsRenderPass(pDevice, SHADOWS_MAP_EXTENT) });
 	renderPasses.insert({ final, new FinalRenderPass(pDevice, pSwapChain) });

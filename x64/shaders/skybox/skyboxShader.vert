@@ -38,5 +38,5 @@ void main()
     fragTexCoord.y = -fragTexCoord.y;
 
     // fixes difference from opengl
-    gl_Position.y = -gl_Position.y;
+    // gl_Position.y = -gl_Position.y;
 }
