@@ -97,17 +97,17 @@ void Model::setPipeline(GraphicsPipeline * pPipeline)
 	this->pPipeline = pPipeline;
 }
 
-void Model::drawShadows(
+void Model::drawDepth(
     VkCommandBuffer commandBuffer,
     std::vector<VkDescriptorSet> descriptorSets,
-    GraphicsPipeline *pShadowsPipeline
+    GraphicsPipeline *pDepthPipeline
 )
 {
 	descriptorSets.push_back(transformDescriptorSet);
 
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pShadowsPipeline->pipeline);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pDepthPipeline->pipeline);
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pShadowsPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pDepthPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
 
 	for (auto &mesh : meshes)
 	{

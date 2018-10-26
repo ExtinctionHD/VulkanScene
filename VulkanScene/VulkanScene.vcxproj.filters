@@ -192,7 +192,7 @@
     <ClInclude Include="RenderPass.h">
       <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
     </ClInclude>
-    <ClInclude Include="ShadowsRenderPass.h">
+    <ClInclude Include="DepthRenderPass.h">
       <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
     </ClInclude>
   </ItemGroup>
@@ -293,7 +293,7 @@
     <ClCompile Include="RenderPass.cpp">
       <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
     </ClCompile>
-    <ClCompile Include="ShadowsRenderPass.cpp">
+    <ClCompile Include="DepthRenderPass.cpp">
       <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
     </ClCompile>
   </ItemGroup>

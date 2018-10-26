@@ -85,7 +85,7 @@ private:
 	// initialize rendering commands
 	void initGraphicsCommands();
 
-	void beginShadowsRenderPass(VkCommandBuffer commandBuffer);
+	void beginDepthRenderPass(VkCommandBuffer commandBuffer);
 
 	void beginFinalRenderPass(VkCommandBuffer commandBuffer, uint32_t index);
 

@@ -1,25 +1,25 @@
-﻿#include "ShadowsRenderPass.h"
+﻿#include "DepthRenderPass.h"
 #include <cassert>
 
 // public:
 
-ShadowsRenderPass::ShadowsRenderPass(Device *pDevice, VkExtent2D textureExtent) : RenderPass(pDevice, textureExtent)
+DepthRenderPass::DepthRenderPass(Device *pDevice, VkExtent2D textureExtent) : RenderPass(pDevice, textureExtent)
 {
 }
 
-ShadowsRenderPass::~ShadowsRenderPass()
+DepthRenderPass::~DepthRenderPass()
 {
-	delete pShadowsMap;
+	delete pDepthMap;
 }
 
-TextureImage * ShadowsRenderPass::getShadowsMap() const
+TextureImage * DepthRenderPass::getDepthMap() const
 {
-	return pShadowsMap;
+	return pDepthMap;
 }
 
 // protected:
 
-void ShadowsRenderPass::createRenderPass()
+void DepthRenderPass::createRenderPass()
 {
 	VkAttachmentDescription depthAttachment{
 		   0,													// flags;
@@ -98,7 +98,7 @@ void ShadowsRenderPass::createRenderPass()
 	assert(result == VK_SUCCESS);
 }
 
-void ShadowsRenderPass::createFramebuffers()
+void DepthRenderPass::createFramebuffers()
 {
 	VkExtent3D textureExtent{
 		extent.width,
@@ -106,8 +106,8 @@ void ShadowsRenderPass::createFramebuffers()
 		1
 	};
 
-	delete pShadowsMap;
-	pShadowsMap = new TextureImage(
+	delete pDepthMap;
+	pDepthMap = new TextureImage(
 		pDevice,
 	    textureExtent,
 	    0,
@@ -127,7 +127,7 @@ void ShadowsRenderPass::createFramebuffers()
 		0,											// flags;
 		renderPass,									// renderPass;
 		1,							                // attachmentCount;
-		&pShadowsMap->view,						    // pAttachments;
+		&pDepthMap->view,						    // pAttachments;
 		extent.width,								// width;
 		extent.height,								// height;
 		1,											// layers;

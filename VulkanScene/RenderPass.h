@@ -52,7 +52,7 @@ private:
 
 enum RenderPassType
 {
-	shadows,
+	depth,
 	final
 };
 

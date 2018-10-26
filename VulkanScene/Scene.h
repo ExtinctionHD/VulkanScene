@@ -29,7 +29,7 @@ public:
 
 	void updateScene();
 
-	void drawShadows(VkCommandBuffer commandBuffer);
+	void drawDepth(VkCommandBuffer commandBuffer);
 
 	void draw(VkCommandBuffer commandBuffer);
 
@@ -51,15 +51,15 @@ private:
 	Buffer *pLightingBuffer{};
 
 	ViewProjMatrices lightingViewProj{};
-	Buffer *pLightingViewProjBuffer;
+	Buffer *pLightingViewProjBuffer{};
 
 	// scene descriptors:
 
-    // shadows renderPass
-	VkDescriptorSet shadowDescriptorSet{};
-	VkDescriptorSetLayout shadowsDsLayout{};
+    // depth renderPass resources
+	VkDescriptorSet depthDescriptorSet{};
+	VkDescriptorSetLayout depthDsLayout{};
 
-    // final renderPass
+    // final renderPass resources
 	VkDescriptorSet sceneDescriptorSet{};
 	VkDescriptorSetLayout sceneDsLayout{};
 
@@ -69,7 +69,7 @@ private:
 	TerrainModel *pTerrain{};
 	std::vector<Model*> models;
 
-	GraphicsPipeline *pShadowsPipeline{};
+	GraphicsPipeline *pDepthPipeline{};
 	std::vector<GraphicsPipeline*> pipelines;
 
 	void initCamera(VkExtent2D cameraExtent);

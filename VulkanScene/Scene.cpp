@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Scene.h"
-#include "ShadowsRenderPass.h"
+#include "DepthRenderPass.h"
 
 // public:
 
@@ -30,7 +30,7 @@ Scene::~Scene()
 		delete pModel;
 	}
 
-	vkDestroyDescriptorSetLayout(pDevice->device, shadowsDsLayout, nullptr);
+	vkDestroyDescriptorSetLayout(pDevice->device, depthDsLayout, nullptr);
 	vkDestroyDescriptorSetLayout(pDevice->device, sceneDsLayout, nullptr);
 
 	delete pLightingBuffer;
@@ -81,10 +81,10 @@ uint32_t Scene::getDescriptorSetCount() const
 
 void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
 {
-	shadowDescriptorSet = pDescriptorPool->getDescriptorSet({ pLightingViewProjBuffer }, { }, true, shadowsDsLayout);
+	depthDescriptorSet = pDescriptorPool->getDescriptorSet({ pLightingViewProjBuffer }, { }, true, depthDsLayout);
 
-	TextureImage *pShadowsMap = dynamic_cast<ShadowsRenderPass*>(renderPasses.at(shadows))->getShadowsMap();
-	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingViewProjBuffer, pLightingBuffer, }, { pShadowsMap }, true, sceneDsLayout);
+    auto pDepthMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(depth))->getDepthMap();
+	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingViewProjBuffer, pLightingBuffer, }, { pDepthMap }, true, sceneDsLayout);
 
 	for (Model *pModel : models)
 	{
@@ -111,13 +111,13 @@ void Scene::updateScene()
 	pLightingViewProjBuffer->updateData(&lightingViewProj.view, sizeof(lightingViewProj.view), offsetof(ViewProjMatrices, view));
 }
 
-void Scene::drawShadows(VkCommandBuffer commandBuffer)
+void Scene::drawDepth(VkCommandBuffer commandBuffer)
 {
 	for (Model *pModel : models)
 	{
         if (pModel != pSkybox)
         {
-			pModel->drawShadows(commandBuffer, { shadowDescriptorSet }, pShadowsPipeline);
+			pModel->drawDepth(commandBuffer, { depthDescriptorSet }, pDepthPipeline);
         }
 	}
 }
@@ -204,32 +204,32 @@ void Scene::initModels()
 
 void Scene::initPipelines(RenderPassesMap renderPasses)
 {
-	const std::string SHADOWS_SHADERS_DIR = File::getExeDir() + "shaders/shadows/";
-	const std::string CAR_SHADERS_DIR = File::getExeDir() + "shaders/car/";
+	const std::string DEPTH_SHADERS_DIR = File::getExeDir() + "shaders/depth/";
+	const std::string MODELS_SHADERS_DIR = File::getExeDir() + "shaders/models/";
 	const std::string SKY_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
 
-    // create pipeline for rendering shadows
+    // create pipeline for rendering scene depth
 	const uint32_t inputBinding = 0;
-	pShadowsPipeline = new GraphicsPipeline(
+	pDepthPipeline = new GraphicsPipeline(
 		pDevice->device,
-		{ shadowsDsLayout, Model::getTransformDsLayout() },
-		renderPasses.at(shadows),
+		{ depthDsLayout, Model::getTransformDsLayout() },
+		renderPasses.at(depth),
 		{
-			new ShaderModule(pDevice->device, SHADOWS_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, SHADOWS_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+			new ShaderModule(pDevice->device, DEPTH_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, DEPTH_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
 		},
 		Vertex::getBindingDescription(inputBinding),
 		Vertex::getAttributeDescriptions(inputBinding)
 	);
-	pipelines.push_back(pShadowsPipeline);
+	pipelines.push_back(pDepthPipeline);
 
     // create main pipeline
 	pipelines.push_back(pCar->createPipeline(
 		{ sceneDsLayout },
 		renderPasses.at(final),
 		{
-			new ShaderModule(pDevice->device, CAR_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, CAR_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+			new ShaderModule(pDevice->device, MODELS_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, MODELS_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
 		}
 	));
 	pTerrain->setPipeline(*--pipelines.end());

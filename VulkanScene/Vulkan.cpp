@@ -5,7 +5,7 @@
 
 #include "Vulkan.h"
 #include "FinalRenderPass.h"
-#include "ShadowsRenderPass.h"
+#include "DepthRenderPass.h"
 
 // public:
 
@@ -148,9 +148,9 @@ void Vulkan::keyUpCallback(int key)
 
 void Vulkan::createRenderPasses()
 {
-	const VkExtent2D SHADOWS_MAP_EXTENT = { 2048, 2048 };
+	const VkExtent2D DEPTH_MAP_EXTENT = { 4096, 4096 };
 
-	renderPasses.insert({ shadows, new ShadowsRenderPass(pDevice, SHADOWS_MAP_EXTENT) });
+	renderPasses.insert({ depth, new DepthRenderPass(pDevice, DEPTH_MAP_EXTENT) });
 	renderPasses.insert({ final, new FinalRenderPass(pDevice, pSwapChain) });
 
     for (auto renderPass : renderPasses)
@@ -192,7 +192,7 @@ void Vulkan::initGraphicsCommands()
 		result = vkBeginCommandBuffer(graphicCommands[i], &beginInfo);
 		assert(result == VK_SUCCESS);
 
-		beginShadowsRenderPass(graphicCommands[i]);
+		beginDepthRenderPass(graphicCommands[i]);
 
 		beginFinalRenderPass(graphicCommands[i], i);
 
@@ -201,21 +201,21 @@ void Vulkan::initGraphicsCommands()
 	}
 }
 
-void Vulkan::beginShadowsRenderPass(VkCommandBuffer commandBuffer)
+void Vulkan::beginDepthRenderPass(VkCommandBuffer commandBuffer)
 {
 	VkClearValue clearValue;
 	clearValue.depthStencil = { 1.0f, 0 };
 
 	VkRect2D renderArea{
 		{ 0, 0 },                               // offset
-		renderPasses.at(shadows)->getExtent()   // extent
+		renderPasses.at(depth)->getExtent()   // extent
 	};
 
 	VkRenderPassBeginInfo renderPassBeginInfo{
 		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	    // sType;
 		nullptr,									    // pNext;
-		renderPasses.at(shadows)->getRenderPass(),		// renderPass;
-		renderPasses.at(shadows)->getFramebuffers()[0], // framebuffer;
+		renderPasses.at(depth)->getRenderPass(),		// renderPass;
+		renderPasses.at(depth)->getFramebuffers()[0], // framebuffer;
 		renderArea,									    // renderArea;
 		1,							                    // clearValueCount;
 		&clearValue							            // pClearValues;
@@ -223,7 +223,7 @@ void Vulkan::beginShadowsRenderPass(VkCommandBuffer commandBuffer)
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	pScene->drawShadows(commandBuffer);
+	pScene->drawDepth(commandBuffer);
 
 	vkCmdEndRenderPass(commandBuffer);
 }
