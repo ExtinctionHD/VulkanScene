@@ -15,6 +15,8 @@ public:
 	AssimpModel(Device *pDevice, const std::string& filename);
 	~AssimpModel();
 
+	glm::vec3 getSize() const;
+
 protected:
 	VkVertexInputBindingDescription  getVertexInputBindingDescription(uint32_t inputBinding) override;
 
