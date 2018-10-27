@@ -81,16 +81,7 @@ uint32_t Scene::getDescriptorSetCount() const
 
 void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
 {
-	depthDescriptorSet = pDescriptorPool->getDescriptorSet({ pLightingViewProjBuffer }, { }, true, depthDsLayout);
-
-    auto pDepthMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(depth))->getDepthMap();
-	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingViewProjBuffer, pLightingBuffer, }, { pDepthMap }, true, sceneDsLayout);
-
-	for (Model *pModel : models)
-	{
-		pModel->initDescriptorSets(pDescriptorPool);
-	}
-
+	initDescriptorSets(pDescriptorPool, renderPasses);
 	initPipelines(renderPasses);
 }
 
@@ -179,7 +170,6 @@ void Scene::initLighting()
 
 void Scene::initModels()
 {
-	const std::string AVENTADOR_FILE = File::getExeDir() + "models/aventador/lamborghini_aventador.fbx";
 	const std::string MUSTANG_FILE = File::getExeDir() + "models/mustangGT/mustang_GT.obj";
 	const std::string FORD_FILE = File::getExeDir() + "models/fordGT/Ford GT 2017.obj";
 	const std::string SKYBOX_DIR = File::getExeDir() + "textures/skyboxClouds/";
@@ -191,7 +181,7 @@ void Scene::initModels()
 	transform = glm::scale(transform, glm::vec3(0.15f, 0.15f, 0.15f));
 	pCar->setTransform(transform);
 
-	// initalize skybox model
+	// initialize skybox model
 	pSkybox = new SkyboxModel(pDevice, SKYBOX_DIR, ".jpg");
 
 	// initialize terrain model
@@ -200,6 +190,19 @@ void Scene::initModels()
 	models.push_back(pSkybox);
 	models.push_back(pTerrain);
 	models.push_back(pCar);
+}
+
+void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
+{
+	depthDescriptorSet = pDescriptorPool->getDescriptorSet({ pLightingViewProjBuffer }, { }, true, depthDsLayout);
+
+	auto pDepthMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(depth))->getDepthMap();
+	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingViewProjBuffer, pLightingBuffer, }, { pDepthMap }, true, sceneDsLayout);
+
+	for (Model *pModel : models)
+	{
+		pModel->initDescriptorSets(pDescriptorPool);
+	}
 }
 
 void Scene::initPipelines(RenderPassesMap renderPasses)

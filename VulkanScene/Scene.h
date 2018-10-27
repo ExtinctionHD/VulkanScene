@@ -19,11 +19,11 @@ public:
 
 	Controller* getController() const;
 
-	uint32_t getBufferCount() const;;
+	uint32_t getBufferCount() const;
 
-	uint32_t getTextureCount() const;;
+	uint32_t getTextureCount() const;
 
-	uint32_t getDescriptorSetCount() const;;
+	uint32_t getDescriptorSetCount() const;
 
 	void prepareSceneRendering(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses);
 
@@ -77,6 +77,8 @@ private:
 	void initLighting();
 
 	void initModels();
+
+	void initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses);
 
 	void initPipelines(RenderPassesMap renderPasses);
 };
