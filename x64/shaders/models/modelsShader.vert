@@ -8,8 +8,7 @@ layout(set = 0, binding = 0) uniform SpaceMatrix {
 } space;
 
 layout(set = 0, binding = 1) uniform LightingSpaceMatrix {
-    mat4 view;
-    mat4 proj;
+    mat4 matrix;
 } lightingSpace;
 
 layout(set = 1, binding = 0) uniform ModelMatrix {
@@ -48,7 +47,7 @@ void main()
     // tangent vector of vertex in world coordinates
     fragTangent = (model.matrix * vec4(inTangent, 0.0f)).xyz;
     // fragment position in lighting space
-    fragPosLightingSpace = lightingSpace.proj * lightingSpace.view * model.matrix * vec4(inPosition, 1.0f);
+    fragPosLightingSpace = lightingSpace.matrix * model.matrix * vec4(inPosition, 1.0f);
 
     gl_Position = space.matrix * model.matrix * vec4(inPosition, 1.0f);
 
