@@ -1,9 +1,10 @@
 #include "AssimpModel.h"
 #include "SkyboxModel.h"
-#include <glm/gtc/matrix_transform.hpp>
 
 #include "Scene.h"
 #include "DepthRenderPass.h"
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/rotate_vector.hpp>
 
 // public:
 
@@ -33,7 +34,7 @@ Scene::~Scene()
 	vkDestroyDescriptorSetLayout(pDevice->device, depthDsLayout, nullptr);
 	vkDestroyDescriptorSetLayout(pDevice->device, sceneDsLayout, nullptr);
 
-	delete pLightingBuffer;
+	delete pLighting;
 	delete pCamera;
 	delete pController;
 }
@@ -79,7 +80,7 @@ uint32_t Scene::getDescriptorSetCount() const
 	return setCount;
 }
 
-void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
+void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderPassesMap &renderPasses)
 {
 	initDescriptorSets(pDescriptorPool, renderPasses);
 	initPipelines(renderPasses);
@@ -90,16 +91,10 @@ void Scene::updateScene()
 	double deltaSec = frameTimer.getDeltaSec();
 
 	pController->controlCamera(deltaSec);
+	pLighting->update(pCamera->getPos());
 
 	pCar->setTransform(rotate(pCar->getTransform(), glm::radians(30.0f) * float(deltaSec), glm::vec3(0.0f, -1.0f, 0.0f)));
-
 	pSkybox->setTransform(translate(glm::mat4(1.0f), pCamera->getPos()));
-
-	lighting.cameraPos = pCamera->getPos();
-	pLightingBuffer->updateData(&lighting.cameraPos, sizeof(lighting.cameraPos), offsetof(Lighting, cameraPos));
-
-	lightingViewProj.view = lookAt(pCamera->getPos() - normalize(lighting.direction), pCamera->getPos(), glm::vec3(0.0f, -1.0f, 0.0f));
-	pLightingViewProjBuffer->updateData(&lightingViewProj.view, sizeof(lightingViewProj.view), offsetof(ViewProjMatrices, view));
 }
 
 void Scene::drawDepth(VkCommandBuffer commandBuffer)
@@ -138,14 +133,15 @@ void Scene::initCamera(VkExtent2D cameraExtent)
 	glm::vec3 pos{ 0.0f, -40.0f, -80.0f };
 	glm::vec3 forward{ 0.0f, -0.8f, 1.0f };
 	glm::vec3 up{ 0.0f, -1.0f, 0.0f };
+	const float fov = 45.0f;
 
-	pCamera = new Camera(pDevice, pos, forward, up, cameraExtent);
+	pCamera = new Camera(pDevice, pos, forward, up, cameraExtent, fov);
 }
 
 void Scene::initLighting()
 {
     // init lighting attributes
-	lighting = Lighting{
+	Lighting::Attributes attributes{
 		glm::vec3(1.0f, 1.0f, 1.0f),		// color
 		0.8f,								// ambientStrength
 		glm::vec3(-0.89f, 0.4f, -0.21f),	// direction
@@ -153,19 +149,10 @@ void Scene::initLighting()
 		pCamera->getPos(),					// cameraPos
 		2.0f								// specularPower
 	};
-	pLightingBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(Lighting));
-	pLightingBuffer->updateData(&lighting, sizeof(Lighting), 0);
 
-    // init lighting view and projection matrices
+	const float spaceRadius = 100.0f;
 
-	lightingViewProj = ViewProjMatrices{
-		lookAt(pCamera->getPos() - normalize(lighting.direction), pCamera->getPos(), glm::vec3(0.0f, -1.0f,  0.0f)),
-		glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, -100.0f, 100.0f)
-	};
-	lightingViewProj.projection[1][1] *= -1;
-
-	pLightingViewProjBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(ViewProjMatrices));
-	pLightingViewProjBuffer->updateData(&lightingViewProj, sizeof(ViewProjMatrices), 0);
+	pLighting = new Lighting(pDevice, attributes, spaceRadius);
 }
 
 void Scene::initModels()
@@ -194,10 +181,19 @@ void Scene::initModels()
 
 void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
 {
-	depthDescriptorSet = pDescriptorPool->getDescriptorSet({ pLightingViewProjBuffer }, { }, true, depthDsLayout);
+	depthDescriptorSet = pDescriptorPool->getDescriptorSet({ pLighting->getSpaceBuffer() }, { }, true, depthDsLayout);
 
 	auto pDepthMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(depth))->getDepthMap();
-	sceneDescriptorSet = pDescriptorPool->getDescriptorSet({ pCamera->getViewProjBuffer(), pLightingViewProjBuffer, pLightingBuffer, }, { pDepthMap }, true, sceneDsLayout);
+	sceneDescriptorSet = pDescriptorPool->getDescriptorSet(
+		{ 
+		    pCamera->getSpaceBuffer(), 
+		    pLighting->getSpaceBuffer(), 
+		    pLighting->getAttributesBuffer(), 
+		},
+		{ pDepthMap },
+		true,
+		sceneDsLayout
+	);
 
 	for (Model *pModel : models)
 	{

@@ -3,9 +3,7 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
-#include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
-#include "ViewProjMatrices.h"
 #include "Buffer.h"
 
 // provides camera attributes
@@ -13,9 +11,10 @@
 class Camera
 {
 public:
+    // creates camera located in (0.0, 0.0, 0.0), locking at z axis, with 45.0 degrees field of view
 	Camera(Device *pDevice, VkExtent2D extent);
 
-	Camera(Device *pDevice, glm::vec3 pos, glm::vec3 forward, glm::vec3 up, VkExtent2D extent);
+	Camera(Device *pDevice, glm::vec3 pos, glm::vec3 forward, glm::vec3 up, VkExtent2D extent, float fov);
 
 	~Camera();
 
@@ -40,9 +39,7 @@ public:
 
 	glm::vec3 getUp() const;
 
-	Buffer* getViewProjBuffer() const;
-
-	ViewProjMatrices getMatrices() const;
+	Buffer* getSpaceBuffer() const;
 
 	glm::vec2 getCenter() const;
 
@@ -52,7 +49,7 @@ public:
 
 	void setExtent(VkExtent2D extent);
 
-	void updateView();
+	void updateSpace();
 
 private:
 	// step of camera movement
@@ -73,6 +70,8 @@ private:
 	// pSurface extent
 	VkExtent2D extent{};
 
+	float fov;
+
 	// horizontal angle
 	// angle 0.0f directed towards z axis
 	float angleH{};
@@ -81,13 +80,12 @@ private:
 	float angleV{};
 
 	// camera view and projection matrices
-	ViewProjMatrices viewProj{};
-	Buffer *pViewProjBuffer{};
+	Buffer *pSpaceBuffer{};
 
 	// initializes camera angles
 	void initAngles();
 
-	void initViewProj(Device *pDevice);
+	void initSpaceBuffer(Device *pDevice);
 
 	glm::mat4 getViewMatrix() const;
 

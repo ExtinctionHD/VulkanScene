@@ -128,7 +128,7 @@ TextureImage::TextureImage(
 
 	createImageView(subresourceRange, viewType);
 
-	createSampler(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	createSampler(VK_SAMPLER_ADDRESS_MODE_REPEAT);
 }
 
 

@@ -10,26 +10,29 @@ Camera::Camera(Device *pDevice, VkExtent2D extent)
 	pos = glm::vec3(0.0f, 0.0f, 0.0f);
 	forward = glm::vec3(0.0f, 0.0f, 1.0f);
 	up = glm::vec3(0.0f, -1.0f, 0.0f);
+
 	this->extent = extent;
+	this->fov = 45.0f;
 
 	initAngles();
-	initViewProj(pDevice);
+	initSpaceBuffer(pDevice);
 }
 
-Camera::Camera(Device *pDevice, glm::vec3 pos, glm::vec3 target, glm::vec3 up, VkExtent2D extent)
+Camera::Camera(Device *pDevice, glm::vec3 pos, glm::vec3 forward, glm::vec3 up, VkExtent2D extent, float fov)
 {
 	this->pos = pos;
-	this->forward = glm::normalize(target);
+	this->forward = glm::normalize(forward);
 	this->up = glm::normalize(up);
 	this->extent = extent;
+	this->fov = fov;
 
 	initAngles();
-	initViewProj(pDevice);
+	initSpaceBuffer(pDevice);
 }
 
 Camera::~Camera()
 {
-	delete(pViewProjBuffer);
+	delete(pSpaceBuffer);
 }
 
 glm::vec3 Camera::getPos() const
@@ -47,14 +50,9 @@ glm::vec3 Camera::getUp() const
 	return up;
 }
 
-Buffer * Camera::getViewProjBuffer() const
+Buffer * Camera::getSpaceBuffer() const
 {
-	return pViewProjBuffer;
-}
-
-ViewProjMatrices Camera::getMatrices() const
-{
-	return ViewProjMatrices{ getViewMatrix(), getProjectionMatrix() };
+	return pSpaceBuffer;
 }
 
 glm::vec2 Camera::getCenter() const
@@ -116,16 +114,14 @@ void Camera::setExtent(VkExtent2D extent)
 {
 	this->extent = extent;
 
-	viewProj.projection = getProjectionMatrix();
-	pViewProjBuffer->updateData(&viewProj.projection, sizeof(viewProj.projection), offsetof(ViewProjMatrices, projection));
+	updateSpace();
 }
 
-void Camera::updateView()
+void Camera::updateSpace()
 {
-	viewProj.view = getViewMatrix();
-	pViewProjBuffer->updateData(&viewProj.view, sizeof(viewProj.view), offsetof(ViewProjMatrices, view));
+	glm::mat4 space = getProjectionMatrix() * getViewMatrix();
+	pSpaceBuffer->updateData(&space, sizeof(space), 0);
 }
-
 
 // private:
 
@@ -166,13 +162,10 @@ void Camera::initAngles()
 	angleV = -glm::degrees(glm::asin(forward.y));
 }
 
-void Camera::initViewProj(Device *pDevice)
+void Camera::initSpaceBuffer(Device *pDevice)
 {
-	viewProj.view = getViewMatrix();
-	viewProj.projection = getProjectionMatrix();
-
-	pViewProjBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(viewProj));
-	pViewProjBuffer->updateData(&viewProj, sizeof(viewProj), 0);
+	pSpaceBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(glm::mat4));
+    updateSpace();
 }
 
 glm::mat4 Camera::getViewMatrix() const
@@ -182,12 +175,11 @@ glm::mat4 Camera::getViewMatrix() const
 
 glm::mat4 Camera::getProjectionMatrix() const
 {
-	const float viewAngle = 45.0f;
 	const float aspect = extent.width / float(extent.height);
 	const float zNear = 0.1f;
 	const float zFar = 10000.0f;
 
-	glm::mat4 proj = glm::perspective(glm::radians(viewAngle), aspect, zNear, zFar);
+	glm::mat4 proj = glm::perspective(glm::radians(fov), aspect, zNear, zFar);
 	proj[1][1] *= -1;
 
 	return proj;

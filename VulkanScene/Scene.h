@@ -25,7 +25,7 @@ public:
 
 	uint32_t getDescriptorSetCount() const;
 
-	void prepareSceneRendering(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses);
+	void prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderPassesMap &renderPasses);
 
 	void updateScene();
 
@@ -47,11 +47,7 @@ private:
 	Timer frameTimer;
 
 	// scene lighting attributes
-	Lighting lighting{};
-	Buffer *pLightingBuffer{};
-
-	ViewProjMatrices lightingViewProj{};
-	Buffer *pLightingViewProjBuffer{};
+	Lighting *pLighting;
 
 	// scene descriptors:
 

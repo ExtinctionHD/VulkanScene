@@ -3,19 +3,18 @@
 
 // binding from application:
 
-layout(set = 0, binding = 0) uniform ViewProj {
-    mat4 view;
-    mat4 proj;
-} vp;
+layout(set = 0, binding = 0) uniform SpaceMatrix {
+    mat4 matrix;
+} space;
 
-layout(set = 0, binding = 1) uniform LightingViewProj {
+layout(set = 0, binding = 1) uniform LightingSpaceMatrix {
     mat4 view;
     mat4 proj;
-} lightingVp;
+} lightingSpace;
 
 layout(set = 1, binding = 0) uniform ModelMatrix {
-	mat4 model;
-} m;
+	mat4 matrix;
+} model;
 
 // input and output values:
 
@@ -41,17 +40,17 @@ out gl_PerVertex {
 void main() 
 {	
     // position of fragment in world coordinates
-    fragPos = (m.model * vec4(inPosition, 1.0f)).xyz;
+    fragPos = (model.matrix * vec4(inPosition, 1.0f)).xyz;
     // texture coordinates without changes
     fragTexCoord = inTexCoord;
     // vertex normal vector in world coordinates
-    fragNormal = (m.model * vec4(inNormal, 0.0f)).xyz;
+    fragNormal = (model.matrix * vec4(inNormal, 0.0f)).xyz;
     // tangent vector of vertex in world coordinates
-    fragTangent = (m.model * vec4(inTangent, 0.0f)).xyz;
+    fragTangent = (model.matrix * vec4(inTangent, 0.0f)).xyz;
     // fragment position in lighting space
-    fragPosLightingSpace = lightingVp.proj * lightingVp.view * m.model * vec4(inPosition, 1.0f);
+    fragPosLightingSpace = lightingSpace.proj * lightingSpace.view * model.matrix * vec4(inPosition, 1.0f);
 
-    gl_Position = vp.proj * vp.view * m.model * vec4(inPosition, 1.0f);
+    gl_Position = space.matrix * model.matrix * vec4(inPosition, 1.0f);
 
     // fixes difference from opengl
     // gl_Position.y = -gl_Position.y;

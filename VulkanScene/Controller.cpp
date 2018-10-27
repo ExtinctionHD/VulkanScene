@@ -10,7 +10,7 @@ void Controller::controlCamera(float deltaSec)
 	POINT pos;
 	GetCursorPos(&pos);
 
-	glm::vec2 center = pCamera->getCenter();
+	const glm::vec2 center = pCamera->getCenter();
 
 	pCamera->rotate(pos.x - center.x, pos.y - center.y);
 
@@ -18,7 +18,7 @@ void Controller::controlCamera(float deltaSec)
 
 	pCamera->move(deltaSec);
 
-	pCamera->updateView();
+	pCamera->updateSpace();
 }
 
 void Controller::keyDownCallback(int key)

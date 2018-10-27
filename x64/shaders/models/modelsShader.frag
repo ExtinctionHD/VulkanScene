@@ -99,39 +99,39 @@ float shadowCalculation(vec4 fragPosLightSpace, float bias)
 // fragment shader code:
 void main() 
 {
-	vec3 direction = normalize(light.direction);
-	vec3 normal = calculateBumpedNormal();
+	// vec3 direction = normalize(light.direction);
+	// vec3 normal = calculateBumpedNormal();
 
-	vec3 ambient = light.color * light.ambientStrength * colors.ambient.rgb * texture(ambientTexture, fragTexCoord).rgb;
+	// vec3 ambient = light.color * light.ambientStrength * colors.ambient.rgb * texture(ambientTexture, fragTexCoord).rgb;
 
-	vec3 diffuse = vec3(0.0f, 0.0f, 0.0f);
-	vec3 specular = vec3(0.0f, 0.0f, 0.0f);
+	// vec3 diffuse = vec3(0.0f, 0.0f, 0.0f);
+	// vec3 specular = vec3(0.0f, 0.0f, 0.0f);
 
-	float diffuseFactor = dot(normal, -direction);
-	if (diffuseFactor > 0)
-	{
-		diffuse = light.color * light.diffuseStrength * diffuseFactor * colors.diffuse.rgb;
+	// float diffuseFactor = dot(normal, -direction);
+	// if (diffuseFactor > 0)
+	// {
+	// 	diffuse = light.color * light.diffuseStrength * diffuseFactor * colors.diffuse.rgb;
 
-		vec3 fragToCamera = normalize(light.cameraPos - fragPos);
-		vec3 lightReflect = normalize(reflect(direction, normal));
-		float specularFactor = dot(fragToCamera, lightReflect);
-		if (specularFactor > 0)
-		{
-			specular = light.color * pow(specularFactor, light.specularPower) * colors.specular.r * texture(specularMap, fragTexCoord).r;
-		}
-	}
+	// 	vec3 fragToCamera = normalize(light.cameraPos - fragPos);
+	// 	vec3 lightReflect = normalize(reflect(direction, normal));
+	// 	float specularFactor = dot(fragToCamera, lightReflect);
+	// 	if (specularFactor > 0)
+	// 	{
+	// 		specular = light.color * pow(specularFactor, light.specularPower) * colors.specular.r * texture(specularMap, fragTexCoord).r;
+	// 	}
+	// }
 
-	float opacity = colors.opacity * texture(opacityMap, fragTexCoord).r;
+	// float opacity = colors.opacity * texture(opacityMap, fragTexCoord).r;
 
-	float bias = max(0.0025f * (1.0f - dot(normal, direction)), 0.00025f);
-	float shadow = shadowCalculation(fragPosLightingSpace, bias);
+	// float bias = max(0.0025f * (1.0f - dot(normal, direction)), 0.00025f);
+	// float shadow = shadowCalculation(fragPosLightingSpace, bias);
 
-	vec3 result = ambient + (1.0f - shadow) * (diffuse + specular);
-	outColor = vec4(result, opacity) * texture(diffuseTexture, fragTexCoord);
+	// vec3 result = ambient + (1.0f - shadow) * (diffuse + specular);
+	// outColor = vec4(result, opacity) * texture(diffuseTexture, fragTexCoord);
 
 	// shows scene depth
-	// float depth = texture(shadowsMap, fragTexCoord).r;
-	// outColor = vec4(depth, depth, depth, 1.0);
+	float depth = texture(shadowsMap, fragTexCoord).r;
+	outColor = vec4(depth, depth, depth, 1.0);
 
 	// gamma correction
 	// float gamma = 2.2f;	

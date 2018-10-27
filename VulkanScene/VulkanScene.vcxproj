@@ -51,12 +51,12 @@
     <ClInclude Include="TextureImage.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vertex.h" />
-    <ClInclude Include="ViewProjMatrices.h" />
     <ClInclude Include="Vulkan.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="Lighting.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="AssimpModel.cpp" />
     <ClCompile Include="DescriptorPool.cpp" />
