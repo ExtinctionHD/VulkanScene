@@ -47,7 +47,7 @@ private:
 	Timer frameTimer;
 
 	// scene lighting attributes
-	Lighting *pLighting;
+	Lighting *pLighting{};
 
 	// scene descriptors:
 

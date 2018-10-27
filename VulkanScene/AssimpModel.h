@@ -25,9 +25,15 @@ private:
 
 	std::map<std::string, TextureImage*> textures;
 
+	glm::vec3 minPos = glm::vec3(std::numeric_limits<float>::infinity());
+
+	glm::vec3 maxPos = glm::vec3(-std::numeric_limits<float>::infinity());
+
 	void processNode(aiNode *pAiNode, const aiScene *pAiScene);
 
 	Mesh<Vertex>* processMesh(aiMesh *pAiMesh, const aiScene *pAiScene);
+
+	void initPosLimits(glm::vec3 pos);
 
 	void initTangents(std::vector<Vertex>& vertices, std::vector<uint32_t> indices);
 
