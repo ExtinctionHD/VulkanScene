@@ -1,209 +1,60 @@
-#include <cassert>
-
-#include "RenderPass.h"
+﻿#include "RenderPass.h"
 
 // public:
 
-RenderPass::RenderPass(Device *pDevice, SwapChain *pSwapChain)
+RenderPass::~RenderPass()
 {
-	device = pDevice->device;
-	framebuffersExtent = pSwapChain->extent;
-
-	VkFormat depthAttachmentFormat = pDevice->findSupportedFormat(
-		DEPTH_FORMATS,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-	);
-
-	createRenderPass(pSwapChain->imageFormat, depthAttachmentFormat);
-
-	createDepthResources(pDevice, pSwapChain->extent, depthAttachmentFormat);
-
-	createFramebuffers(pSwapChain->imageViews);
+	cleanup();
 }
 
-RenderPass::~RenderPass()
+VkRenderPass RenderPass::getRenderPass() const
+{
+	return renderPass;
+}
+
+std::vector<VkFramebuffer> RenderPass::getFramebuffers() const
+{
+	return framebuffers;
+}
+
+VkExtent2D RenderPass::getExtent() const
+{
+	return extent;
+}
+
+void RenderPass::create()
+{
+	createRenderPass();
+	createFramebuffers();
+}
+
+// protected:
+
+void RenderPass::recreate(VkExtent2D newExtent)
+{
+	cleanup();
+	extent = newExtent;
+	create();
+}
+
+RenderPass::RenderPass(Device *pDevice, VkExtent2D extent)
+{
+    this->pDevice = pDevice;
+    this->extent = extent;
+
+    depthAttachmentFormat = pDevice->findSupportedFormat(
+        DEPTH_FORMATS,
+        VK_IMAGE_TILING_OPTIMAL,
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+    );
+}
+
+void RenderPass::cleanup()
 {
 	for (VkFramebuffer framebuffer : framebuffers)
 	{
-		vkDestroyFramebuffer(device, framebuffer, nullptr);
+		vkDestroyFramebuffer(pDevice->device, framebuffer, nullptr);
 	}
-
-	delete(pDepthImage);
-
-	vkDestroyRenderPass(device, renderPass, nullptr);
-}
-
-// private:
-
-void RenderPass::createRenderPass(VkFormat colorAttachmentFormat, VkFormat depthAttachmentFormat)
-{
-	// description of attachments
-
-	VkAttachmentDescription colorAttachment{
-		0,									// flags;
-		colorAttachmentFormat,				// format;
-		VK_SAMPLE_COUNT_1_BIT,				// samples;
-		VK_ATTACHMENT_LOAD_OP_CLEAR,		// loadOp;
-		VK_ATTACHMENT_STORE_OP_STORE,		// storeOp;
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,	// stencilLoadOp;
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,	// stencilStoreOp;
-		VK_IMAGE_LAYOUT_UNDEFINED,			// initialLayout;
-		VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,    // finalLayout;
-	};
-
-	VkAttachmentDescription depthAttachment{
-		0,													// flags;
-		depthAttachmentFormat,								// format;
-		VK_SAMPLE_COUNT_1_BIT,								// samples;
-		VK_ATTACHMENT_LOAD_OP_CLEAR,						// loadOp;
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,					// storeOp;
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,					// stencilLoadOp;
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,					// stencilStoreOp;
-		VK_IMAGE_LAYOUT_UNDEFINED,							// initialLayout;
-		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,	// finalLayout;
-	};
-
-	std::vector<VkAttachmentDescription> attachments{
-		colorAttachment,
-		depthAttachment
-	};
-
-	// references to attachments
-
-	VkAttachmentReference colorAttachmentRef{
-		0,											// attachment;
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL	// layout;
-	};
-
-	VkAttachmentReference depthAttachmentRef{
-		1,													// attachment;
-		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL	// layout;
-	};
-
-	// subpass and it dependecies (contain references)
-
-	VkSubpassDescription subpass{
-		0,									// flags;
-		VK_PIPELINE_BIND_POINT_GRAPHICS,	// pipelineBindPoint;
-		0,									// inputAttachmentCount;
-		nullptr,							// pInputAttachmentReferences;
-		1,									// colorAttachmentCount;
-		&colorAttachmentRef,				// pColorAttachmentReferences;
-		nullptr,							// pResolveAttachmentReference;
-		&depthAttachmentRef,				// pDepthStencilAttachmentReference;
-		0,									// preserveAttachmentCount;
-		nullptr								// pPreserveAttachments;
-	};
-
-	VkSubpassDependency inputDependency{
-		VK_SUBPASS_EXTERNAL,														// srcSubpass;
-		0,																			// dstSubpass;
-		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,										// srcStageMask;
-		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,								// dstStageMask;
-		VK_ACCESS_MEMORY_READ_BIT,													// srcAccessMask;
-		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	// dstAccessMask;
-		VK_DEPENDENCY_BY_REGION_BIT,												// dependencyFlags;
-	};
-
-	VkSubpassDependency outputDependency{
-		0,																			// srcSubpass;
-		VK_SUBPASS_EXTERNAL,														// dstSubpass;
-		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,								// srcStageMask;
-		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,										// dstStageMask;
-		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	// srcAccessMask;
-		VK_ACCESS_MEMORY_READ_BIT,													// dstAccessMask;
-		VK_DEPENDENCY_BY_REGION_BIT,												// dependencyFlags;
-	};
-
-	std::vector<VkSubpassDependency> dependencies{
-		inputDependency,
-		outputDependency
-	};
-
-	// render pass (contain descriptions)
-
-	VkRenderPassCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,	// sType;
-		nullptr,									// pNext;
-		0,											// flags;
-		attachments.size(),							// attachmentCount;
-		attachments.data(),							// pAttachments;
-		1,											// subpassCount;
-		&subpass,									// pSubpasses;
-		dependencies.size(),						// dependencyCount;
-		dependencies.data(),						// pDependencies;
-	};
-
-	VkResult result = vkCreateRenderPass(device, &createInfo, nullptr, &renderPass);
-	assert(result == VK_SUCCESS);
-}
-
-void RenderPass::createDepthResources(Device *pDevice, VkExtent2D depthImageExtent, VkFormat depthImageFormat)
-{
-	VkExtent3D extent{
-		depthImageExtent.width,
-		depthImageExtent.height,
-		1
-	};
-
-	pDepthImage = new Image(
-		pDevice,
-		extent,
-		0,
-		1,
-		depthImageFormat,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		1
-	);
-
-	VkImageSubresourceRange subresourceRange{
-		VK_IMAGE_ASPECT_DEPTH_BIT,	// aspectMask;
-		0,							// baseMipLevel;
-		1,							// levelCount;
-		0,							// baseArrayLayer;
-		1,							// layerCount;
-	};
-
-	pDepthImage->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
-
-	pDepthImage->transitLayout(
-		pDevice,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-		subresourceRange
-	);
-}
-
-void RenderPass::createFramebuffers(std::vector<VkImageView> swapChainImageViews)
-{
-	framebuffers.resize(swapChainImageViews.size());
-
-	VkExtent3D extent = pDepthImage->extent;
-
-	for (size_t i = 0; i < swapChainImageViews.size(); i++)
-	{
-		std::vector<VkImageView> attachments{
-			swapChainImageViews[i],
-			pDepthImage->view
-		};
-
-		VkFramebufferCreateInfo createInfo{
-			VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
-			nullptr,									// pNext;
-			0,											// flags;
-			renderPass,									// renderPass;
-			attachments.size(),							// attachmentCount;
-			attachments.data(),							// pAttachments;
-			extent.width,								// width;
-			extent.height,								// height;
-			1,											// layers;
-		};
-
-		VkResult result = vkCreateFramebuffer(device, &createInfo, nullptr, &framebuffers[i]);
-		assert(result == VK_SUCCESS);
-	}
+	vkDestroyRenderPass(pDevice->device, renderPass, nullptr);
 }
 

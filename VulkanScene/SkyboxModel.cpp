@@ -41,7 +41,7 @@ SkyboxModel::SkyboxModel(Device *pDevice, std::string texturesDir, std::string e
 	};
 
 	Material *pMaterial = new Material(pDevice);
-	materials.insert(std::pair<uint32_t, Material*>(0, pMaterial));
+	materials.insert({ 0, pMaterial });
 	pMaterial->addTexture(aiTextureType_AMBIENT, pTexture);
 
 	meshes.push_back(new Mesh<Position>(pDevice, cubeVertices, cubeIndices, pMaterial));

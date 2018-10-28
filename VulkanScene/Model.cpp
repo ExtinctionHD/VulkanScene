@@ -6,10 +6,10 @@ Model::~Model()
 {
 	objectCount--;
 
-	if (objectCount == 0 && transformDSLayout != VK_NULL_HANDLE)
+	if (objectCount == 0 && transformDsLayout != VK_NULL_HANDLE)
 	{
-		vkDestroyDescriptorSetLayout(pDevice->device, transformDSLayout, nullptr);
-		transformDSLayout = VK_NULL_HANDLE;
+		vkDestroyDescriptorSetLayout(pDevice->device, transformDsLayout, nullptr);
+		transformDsLayout = VK_NULL_HANDLE;
 	}
 
 	// cleanup materials
@@ -27,7 +27,7 @@ Model::~Model()
 	delete(pTransformBuffer);
 }
 
-glm::mat4 Model::getTransform()
+glm::mat4 Model::getTransform() const
 {
 	return transform;
 }
@@ -40,19 +40,17 @@ void Model::setTransform(glm::mat4 matrix)
 
 uint32_t Model::getBufferCount() const 
 {
-	return 1 + meshes.size();
+	return 1 + materials.size();
 }
 
 uint32_t Model::getTextureCount() const
 {
-	uint32_t textureCount = 0;
+	return Material::TEXTURES_ORDER.size() * materials.size();
+}
 
-	for (MeshBase *pMesh : meshes)
-	{
-		textureCount += pMesh->pMaterial->getTextures().size();
-	}
-
-	return textureCount;
+uint32_t Model::getDescriptorSetCount() const
+{
+	return 1 + materials.size();
 }
 
 uint32_t Model::getMeshCount() const
@@ -60,20 +58,25 @@ uint32_t Model::getMeshCount() const
 	return meshes.size();
 }
 
+VkDescriptorSetLayout Model::getTransformDsLayout()
+{
+	return transformDsLayout;
+}
+
 void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 {
-	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, transformDSLayout == VK_NULL_HANDLE, transformDSLayout);
+	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, transformDsLayout == VK_NULL_HANDLE, transformDsLayout);
 
-	for (std::pair<uint32_t, Material*> pair : materials)
+	for (auto material : materials)
 	{
-		pair.second->initDescritorSet(pDescriptorPool);
+		material.second->initDescriptorSet(pDescriptorPool);
 	}
 }
 
 GraphicsPipeline * Model::createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules)
 {
-	layouts.push_back(transformDSLayout);
-	layouts.push_back(Material::getDSLayout());
+	layouts.push_back(transformDsLayout);
+	layouts.push_back(Material::getDsLayout());
 
 	const uint32_t inputBinding = 0;
 
@@ -94,6 +97,24 @@ void Model::setPipeline(GraphicsPipeline * pPipeline)
 	this->pPipeline = pPipeline;
 }
 
+void Model::drawDepth(
+    VkCommandBuffer commandBuffer,
+    std::vector<VkDescriptorSet> descriptorSets,
+    GraphicsPipeline *pDepthPipeline
+)
+{
+	descriptorSets.push_back(transformDescriptorSet);
+
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pDepthPipeline->pipeline);
+
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pDepthPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+
+	for (auto &mesh : meshes)
+	{
+		mesh->draw(commandBuffer);
+	}
+}
+
 
 void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
 {
@@ -105,18 +126,10 @@ void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> des
 
 	for (auto &mesh : meshes)
 	{
-		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDesriptorSet();
+		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDescriptorSet();
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
 
-		VkBuffer vertexBuffer = mesh->getVertexBuffer();
-		VkDeviceSize offset = 0;
-		vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer, &offset);
-
-		VkBuffer indexBuffer = mesh->getIndexBuffer();
-		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
-		uint32_t indexCount = mesh->getIndexCount();
-		vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+		mesh->draw(commandBuffer);
 	}
 }
 
@@ -136,6 +149,6 @@ Model::Model(Device *pDevice)
 
 uint32_t Model::objectCount = 0;
 
-VkDescriptorSetLayout Model::transformDSLayout = VK_NULL_HANDLE;
+VkDescriptorSetLayout Model::transformDsLayout = VK_NULL_HANDLE;
 
 

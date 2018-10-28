@@ -15,9 +15,9 @@ Material::Material(Device *pDevice)
 	}
 
 	// initialize current material with default textures
-	for (int i = 0; i < TEXTURES_ORDER.size(); i++)
+	for (size_t i = 0; i < TEXTURES_ORDER.size(); i++)
 	{
-		textures.insert(std::pair<aiTextureType, TextureImage*>(TEXTURES_ORDER[i], defaultTextures[i]));
+		textures.insert({ TEXTURES_ORDER[i], defaultTextures[i] });
 	}
 
 	colors = MaterialColors{
@@ -58,7 +58,7 @@ std::vector<TextureImage*> Material::getTextures() const
 {
 	std::vector<TextureImage*> result;
 
-	for (aiTextureType type : TEXTURES_ORDER)
+    for (aiTextureType type : TEXTURES_ORDER)
 	{
 		result.push_back(textures.at(type));
 	}
@@ -78,7 +78,7 @@ void Material::addTexture(aiTextureType type, TextureImage * pTexture)
 
 std::string Material::getDefaultTexturePath(aiTextureType type)
 {
-	std::string DEFAULT_TEXTURE_DIR = File::getExeDir() + "textures/default/";
+    const std::string DEFAULT_TEXTURE_DIR = File::getExeDir() + "textures/default/";
 
 	switch (type)
 	{
@@ -97,17 +97,17 @@ std::string Material::getDefaultTexturePath(aiTextureType type)
 	}
 }
 
-void Material::initDescritorSet(DescriptorPool * pDescriptorPool)
+void Material::initDescriptorSet(DescriptorPool * pDescriptorPool)
 {
 	descriptorSet = pDescriptorPool->getDescriptorSet({ pColorsBuffer }, getTextures(), dsLayout == VK_NULL_HANDLE, dsLayout);
 }
 
-VkDescriptorSet Material::getDesriptorSet() const
+VkDescriptorSet Material::getDescriptorSet() const
 {
 	return descriptorSet;
 }
 
-VkDescriptorSetLayout Material::getDSLayout()
+VkDescriptorSetLayout Material::getDsLayout()
 {
 	return dsLayout;
 }

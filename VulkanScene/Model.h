@@ -2,6 +2,8 @@
 
 #include "Buffer.h"
 #include "Device.h"
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include "DescriptorPool.h"
 #include "GraphicsPipeline.h"
@@ -14,7 +16,7 @@ class Model
 public:
 	virtual ~Model();
 
-	glm::mat4 getTransform();
+	glm::mat4 getTransform() const;
 
 	void setTransform(glm::mat4 matrix);
 
@@ -22,13 +24,19 @@ public:
 
 	uint32_t getTextureCount() const;
 
+	uint32_t getDescriptorSetCount() const;
+
 	uint32_t getMeshCount() const;
+
+	static VkDescriptorSetLayout getTransformDsLayout();
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
 	GraphicsPipeline* createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
 
 	void setPipeline(GraphicsPipeline *pPipeline);
+
+	void drawDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, GraphicsPipeline *pDepthPipeline);
 
 	void draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
 
@@ -48,15 +56,15 @@ protected:
 private:
 	static uint32_t objectCount;
 
-	GraphicsPipeline *pPipeline;
+	GraphicsPipeline *pPipeline{};
 
-	glm::mat4 transform;
+	glm::mat4 transform{};
 
 	Buffer *pTransformBuffer;
 
 	// descritpor set for mvp buffer
 	VkDescriptorSet transformDescriptorSet{};
 
-	static VkDescriptorSetLayout transformDSLayout;
+	static VkDescriptorSetLayout transformDsLayout;
 };
 

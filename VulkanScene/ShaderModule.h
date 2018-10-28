@@ -10,7 +10,7 @@ public:
 
 	VkShaderStageFlagBits stage;
 
-	VkShaderModule module;
+	VkShaderModule module{};
 
 private:
 	// device that provide shader module

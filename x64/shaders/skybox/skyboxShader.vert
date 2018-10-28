@@ -5,15 +5,13 @@
 
 // uniform buffer with mvp matrices
 // that positioning vertices in scene space
-layout(set = 0, binding = 0) uniform ViewProjection 
-{
-	mat4 view;
-	mat4 proj;
-} vp;
+layout(set = 0, binding = 0) uniform SpaceMatrix {
+    mat4 matrix;
+} space;
 
 layout(set = 1, binding = 0) uniform ModelMatrix {
-    mat4 model;
-} m;
+    mat4 matrix;
+} model;
 
 // input and output values:
 
@@ -31,12 +29,12 @@ out gl_PerVertex {
 // vertex shader code
 void main() 
 {	
-	vec4 mvpPos = vp.proj * vp.view * m.model * vec4(inPosition, 1.0);
+	vec4 mvpPos = space.matrix * model.matrix * vec4(inPosition, 1.0);
     gl_Position = mvpPos.xyww;
 
     fragTexCoord = inPosition;
     fragTexCoord.y = -fragTexCoord.y;
 
     // fixes difference from opengl
-    gl_Position.y = -gl_Position.y;
+    // gl_Position.y = -gl_Position.y;
 }

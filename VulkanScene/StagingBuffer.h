@@ -24,13 +24,13 @@ protected:
 	Device * pDevice;
 
 	// main buffer object
-	VkBuffer stagingBuffer;
+	VkBuffer stagingBuffer{};
 
 	// size of this buffer
 	VkDeviceSize size;
 
 	// buffer memory
-	VkDeviceMemory stagingMemory;
+	VkDeviceMemory stagingMemory{};
 
 	static void createBuffer(
 		Device *pDevice,

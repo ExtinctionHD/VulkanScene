@@ -73,8 +73,17 @@
     <Filter Include="Исходные файлы\Scene\Model">
       <UniqueIdentifier>{0ead2906-725d-4a3b-9995-112bde4769e9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\Scene\Struct">
-      <UniqueIdentifier>{9810e5ab-46f2-4ecd-8590-94e3b693476a}</UniqueIdentifier>
+    <Filter Include="Файлы заголовков\Scene\Mesh">
+      <UniqueIdentifier>{71a4dc86-6c7d-4601-80e8-ae7a229d5294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Scene\Mesh">
+      <UniqueIdentifier>{faf84c43-3edd-4785-8b32-1c9e5c2ce548}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Vulkan\Rendering\RenderPass">
+      <UniqueIdentifier>{33b36251-9252-4da7-b752-89b6a31d5de6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Vulkan\Rendering\RenderPass">
+      <UniqueIdentifier>{10315b15-6edd-48e6-983d-ef9710275833}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -102,9 +111,6 @@
     <ClInclude Include="File.h">
       <Filter>Файлы заголовков\Static</Filter>
     </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Файлы заголовков\Scene\Model</Filter>
-    </ClInclude>
     <ClInclude Include="TextureImage.h">
       <Filter>Файлы заголовков\Vulkan\Image</Filter>
     </ClInclude>
@@ -120,14 +126,8 @@
     <ClInclude Include="GraphicsPipeline.h">
       <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="RenderPass.h">
-      <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderModule.h">
       <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Position.h">
-      <Filter>Файлы заголовков\Scene\Model</Filter>
     </ClInclude>
     <ClInclude Include="Buffer.h">
       <Filter>Файлы заголовков\Vulkan\Buffer</Filter>
@@ -153,16 +153,7 @@
     <ClInclude Include="DescriptorPool.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
-    <ClInclude Include="Lighting.h">
-      <Filter>Файлы заголовков\Scene\Struct</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Файлы заголовков\Scene\Model</Filter>
-    </ClInclude>
     <ClInclude Include="Material.h">
-      <Filter>Файлы заголовков\Scene\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshBase.h">
       <Filter>Файлы заголовков\Scene\Model</Filter>
     </ClInclude>
     <ClInclude Include="Controller.h">
@@ -171,11 +162,32 @@
     <ClInclude Include="Surface.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
-    <ClInclude Include="ViewProjMatrices.h">
-      <Filter>Файлы заголовков\Scene\Struct</Filter>
-    </ClInclude>
     <ClInclude Include="TerrainModel.h">
       <Filter>Файлы заголовков\Scene\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Файлы заголовков\Scene\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshBase.h">
+      <Filter>Файлы заголовков\Scene\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Position.h">
+      <Filter>Файлы заголовков\Scene\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Файлы заголовков\Scene\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="FinalRenderPass.h">
+      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPass.h">
+      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthRenderPass.h">
+      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighting.h">
+      <Filter>Файлы заголовков\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -203,9 +215,6 @@
     <ClCompile Include="File.cpp">
       <Filter>Исходные файлы\Static</Filter>
     </ClCompile>
-    <ClCompile Include="Vertex.cpp">
-      <Filter>Исходные файлы\Scene\Model</Filter>
-    </ClCompile>
     <ClCompile Include="TextureImage.cpp">
       <Filter>Исходные файлы\Vulkan\Image</Filter>
     </ClCompile>
@@ -220,15 +229,6 @@
     </ClCompile>
     <ClCompile Include="GraphicsPipeline.cpp">
       <Filter>Исходные файлы\Vulkan\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPass.cpp">
-      <Filter>Исходные файлы\Vulkan\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderModule.cpp">
-      <Filter>Исходные файлы\Vulkan\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Position.cpp">
-      <Filter>Исходные файлы\Scene\Model</Filter>
     </ClCompile>
     <ClCompile Include="Buffer.cpp">
       <Filter>Исходные файлы\Vulkan\Buffer</Filter>
@@ -257,9 +257,6 @@
     <ClCompile Include="Material.cpp">
       <Filter>Исходные файлы\Scene\Model</Filter>
     </ClCompile>
-    <ClCompile Include="MeshBase.cpp">
-      <Filter>Исходные файлы\Scene\Model</Filter>
-    </ClCompile>
     <ClCompile Include="Controller.cpp">
       <Filter>Исходные файлы\App</Filter>
     </ClCompile>
@@ -271,6 +268,30 @@
     </ClCompile>
     <ClCompile Include="TerrainModel.cpp">
       <Filter>Исходные файлы\Scene\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshBase.cpp">
+      <Filter>Исходные файлы\Scene\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Исходные файлы\Scene\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Position.cpp">
+      <Filter>Исходные файлы\Scene\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="FinalRenderPass.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderModule.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderPass.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthRenderPass.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighting.cpp">
+      <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

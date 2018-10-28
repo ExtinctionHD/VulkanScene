@@ -26,7 +26,7 @@ public:
 	~Image();
 
 	// extent of this image
-	VkExtent3D extent;
+	VkExtent3D extent{};
 
 	VkImageView view = VK_NULL_HANDLE;
 

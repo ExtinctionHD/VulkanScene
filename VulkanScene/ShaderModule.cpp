@@ -14,9 +14,9 @@ ShaderModule::ShaderModule(VkDevice device, std::string filename, VkShaderStageF
 	std::vector<char> code = File::getFileBytes(filename);
 
 	VkShaderModuleCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,	// sType;
-		nullptr,										// pNext;
-		0,												// flags;
+		VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,    // sType;
+		nullptr,                                        // pNext;
+		0,                                              // flags;
 		code.size(),									// codeSize;
 		reinterpret_cast<uint32_t*>(code.data())		// pCode;
 	};

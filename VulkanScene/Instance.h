@@ -13,10 +13,10 @@ public:
 	VkInstance getInstance();
 
 private:
-	VkInstance instance;
+	VkInstance instance{};
 
 	// validation layers callback
-	VkDebugReportCallbackEXT callback;
+	VkDebugReportCallbackEXT callback{};
 
 	void createInstance(std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions);
 

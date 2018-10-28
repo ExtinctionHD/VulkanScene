@@ -36,6 +36,11 @@ AssimpModel::~AssimpModel()
 	}
 }
 
+glm::vec3 AssimpModel::getSize() const
+{
+	return maxPos - minPos;
+}
+
 // protected:
 
 VkVertexInputBindingDescription AssimpModel::getVertexInputBindingDescription(uint32_t inputBinding)
@@ -92,6 +97,8 @@ Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScen
 			pAiMesh->mVertices[i].z
 		);
 
+		initPosLimits(vertex.pos);
+
 		vertex.normal = glm::vec3(
 			pAiMesh->mNormals[i].x,
 			pAiMesh->mNormals[i].y,
@@ -144,6 +151,35 @@ Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScen
 	Material *pMaterial = getMeshMaterial(pAiMesh->mMaterialIndex, pAiScene->mMaterials);
 
 	return new Mesh<Vertex>(pDevice, vertices, indices, pMaterial);
+}
+
+void AssimpModel::initPosLimits(glm::vec3 pos)
+{
+	if (pos.x > maxPos.x)
+	{
+		maxPos.x = pos.x;
+	}
+	if (pos.y > maxPos.y)
+	{
+		maxPos.y = pos.y;
+	}
+	if (pos.z > maxPos.z)
+	{
+		maxPos.z = pos.z;
+	}
+
+	if (pos.x < minPos.x)
+	{
+		minPos.x = pos.x;
+	}
+	if (pos.y < minPos.y)
+	{
+		minPos.y = pos.y;
+	}
+	if (pos.z < minPos.z)
+	{
+		minPos.z = pos.z;
+	}
 }
 
 void AssimpModel::initTangents(std::vector<Vertex>& vertices, std::vector<uint32_t> indices)
@@ -204,7 +240,7 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 			}
 		}
 
-		materials.insert(std::pair<uint32_t, Material*>(index, pMaterial));
+		materials.insert({ index, pMaterial });
 	}
 	else
 	{
@@ -233,7 +269,7 @@ TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextur
 	if (textures.find(path.C_Str()) == textures.end())
 	{
 		pTexture = new TextureImage(pDevice, { directory + path.C_Str() }, 1);
-		textures.insert(std::pair<std::string, TextureImage*>(path.C_Str(), pTexture));
+		textures.insert({ path.C_Str(), pTexture });
 	}
 	else
 	{

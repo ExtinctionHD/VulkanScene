@@ -4,6 +4,8 @@
 #include "AssimpModel.h"
 
 #include "Vulkan.h"
+#include "FinalRenderPass.h"
+#include "DepthRenderPass.h"
 
 // public:
 
@@ -16,12 +18,13 @@ Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 	pSurface = new Surface(pInstance->getInstance(),hInstance, hWnd);
 	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers);
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);
-	pRenderPass = new RenderPass(pDevice, pSwapChain);
-	pScene = new Scene(pDevice, pSwapChain->extent);
-	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDecriptorSetCount());
 
-	pScene->initDescriptorSets(pDescriptorPool);
-	pScene->initPipelines(pRenderPass);
+	createRenderPasses();
+
+	pScene = new Scene(pDevice, pSwapChain->getExtent());
+	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDescriptorSetCount());
+
+	pScene->prepareSceneRendering(pDescriptorPool, renderPasses);
 
 	initGraphicsCommands();
 
@@ -38,6 +41,10 @@ Vulkan::~Vulkan()
 
 	delete(pScene);
 	delete(pDescriptorPool);
+    for (auto renderPass : renderPasses)
+    {
+		delete renderPass.second;
+    }
 	delete(pSwapChain);
 	delete(pDevice);
 	delete(pSurface);
@@ -56,7 +63,7 @@ void Vulkan::drawFrame()
 	uint32_t imageIndex;
 	VkResult result = vkAcquireNextImageKHR(
 		pDevice->device,
-		pSwapChain->swapChain,
+		pSwapChain->getSwapchain(),
 		(std::numeric_limits<uint64_t>::max)(),
 		imageAvailable,
 		VK_NULL_HANDLE,
@@ -64,15 +71,13 @@ void Vulkan::drawFrame()
 	);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
-		resize(pSwapChain->extent);
+		resize(pSwapChain->getExtent());
 		return;
 	}
-	else
-	{
-		assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
-	}
 
-	std::vector<VkSemaphore> waitSemaphores{ imageAvailable };
+    assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
+
+    std::vector<VkSemaphore> waitSemaphores{ imageAvailable };
 	std::vector<VkPipelineStageFlags> waitStages{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 	std::vector<VkSemaphore> signalSemaphores{ renderingFinished };
 	VkSubmitInfo submitInfo{
@@ -90,7 +95,7 @@ void Vulkan::drawFrame()
 	result = vkQueueSubmit(pDevice->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
 	assert(result == VK_SUCCESS);
 
-	std::vector<VkSwapchainKHR> swapChains{ pSwapChain->swapChain };
+	std::vector<VkSwapchainKHR> swapChains{ pSwapChain->getSwapchain() };
 	VkPresentInfoKHR presentInfo{
 		VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,	// sType;
 		nullptr,							// pNext;
@@ -105,8 +110,7 @@ void Vulkan::drawFrame()
 	result = vkQueuePresentKHR(pDevice->presentQueue, &presentInfo);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 	{
-		resize(pSwapChain->extent);
-		return;
+		resize(pSwapChain->getExtent());
 	}
 	else
 	{
@@ -123,12 +127,9 @@ void Vulkan::resize(VkExtent2D newExtent)
 
 	vkDeviceWaitIdle(pDevice->device);
 
-	delete(pRenderPass);
-	delete(pSwapChain);
-
-	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), newExtent);
-	pRenderPass = new RenderPass(pDevice, pSwapChain);
-	pScene->resizeExtent(pRenderPass);
+	pSwapChain->recreate(newExtent);
+	renderPasses.at(final)->recreate(pSwapChain->getExtent());
+	pScene->resizeExtent(pSwapChain->getExtent());
 
 	initGraphicsCommands();
 }
@@ -145,6 +146,19 @@ void Vulkan::keyUpCallback(int key)
 
 // private:
 
+void Vulkan::createRenderPasses()
+{
+	const VkExtent2D DEPTH_MAP_EXTENT = { 4096, 4096 };
+
+	renderPasses.insert({ depth, new DepthRenderPass(pDevice, DEPTH_MAP_EXTENT) });
+	renderPasses.insert({ final, new FinalRenderPass(pDevice, pSwapChain) });
+
+    for (auto renderPass : renderPasses)
+    {
+		renderPass.second->create();
+    }
+}
+
 void Vulkan::initGraphicsCommands()
 {
 	// return old command buffers to pool
@@ -153,7 +167,7 @@ void Vulkan::initGraphicsCommands()
 		vkFreeCommandBuffers(pDevice->device, pDevice->commandPool, graphicCommands.size(), graphicCommands.data());
 	}
 
-	graphicCommands.resize(pSwapChain->imageCount);
+	graphicCommands.resize(pSwapChain->getImageCount());
 
 	VkCommandBufferAllocateInfo allocInfo{
 		VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,	// sType;
@@ -166,18 +180,7 @@ void Vulkan::initGraphicsCommands()
 	VkResult result = vkAllocateCommandBuffers(pDevice->device, &allocInfo, graphicCommands.data());
 	assert(result == VK_SUCCESS);
 
-	// clear values for each frame
-	std::array<VkClearValue, 2> clearValues = {};
-	clearValues[0].color = clearColor;
-	clearValues[1].depthStencil = { 1, 0 };
-
-	// render area for each frame
-	VkRect2D renderArea{
-		{ 0, 0 },			// offset
-		pSwapChain->extent	// extent
-	};
-
-	for (int i = 0; i < graphicCommands.size(); i++)
+	for (size_t i = 0; i < graphicCommands.size(); i++)
 	{
 		VkCommandBufferBeginInfo beginInfo{
 			VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,	// sType;
@@ -189,26 +192,68 @@ void Vulkan::initGraphicsCommands()
 		result = vkBeginCommandBuffer(graphicCommands[i], &beginInfo);
 		assert(result == VK_SUCCESS);
 
-		VkRenderPassBeginInfo renderPassBeginInfo{
-			VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	// sType;
-			nullptr,									// pNext;
-			pRenderPass->renderPass,					// renderPass;
-			pRenderPass->framebuffers[i],				// framebuffer;
-			renderArea,									// renderArea;
-			clearValues.size(),							// clearValueCount;
-			clearValues.data()							// pClearValues;
-		};
+		beginDepthRenderPass(graphicCommands[i]);
 
-		vkCmdBeginRenderPass(graphicCommands[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-		// draw each model
-		pScene->draw(graphicCommands[i]);
-
-		vkCmdEndRenderPass(graphicCommands[i]);
+		beginFinalRenderPass(graphicCommands[i], i);
 
 		result = vkEndCommandBuffer(graphicCommands[i]);
 		assert(result == VK_SUCCESS);
 	}
+}
+
+void Vulkan::beginDepthRenderPass(VkCommandBuffer commandBuffer)
+{
+	VkClearValue clearValue;
+	clearValue.depthStencil = { 1.0f, 0 };
+
+	VkRect2D renderArea{
+		{ 0, 0 },                               // offset
+		renderPasses.at(depth)->getExtent()   // extent
+	};
+
+	VkRenderPassBeginInfo renderPassBeginInfo{
+		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	    // sType;
+		nullptr,									    // pNext;
+		renderPasses.at(depth)->getRenderPass(),		// renderPass;
+		renderPasses.at(depth)->getFramebuffers()[0], // framebuffer;
+		renderArea,									    // renderArea;
+		1,							                    // clearValueCount;
+		&clearValue							            // pClearValues;
+	};
+
+	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	pScene->drawDepth(commandBuffer);
+
+	vkCmdEndRenderPass(commandBuffer);
+}
+
+void Vulkan::beginFinalRenderPass(VkCommandBuffer commandBuffer, uint32_t index)
+{
+	std::array<VkClearValue, 2> clearValues{};
+	clearValues[0].color = CLEAR_COLOR;
+	clearValues[1].depthStencil = { 1.0f, 0 };
+
+	VkRect2D renderArea{
+		{ 0, 0 },                           // offset
+		renderPasses.at(final)->getExtent() // extent
+	};
+
+	VkRenderPassBeginInfo renderPassBeginInfo{
+		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,           // sType;
+		nullptr,                                            // pNext;
+		renderPasses.at(final)->getRenderPass(),            // renderPass;
+		renderPasses.at(final)->getFramebuffers()[index],   // framebuffer;
+		renderArea,                                         // renderArea;
+		clearValues.size(),                                 // clearValueCount;
+		clearValues.data()                                  // pClearValues;
+	};
+
+	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	pScene->draw(commandBuffer);
+
+	vkCmdEndRenderPass(commandBuffer);
 }
 
 void Vulkan::createSemaphore(VkDevice device, VkSemaphore& semaphore)

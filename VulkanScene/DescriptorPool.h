@@ -23,7 +23,7 @@ public:
 private:
 	Device *pDevice;
 
-	VkDescriptorPool pool;
+	VkDescriptorPool pool{};
 
 	VkDescriptorSetLayout createDescriptorSetLayout(std::vector<Buffer*> buffers, const std::vector<TextureImage*> &
 	                                                textures);

@@ -1,18 +1,43 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "Buffer.h"
 
-struct Lighting
+class Lighting
 {
-	glm::vec3 color;
+public:
+	struct Attributes
+	{
+		glm::vec3 color;
 
-	float ambientStrength;
+		float ambientStrength;
 
-	glm::vec3 direction;
+		glm::vec3 direction;
 
-	float diffuesStrength;
+		float diffuseStrength;
 
-	glm::vec3 cameraPos;
+		glm::vec3 cameraPos;
 
-	float specularPower;
+		float specularPower;
+	};
+
+	Lighting(Device *pDevice, Attributes attributes, float spaceRadius);
+	~Lighting();
+
+	Buffer* getAttributesBuffer() const;
+
+    Buffer* getSpaceBuffer() const;
+
+	void update(glm::vec3 cameraPos);
+
+private:
+	Attributes attributes;
+
+	glm::mat4 projection;
+
+	Buffer *pAttributesBuffer;
+
+	Buffer *pSpaceBuffer;
+
+	glm::mat4 getSpaceMatrix() const;
 };

@@ -36,9 +36,11 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="Position.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
+    <ClInclude Include="FinalRenderPass.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderModule.h" />
+    <ClInclude Include="DepthRenderPass.h" />
     <ClInclude Include="SkyboxModel.h" />
     <ClInclude Include="StagingBuffer.h" />
     <ClInclude Include="Surface.h" />
@@ -49,12 +51,12 @@
     <ClInclude Include="TextureImage.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vertex.h" />
-    <ClInclude Include="ViewProjMatrices.h" />
     <ClInclude Include="Vulkan.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="Lighting.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="AssimpModel.cpp" />
     <ClCompile Include="DescriptorPool.cpp" />
@@ -70,9 +72,11 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Position.cpp" />
     <ClCompile Include="QueueFamilyIndices.cpp" />
+    <ClCompile Include="FinalRenderPass.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderModule.cpp" />
+    <ClCompile Include="DepthRenderPass.cpp" />
     <ClCompile Include="SkyboxModel.cpp" />
     <ClCompile Include="StagingBuffer.cpp" />
     <ClCompile Include="Surface.cpp" />

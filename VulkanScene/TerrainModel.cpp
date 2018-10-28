@@ -2,6 +2,7 @@
 #include "Mesh.h"
 
 #include "TerrainModel.h"
+#include "File.h"
 
 // public:
 
@@ -56,7 +57,7 @@ void TerrainModel::initMaterial(std::string texturesDir, std::string extension)
 
 	Material *pMaterial = new Material(pDevice);
 
-	for (int i = 0; i < types.size(); i++)
+	for (size_t i = 0; i < types.size(); i++)
 	{
 		if (File::exists(filenames[i]))
 		{
@@ -66,7 +67,7 @@ void TerrainModel::initMaterial(std::string texturesDir, std::string extension)
 		}
 	}
 
-	materials.insert(std::pair<uint32_t, Material*>(0, pMaterial));
+	materials.insert({ 0, pMaterial });
 }
 
 void TerrainModel::initMesh()

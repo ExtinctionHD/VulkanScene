@@ -11,22 +11,18 @@ class MeshBase
 public:
 	virtual ~MeshBase();
 
-	VkBuffer getVertexBuffer() const;
+	void draw(VkCommandBuffer commandBuffer) const;
 
-	VkBuffer getIndexBuffer() const;
-
-	uint32_t getIndexCount() const;
-
-	Material *pMaterial;
+	Material *pMaterial{};
 
 protected:
 	MeshBase() {}
 
 	std::vector<uint32_t> indices;
 
-	Buffer *pVertexBuffer;
+	Buffer *pVertexBuffer{};
 
-	Buffer *pIndexBuffer;
+	Buffer *pIndexBuffer{};
 
 };
 
