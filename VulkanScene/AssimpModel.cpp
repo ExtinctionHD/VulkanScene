@@ -3,6 +3,10 @@
 #include <functional>
 #include <assimp/postprocess.h>
 #include <assimp/Importer.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "AssimpModel.h"
 
@@ -36,9 +40,23 @@ AssimpModel::~AssimpModel()
 	}
 }
 
-glm::vec3 AssimpModel::getSize() const
+glm::vec3 AssimpModel::getBaseSize() const
 {
 	return maxPos - minPos;
+}
+
+void AssimpModel::scaleTo(glm::vec3 size)
+{
+	glm::vec3 scale;
+	glm::quat rotation;
+	glm::vec3 translation;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+
+	decompose(getTransform(), scale, rotation, translation, skew, perspective);
+
+	setTransform(glm::scale(getTransform(), 1.0f / scale));
+	setTransform(glm::scale(getTransform(), size / getBaseSize()));
 }
 
 // protected:

@@ -1,4 +1,6 @@
 #include "Model.h"
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/matrix_decompose.hpp>
 
 // public:
 
@@ -36,6 +38,43 @@ void Model::setTransform(glm::mat4 matrix)
 {
 	transform = matrix;
 	pTransformBuffer->updateData(&transform, sizeof(transform), 0);
+}
+
+void Model::rotate(glm::vec3 axis, float angle)
+{
+	setTransform(glm::rotate(getTransform(), glm::radians(angle), axis));
+}
+
+void Model::rotateAxisX(float angle)
+{
+	setTransform(glm::rotate(getTransform(), glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f)));
+}
+
+void Model::rotateAxisY(float angle)
+{
+	setTransform(glm::rotate(getTransform(), glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)));
+}
+
+void Model::rotateAxisZ(float angle)
+{
+	setTransform(glm::rotate(getTransform(), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f)));
+}
+
+void Model::moveTo(glm::vec3 pos)
+{
+	glm::vec3 scale;
+	glm::quat rotation;
+	glm::vec3 translation;
+	glm::vec3 skew;
+	glm::vec4 perspective;
+
+	decompose(getTransform(), scale, rotation, translation, skew, perspective);
+
+	glm::mat4 transform = glm::scale(glm::mat4(1.0f), scale);
+	transform = glm::rotate(transform, glm::angle(rotation), axis(rotation));
+	transform = glm::translate(transform, pos);
+
+	setTransform(transform);
 }
 
 uint32_t Model::getBufferCount() const 

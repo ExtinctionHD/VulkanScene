@@ -20,6 +20,16 @@ public:
 
 	void setTransform(glm::mat4 matrix);
 
+	void rotate(glm::vec3 axis, float angle);
+
+	void rotateAxisX(float angle);
+
+	void rotateAxisY(float angle);
+
+	void rotateAxisZ(float angle);
+
+	void moveTo(glm::vec3 pos);
+
 	uint32_t getBufferCount() const;
 
 	uint32_t getTextureCount() const;

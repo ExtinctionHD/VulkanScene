@@ -123,7 +123,7 @@ void main()
 
 	float opacity = colors.opacity * texture(opacityMap, fragTexCoord).r;
 
-	float bias = max(0.0025f * (1.0f - dot(normal, direction)), 0.00025f);
+	float bias = max(0.0005f * (1.0f - dot(normal, direction)), 0.00005f);
 	float shadow = shadowCalculation(fragPosLightingSpace, bias);
 
 	vec3 result = ambient + (1.0f - shadow) * (diffuse + specular);

@@ -93,7 +93,7 @@ void Scene::updateScene()
 	pController->controlCamera(deltaSec);
 	pLighting->update(pCamera->getPos());
 
-	pCar->setTransform(rotate(pCar->getTransform(), glm::radians(30.0f) * float(deltaSec), glm::vec3(0.0f, -1.0f, 0.0f)));
+	// pCar->setTransform(rotate(pCar->getTransform(), glm::radians(30.0f) * float(deltaSec), glm::vec3(0.0f, -1.0f, 0.0f)));
 	pSkybox->setTransform(translate(glm::mat4(1.0f), pCamera->getPos()));
 }
 
@@ -130,7 +130,7 @@ void Scene::resizeExtent(VkExtent2D newExtent)
 
 void Scene::initCamera(VkExtent2D cameraExtent)
 {
-	glm::vec3 pos{ 0.0f, -40.0f, -80.0f };
+	glm::vec3 pos{ 0.0f, -3.0f, -6.0f };
 	glm::vec3 forward{ 0.0f, -0.8f, 1.0f };
 	glm::vec3 up{ 0.0f, -1.0f, 0.0f };
 	const float fov = 45.0f;
@@ -150,7 +150,7 @@ void Scene::initLighting()
 		2.0f								// specularPower
 	};
 
-	const float spaceRadius = 100.0f;
+	const float spaceRadius = 10.0f;
 
 	pLighting = new Lighting(pDevice, attributes, spaceRadius);
 }
@@ -164,15 +164,14 @@ void Scene::initModels()
 
 	// initialize car model
 	pCar = new AssimpModel(pDevice, FORD_FILE);
-	glm::mat4 transform = glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	transform = glm::scale(transform, glm::vec3(0.15f, 0.15f, 0.15f));
-	pCar->setTransform(transform);
+	pCar->rotateAxisX(180.0f);
+	pCar->scaleTo({ 2.045f, 1.03f, 4.763f });
 
 	// initialize skybox model
 	pSkybox = new SkyboxModel(pDevice, SKYBOX_DIR, ".jpg");
 
 	// initialize terrain model
-	pTerrain = new TerrainModel(pDevice, { 20000, 20000 }, { 1000, 1000 }, TERRAIN_DIR, ".jpg");
+	pTerrain = new TerrainModel(pDevice, { 2000, 2000 }, { 2000, 2000 }, TERRAIN_DIR, ".jpg");
 
 	models.push_back(pSkybox);
 	models.push_back(pTerrain);
