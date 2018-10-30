@@ -112,7 +112,7 @@ void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 	}
 }
 
-GraphicsPipeline * Model::createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules)
+GraphicsPipeline * Model::createFinalPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules)
 {
 	layouts.push_back(transformDsLayout);
 	layouts.push_back(Material::getDsLayout());
@@ -120,12 +120,13 @@ GraphicsPipeline * Model::createPipeline(std::vector<VkDescriptorSetLayout> layo
 	const uint32_t inputBinding = 0;
 
 	pPipeline = new GraphicsPipeline(
-		pDevice->device,
+		pDevice,
 		layouts,
 		pRenderPass,
 		shaderModules,
 		getVertexInputBindingDescription(inputBinding),
-		getVertexInputAttributeDescriptions(inputBinding)
+		getVertexInputAttributeDescriptions(inputBinding),
+		pDevice->getSampleCount()
 	);
 
 	return pPipeline;

@@ -8,6 +8,7 @@ Image::Image(
 	Device *pDevice, 
 	VkExtent3D extent, 
 	VkImageCreateFlags flags,
+	VkSampleCountFlagBits sampleCount,
 	uint32_t mipLevels, 
 	VkFormat format, 
 	VkImageTiling tiling, 
@@ -16,7 +17,7 @@ Image::Image(
 	uint32_t arrayLayers
 )
 {
-	createThisImage(pDevice, extent, flags, mipLevels, format, tiling, usage, properties, arrayLayers);
+	createThisImage(pDevice, extent, flags, sampleCount, mipLevels, format, tiling, usage, properties, arrayLayers);
 }
 
 Image::~Image()
@@ -104,6 +105,14 @@ void Image::transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayou
 		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	}
+	else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+	{
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	}
 	else
 	{
 		throw std::invalid_argument("Unsupported image layout transition");
@@ -149,7 +158,7 @@ void Image::updateData(uint8_t *pixels, size_t pixelSize, uint32_t arrayLayer)
 	{
 		uint8_t *dataBytes = reinterpret_cast<uint8_t*>(data);
 
-		for (int y = 0; y < extent.height; y++)
+		for (uint32_t y = 0; y < extent.height; y++)
 		{
 			memcpy(
 				&dataBytes[y * layout.rowPitch],
@@ -192,7 +201,8 @@ void Image::copyImage(Device *pDevice, Image& srcImage, Image& dstImage, VkExten
 void Image::createThisImage(
 	Device *pDevice, 
 	VkExtent3D extent, 
-	VkImageCreateFlags flags, 
+	VkImageCreateFlags flags,
+	VkSampleCountFlagBits sampleCount,
 	uint32_t mipLevels, 
 	VkFormat format, 
 	VkImageTiling tiling, 
@@ -214,7 +224,7 @@ void Image::createThisImage(
 		extent,									// extent;
 		mipLevels,								// mipLevels;
 		arrayLayers,							// arrayLayers;
-		VK_SAMPLE_COUNT_1_BIT,					// samples;
+		sampleCount,					        // samples;
 		tiling,									// tiling;
 		usage,									// usage;
 		VK_SHARING_MODE_EXCLUSIVE,				// sharingMode;

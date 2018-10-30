@@ -20,6 +20,7 @@ public:
 	    Device *pDevice,
 	    VkExtent3D extent,
 		VkImageCreateFlags flags,
+		VkSampleCountFlagBits sampleCount,
 	    VkFormat format,
 		VkImageTiling tiling,
 		VkImageUsageFlags usage,

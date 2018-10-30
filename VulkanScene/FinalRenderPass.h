@@ -18,11 +18,15 @@ protected:
 private:
     SwapChain *pSwapChain;
 
+	Image *pColorImage{};
+
 	// depth image and its view
 	Image *pDepthImage{};
 
+	void createColorAttachment();
+
 	// create depth image, its view and execute its layout transition
-	void createDepthResources();
+	void createDepthAttachment();
 
 };
 

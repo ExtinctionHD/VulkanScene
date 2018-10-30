@@ -56,6 +56,7 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 		pDevice,
 		extent,
 		flags,
+        VK_SAMPLE_COUNT_1_BIT,
 		mipLevels,
 		format,
 		VK_IMAGE_TILING_OPTIMAL,
@@ -109,6 +110,7 @@ TextureImage::TextureImage(
     Device *pDevice,
     VkExtent3D extent,
     VkImageCreateFlags flags,
+	VkSampleCountFlagBits sampleCount,
     VkFormat format,
     VkImageTiling tiling,
     VkImageUsageFlags usage,
@@ -116,7 +118,7 @@ TextureImage::TextureImage(
     VkImageAspectFlags aspectFlags,
 	VkImageViewType viewType,
     uint32_t arrayLayers
-) : Image(pDevice, extent, flags, 1, format, tiling, usage, properties, arrayLayers)
+) : Image(pDevice, extent, flags, sampleCount, 1, format, tiling, usage, properties, arrayLayers)
 {
 	VkImageSubresourceRange subresourceRange{
 		VK_IMAGE_ASPECT_COLOR_BIT,

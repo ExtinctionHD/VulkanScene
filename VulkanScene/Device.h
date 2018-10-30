@@ -41,11 +41,13 @@ public:
 
 	QueueFamilyIndices getQueueFamilyIndices() const;  // suitable indices on picked GPU
 
+	VkSampleCountFlagBits getSampleCount() const;
+
 	// returns command buffer to write one time commands
-	VkCommandBuffer beginOneTimeCommands();
+	VkCommandBuffer beginOneTimeCommands() const;
 
 	// ends command buffer and submit it to graphics queue
-	void endOneTimeCommands(VkCommandBuffer commandBuffer);
+	void endOneTimeCommands(VkCommandBuffer commandBuffer) const;
 
 private:
 	const std::vector<const char*> EXTENSIONS =
@@ -56,6 +58,8 @@ private:
 	std::vector<const char*> layers;
 
 	VkSurfaceKHR surface;  // properties of the device are calculated for this pSurface
+
+	VkSampleCountFlagBits sampleCount;
 
 	void pickPhysicalDevice(
 		VkInstance instance, 
@@ -71,6 +75,8 @@ private:
 		std::vector<const char *> requiredLayers, 
 		std::vector<const char *> requiredExtensions
 	);
+
+	VkSampleCountFlagBits getMaxSupportedSampleCount() const;  // max sample count supported by picked GPU
 
 	// layers must be supported not only by instance, but also by GPU
 	static bool checkDeviceLayerSupport(VkPhysicalDevice device, std::vector<const char *> requiredLayers);

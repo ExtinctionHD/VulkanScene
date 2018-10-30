@@ -209,7 +209,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
     // create pipeline for rendering scene depth
 	const uint32_t inputBinding = 0;
 	pDepthPipeline = new GraphicsPipeline(
-		pDevice->device,
+		pDevice,
 		{ depthDsLayout, Model::getTransformDsLayout() },
 		renderPasses.at(depth),
 		{
@@ -217,12 +217,13 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 			new ShaderModule(pDevice->device, DEPTH_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
 		},
 		Vertex::getBindingDescription(inputBinding),
-		Vertex::getAttributeDescriptions(inputBinding)
+		Vertex::getAttributeDescriptions(inputBinding),
+        VK_SAMPLE_COUNT_1_BIT
 	);
 	pipelines.push_back(pDepthPipeline);
 
     // create main pipeline
-	pipelines.push_back(pCar->createPipeline(
+	pipelines.push_back(pCar->createFinalPipeline(
 		{ sceneDsLayout },
 		renderPasses.at(final),
 		{
@@ -233,7 +234,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 	pTerrain->setPipeline(*--pipelines.end());
 
     // create pipeline for skybox rendering
-	pipelines.push_back(pSkybox->createPipeline(
+	pipelines.push_back(pSkybox->createFinalPipeline(
 		{ sceneDsLayout },
 		renderPasses.at(final),
 		{
