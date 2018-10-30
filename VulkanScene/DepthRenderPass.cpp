@@ -24,7 +24,7 @@ void DepthRenderPass::createRenderPass()
 	VkAttachmentDescription depthAttachment{
 		   0,													// flags;
 		   depthAttachmentFormat,								// format;
-		   VK_SAMPLE_COUNT_1_BIT,								// samples;
+		   VK_SAMPLE_COUNT_1_BIT,							    // samples;
 		   VK_ATTACHMENT_LOAD_OP_CLEAR,						    // loadOp;
 		   VK_ATTACHMENT_STORE_OP_STORE,					    // storeOp;
 		   VK_ATTACHMENT_LOAD_OP_DONT_CARE,					    // stencilLoadOp;
@@ -56,23 +56,25 @@ void DepthRenderPass::createRenderPass()
 	};
 
 	VkSubpassDependency inputDependency{
-		VK_SUBPASS_EXTERNAL,														// srcSubpass;
-		0,																			// dstSubpass;
-		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,										// srcStageMask;
-		VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,								// dstStageMask;
-		0,													// srcAccessMask;
-		VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,	// dstAccessMask;
-		VK_DEPENDENCY_BY_REGION_BIT,												// dependencyFlags;
+		VK_SUBPASS_EXTERNAL,                            // srcSubpass;
+		0,                                              // dstSubpass;
+		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,           // srcStageMask;
+		VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,      // dstStageMask;
+		0,                                              // srcAccessMask;
+		VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | 
+		VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,   // dstAccessMask;
+		VK_DEPENDENCY_BY_REGION_BIT,                    // dependencyFlags;
 	};
 
 	VkSubpassDependency outputDependency{
-		0,																			// srcSubpass;
-		VK_SUBPASS_EXTERNAL,														// dstSubpass;
-		VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,								// srcStageMask;
-		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,										// dstStageMask;
-		VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,	// srcAccessMask;
-		VK_ACCESS_SHADER_READ_BIT,													// dstAccessMask;
-		VK_DEPENDENCY_BY_REGION_BIT,												// dependencyFlags;
+		0,                                              // srcSubpass;
+		VK_SUBPASS_EXTERNAL,                            // dstSubpass;
+		VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,      // srcStageMask;
+		VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,          // dstStageMask;
+		VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | 
+		VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT,   // srcAccessMask;
+		VK_ACCESS_SHADER_READ_BIT,                      // dstAccessMask;
+		VK_DEPENDENCY_BY_REGION_BIT,                    // dependencyFlags;
 	};
 
 	std::vector<VkSubpassDependency> dependencies{
@@ -107,10 +109,12 @@ void DepthRenderPass::createFramebuffers()
 	};
 
 	delete pDepthMap;
+
 	pDepthMap = new TextureImage(
 		pDevice,
 	    textureExtent,
 	    0,
+        VK_SAMPLE_COUNT_1_BIT,
 	    depthAttachmentFormat,
 	    VK_IMAGE_TILING_OPTIMAL,
 	    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,

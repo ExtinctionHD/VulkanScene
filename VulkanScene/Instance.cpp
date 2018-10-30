@@ -43,7 +43,7 @@ void Instance::createInstance(std::vector<const char *> requiredLayers, std::vec
 	// required layers
 	assert(checkInstanceLayerSupport(requiredLayers));
 
-	// required extenstions
+	// required extensions
 	assert(checkInstanceExtensionSupport(requiredExtensions));
 
 	// infoabout application for vulkan

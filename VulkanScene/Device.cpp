@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "Device.h"
+#include <algorithm>
 
 // public:
 
@@ -57,9 +58,9 @@ VkFormat Device::findSupportedFormat(std::vector<VkFormat> requestedFormats, VkI
 		{
 			return format;
 		}
-
-		throw std::runtime_error("Failed to find suitable image format");
 	}
+
+	throw std::runtime_error("Failed to find suitable image format");
 }
 
 SurfaceSupportDetails Device::getSurfaceSupportDetails() const
@@ -72,7 +73,12 @@ QueueFamilyIndices Device::getQueueFamilyIndices() const
 	return QueueFamilyIndices(physicalDevice, surface);
 }
 
-VkCommandBuffer Device::beginOneTimeCommands()
+VkSampleCountFlagBits Device::getSampleCount() const
+{
+	return sampleCount;
+}
+
+VkCommandBuffer Device::beginOneTimeCommands() const
 {
 	VkCommandBuffer commandBuffer;
 
@@ -100,7 +106,7 @@ VkCommandBuffer Device::beginOneTimeCommands()
 	return commandBuffer;
 }
 
-void Device::endOneTimeCommands(VkCommandBuffer commandBuffer)
+void Device::endOneTimeCommands(VkCommandBuffer commandBuffer) const
 {
 	VkResult result = vkEndCommandBuffer(commandBuffer);
 	assert(result == VK_SUCCESS);
@@ -146,6 +152,7 @@ void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 		if (isPhysicalDeviceSuitable(device, surface, layers, EXTENSIONS))
 		{
 			physicalDevice = device;
+			sampleCount = getMaxSupportedSampleCount();
 		}
 	}
 
@@ -153,6 +160,26 @@ void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 	{
 		std::runtime_error("Failed to find suitable device");
 	}
+}
+
+VkSampleCountFlagBits Device::getMaxSupportedSampleCount() const
+{
+	VkPhysicalDeviceProperties physicalDeviceProperties;
+	vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
+
+	VkSampleCountFlags counts = std::min(
+		physicalDeviceProperties.limits.framebufferColorSampleCounts,
+		physicalDeviceProperties.limits.framebufferDepthSampleCounts
+	);
+
+	if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
+	if (counts & VK_SAMPLE_COUNT_32_BIT) { return VK_SAMPLE_COUNT_32_BIT; }
+	if (counts & VK_SAMPLE_COUNT_16_BIT) { return VK_SAMPLE_COUNT_16_BIT; }
+	if (counts & VK_SAMPLE_COUNT_8_BIT) { return VK_SAMPLE_COUNT_8_BIT; }
+	if (counts & VK_SAMPLE_COUNT_4_BIT) { return VK_SAMPLE_COUNT_4_BIT; }
+	if (counts & VK_SAMPLE_COUNT_2_BIT) { return VK_SAMPLE_COUNT_2_BIT; }
+
+	return VK_SAMPLE_COUNT_1_BIT;
 }
 
 bool Device::isPhysicalDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface, std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions)

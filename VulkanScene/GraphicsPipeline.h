@@ -12,12 +12,13 @@ public:
 	VkPipeline pipeline{};
 
 	GraphicsPipeline(
-		VkDevice device, 
+		Device *pDevice, 
 		std::vector<VkDescriptorSetLayout> descriptorSetLayouts, 
 		RenderPass *pRenderPass, 
 		std::vector<ShaderModule*> shaderModules,
 		VkVertexInputBindingDescription bindingDescription,
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
+		VkSampleCountFlagBits sampleCount
 	);
 
 	~GraphicsPipeline();
@@ -30,7 +31,7 @@ public:
 
 private:
 	// device that provide pipeline
-	VkDevice device;
+	Device *pDevice;
 
 	RenderPass *pRenderPass;
 
@@ -40,6 +41,8 @@ private:
 	// information about input vertices
 	VkVertexInputBindingDescription bindingDescription{};
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+
+	VkSampleCountFlagBits sampleCount;
 
 	void createLayout(std::vector<VkDescriptorSetLayout> descriptorSetLayouts);
 

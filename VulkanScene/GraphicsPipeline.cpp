@@ -5,19 +5,21 @@
 // public:
 
 GraphicsPipeline::GraphicsPipeline(
-	VkDevice device, 
+	Device *pDevice,
 	std::vector<VkDescriptorSetLayout> descriptorSetLayouts, 
 	RenderPass *pRenderPass, 
 	std::vector<ShaderModule*> shaderModules,
 	VkVertexInputBindingDescription bindingDescription,
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
+    VkSampleCountFlagBits sampleCount
 )
 {
-	this->device = device;
+	this->pDevice = pDevice;
 	this->pRenderPass = pRenderPass;
 	this->shaderModules = shaderModules;
 	this->bindingDescription = bindingDescription;
 	this->attributeDescriptions = attributeDescriptions;
+	this->sampleCount = sampleCount;
 
 	createLayout(descriptorSetLayouts);
 
@@ -30,13 +32,13 @@ GraphicsPipeline::~GraphicsPipeline()
 	{
 		delete pShaderModule;
 	}
-	vkDestroyPipeline(device, pipeline, nullptr);
-	vkDestroyPipelineLayout(device, layout, nullptr);
+	vkDestroyPipeline(pDevice->device, pipeline, nullptr);
+	vkDestroyPipelineLayout(pDevice->device, layout, nullptr);
 }
 
 void GraphicsPipeline::recreate()
 {
-	vkDestroyPipeline(device, pipeline, nullptr);
+	vkDestroyPipeline(pDevice->device, pipeline, nullptr);
 	createPipeline(pRenderPass->getExtent());
 }
 
@@ -54,7 +56,7 @@ void GraphicsPipeline::createLayout(std::vector<VkDescriptorSetLayout> descripto
 		nullptr,										// pPushConstantRanges;
 	};
 
-	VkResult result = vkCreatePipelineLayout(device, &createInfo, nullptr, &layout);
+	VkResult result = vkCreatePipelineLayout(pDevice->device, &createInfo, nullptr, &layout);
 	assert(result == VK_SUCCESS);
 }
 
@@ -146,14 +148,14 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 
 	VkPipelineMultisampleStateCreateInfo multisampleState{
 		VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,	// sType;
-		nullptr,				// pNext;
-		0,						// flags;
-		VK_SAMPLE_COUNT_1_BIT,	// rasterizationSamples;
-		VK_FALSE,				// sampleShadingEnable;
-		1,						// minSampleShading;
-		nullptr,				// pSampleMask;
-		VK_FALSE,				// alphaToCoverageEnable;
-		VK_FALSE				// alphaToOneEnable;
+		nullptr,                    // pNext;
+		0,                          // flags;
+		sampleCount,                // rasterizationSamples;
+		VK_FALSE,                   // sampleShadingEnable;
+		1,                          // minSampleShading;
+		nullptr,                    // pSampleMask;
+		VK_FALSE,                   // alphaToCoverageEnable;
+		VK_FALSE                    // alphaToOneEnable;
 	};
 
 	// depth and stencil tests:
@@ -224,7 +226,7 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 		-1,							    // basePipelineIndex;
 	};
 
-	VkResult result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &createInfo, nullptr, &pipeline);
+	VkResult result = vkCreateGraphicsPipelines(pDevice->device, VK_NULL_HANDLE, 1, &createInfo, nullptr, &pipeline);
 	assert(result == VK_SUCCESS);
 }
 

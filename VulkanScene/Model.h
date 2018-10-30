@@ -42,7 +42,7 @@ public:
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
-	GraphicsPipeline* createPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
+	GraphicsPipeline* createFinalPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
 
 	void setPipeline(GraphicsPipeline *pPipeline);
 
