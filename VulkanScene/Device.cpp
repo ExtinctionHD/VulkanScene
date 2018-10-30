@@ -261,6 +261,10 @@ void Device::createLogicalDevice(VkSurfaceKHR surface)
 		queueCreateInfos.push_back(queueCreateInfo);
 	}
 
+	VkPhysicalDeviceFeatures deviceFeatures{};
+	deviceFeatures.samplerAnisotropy = VK_TRUE;
+	deviceFeatures.sampleRateShading = VK_TRUE;
+
 	VkDeviceCreateInfo deviceCreateInfo =
 	{
 		VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,	// sType;

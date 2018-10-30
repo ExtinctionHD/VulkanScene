@@ -151,8 +151,8 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 		nullptr,                    // pNext;
 		0,                          // flags;
 		sampleCount,                // rasterizationSamples;
-		VK_FALSE,                   // sampleShadingEnable;
-		1,                          // minSampleShading;
+		VK_TRUE,                    // sampleShadingEnable;
+		0.2f,                       // minSampleShading;
 		nullptr,                    // pSampleMask;
 		VK_FALSE,                   // alphaToCoverageEnable;
 		VK_FALSE                    // alphaToOneEnable;
