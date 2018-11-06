@@ -81,13 +81,13 @@ void AssimpModel::processNode(aiNode *pAiNode, const aiScene *pAiScene)
 
 		MeshBase* pMesh = processMesh(pAiMesh, pAiScene);
 
-		if (pMesh->pMaterial->colors.opacity == 1.0f)
+		if (pMesh->pMaterial->isSolid())
 		{
-			meshes.insert(meshes.begin(), { pMesh });
+			solidMeshes.push_back(pMesh);
 		}
 		else
 		{
-			meshes.push_back(pMesh);
+			transparentMeshes.push_back(pMesh);
 		}
 	}
 

@@ -15,9 +15,9 @@ Material::Material(Device *pDevice)
 	}
 
 	// initialize current material with default textures
-	for (size_t i = 0; i < TEXTURES_ORDER.size(); i++)
+	for (auto type : TEXTURES_ORDER)
 	{
-		textures.insert({ TEXTURES_ORDER[i], defaultTextures[i] });
+		textures.insert({ type, defaultTextures.at(type) });
 	}
 
 	colors = MaterialColors{
@@ -64,6 +64,11 @@ std::vector<TextureImage*> Material::getTextures() const
 	}
 
 	return result;
+}
+
+bool Material::isSolid() const
+{
+	return colors.opacity == 1.0f && textures.at(aiTextureType_OPACITY) == defaultTextures.at(aiTextureType_OPACITY);
 }
 
 void Material::updateColorsBuffer()
@@ -116,7 +121,7 @@ void Material::initDefaultTextures(Device *pDevice)
 {
 	for (aiTextureType type : TEXTURES_ORDER)
 	{
-		defaultTextures.push_back(new TextureImage(pDevice, { getDefaultTexturePath(type) }, 1));
+		defaultTextures.insert({ type, new TextureImage(pDevice, { getDefaultTexturePath(type) }, 1) });
 	}
 }
 
@@ -126,4 +131,4 @@ uint32_t Material::objectCount = 0;
 
 VkDescriptorSetLayout Material::dsLayout = VK_NULL_HANDLE;
 
-std::vector<TextureImage*> Material::defaultTextures;
+std::unordered_map<aiTextureType, TextureImage*> Material::defaultTextures;

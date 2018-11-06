@@ -101,7 +101,7 @@ void Scene::drawDepth(VkCommandBuffer commandBuffer)
 {
 	for (Model *pModel : models)
 	{
-        if (pModel != pSkybox)
+        if (pModel != pSkybox && pModel != pTerrain)
         {
 			pModel->drawDepth(commandBuffer, { depthDescriptorSet }, pDepthPipeline);
         }
@@ -112,7 +112,12 @@ void Scene::draw(VkCommandBuffer commandBuffer)
 {
 	for (Model *pModel : models)
 	{
-		pModel->draw(commandBuffer, { sceneDescriptorSet });
+		pModel->drawSolid(commandBuffer, { sceneDescriptorSet });
+	}
+
+	for (Model *pModel : models)
+	{
+		pModel->drawTransparent(commandBuffer, { sceneDescriptorSet });
 	}
 }
 

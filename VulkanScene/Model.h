@@ -48,14 +48,18 @@ public:
 
 	void drawDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, GraphicsPipeline *pDepthPipeline);
 
-	void draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
+	void drawSolid(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
+
+	void drawTransparent(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
 
 protected:
 	Model(Device *pDevice);
 
 	Device *pDevice;
 
-	std::vector<MeshBase*> meshes;
+	std::vector<MeshBase*> solidMeshes;
+
+	std::vector<MeshBase*> transparentMeshes;
 
 	std::map<uint32_t, Material*> materials;
 

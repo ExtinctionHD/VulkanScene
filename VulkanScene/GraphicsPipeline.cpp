@@ -148,14 +148,14 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 
 	VkPipelineMultisampleStateCreateInfo multisampleState{
 		VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO,	// sType;
-		nullptr,                    // pNext;
-		0,                          // flags;
-		sampleCount,                // rasterizationSamples;
-		VK_TRUE,                    // sampleShadingEnable;
-		0.2f,                       // minSampleShading;
-		nullptr,                    // pSampleMask;
-		VK_FALSE,                   // alphaToCoverageEnable;
-		VK_FALSE                    // alphaToOneEnable;
+		nullptr,        // pNext;
+		0,              // flags;
+		sampleCount,    // rasterizationSamples;
+		VK_TRUE,        // sampleShadingEnable;
+		0.2f,           // minSampleShading;
+		nullptr,        // pSampleMask;
+		VK_FALSE,       // alphaToCoverageEnable;
+		VK_FALSE        // alphaToOneEnable;
 	};
 
 	// depth and stencil tests:

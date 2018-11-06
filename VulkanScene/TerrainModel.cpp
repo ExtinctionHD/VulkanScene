@@ -118,5 +118,5 @@ void TerrainModel::initMesh()
 		1, 2, 3
 	};
 
-	meshes.push_back(new Mesh<Vertex>(pDevice, vertices, indices, materials.at(0)));
+	solidMeshes.push_back(new Mesh<Vertex>(pDevice, vertices, indices, materials.at(0)));
 }

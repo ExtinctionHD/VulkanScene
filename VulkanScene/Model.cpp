@@ -21,7 +21,7 @@ Model::~Model()
 	}
 
 	// cleanup meshes
-	for (auto it = meshes.begin(); it != meshes.end(); ++it)
+	for (auto it = solidMeshes.begin(); it != solidMeshes.end(); ++it)
 	{
 		delete(*it);
 	}
@@ -94,7 +94,7 @@ uint32_t Model::getDescriptorSetCount() const
 
 uint32_t Model::getMeshCount() const
 {
-	return meshes.size();
+	return solidMeshes.size();
 }
 
 VkDescriptorSetLayout Model::getTransformDsLayout()
@@ -149,14 +149,13 @@ void Model::drawDepth(
 
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pDepthPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
 
-	for (auto &mesh : meshes)
+	for (auto &mesh : solidMeshes)
 	{
 		mesh->draw(commandBuffer);
 	}
 }
 
-
-void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
+void Model::drawSolid(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
 {
 	descriptorSets.push_back(transformDescriptorSet);
 
@@ -164,7 +163,24 @@ void Model::draw(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> des
 
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
 
-	for (auto &mesh : meshes)
+	for (auto &mesh : solidMeshes)
+	{
+		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDescriptorSet();
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
+
+		mesh->draw(commandBuffer);
+	}
+}
+
+void Model::drawTransparent(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
+{
+	descriptorSets.push_back(transformDescriptorSet);
+
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->pipeline);
+
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+
+	for (auto &mesh : transparentMeshes)
 	{
 		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDescriptorSet();
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);

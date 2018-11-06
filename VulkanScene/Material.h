@@ -34,6 +34,8 @@ public:
 
 	std::vector<TextureImage*> getTextures() const;
 
+	bool isSolid() const;
+
 	Buffer *pColorsBuffer;
 
 	// loads colors data in buffer
@@ -64,6 +66,6 @@ private:
 
 	static VkDescriptorSetLayout dsLayout;
 
-	static std::vector<TextureImage*> defaultTextures;
+	static std::unordered_map<aiTextureType, TextureImage*> defaultTextures;
 };
 
