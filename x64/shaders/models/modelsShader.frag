@@ -15,17 +15,15 @@ layout(set = 0, binding = 2) uniform Lighting {
 layout(set = 0, binding = 3) uniform sampler2D shadowsMap;
 
 layout(set = 2, binding = 0) uniform Colors {
-	vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;
 	float opacity;
 } colors;
 
-layout(set = 2, binding = 1) uniform sampler2D ambientTexture;
-layout(set = 2, binding = 2) uniform sampler2D diffuseTexture;
-layout(set = 2, binding = 3) uniform sampler2D specularMap;
-layout(set = 2, binding = 4) uniform sampler2D opacityMap;
-layout(set = 2, binding = 5) uniform sampler2D normalMap;
+layout(set = 2, binding = 1) uniform sampler2D diffuseTexture;
+layout(set = 2, binding = 2) uniform sampler2D specularMap;
+layout(set = 2, binding = 3) uniform sampler2D opacityMap;
+layout(set = 2, binding = 4) uniform sampler2D normalMap;
 
 // input and output values:
 
@@ -39,7 +37,7 @@ layout(location = 4) in vec4 fragPosLightingSpace;
 // result of fragment shader: color of each fragment
 layout(location = 0) out vec4 outColor;
 
-vec3 calculateBumpedNormal()
+vec3 getBumpedNormal()
 {
 	vec3 normal = normalize(fragNormal);
 
@@ -63,8 +61,32 @@ vec3 calculateBumpedNormal()
 	return resultNormal;
 }
 
+vec3 getAmbientIntensity()
+{
+	return light.color * light.ambientStrength;
+}
+
+vec3 getDiffuseIntensity(vec3 N, vec3 L)
+{
+	float diffuseFactor = clamp(dot(N, L), 0.0f, 1.0f);
+	return light.color * light.diffuseStrength * diffuseFactor;
+}
+
+vec3 getSpecularIntensity(vec3 N, vec3 L, vec3 V)
+{
+	float specularFactor = 0.0f;
+
+	if (dot(N, L) > 0.0f)
+	{
+		vec3 H = normalize(L + V);
+		specularFactor = pow(dot(N, H), light.specularPower);
+	}
+
+	return light.color * colors.specular.r * texture(specularMap, fragTexCoord).r * specularFactor;
+}
+
 // 1 - fragment in the shadow, 0 - fragment in the light
-float shadowCalculation(vec4 fragPosLightSpace, float bias)
+float getShading(vec4 fragPosLightSpace, float bias)
 {
 	// normalize proj coordiantes
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -99,39 +121,22 @@ float shadowCalculation(vec4 fragPosLightSpace, float bias)
 // fragment shader code:
 void main() 
 {
-	vec3 direction = normalize(light.direction);
-	vec3 normal = calculateBumpedNormal();
+	vec3 L = normalize(-light.direction);
+	vec3 V = normalize(light.cameraPos - fragPos);
+	vec3 N = getBumpedNormal();
 
-	vec3 ambient = light.color * light.ambientStrength * colors.ambient.rgb * texture(ambientTexture, fragTexCoord).rgb;
+	float bias = max(0.002f * (1.0f - dot(N, light.direction)), 0.0002f);
+	float illumination = 1.0f - getShading(fragPosLightingSpace, bias);
 
-	vec3 diffuse = vec3(0.0f, 0.0f, 0.0f);
-	vec3 specular = vec3(0.0f, 0.0f, 0.0f);
+	vec3 ambientI = getAmbientIntensity();
+	vec3 diffuseI = getDiffuseIntensity(N, L) * illumination;
+	vec3 specularI = getSpecularIntensity(N, L, V) * illumination;
 
-	float diffuseFactor = dot(normal, -direction);
-	if (diffuseFactor > 0)
-	{
-		diffuse = light.color * light.diffuseStrength * diffuseFactor * colors.diffuse.rgb;
-
-		vec3 fragToCamera = normalize(light.cameraPos - fragPos);
-		vec3 lightReflect = normalize(reflect(direction, normal));
-		float specularFactor = dot(fragToCamera, lightReflect);
-		if (specularFactor > 0)
-		{
-			specular = light.color * pow(specularFactor, light.specularPower) * colors.specular.r * texture(specularMap, fragTexCoord).r;
-		}
-	}
+	vec3 diffuseColor = colors.diffuse.rgb * texture(diffuseTexture, fragTexCoord).rgb;
+	vec3 resultI = ambientI + diffuseI + specularI;
 
 	float opacity = colors.opacity * texture(opacityMap, fragTexCoord).r;
-
-	float bias = max(0.001f * (1.0f - dot(normal, direction)), 0.0001f);
-	float shadow = shadowCalculation(fragPosLightingSpace, bias);
-
-	vec3 result = ambient + (1.0f - shadow) * (diffuse + specular);
-	outColor = vec4(result, opacity) * texture(diffuseTexture, fragTexCoord);
-
-	// shows scene depth
-	// float depth = texture(shadowsMap, fragTexCoord).r;
-	// outColor = vec4(depth, depth, depth, 1.0);
+	outColor = vec4(resultI * diffuseColor, opacity);
 
 	// gamma correction
 	// float gamma = 2.2f;	

@@ -21,7 +21,6 @@ Material::Material(Device *pDevice)
 	}
 
 	colors = MaterialColors{
-		glm::vec4(1.0f),	// ambient
 		glm::vec4(1.0f),	// diffuse
 		glm::vec4(1.0f),	// specular
 		1.0f				// opacity
@@ -47,7 +46,6 @@ Material::~Material()
 }
 
 const std::vector<aiTextureType> Material::TEXTURES_ORDER = {
-	aiTextureType_AMBIENT,
 	aiTextureType_DIFFUSE,
 	aiTextureType_SPECULAR,
 	aiTextureType_OPACITY,
@@ -87,8 +85,6 @@ std::string Material::getDefaultTexturePath(aiTextureType type)
 
 	switch (type)
 	{
-	case aiTextureType_AMBIENT:
-		return DEFAULT_TEXTURE_DIR + "ambient.jpg";
 	case aiTextureType_DIFFUSE:
 		return DEFAULT_TEXTURE_DIR + "diffuse.jpg";
 	case aiTextureType_SPECULAR:

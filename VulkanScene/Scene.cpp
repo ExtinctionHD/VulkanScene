@@ -150,9 +150,9 @@ void Scene::initLighting()
 		glm::vec3(1.0f, 1.0f, 1.0f),		// color
 		0.8f,								// ambientStrength
 		glm::vec3(-0.89f, 0.4f, -0.21f),	// direction
-		0.7f,								// diffuseStrength
+		0.8f,								// diffuseStrength
 		pCamera->getPos(),					// cameraPos
-		2.0f								// specularPower
+		8.0f								// specularPower
 	};
 
 	const float spaceRadius = 10.0f;
@@ -164,13 +164,14 @@ void Scene::initModels()
 {
 	const std::string MUSTANG_FILE = File::getExeDir() + "models/mustangGT/mustang_GT.obj";
 	const std::string FORD_FILE = File::getExeDir() + "models/fordGT/Ford GT 2017.obj";
+	const std::string REGERA_FILE = File::getExeDir() + "models/regera/regera.obj";
 	const std::string SKYBOX_DIR = File::getExeDir() + "textures/skyboxClouds/";
-	const std::string TERRAIN_DIR = File::getExeDir() + "textures/asphaltBricks/";
+	const std::string TERRAIN_DIR = File::getExeDir() + "textures/rockyTerrain/";
 
 	// initialize car model
-	pCar = new AssimpModel(pDevice, FORD_FILE);
-	pCar->rotateAxisX(180.0f);
-	pCar->scaleTo({ 2.045f, 1.03f, 4.763f });
+	pCar = new AssimpModel(pDevice, REGERA_FILE);
+	pCar->scaleToX(2.050f);
+	pCar->rotateAxisX(90.0f);
 
 	// initialize skybox model
 	pSkybox = new SkyboxModel(pDevice, SKYBOX_DIR, ".jpg");

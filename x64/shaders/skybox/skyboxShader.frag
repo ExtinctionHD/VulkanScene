@@ -5,14 +5,13 @@
 
 // material color
 layout(set = 2, binding = 0) uniform Colors {
-	vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;
 	float opacity;
 } colors;
 
 // skybox cupe texture
-layout(set = 2, binding = 1) uniform samplerCube textureSampler;
+layout(set = 2, binding = 1) uniform samplerCube diffuseTexture;
 
 // input and output values:
 
@@ -25,8 +24,7 @@ layout(location = 0) out vec4 outColor;
 // fragment shader code:
 void main() 
 {
-
-    outColor = texture(textureSampler, fragTexCoord);
+    outColor = texture(diffuseTexture, fragTexCoord);
 
     // gamma correction
 	//float gamma = 2.2f;

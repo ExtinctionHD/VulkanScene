@@ -42,14 +42,12 @@ std::vector<VkVertexInputAttributeDescription> TerrainModel::getVertexInputAttri
 void TerrainModel::initMaterial(std::string texturesDir, std::string extension)
 {
 	const std::vector<aiTextureType> types = {
-		aiTextureType_AMBIENT,
 		aiTextureType_DIFFUSE,
 		aiTextureType_SPECULAR,
 		aiTextureType_NORMALS
 	};
 
 	const std::vector<std::string> filenames = {
-		texturesDir + "ambient" + extension,
 		texturesDir + "diffuse" + extension,
 		texturesDir + "specular" + extension,
 		texturesDir + "normals" + extension,

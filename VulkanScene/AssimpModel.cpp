@@ -59,6 +59,52 @@ void AssimpModel::scaleTo(glm::vec3 size)
 	setTransform(glm::scale(getTransform(), size / getBaseSize()));
 }
 
+void AssimpModel::scaleToX(float sizeX)
+{
+	glm::vec3 baseSize = getBaseSize();
+
+	const float sizeFactor = baseSize.x / sizeX;
+
+	glm::vec3 size = glm::vec3(
+		sizeX,
+		baseSize.y / sizeFactor,
+		baseSize.z / sizeFactor
+	);
+
+	scaleTo(size);
+}
+
+void AssimpModel::scaleToY(float sizeY)
+{
+	glm::vec3 baseSize = getBaseSize();
+
+	const float sizeFactor = baseSize.y / sizeY;
+
+	glm::vec3 size = glm::vec3(
+		baseSize.x / sizeFactor,
+		sizeY,
+		baseSize.z / sizeFactor
+	);
+
+	scaleTo(size);
+}
+
+void AssimpModel::scaleToZ(float sizeZ)
+{
+	glm::vec3 baseSize = getBaseSize();
+
+	const float sizeFactor = baseSize.z / sizeZ;
+
+	glm::vec3 size = glm::vec3(
+		baseSize.x / sizeFactor,
+		baseSize.y / sizeFactor,
+        sizeZ
+	);
+
+	scaleTo(size);
+}
+
+
 // protected:
 
 VkVertexInputBindingDescription AssimpModel::getVertexInputBindingDescription(uint32_t inputBinding)
@@ -243,7 +289,6 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 	{
 		aiMaterial *pAiMaterial = ppAiMaterial[index];
 
-		pMaterial->colors.ambientColor = getMaterialColor(pAiMaterial, "$clr.ambient");
 		pMaterial->colors.diffuseColor = getMaterialColor(pAiMaterial, "$clr.diffuse");
 		pMaterial->colors.specularColor = getMaterialColor(pAiMaterial, "$clr.specular");
 		aiGetMaterialFloat(pAiMaterial, AI_MATKEY_OPACITY, &pMaterial->colors.opacity);

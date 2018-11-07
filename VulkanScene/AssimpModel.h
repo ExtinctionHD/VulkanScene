@@ -19,6 +19,12 @@ public:
 
 	void scaleTo(glm::vec3 size);
 
+	void scaleToX(float sizeX);
+
+	void scaleToY(float sizeY);
+
+	void scaleToZ(float sizeZ);
+
 protected:
 	VkVertexInputBindingDescription  getVertexInputBindingDescription(uint32_t inputBinding) override;
 
