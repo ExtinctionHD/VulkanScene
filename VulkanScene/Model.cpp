@@ -60,21 +60,14 @@ void Model::rotateAxisZ(float angle)
 	setTransform(glm::rotate(getTransform(), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f)));
 }
 
-void Model::moveTo(glm::vec3 pos)
+void Model::move(glm::vec3 distance)
 {
-	glm::vec3 scale;
-	glm::quat rotation;
-	glm::vec3 translation;
-	glm::vec3 skew;
-	glm::vec4 perspective;
+	setTransform(translate(getTransform(), distance));
+}
 
-	decompose(getTransform(), scale, rotation, translation, skew, perspective);
-
-	glm::mat4 transform = glm::scale(glm::mat4(1.0f), scale);
-	transform = glm::rotate(transform, glm::angle(rotation), axis(rotation));
-	transform = glm::translate(transform, pos);
-
-	setTransform(transform);
+void Model::scale(glm::vec3 scale)
+{
+	setTransform(glm::scale(getTransform(), scale));
 }
 
 uint32_t Model::getBufferCount() const 

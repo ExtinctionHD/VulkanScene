@@ -162,15 +162,32 @@ void Scene::initLighting()
 
 void Scene::initModels()
 {
-	const std::string MUSTANG_FILE = File::getExeDir() + "models/mustangGT/mustang_GT.obj";
-	const std::string FORD_FILE = File::getExeDir() + "models/fordGT/Ford GT 2017.obj";
 	const std::string REGERA_FILE = File::getExeDir() + "models/regera/regera.obj";
+	const std::string MERCEDES_FILE = File::getExeDir() + "models/amgGT/amgGT.obj";
+	const std::string AUDI_FILE = File::getExeDir() + "models/audiA7/audiA7.obj";
+	const std::string VULCAN_FILE = File::getExeDir() + "models/vulcan/vulcan.obj";
+
 	const std::string SKYBOX_DIR = File::getExeDir() + "textures/skyboxClouds/";
 	const std::string TERRAIN_DIR = File::getExeDir() + "textures/rockyTerrain/";
 
 	// initialize car model
-	pCar = new AssimpModel(pDevice, REGERA_FILE);
-	pCar->scaleToX(2.050f);
+	pCar = new AssimpModel(pDevice, VULCAN_FILE);
+
+    // regera transformations
+	/*pCar->scale(glm::vec3(2.050f / pCar->getBaseSize().x));
+	pCar->rotateAxisX(90.0f);*/
+
+	// mercedes transformations
+	/*pCar->scale(glm::vec3(1.953f / pCar->getBaseSize().x));
+	pCar->rotateAxisX(180.0f);*/
+
+    // audi transformations
+	/*pCar->move({ 0.0f, -0.690, 0.0f });
+	pCar->scale(glm::vec3(2.118f / pCar->getBaseSize().x));
+	pCar->rotateAxisX(90.0f);*/
+
+    // aston martin transformations
+	pCar->scale(glm::vec3(2.063f / pCar->getBaseSize().x));
 	pCar->rotateAxisX(90.0f);
 
 	// initialize skybox model

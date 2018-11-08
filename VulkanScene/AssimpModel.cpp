@@ -45,66 +45,6 @@ glm::vec3 AssimpModel::getBaseSize() const
 	return maxPos - minPos;
 }
 
-void AssimpModel::scaleTo(glm::vec3 size)
-{
-	glm::vec3 scale;
-	glm::quat rotation;
-	glm::vec3 translation;
-	glm::vec3 skew;
-	glm::vec4 perspective;
-
-	decompose(getTransform(), scale, rotation, translation, skew, perspective);
-
-	setTransform(glm::scale(getTransform(), 1.0f / scale));
-	setTransform(glm::scale(getTransform(), size / getBaseSize()));
-}
-
-void AssimpModel::scaleToX(float sizeX)
-{
-	glm::vec3 baseSize = getBaseSize();
-
-	const float sizeFactor = baseSize.x / sizeX;
-
-	glm::vec3 size = glm::vec3(
-		sizeX,
-		baseSize.y / sizeFactor,
-		baseSize.z / sizeFactor
-	);
-
-	scaleTo(size);
-}
-
-void AssimpModel::scaleToY(float sizeY)
-{
-	glm::vec3 baseSize = getBaseSize();
-
-	const float sizeFactor = baseSize.y / sizeY;
-
-	glm::vec3 size = glm::vec3(
-		baseSize.x / sizeFactor,
-		sizeY,
-		baseSize.z / sizeFactor
-	);
-
-	scaleTo(size);
-}
-
-void AssimpModel::scaleToZ(float sizeZ)
-{
-	glm::vec3 baseSize = getBaseSize();
-
-	const float sizeFactor = baseSize.z / sizeZ;
-
-	glm::vec3 size = glm::vec3(
-		baseSize.x / sizeFactor,
-		baseSize.y / sizeFactor,
-        sizeZ
-	);
-
-	scaleTo(size);
-}
-
-
 // protected:
 
 VkVertexInputBindingDescription AssimpModel::getVertexInputBindingDescription(uint32_t inputBinding)
@@ -297,6 +237,14 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 
 		for (aiTextureType type : Material::TEXTURES_ORDER)
 		{
+            if (type == aiTextureType_NORMALS)
+            {
+				if (pAiMaterial->GetTextureCount(aiTextureType_HEIGHT))
+				{
+					pMaterial->addTexture(aiTextureType_NORMALS, loadMaterialTexture(pAiMaterial, aiTextureType_HEIGHT));
+				}
+            }
+
 			if (pAiMaterial->GetTextureCount(type))
 			{
 				pMaterial->addTexture(type, loadMaterialTexture(pAiMaterial, type));
