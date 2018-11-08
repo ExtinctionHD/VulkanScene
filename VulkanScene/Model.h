@@ -28,7 +28,9 @@ public:
 
 	void rotateAxisZ(float angle);
 
-	void moveTo(glm::vec3 pos);
+	void move(glm::vec3 distance);
+
+	void scale(glm::vec3 scale);
 
 	uint32_t getBufferCount() const;
 

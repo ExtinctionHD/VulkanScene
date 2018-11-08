@@ -17,8 +17,6 @@ public:
 
 	glm::vec3 getBaseSize() const;
 
-	void scaleTo(glm::vec3 size);
-
 protected:
 	VkVertexInputBindingDescription  getVertexInputBindingDescription(uint32_t inputBinding) override;
 

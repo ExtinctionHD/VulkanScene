@@ -45,20 +45,6 @@ glm::vec3 AssimpModel::getBaseSize() const
 	return maxPos - minPos;
 }
 
-void AssimpModel::scaleTo(glm::vec3 size)
-{
-	glm::vec3 scale;
-	glm::quat rotation;
-	glm::vec3 translation;
-	glm::vec3 skew;
-	glm::vec4 perspective;
-
-	decompose(getTransform(), scale, rotation, translation, skew, perspective);
-
-	setTransform(glm::scale(getTransform(), 1.0f / scale));
-	setTransform(glm::scale(getTransform(), size / getBaseSize()));
-}
-
 // protected:
 
 VkVertexInputBindingDescription AssimpModel::getVertexInputBindingDescription(uint32_t inputBinding)
@@ -243,7 +229,6 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 	{
 		aiMaterial *pAiMaterial = ppAiMaterial[index];
 
-		pMaterial->colors.ambientColor = getMaterialColor(pAiMaterial, "$clr.ambient");
 		pMaterial->colors.diffuseColor = getMaterialColor(pAiMaterial, "$clr.diffuse");
 		pMaterial->colors.specularColor = getMaterialColor(pAiMaterial, "$clr.specular");
 		aiGetMaterialFloat(pAiMaterial, AI_MATKEY_OPACITY, &pMaterial->colors.opacity);
@@ -252,6 +237,14 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 
 		for (aiTextureType type : Material::TEXTURES_ORDER)
 		{
+            if (type == aiTextureType_NORMALS)
+            {
+				if (pAiMaterial->GetTextureCount(aiTextureType_HEIGHT))
+				{
+					pMaterial->addTexture(aiTextureType_NORMALS, loadMaterialTexture(pAiMaterial, aiTextureType_HEIGHT));
+				}
+            }
+
 			if (pAiMaterial->GetTextureCount(type))
 			{
 				pMaterial->addTexture(type, loadMaterialTexture(pAiMaterial, type));

@@ -23,8 +23,6 @@ public:
 
 	struct MaterialColors
 	{
-		glm::vec4 ambientColor;
-
 		glm::vec4 diffuseColor;
 
 		glm::vec4 specularColor;
