@@ -146,14 +146,36 @@ void Scene::initCamera(VkExtent2D cameraExtent)
 void Scene::initLighting()
 {
     // init lighting attributes
+
+    // noon lighting attributes
+	//Lighting::Attributes attributes{
+	//	glm::vec3(1.0f, 1.0f, 1.0f),    // color
+	//	0.8f,                           // ambientStrength
+	//	glm::vec3(0.0f, 1.0f, -0.001f), // direction
+	//	0.8f,                           // directedStrength
+	//	pCamera->getPos(),              // cameraPos
+	//	16.0f                           // specularPower
+	//};
+
+    // clouds lighting attributes
 	Lighting::Attributes attributes{
-		glm::vec3(1.0f, 1.0f, 1.0f),		// color
-		0.8f,								// ambientStrength
-		glm::vec3(-0.89f, 0.4f, -0.21f),	// direction
-		0.8f,								// diffuseStrength
-		pCamera->getPos(),					// cameraPos
-		8.0f								// specularPower
+	    glm::vec3(1.0f, 1.0f, 1.0f),        // color
+	    0.7f,								// ambientStrength
+	    glm::vec3(-0.89f, 0.4f, -0.21f),    // direction
+	    0.7f,								// directedStrength
+	    pCamera->getPos(),                  // cameraPos
+	    8.0f                                // specularPower
 	};
+
+    // sunset lighting attributes
+	//Lighting::Attributes attributes{
+	//	glm::vec3(0.98f, 0.65f, 0.45f),     // color
+	//	0.2f,								// ambientStrength
+	//	glm::vec3(-0.7f, 0.09f, 0.7f),	    // direction (sunset skybox)
+	//	0.6f,								// directedStrength
+	//	pCamera->getPos(),					// cameraPos
+	//	16.0f								// specularPower
+	//};
 
 	const float spaceRadius = 10.0f;
 
@@ -167,15 +189,19 @@ void Scene::initModels()
 	const std::string AUDI_FILE = File::getExeDir() + "models/audiA7/audiA7.obj";
 	const std::string VULCAN_FILE = File::getExeDir() + "models/vulcan/vulcan.obj";
 
-	const std::string SKYBOX_DIR = File::getExeDir() + "textures/skyboxClouds/";
-	const std::string TERRAIN_DIR = File::getExeDir() + "textures/rockyTerrain/";
+	const std::string SUNSET_SKYBOX_DIR = File::getExeDir() + "textures/skyboxSunset/";
+	const std::string CLOUDS_SKYBOX_DIR = File::getExeDir() + "textures/skyboxClouds/";
+	const std::string NOON_SKYBOX_DIR = File::getExeDir() + "textures/skyboxNoon/";
+
+	const std::string ROCKY_TERRAIN_DIR = File::getExeDir() + "textures/rockyTerrain/";
+    const std::string BRICKS_TERRAIN_DIR = File::getExeDir() + "textures/asphaltBricks/";
 
 	// initialize car model
-	pCar = new AssimpModel(pDevice, VULCAN_FILE);
+	pCar = new AssimpModel(pDevice, REGERA_FILE);
 
     // regera transformations
-	/*pCar->scale(glm::vec3(2.050f / pCar->getBaseSize().x));
-	pCar->rotateAxisX(90.0f);*/
+	pCar->scale(glm::vec3(2.050f / pCar->getBaseSize().x));
+	pCar->rotateAxisX(90.0f);
 
 	// mercedes transformations
 	/*pCar->scale(glm::vec3(1.953f / pCar->getBaseSize().x));
@@ -187,14 +213,14 @@ void Scene::initModels()
 	pCar->rotateAxisX(90.0f);*/
 
     // aston martin transformations
-	pCar->scale(glm::vec3(2.063f / pCar->getBaseSize().x));
-	pCar->rotateAxisX(90.0f);
+	/*pCar->scale(glm::vec3(2.063f / pCar->getBaseSize().x));
+	pCar->rotateAxisX(90.0f);*/
 
 	// initialize skybox model
-	pSkybox = new SkyboxModel(pDevice, SKYBOX_DIR, ".jpg");
+	pSkybox = new SkyboxModel(pDevice, CLOUDS_SKYBOX_DIR, ".jpg");
 
 	// initialize terrain model
-	pTerrain = new TerrainModel(pDevice, { 2000, 2000 }, { 2000, 2000 }, TERRAIN_DIR, ".jpg");
+	pTerrain = new TerrainModel(pDevice, { 2000, 2000 }, { 2000, 2000 }, ROCKY_TERRAIN_DIR, ".jpg");
 
 	models.push_back(pSkybox);
 	models.push_back(pTerrain);
