@@ -7,7 +7,7 @@ layout(set = 0, binding = 2) uniform Lighting {
 	vec3 color;
 	float ambientStrength;
 	vec3 direction;
-	float diffuseStrength;
+	float directedStrength;
 	vec3 cameraPos;
 	float specularPower;
 } light;
@@ -61,28 +61,32 @@ vec3 getBumpedNormal()
 	return resultNormal;
 }
 
-vec3 getAmbientIntensity()
+float getAmbientIntensity()
 {
-	return light.color * light.ambientStrength;
+	return light.ambientStrength;
 }
 
-vec3 getDiffuseIntensity(vec3 N, vec3 L)
+float getDiffuseIntensity(vec3 N, vec3 L)
 {
 	float diffuseFactor = clamp(dot(N, L), 0.0f, 1.0f);
-	return light.color * light.diffuseStrength * diffuseFactor;
+	return light.directedStrength * diffuseFactor;
 }
 
-vec3 getSpecularIntensity(vec3 N, vec3 L, vec3 V)
+float getSpecularIntensity(vec3 N, vec3 L, vec3 V)
 {
-	float specularFactor = 0.0f;
+	vec3 H = normalize(L + V);
+	float specularFactor = dot(N, H);
 
-	if (dot(N, L) > 0.0f)
+	if (specularFactor > 0.0f)
 	{
-		vec3 H = normalize(L + V);
-		specularFactor = pow(dot(N, H), light.specularPower);
+		specularFactor = pow(specularFactor, light.specularPower);
+	}
+	else
+	{
+		specularFactor = 0.0f;
 	}
 
-	return light.color * colors.specular.r * texture(specularMap, fragTexCoord).r * specularFactor;
+	return light.directedStrength * colors.specular.r * texture(specularMap, fragTexCoord).r * specularFactor;
 }
 
 // 1 - fragment in the shadow, 0 - fragment in the light
@@ -125,18 +129,21 @@ void main()
 	vec3 V = normalize(light.cameraPos - fragPos);
 	vec3 N = getBumpedNormal();
 
-	float bias = max(0.002f * (1.0f - dot(N, light.direction)), 0.0002f);
+	float bias = max(0.0015f * (1.0f - dot(N, light.direction)), 0.00015f);
 	float illumination = 1.0f - getShading(fragPosLightingSpace, bias);
 
-	vec3 ambientI = getAmbientIntensity();
-	vec3 diffuseI = getDiffuseIntensity(N, L) * illumination;
-	vec3 specularI = getSpecularIntensity(N, L, V) * illumination;
+	float ambientI = getAmbientIntensity();
+	float diffuseI = getDiffuseIntensity(N, L) * illumination;
+	float specularI = getSpecularIntensity(N, L, V) * illumination;
 
 	vec3 diffuseColor = colors.diffuse.rgb * texture(diffuseTexture, fragTexCoord).rgb;
-	vec3 resultI = ambientI + diffuseI + specularI;
+
+	vec3 lightingComponent = light.color * diffuseColor * (ambientI + diffuseI);
+	vec3 specularComponent = light.color * specularI;
 
 	float opacity = colors.opacity * texture(opacityMap, fragTexCoord).r;
-	outColor = vec4(resultI * diffuseColor, opacity);
+
+	outColor = vec4(lightingComponent + specularComponent, opacity);
 
 	// gamma correction
 	// float gamma = 2.2f;	

@@ -14,7 +14,7 @@ public:
 
 		glm::vec3 direction;
 
-		float diffuseStrength;
+		float directedStrength;
 
 		glm::vec3 cameraPos;
 
