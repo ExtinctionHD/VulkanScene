@@ -20,17 +20,17 @@ public:
 
 	enum Direction
 	{
-		negative = -1,
-		none = 0,
-		positive = 1
+		NEGATIVE = -1,
+		NONE = 0,
+		POSITIVE = 1
 	};
 
 	// asix movement states
 	struct Movement
 	{
-		Direction forward = Direction::none;
-		Direction right = Direction::none;
-		Direction up = Direction::none;
+		Direction forward = NONE;
+		Direction right = NONE;
+		Direction up = NONE;
 	} movement;
 
 	glm::vec3 getPos() const;

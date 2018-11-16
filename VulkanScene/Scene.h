@@ -56,8 +56,8 @@ private:
 	VkDescriptorSetLayout depthDsLayout{};
 
     // final renderPass resources
-	VkDescriptorSet sceneDescriptorSet{};
-	VkDescriptorSetLayout sceneDsLayout{};
+	VkDescriptorSet finalDescriptorSet{};
+	VkDescriptorSetLayout finalDsLayout{};
 
 	// models
 	AssimpModel *pCar{};

@@ -20,6 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller.h" />
+    <ClInclude Include="GeometryRenderPass.h" />
+    <ClInclude Include="LightingRenderPass.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="AssimpModel.h" />
@@ -56,7 +58,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="GeometryRenderPass.cpp" />
     <ClCompile Include="Lighting.cpp" />
+    <ClCompile Include="LightingRenderPass.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="AssimpModel.cpp" />
     <ClCompile Include="DescriptorPool.cpp" />

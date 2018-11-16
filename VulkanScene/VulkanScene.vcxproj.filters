@@ -189,6 +189,12 @@
     <ClInclude Include="Lighting.h">
       <Filter>Файлы заголовков\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="GeometryRenderPass.h">
+      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="LightingRenderPass.h">
+      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
@@ -292,6 +298,12 @@
     </ClCompile>
     <ClCompile Include="Lighting.cpp">
       <Filter>Исходные файлы\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryRenderPass.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="LightingRenderPass.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

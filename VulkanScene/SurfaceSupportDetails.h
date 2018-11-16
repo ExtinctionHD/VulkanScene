@@ -13,9 +13,9 @@ public:
 	std::vector<VkPresentModeKHR> presentModes;
 
 	// base constructor
-	SurfaceSupportDetails() {}
+	SurfaceSupportDetails() = default;
 
-	// initialize all details
+    // initialize all details
 	SurfaceSupportDetails(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 	// this device is suitable for this pSurface

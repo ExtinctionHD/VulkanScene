@@ -2,10 +2,12 @@
 #include <array>
 #include "ShaderModule.h"
 #include "AssimpModel.h"
-
-#include "Vulkan.h"
 #include "FinalRenderPass.h"
 #include "DepthRenderPass.h"
+#include "GeometryRenderPass.h"
+#include "LightingRenderPass.h"
+
+#include "Vulkan.h"
 
 // public:
 
@@ -128,7 +130,11 @@ void Vulkan::resize(VkExtent2D newExtent)
 	vkDeviceWaitIdle(pDevice->device);
 
 	pSwapChain->recreate(newExtent);
-	renderPasses.at(final)->recreate(pSwapChain->getExtent());
+
+	renderPasses.at(FINAL)->recreate(pSwapChain->getExtent());
+	renderPasses.at(GEOMETRY)->recreate(pSwapChain->getExtent());
+	renderPasses.at(LIGHTING)->recreate(pSwapChain->getExtent());
+
 	pScene->resizeExtent(pSwapChain->getExtent());
 
 	initGraphicsCommands();
@@ -150,8 +156,10 @@ void Vulkan::createRenderPasses()
 {
 	const VkExtent2D DEPTH_MAP_EXTENT = { 4096, 4096 };
 
-	renderPasses.insert({ depth, new DepthRenderPass(pDevice, DEPTH_MAP_EXTENT) });
-	renderPasses.insert({ final, new FinalRenderPass(pDevice, pSwapChain) });
+	renderPasses.insert({ DEPTH, new DepthRenderPass(pDevice, DEPTH_MAP_EXTENT) });
+	renderPasses.insert({ GEOMETRY, new GeometryRenderPass(pDevice, pSwapChain->getExtent()) });
+	renderPasses.insert({ LIGHTING, new LightingRenderPass(pDevice, pSwapChain) });
+	renderPasses.insert({ FINAL, new FinalRenderPass(pDevice, pSwapChain) });
 
     for (auto renderPass : renderPasses)
     {
@@ -208,14 +216,14 @@ void Vulkan::beginDepthRenderPass(VkCommandBuffer commandBuffer)
 
 	VkRect2D renderArea{
 		{ 0, 0 },                               // offset
-		renderPasses.at(depth)->getExtent()   // extent
+		renderPasses.at(DEPTH)->getExtent()   // extent
 	};
 
 	VkRenderPassBeginInfo renderPassBeginInfo{
 		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	    // sType;
 		nullptr,									    // pNext;
-		renderPasses.at(depth)->getRenderPass(),		// renderPass;
-		renderPasses.at(depth)->getFramebuffers()[0], // framebuffer;
+		renderPasses.at(DEPTH)->getRenderPass(),		// renderPass;
+		renderPasses.at(DEPTH)->getFramebuffers()[0], // framebuffer;
 		renderArea,									    // renderArea;
 		1,							                    // clearValueCount;
 		&clearValue							            // pClearValues;
@@ -236,14 +244,14 @@ void Vulkan::beginFinalRenderPass(VkCommandBuffer commandBuffer, uint32_t index)
 
 	VkRect2D renderArea{
 		{ 0, 0 },                           // offset
-		renderPasses.at(final)->getExtent() // extent
+		renderPasses.at(FINAL)->getExtent() // extent
 	};
 
 	VkRenderPassBeginInfo renderPassBeginInfo{
 		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,           // sType;
 		nullptr,                                            // pNext;
-		renderPasses.at(final)->getRenderPass(),            // renderPass;
-		renderPasses.at(final)->getFramebuffers()[index],   // framebuffer;
+		renderPasses.at(FINAL)->getRenderPass(),            // renderPass;
+		renderPasses.at(FINAL)->getFramebuffers()[index],   // framebuffer;
 		renderArea,                                         // renderArea;
 		clearValues.size(),                                 // clearValueCount;
 		clearValues.data()                                  // pClearValues;

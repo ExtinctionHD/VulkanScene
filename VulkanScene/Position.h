@@ -9,11 +9,11 @@
 class Position
 {
 public:
-	Position() {}
-	Position(glm::vec3 pos);
-	~Position() {}
+	Position() = default;
 
-	glm::vec3 pos{};
+    Position(glm::vec3 pos);
+
+    glm::vec3 pos{};
 
 	// description of whole vertex
 	static VkVertexInputBindingDescription getBindingDescription(uint32_t binding);

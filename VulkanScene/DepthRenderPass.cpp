@@ -3,13 +3,8 @@
 
 // public:
 
-DepthRenderPass::DepthRenderPass(Device *pDevice, VkExtent2D textureExtent) : RenderPass(pDevice, textureExtent)
+DepthRenderPass::DepthRenderPass(Device *pDevice, VkExtent2D attachmentExtent) : RenderPass(pDevice, attachmentExtent)
 {
-}
-
-DepthRenderPass::~DepthRenderPass()
-{
-	delete pDepthMap;
 }
 
 TextureImage * DepthRenderPass::getDepthMap() const
@@ -17,14 +12,37 @@ TextureImage * DepthRenderPass::getDepthMap() const
 	return pDepthMap;
 }
 
+void DepthRenderPass::createAttachments()
+{
+	VkExtent3D attachmentExtent{
+		extent.width,
+		extent.height,
+		1
+	};
+
+	pDepthMap = new TextureImage(
+		pDevice,
+		attachmentExtent,
+		0,
+		VK_SAMPLE_COUNT_1_BIT,
+		depthAttachmentFormat,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		VK_IMAGE_ASPECT_DEPTH_BIT,
+		VK_IMAGE_VIEW_TYPE_2D,
+		1
+	);
+}
+
 // protected:
 
 void DepthRenderPass::createRenderPass()
 {
-	VkAttachmentDescription depthAttachment{
+	VkAttachmentDescription depthAttachmentDesc{
 		   0,													// flags;
-		   depthAttachmentFormat,								// format;
-		   VK_SAMPLE_COUNT_1_BIT,							    // samples;
+		   pDepthMap->format,                                   // format;
+		   pDepthMap->getSampleCount(),							// samples;
 		   VK_ATTACHMENT_LOAD_OP_CLEAR,						    // loadOp;
 		   VK_ATTACHMENT_STORE_OP_STORE,					    // storeOp;
 		   VK_ATTACHMENT_LOAD_OP_DONT_CARE,					    // stencilLoadOp;
@@ -89,7 +107,7 @@ void DepthRenderPass::createRenderPass()
 		nullptr,									// pNext;
 		0,											// flags;
 		1,							                // attachmentCount;
-		&depthAttachment,							// pAttachments;
+		&depthAttachmentDesc,						// pAttachments;
 		1,											// subpassCount;
 		&subpass,									// pSubpasses;
 		dependencies.size(),						// dependencyCount;
@@ -102,28 +120,6 @@ void DepthRenderPass::createRenderPass()
 
 void DepthRenderPass::createFramebuffers()
 {
-	VkExtent3D textureExtent{
-		extent.width,
-		extent.height,
-		1
-	};
-
-	delete pDepthMap;
-
-	pDepthMap = new TextureImage(
-		pDevice,
-	    textureExtent,
-	    0,
-        VK_SAMPLE_COUNT_1_BIT,
-	    depthAttachmentFormat,
-	    VK_IMAGE_TILING_OPTIMAL,
-	    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-	    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-	    VK_IMAGE_ASPECT_DEPTH_BIT,
-	    VK_IMAGE_VIEW_TYPE_2D,
-	    1
-	);
-
 	VkFramebuffer framebuffer;
 	VkFramebufferCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;

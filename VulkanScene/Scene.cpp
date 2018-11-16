@@ -1,10 +1,11 @@
 #include "AssimpModel.h"
 #include "SkyboxModel.h"
 
-#include "Scene.h"
 #include "DepthRenderPass.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/rotate_vector.hpp>
+
+#include "Scene.h"
 
 // public:
 
@@ -32,7 +33,7 @@ Scene::~Scene()
 	}
 
 	vkDestroyDescriptorSetLayout(pDevice->device, depthDsLayout, nullptr);
-	vkDestroyDescriptorSetLayout(pDevice->device, sceneDsLayout, nullptr);
+	vkDestroyDescriptorSetLayout(pDevice->device, finalDsLayout, nullptr);
 
 	delete pLighting;
 	delete pCamera;
@@ -112,12 +113,12 @@ void Scene::draw(VkCommandBuffer commandBuffer)
 {
 	for (Model *pModel : models)
 	{
-		pModel->drawSolid(commandBuffer, { sceneDescriptorSet });
+		pModel->drawSolid(commandBuffer, { finalDescriptorSet });
 	}
 
 	for (Model *pModel : models)
 	{
-		pModel->drawTransparent(commandBuffer, { sceneDescriptorSet });
+		pModel->drawTransparent(commandBuffer, { finalDescriptorSet });
 	}
 }
 
@@ -231,8 +232,8 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 {
 	depthDescriptorSet = pDescriptorPool->getDescriptorSet({ pLighting->getSpaceBuffer() }, { }, true, depthDsLayout);
 
-	auto pDepthMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(depth))->getDepthMap();
-	sceneDescriptorSet = pDescriptorPool->getDescriptorSet(
+	auto pDepthMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthMap();
+	finalDescriptorSet = pDescriptorPool->getDescriptorSet(
 		{ 
 		    pCamera->getSpaceBuffer(), 
 		    pLighting->getSpaceBuffer(), 
@@ -240,7 +241,7 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 		},
 		{ pDepthMap },
 		true,
-		sceneDsLayout
+		finalDsLayout
 	);
 
 	for (Model *pModel : models)
@@ -260,7 +261,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 	pDepthPipeline = new GraphicsPipeline(
 		pDevice,
 		{ depthDsLayout, Model::getTransformDsLayout() },
-		renderPasses.at(depth),
+		renderPasses.at(DEPTH),
 		{
 			new ShaderModule(pDevice->device, DEPTH_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
 			new ShaderModule(pDevice->device, DEPTH_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
@@ -273,8 +274,8 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 
     // create main pipeline
 	pipelines.push_back(pCar->createFinalPipeline(
-		{ sceneDsLayout },
-		renderPasses.at(final),
+		{ finalDsLayout },
+		renderPasses.at(FINAL),
 		{
 			new ShaderModule(pDevice->device, MODELS_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
 			new ShaderModule(pDevice->device, MODELS_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
@@ -284,8 +285,8 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 
     // create pipeline for skybox rendering
 	pipelines.push_back(pSkybox->createFinalPipeline(
-		{ sceneDsLayout },
-		renderPasses.at(final),
+		{ finalDsLayout },
+		renderPasses.at(FINAL),
 		{
 			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
 			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)

@@ -24,6 +24,7 @@ VkExtent2D RenderPass::getExtent() const
 
 void RenderPass::create()
 {
+	createAttachments();
 	createRenderPass();
 	createFramebuffers();
 }
@@ -51,10 +52,18 @@ RenderPass::RenderPass(Device *pDevice, VkExtent2D extent)
 
 void RenderPass::cleanup()
 {
+    for (Image *pImage : attachments)
+    {
+		delete pImage;
+    }
+	attachments.clear();
+
 	for (VkFramebuffer framebuffer : framebuffers)
 	{
 		vkDestroyFramebuffer(pDevice->device, framebuffer, nullptr);
 	}
+	framebuffers.clear();
+
 	vkDestroyRenderPass(pDevice->device, renderPass, nullptr);
 }
 

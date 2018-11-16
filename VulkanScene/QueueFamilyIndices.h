@@ -10,9 +10,9 @@ public:
 	int present = -1;	// for presenting on pSurface
 
 	// base constructor
-	QueueFamilyIndices() {}
+	QueueFamilyIndices() = default;
 
-	// try to find required queue families and save they indices
+    // try to find required queue families and save they indices
 	QueueFamilyIndices(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 	// this device have all required queue families (for this pSurface)

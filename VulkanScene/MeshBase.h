@@ -16,9 +16,9 @@ public:
 	Material *pMaterial{};
 
 protected:
-	MeshBase() {}
+	MeshBase() = default;
 
-	std::vector<uint32_t> indices;
+    std::vector<uint32_t> indices;
 
 	Buffer *pVertexBuffer{};
 

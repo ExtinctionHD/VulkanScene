@@ -8,9 +8,10 @@ class FinalRenderPass : public RenderPass
 {
 public:
 	FinalRenderPass(Device *pDevice, SwapChain *pSwapChain);
-	~FinalRenderPass();
 
 protected:
+    void createAttachments() override;
+
 	void createRenderPass() override;
 
 	void createFramebuffers() override;
@@ -22,11 +23,5 @@ private:
 
 	// depth image and its view
 	Image *pDepthImage{};
-
-	void createColorAttachment();
-
-	// create depth image, its view and execute its layout transition
-	void createDepthAttachment();
-
 };
 
