@@ -37,19 +37,19 @@ layout(location = 4) in vec4 fragPosLightingSpace;
 // result of fragment shader: color of each fragment
 layout(location = 0) out vec4 outColor;
 
-vec3 getBumpedNormal()
+vec3 getBumpedNormal(vec3 normal, vec3 tangent, vec2 uv, sampler2D normalMap)
 {
-	vec3 normal = normalize(fragNormal);
+	normal = normalize(normal);
 
 	// texture u vector in world space
-	vec3 tangent = normalize(fragTangent);
+	tangent = normalize(tangent);
 	tangent = normalize(tangent - dot(tangent, normal) * normal);
 
 	// texture v vector in world space
 	vec3 bitangent = cross(tangent, normal);
 
 	// normal from map
-	vec3 bumMapNormal = texture(normalMap, fragTexCoord).xyz;
+	vec3 bumMapNormal = texture(normalMap, uv).xyz;
 	bumMapNormal = 2.0f * bumMapNormal - vec3(1.0f, 1.0f, 1.0f);
 
 	// normal from map in world space
@@ -127,7 +127,7 @@ void main()
 {
 	vec3 L = normalize(-light.direction);
 	vec3 V = normalize(light.cameraPos - fragPos);
-	vec3 N = getBumpedNormal();
+	vec3 N = getBumpedNormal(fragNormal, fragTangent, fragTexCoord, normalMap);
 
 	float bias = max(0.0015f * (1.0f - dot(N, light.direction)), 0.00015f);
 	float illumination = 1.0f - getShading(fragPosLightingSpace, bias);

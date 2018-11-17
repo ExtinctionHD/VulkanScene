@@ -219,7 +219,7 @@ void FinalRenderPass::createFramebuffers()
 	for (size_t i = 0; i < swapChainImageViews.size(); i++)
 	{
 		std::vector<VkImageView> imageViews{
-            pColorImage->view,
+			pColorImage->view,
 			pDepthImage->view,
 			swapChainImageViews[i]
 		};

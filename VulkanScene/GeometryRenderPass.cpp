@@ -6,6 +6,11 @@ GeometryRenderPass::GeometryRenderPass(Device *pDevice, VkExtent2D attachmentExt
 {
 }
 
+std::vector<TextureImage *> GeometryRenderPass::getMaps() const
+{
+	return { pPosMap, pNormalMap, pAlbedoMap, pSpecularMap };
+}
+
 void GeometryRenderPass::createAttachments()
 {
 	VkExtent3D attachmentExtent{
@@ -44,7 +49,7 @@ void GeometryRenderPass::createAttachments()
 	);
 	attachments.push_back(pNormalMap);
 
-	pColorMap = new TextureImage(
+	pAlbedoMap = new TextureImage(
 		pDevice,
 		attachmentExtent,
 		0,
@@ -57,7 +62,22 @@ void GeometryRenderPass::createAttachments()
 		VK_IMAGE_VIEW_TYPE_2D,
 		1
 	);
-	attachments.push_back(pColorMap);
+	attachments.push_back(pAlbedoMap);
+
+	pSpecularMap = new TextureImage(
+		pDevice,
+		attachmentExtent,
+		0,
+		pDevice->getSampleCount(),
+		VK_FORMAT_R8_UNORM,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		VK_IMAGE_ASPECT_COLOR_BIT,
+		VK_IMAGE_VIEW_TYPE_2D,
+		1
+	);
+	attachments.push_back(pSpecularMap);
 
 	pDepthImage = new Image(
 		pDevice,
@@ -102,14 +122,19 @@ void GeometryRenderPass::createRenderPass()
 		attachmentDescriptions.push_back(attachmentDesc);
 	}
 
-	std::vector<VkAttachmentReference> colorAttachmentReferences{
-		{ 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
-		{ 1, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL },
-		{ 2, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL }
-	};
+	std::vector<VkAttachmentReference> colorAttachmentReferences;
+
+    for (size_t i = 0; i < attachments.size(); i++)
+    {
+		VkAttachmentReference colorAttachmentRef{
+			i,                                          // attachment;
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL    // layout;
+		};
+		colorAttachmentReferences.push_back(colorAttachmentRef);
+    }
 
 	VkAttachmentReference depthAttachmentRef{
-		3,													// attachment;
+		attachments.size() - 1,								// attachment;
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL	// layout;
 	};
 
@@ -171,12 +196,11 @@ void GeometryRenderPass::createRenderPass()
 
 void GeometryRenderPass::createFramebuffers()
 {
-	std::vector<VkImageView> imageViews{
-		pPosMap->view,
-		pNormalMap->view,
-		pColorMap->view,
-		pDepthImage->view
-	};
+	std::vector<VkImageView> imageViews;
+    for(Image *pImage : attachments)
+    {
+		imageViews.push_back(pImage->view);
+    }
 
 	VkFramebuffer framebuffer;
 	VkFramebufferCreateInfo createInfo{

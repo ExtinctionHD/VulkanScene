@@ -19,7 +19,7 @@ void LightingRenderPass::createAttachments()
 		pDevice,
 		attachmentExtent,
 		0,
-		pDevice->getSampleCount(),
+		VK_SAMPLE_COUNT_1_BIT,
 		1,
 		pSwapChain->getImageFormat(),
 		VK_IMAGE_TILING_OPTIMAL,
@@ -132,22 +132,31 @@ void LightingRenderPass::createRenderPass()
 
 void LightingRenderPass::createFramebuffers()
 {
-	VkFramebuffer framebuffer;
-	VkFramebufferCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
-		nullptr,									// pNext;
-		0,											// flags;
-		renderPass,									// renderPass;
-		1,							                // attachmentCount;
-		&pColorImage->view,							// pAttachments;
-		extent.width,								// width;
-		extent.height,								// height;
-		1,											// layers;
-	};
+	std::vector<VkImageView> swapChainImageViews = pSwapChain->getImageViews();
 
-	VkResult result = vkCreateFramebuffer(pDevice->device, &createInfo, nullptr, &framebuffer);
-	assert(result == VK_SUCCESS);
+	framebuffers.resize(swapChainImageViews.size());
 
-	framebuffers.push_back(framebuffer);
+	for (size_t i = 0; i < swapChainImageViews.size(); i++)
+	{
+		std::vector<VkImageView> imageViews{
+			pColorImage->view,
+			swapChainImageViews[i]
+		};
+
+		VkFramebufferCreateInfo createInfo{
+			VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
+			nullptr,									// pNext;
+			0,											// flags;
+			renderPass,									// renderPass;
+			imageViews.size(),							// attachmentCount;
+			imageViews.data(),							// pAttachments;
+			extent.width,								// width;
+			extent.height,								// height;
+			1,											// layers;
+		};
+
+		VkResult result = vkCreateFramebuffer(pDevice->device, &createInfo, nullptr, &framebuffers[i]);
+		assert(result == VK_SUCCESS);
+	}
 }
 
