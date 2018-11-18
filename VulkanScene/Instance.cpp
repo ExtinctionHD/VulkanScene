@@ -1,12 +1,9 @@
 #include <set>
-#include <iostream>
-#include <fstream>
-#include "File.h"
 #include <cassert>
 
 #include "Instance.h"
 
-Instance::Instance(std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions)
+Instance::Instance(const std::vector<const char *> &requiredLayers, std::vector<const char *> requiredExtensions)
 {
 	if (!requiredLayers.empty())
 	{
@@ -17,10 +14,6 @@ Instance::Instance(std::vector<const char *> requiredLayers, std::vector<const c
 
 	if (!requiredLayers.empty())
 	{
-		// will write error messages to file
-		std::ofstream logFile(File::getExeDir() + "ValidationLayers.log");
-		std::cerr.rdbuf(logFile.rdbuf());
-
 		createDebugCallback();
 	}
 }
@@ -46,9 +39,8 @@ void Instance::createInstance(std::vector<const char *> requiredLayers, std::vec
 	// required extensions
 	assert(checkInstanceExtensionSupport(requiredExtensions));
 
-	// infoabout application for vulkan
-	VkApplicationInfo appInfo =
-	{
+	// info about application for vulkan
+	VkApplicationInfo appInfo{
 		VK_STRUCTURE_TYPE_APPLICATION_INFO,	// sType
 		nullptr,							// pNext
 		"VulkanScene",						// pApplicationName
@@ -59,8 +51,7 @@ void Instance::createInstance(std::vector<const char *> requiredLayers, std::vec
 	};
 
 	// info for vulkan instance
-	VkInstanceCreateInfo createInfo =
-	{
+	VkInstanceCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,	// sType
 		nullptr,								// pNext
 		0,										// flags
@@ -164,7 +155,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Instance::validationLayerCallback(
 	void * userData
 )
 {
-	std::cerr << "VALIDATION LAYER | " << msg << std::endl;
+	assert(VK_FALSE);
 
 	return VK_FALSE;
 }
