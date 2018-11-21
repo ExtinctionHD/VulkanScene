@@ -10,6 +10,11 @@ FinalRenderPass::FinalRenderPass(Device *pDevice, SwapChain *pSwapChain)
     this->pSwapChain = pSwapChain;
 }
 
+uint32_t FinalRenderPass::getColorAttachmentCount() const
+{
+	return 1;
+}
+
 // protected:
 
 void FinalRenderPass::createAttachments()

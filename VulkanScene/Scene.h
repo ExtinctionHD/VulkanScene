@@ -29,9 +29,13 @@ public:
 
 	void updateScene();
 
-	void drawDepth(VkCommandBuffer commandBuffer);
+	void renderDepth(VkCommandBuffer commandBuffer);
 
-	void draw(VkCommandBuffer commandBuffer);
+	void renderGeometry(VkCommandBuffer commandBuffer);
+
+	void renderLighting(VkCommandBuffer commandBuffer);
+
+	void renderFinal(VkCommandBuffer commandBuffer);
 
 	void resizeExtent(VkExtent2D newExtent);
 
@@ -49,15 +53,8 @@ private:
 	// scene lighting attributes
 	Lighting *pLighting{};
 
-	// scene descriptors:
-
-    // depth renderPass resources
-	VkDescriptorSet depthDescriptorSet{};
-	VkDescriptorSetLayout depthDsLayout{};
-
-    // final renderPass resources
-	VkDescriptorSet finalDescriptorSet{};
-	VkDescriptorSetLayout finalDsLayout{};
+	// scene descriptors
+	std::unordered_map<RenderPassType, DescriptorStruct> descriptors;
 
 	// models
 	AssimpModel *pCar{};
@@ -65,7 +62,6 @@ private:
 	TerrainModel *pTerrain{};
 	std::vector<Model*> models;
 
-	GraphicsPipeline *pDepthPipeline{};
 	std::vector<GraphicsPipeline*> pipelines;
 
 	void initCamera(VkExtent2D cameraExtent);

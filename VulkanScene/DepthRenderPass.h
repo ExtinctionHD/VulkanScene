@@ -8,6 +8,8 @@ class DepthRenderPass : public RenderPass
 public:
 	DepthRenderPass(Device *pDevice, VkExtent2D attachmentExtent);
 
+    uint32_t getColorAttachmentCount() const override;
+
 	TextureImage* getDepthMap() const;
 
 protected:

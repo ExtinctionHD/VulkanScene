@@ -6,9 +6,14 @@ GeometryRenderPass::GeometryRenderPass(Device *pDevice, VkExtent2D attachmentExt
 {
 }
 
+uint32_t GeometryRenderPass::getColorAttachmentCount() const
+{
+	return 3;
+}
+
 std::vector<TextureImage *> GeometryRenderPass::getMaps() const
 {
-	return { pPosMap, pNormalMap, pAlbedoMap, pSpecularMap };
+	return { pPosMap, pNormalMap, pAlbedoMap };
 }
 
 void GeometryRenderPass::createAttachments()
@@ -64,21 +69,6 @@ void GeometryRenderPass::createAttachments()
 	);
 	attachments.push_back(pAlbedoMap);
 
-	pSpecularMap = new TextureImage(
-		pDevice,
-		attachmentExtent,
-		0,
-		pDevice->getSampleCount(),
-		VK_FORMAT_R8_UNORM,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		VK_IMAGE_ASPECT_COLOR_BIT,
-		VK_IMAGE_VIEW_TYPE_2D,
-		1
-	);
-	attachments.push_back(pSpecularMap);
-
 	pDepthImage = new Image(
 		pDevice,
         attachmentExtent,
@@ -92,6 +82,23 @@ void GeometryRenderPass::createAttachments()
         1
 	);
 	attachments.push_back(pDepthImage);
+
+	VkImageSubresourceRange subresourceRange = VkImageSubresourceRange{
+		VK_IMAGE_ASPECT_DEPTH_BIT,	// aspectMask;
+		0,							// baseMipLevel;
+		1,							// levelCount;
+		0,							// baseArrayLayer;
+		1,							// layerCount;
+	};
+
+	pDepthImage->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
+
+	pDepthImage->transitLayout(
+		pDevice,
+		VK_IMAGE_LAYOUT_UNDEFINED,
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+		subresourceRange
+	);
 }
 
 void GeometryRenderPass::createRenderPass()
@@ -124,7 +131,7 @@ void GeometryRenderPass::createRenderPass()
 
 	std::vector<VkAttachmentReference> colorAttachmentReferences;
 
-    for (size_t i = 0; i < attachments.size(); i++)
+    for (size_t i = 0; i < attachments.size() - 1; i++)
     {
 		VkAttachmentReference colorAttachmentRef{
 			i,                                          // attachment;

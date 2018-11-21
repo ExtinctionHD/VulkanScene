@@ -202,7 +202,9 @@ void Vulkan::initGraphicsCommands()
 
 		beginDepthRenderPass(graphicCommands[i]);
 
-		beginFinalRenderPass(graphicCommands[i], i);
+		beginGeometryRenderPass(graphicCommands[i]);
+
+		beginLightingRenderPass(graphicCommands[i], i);
 
 		result = vkEndCommandBuffer(graphicCommands[i]);
 		assert(result == VK_SUCCESS);
@@ -215,15 +217,15 @@ void Vulkan::beginDepthRenderPass(VkCommandBuffer commandBuffer)
 	clearValue.depthStencil = { 1.0f, 0 };
 
 	VkRect2D renderArea{
-		{ 0, 0 },                               // offset
-		renderPasses.at(DEPTH)->getExtent()   // extent
+		{ 0, 0 },                           // offset
+		renderPasses.at(DEPTH)->getExtent() // extent
 	};
 
 	VkRenderPassBeginInfo renderPassBeginInfo{
 		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	    // sType;
 		nullptr,									    // pNext;
 		renderPasses.at(DEPTH)->getRenderPass(),		// renderPass;
-		renderPasses.at(DEPTH)->getFramebuffers()[0], // framebuffer;
+		renderPasses.at(DEPTH)->getFramebuffers()[0],   // framebuffer;
 		renderArea,									    // renderArea;
 		1,							                    // clearValueCount;
 		&clearValue							            // pClearValues;
@@ -231,7 +233,64 @@ void Vulkan::beginDepthRenderPass(VkCommandBuffer commandBuffer)
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	pScene->drawDepth(commandBuffer);
+	pScene->renderDepth(commandBuffer);
+
+	vkCmdEndRenderPass(commandBuffer);
+}
+
+void Vulkan::beginGeometryRenderPass(VkCommandBuffer commandBuffer)
+{
+	std::array<VkClearValue, 4> clearValues{};
+	clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
+	clearValues[1].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
+	clearValues[2].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
+	clearValues[3].depthStencil = { 1.0f, 0 };
+
+	VkRect2D renderArea{
+		{ 0, 0 },                               // offset
+		renderPasses.at(GEOMETRY)->getExtent()  // extent
+	};
+
+	VkRenderPassBeginInfo renderPassBeginInfo{
+		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,           // sType;
+		nullptr,                                            // pNext;
+		renderPasses.at(GEOMETRY)->getRenderPass(),         // renderPass;
+		renderPasses.at(GEOMETRY)->getFramebuffers()[0],    // framebuffer;
+		renderArea,                                         // renderArea;
+		clearValues.size(),                                 // clearValueCount;
+		clearValues.data()                                  // pClearValues;
+	};
+
+	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	pScene->renderGeometry(commandBuffer);
+
+	vkCmdEndRenderPass(commandBuffer);
+}
+
+void Vulkan::beginLightingRenderPass(VkCommandBuffer commandBuffer, uint32_t index)
+{
+	std::array<VkClearValue, 1> clearValues{};
+	clearValues[0].color = CLEAR_COLOR;
+
+	VkRect2D renderArea{
+		{ 0, 0 },                               // offset
+		renderPasses.at(LIGHTING)->getExtent()  // extent
+	};
+
+	VkRenderPassBeginInfo renderPassBeginInfo{
+		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,               // sType;
+		nullptr,                                                // pNext;
+		renderPasses.at(LIGHTING)->getRenderPass(),             // renderPass;
+		renderPasses.at(LIGHTING)->getFramebuffers()[index],    // framebuffer;
+		renderArea,                                             // renderArea;
+		clearValues.size(),                                     // clearValueCount;
+		clearValues.data()                                      // pClearValues;
+	};
+
+	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	pScene->renderLighting(commandBuffer);
 
 	vkCmdEndRenderPass(commandBuffer);
 }
@@ -259,7 +318,7 @@ void Vulkan::beginFinalRenderPass(VkCommandBuffer commandBuffer, uint32_t index)
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	pScene->draw(commandBuffer);
+	pScene->renderFinal(commandBuffer);
 
 	vkCmdEndRenderPass(commandBuffer);
 }

@@ -22,7 +22,6 @@ layout(location = 3) in vec3 fragTangent;
 layout (location = 0) out vec4 outPos;
 layout (location = 1) out vec4 outNormal;
 layout (location = 2) out vec4 outAlbedo;
-layout (location = 3) out float outSpecular;
 
 vec3 getBumpedNormal(vec3 normal, vec3 tangent, vec2 uv, sampler2D normalMap)
 {
@@ -55,8 +54,6 @@ void main()
 	outNormal = vec4(getBumpedNormal(fragNormal, fragTangent, fragUV, normalMap), 1.0f);
 
 	vec4 albedo = colors.albedo * texture(albedoMap, fragUV);
-	float opacity = albedo.a * colors.opacity.r * texture(opacityMap, fragUV).r;
-	outAlbedo = vec4(albedo.rgb, opacity);
-
-	outSpecular = colors.specular.r * texture(specularMap, fragUV).r;
+	float specular = colors.specular.r * texture(specularMap, fragUV).r;
+	outAlbedo = vec4(albedo.rgb, specular);
 }

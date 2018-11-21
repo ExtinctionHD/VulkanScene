@@ -19,14 +19,13 @@ layout(binding = 1) uniform LightingSpaceMatrix {
 layout (binding = 2) uniform sampler2DMS posMap;
 layout (binding = 3) uniform sampler2DMS normalMap;
 layout (binding = 4) uniform sampler2DMS albedoMap;
-layout (binding = 5) uniform sampler2DMS specularMap;
-layout (binding = 6) uniform sampler2D shadowsMap;
-
-layout (constant_id = 0) const int NUM_SAMPLES = 8;
+layout (binding = 5) uniform sampler2D shadowsMap;
 
 layout (location = 0) in vec2 inUV;
 
 layout (location = 0) out vec4 outColor;
+
+const int NUM_SAMPLES = 8;
 
 // Manual resolve for MSAA samples 
 vec4 resolve(sampler2DMS tex, ivec2 uv)
@@ -64,5 +63,5 @@ void main()
 
 	// fragColor = (alb.rgb * ambient) + fragColor / float(NUM_SAMPLES);
    
-	outColor = vec4(texelFetch(posMap, uv, 0).rgb, 1.0);	
+	outColor = vec4(resolve(posMap, uv).rgb, 1.0f);	
 }

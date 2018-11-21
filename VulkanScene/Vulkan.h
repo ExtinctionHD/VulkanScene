@@ -54,7 +54,7 @@ private:
 	};
 
 	// color that clear each frame
-	const VkClearColorValue CLEAR_COLOR = { 0.0f, 0.0f, 0.0f, 1.0f };
+	const VkClearColorValue CLEAR_COLOR = {{0.0f, 0.0f, 0.0f, 1.0f}};
 
 	Instance *pInstance;
 
@@ -86,6 +86,10 @@ private:
 	void initGraphicsCommands();
 
 	void beginDepthRenderPass(VkCommandBuffer commandBuffer);
+
+	void beginGeometryRenderPass(VkCommandBuffer commandBuffer);
+
+	void beginLightingRenderPass(VkCommandBuffer commandBuffer, uint32_t index);
 
 	void beginFinalRenderPass(VkCommandBuffer commandBuffer, uint32_t index);
 

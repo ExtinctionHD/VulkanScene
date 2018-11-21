@@ -11,7 +11,8 @@ GraphicsPipeline::GraphicsPipeline(
 	std::vector<ShaderModule*> shaderModules,
 	VkVertexInputBindingDescription bindingDescription,
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
-    VkSampleCountFlagBits sampleCount
+    VkSampleCountFlagBits sampleCount,
+    uint32_t colorAttachmentCount
 )
 {
 	this->pDevice = pDevice;
@@ -20,6 +21,7 @@ GraphicsPipeline::GraphicsPipeline(
 	this->bindingDescription = bindingDescription;
 	this->attributeDescriptions = attributeDescriptions;
 	this->sampleCount = sampleCount;
+	this->attachmentCount = colorAttachmentCount;
 
 	createLayout(descriptorSetLayouts);
 
@@ -177,29 +179,33 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 
 	// color blending:
 
-	VkPipelineColorBlendAttachmentState colorBlendAttachment{
-		VK_TRUE,								// blendEnable;
-		VK_BLEND_FACTOR_SRC_ALPHA,				// srcColorBlendFactor;
-		VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,	// dstColorBlendFactor;
-		VK_BLEND_OP_ADD,						// colorBlendOp;
-		VK_BLEND_FACTOR_ONE,					// srcAlphaBlendFactor;
-		VK_BLEND_FACTOR_ZERO,					// dstAlphaBlendFactor;
-		VK_BLEND_OP_ADD,						// alphaBlendOp;
-		VK_COLOR_COMPONENT_R_BIT |
-		VK_COLOR_COMPONENT_G_BIT |
-		VK_COLOR_COMPONENT_B_BIT |
-		VK_COLOR_COMPONENT_A_BIT				// colorWriteMask;
-	};
+	std::vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments(attachmentCount);
+    for (uint32_t i = 0; i < attachmentCount; i++)
+    {
+		colorBlendAttachments[i] = VkPipelineColorBlendAttachmentState{
+			VK_TRUE,								// blendEnable;
+			VK_BLEND_FACTOR_SRC_ALPHA,				// srcColorBlendFactor;
+			VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,	// dstColorBlendFactor;
+			VK_BLEND_OP_ADD,						// colorBlendOp;
+			VK_BLEND_FACTOR_ONE,					// srcAlphaBlendFactor;
+			VK_BLEND_FACTOR_ZERO,					// dstAlphaBlendFactor;
+			VK_BLEND_OP_ADD,						// alphaBlendOp;
+			VK_COLOR_COMPONENT_R_BIT |
+			VK_COLOR_COMPONENT_G_BIT |
+			VK_COLOR_COMPONENT_B_BIT |
+			VK_COLOR_COMPONENT_A_BIT				// colorWriteMask;
+		};
+    }
 
 	VkPipelineColorBlendStateCreateInfo colorBlendState{
-		VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,	// sType;
-		nullptr,				// pNext;
-		0,						// flags;
-		VK_FALSE,				// logicOpEnable;
-		VK_LOGIC_OP_COPY,		// logicOp;
-		1,						// attachmentCount;
-		&colorBlendAttachment,	// pAttachments;
-		{ 0, 0, 0, 0 }			// blendConstants[4];
+		VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,   // sType;
+		nullptr,                        // pNext;
+		0,                              // flags;
+		VK_FALSE,                       // logicOpEnable;
+		VK_LOGIC_OP_COPY,               // logicOp;
+		colorBlendAttachments.size(),   // attachmentCount;
+		colorBlendAttachments.data(),   // pAttachments;
+		{ 0, 0, 0, 0 }                  // blendConstants[4];
 	};
 
 	// pipeline (contains all of the above)

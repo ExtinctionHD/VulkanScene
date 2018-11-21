@@ -7,6 +7,11 @@ DepthRenderPass::DepthRenderPass(Device *pDevice, VkExtent2D attachmentExtent) :
 {
 }
 
+uint32_t DepthRenderPass::getColorAttachmentCount() const
+{
+	return 0;
+}
+
 TextureImage * DepthRenderPass::getDepthMap() const
 {
 	return pDepthMap;

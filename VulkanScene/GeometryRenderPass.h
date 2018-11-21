@@ -10,6 +10,8 @@ class GeometryRenderPass : public RenderPass
 public:
 	GeometryRenderPass(Device *pDevice, VkExtent2D attachmentExtent);
 
+    uint32_t getColorAttachmentCount() const override;
+
 	std::vector<TextureImage*> getMaps() const;
 
 protected:
@@ -25,8 +27,6 @@ private:
 	TextureImage *pNormalMap{};
 
 	TextureImage *pAlbedoMap{};
-
-	TextureImage *pSpecularMap{};
 
 	Image *pDepthImage{};
 };

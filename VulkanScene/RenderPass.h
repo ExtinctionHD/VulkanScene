@@ -17,6 +17,8 @@ public:
 
 	VkExtent2D getExtent() const;
 
+	virtual uint32_t getColorAttachmentCount() const = 0;
+
 	void create();
 
 	void recreate(VkExtent2D newExtent);

@@ -7,6 +7,11 @@ LightingRenderPass::LightingRenderPass(Device *pDevice, SwapChain *pSwapChain) :
 	this->pSwapChain = pSwapChain;
 }
 
+uint32_t LightingRenderPass::getColorAttachmentCount() const
+{
+	return 1;
+}
+
 void LightingRenderPass::createAttachments()
 {
 	VkExtent3D attachmentExtent{
@@ -139,7 +144,7 @@ void LightingRenderPass::createFramebuffers()
 	for (size_t i = 0; i < swapChainImageViews.size(); i++)
 	{
 		std::vector<VkImageView> imageViews{
-			pColorImage->view,
+			//pColorImage->view,
 			swapChainImageViews[i]
 		};
 

@@ -18,7 +18,8 @@ public:
 		std::vector<ShaderModule*> shaderModules,
 		VkVertexInputBindingDescription bindingDescription,
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
-		VkSampleCountFlagBits sampleCount
+		VkSampleCountFlagBits sampleCount,
+        uint32_t colorAttachmentCount
 	);
 
 	~GraphicsPipeline();
@@ -43,6 +44,8 @@ private:
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
 
 	VkSampleCountFlagBits sampleCount;
+
+	uint32_t attachmentCount;
 
 	void createLayout(std::vector<VkDescriptorSetLayout> descriptorSetLayouts);
 
