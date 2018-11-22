@@ -22,6 +22,28 @@ VkExtent2D RenderPass::getExtent() const
 	return extent;
 }
 
+std::vector<VkClearValue> RenderPass::getClearValues() const
+{
+	std::vector<VkClearValue> clearValues;
+    for(Image *pImage : attachments)
+    {
+		VkClearValue clearValue{};
+
+        if (pImage->format == depthAttachmentFormat)
+        {
+			clearValue.depthStencil = { 1.0f, 0 };
+        }
+		else
+		{
+			clearValue.color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+		}
+
+		clearValues.push_back(clearValue);
+    }
+
+	return clearValues;
+}
+
 void RenderPass::create()
 {
 	createAttachments();

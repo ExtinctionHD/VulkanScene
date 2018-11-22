@@ -260,7 +260,7 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 
 	descriptors.insert({ GEOMETRY, {} });
 	descriptors.at(GEOMETRY).set = pDescriptorPool->getDescriptorSet(
-		{ pCamera->getSpaceBuffer() },
+		{ pCamera->getSpaceBuffer(), pLighting->getSpaceBuffer() },
 		{ },
 		true,
 		descriptors.at(GEOMETRY).layout
@@ -271,7 +271,7 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 
 	descriptors.insert({ LIGHTING, {} });
 	descriptors.at(LIGHTING).set = pDescriptorPool->getDescriptorSet(
-		{ pLighting->getAttributesBuffer(), pLighting->getSpaceBuffer() },
+		{ pLighting->getAttributesBuffer() },
 		maps, 
 		true, 
 		descriptors.at(LIGHTING).layout

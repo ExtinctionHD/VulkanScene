@@ -24,6 +24,8 @@ protected:
 private:
 	TextureImage *pPosMap{};
 
+	TextureImage *pLightSpacePosMap{};
+
 	TextureImage *pNormalMap{};
 
 	TextureImage *pAlbedoMap{};

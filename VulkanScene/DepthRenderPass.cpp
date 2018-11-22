@@ -38,6 +38,7 @@ void DepthRenderPass::createAttachments()
 		VK_IMAGE_VIEW_TYPE_2D,
 		1
 	);
+	attachments.push_back(pDepthMap);
 }
 
 // protected:

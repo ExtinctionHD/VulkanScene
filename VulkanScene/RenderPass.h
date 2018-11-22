@@ -19,6 +19,8 @@ public:
 
 	virtual uint32_t getColorAttachmentCount() const = 0;
 
+	virtual std::vector<VkClearValue> getClearValues() const;
+
 	void create();
 
 	void recreate(VkExtent2D newExtent);

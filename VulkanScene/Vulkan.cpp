@@ -211,27 +211,31 @@ void Vulkan::initGraphicsCommands()
 	}
 }
 
-void Vulkan::beginDepthRenderPass(VkCommandBuffer commandBuffer)
+void Vulkan::beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex)
 {
-	VkClearValue clearValue;
-	clearValue.depthStencil = { 1.0f, 0 };
-
 	VkRect2D renderArea{
 		{ 0, 0 },                           // offset
-		renderPasses.at(DEPTH)->getExtent() // extent
+		renderPasses.at(type)->getExtent()  // extent
 	};
 
+	std::vector<VkClearValue> clearValues = renderPasses.at(type)->getClearValues();
+
 	VkRenderPassBeginInfo renderPassBeginInfo{
-		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	    // sType;
-		nullptr,									    // pNext;
-		renderPasses.at(DEPTH)->getRenderPass(),		// renderPass;
-		renderPasses.at(DEPTH)->getFramebuffers()[0],   // framebuffer;
-		renderArea,									    // renderArea;
-		1,							                    // clearValueCount;
-		&clearValue							            // pClearValues;
+	    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,   // sType;
+	    nullptr,                                    // pNext;
+	    renderPasses.at(type)->getRenderPass(),     // renderPass;
+	    renderPasses.at(type)->getFramebuffers()[framebufferIndex],       // framebuffer;
+	    renderArea,									        // renderArea;
+	    uint32_t(clearValues.size()),    // clearValueCount;
+		clearValues.data()     // pClearValues;
 	};
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void Vulkan::beginDepthRenderPass(VkCommandBuffer commandBuffer)
+{
+	beginRenderPass(commandBuffer, DEPTH, 0);
 
 	pScene->renderDepth(commandBuffer);
 
@@ -240,28 +244,7 @@ void Vulkan::beginDepthRenderPass(VkCommandBuffer commandBuffer)
 
 void Vulkan::beginGeometryRenderPass(VkCommandBuffer commandBuffer)
 {
-	std::array<VkClearValue, 4> clearValues{};
-	clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
-	clearValues[1].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
-	clearValues[2].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
-	clearValues[3].depthStencil = { 1.0f, 0 };
-
-	VkRect2D renderArea{
-		{ 0, 0 },                               // offset
-		renderPasses.at(GEOMETRY)->getExtent()  // extent
-	};
-
-	VkRenderPassBeginInfo renderPassBeginInfo{
-		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,           // sType;
-		nullptr,                                            // pNext;
-		renderPasses.at(GEOMETRY)->getRenderPass(),         // renderPass;
-		renderPasses.at(GEOMETRY)->getFramebuffers()[0],    // framebuffer;
-		renderArea,                                         // renderArea;
-		clearValues.size(),                                 // clearValueCount;
-		clearValues.data()                                  // pClearValues;
-	};
-
-	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	beginRenderPass(commandBuffer, GEOMETRY, 0);
 
 	pScene->renderGeometry(commandBuffer);
 
@@ -270,25 +253,7 @@ void Vulkan::beginGeometryRenderPass(VkCommandBuffer commandBuffer)
 
 void Vulkan::beginLightingRenderPass(VkCommandBuffer commandBuffer, uint32_t index)
 {
-	std::array<VkClearValue, 1> clearValues{};
-	clearValues[0].color = CLEAR_COLOR;
-
-	VkRect2D renderArea{
-		{ 0, 0 },                               // offset
-		renderPasses.at(LIGHTING)->getExtent()  // extent
-	};
-
-	VkRenderPassBeginInfo renderPassBeginInfo{
-		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,               // sType;
-		nullptr,                                                // pNext;
-		renderPasses.at(LIGHTING)->getRenderPass(),             // renderPass;
-		renderPasses.at(LIGHTING)->getFramebuffers()[index],    // framebuffer;
-		renderArea,                                             // renderArea;
-		clearValues.size(),                                     // clearValueCount;
-		clearValues.data()                                      // pClearValues;
-	};
-
-	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	beginRenderPass(commandBuffer, LIGHTING, index);
 
 	pScene->renderLighting(commandBuffer);
 
@@ -297,26 +262,7 @@ void Vulkan::beginLightingRenderPass(VkCommandBuffer commandBuffer, uint32_t ind
 
 void Vulkan::beginFinalRenderPass(VkCommandBuffer commandBuffer, uint32_t index)
 {
-	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = CLEAR_COLOR;
-	clearValues[1].depthStencil = { 1.0f, 0 };
-
-	VkRect2D renderArea{
-		{ 0, 0 },                           // offset
-		renderPasses.at(FINAL)->getExtent() // extent
-	};
-
-	VkRenderPassBeginInfo renderPassBeginInfo{
-		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,           // sType;
-		nullptr,                                            // pNext;
-		renderPasses.at(FINAL)->getRenderPass(),            // renderPass;
-		renderPasses.at(FINAL)->getFramebuffers()[index],   // framebuffer;
-		renderArea,                                         // renderArea;
-		clearValues.size(),                                 // clearValueCount;
-		clearValues.data()                                  // pClearValues;
-	};
-
-	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	beginRenderPass(commandBuffer, FINAL, index);
 
 	pScene->renderFinal(commandBuffer);
 

@@ -12,20 +12,17 @@ layout(binding = 0) uniform Lighting {
 	float specularPower;
 } light;
 
-layout(binding = 1) uniform LightingSpaceMatrix {
-    mat4 matrix;
-} lightingSpace;
-
-layout (binding = 2) uniform sampler2DMS posMap;
-layout (binding = 3) uniform sampler2DMS normalMap;
-layout (binding = 4) uniform sampler2DMS albedoMap;
+layout (binding = 1) uniform sampler2DMS posMap;
+layout (binding = 2) uniform sampler2DMS normalMap;
+layout (binding = 3) uniform sampler2DMS albedoMap;
+layout (binding = 4) uniform sampler2DMS lightSpacePosMap;
 layout (binding = 5) uniform sampler2D shadowsMap;
 
 layout (location = 0) in vec2 inUV;
 
 layout (location = 0) out vec4 outColor;
 
-const int NUM_SAMPLES = 8;
+layout (constant_id = 0) const uint NUM_SAMPLES = 8;
 
 // Manual resolve for MSAA samples 
 vec4 resolve(sampler2DMS tex, ivec2 uv)
@@ -101,19 +98,17 @@ float getShading(vec4 fragPosLightSpace, float bias)
     return shadow;
 }
 
-vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular)
+vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, vec4 lightSpacePos)
 {
 	vec3 L = normalize(-light.direction);
 	vec3 V = normalize(light.cameraPos - pos);
 
-	vec4 fragPosLightingSpace = lightingSpace.matrix * vec4(pos, 1.0f);
-
 	float bias = max(0.0015f * (1.0f - dot(N, light.direction)), 0.00015f);
-	float illumination = 1.0f - getShading(fragPosLightingSpace, bias);
+	float illumination = 1.0f - getShading(lightSpacePos, bias);
 
 	float ambientI = getAmbientIntensity();
-	float diffuseI = getDiffuseIntensity(N, L); // * illumination;
-	float specularI = getSpecularIntensity(N, L, V, specular); // * illumination;
+	float diffuseI = getDiffuseIntensity(N, L) * illumination;
+	float specularI = getSpecularIntensity(N, L, V, specular) * illumination;
 
 	vec3 lightingComponent = light.color * albedo * (ambientI + diffuseI);
 	vec3 specularComponent = light.color * specularI;
@@ -123,23 +118,28 @@ vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular)
 
 void main() 
 {
-	vec3 fragColor = vec3(0.0f);
 	ivec2 size = textureSize(posMap);
 	ivec2 uv = ivec2(inUV * size);
 
-	// Calualte lighting for every MSAA sample
-	for (int i = 0; i < NUM_SAMPLES; i++)
-	{ 
-		vec3 pos = texelFetch(posMap, uv, i).rgb;
-		vec3 normal = texelFetch(normalMap, uv, i).rgb;
-		vec4 albedoAndSpec = texelFetch(albedoMap, uv, i);
-		vec3 albedo = albedoAndSpec.rgb;
-		float specular = albedoAndSpec.a;
+	// vec3 fragColor = vec3(0.0f);
+	// for (int i = 0; i < NUM_SAMPLES; i++)
+	// { 
+	// 	vec3 pos = texelFetch(posMap, uv, i).rgb;
+	// 	vec3 normal = texelFetch(normalMap, uv, i).rgb;
+	// 	vec4 albedoAndSpec = texelFetch(albedoMap, uv, i);
+	// 	vec3 albedo = albedoAndSpec.rgb;
+	// 	float specular = albedoAndSpec.a;
+	// 	vec4 lightSpacePos = texelFetch(lightSpacePosMap, uv, i);
+	//
+	// 	fragColor += calculateLighting(pos, normal, albedo, specular, lightSpacePos);
+	// }
 
-		fragColor += calculateLighting(pos, normal, albedo, specular);
-	}
+	vec3 pos = resolve(posMap, uv).rgb;
+	vec3 normal = resolve(normalMap, uv).rgb;
+	vec4 albedoAndSpec = resolve(albedoMap, uv);
+	vec3 albedo = albedoAndSpec.rgb;
+	float specular = albedoAndSpec.a;
+	vec4 lightSpacePos = resolve(lightSpacePosMap, uv);
 
-	fragColor /= float(NUM_SAMPLES);
-
-	outColor = vec4(fragColor, 1.0f);
+	outColor = vec4(calculateLighting(pos, normal, albedo, specular, lightSpacePos), 1.0f);
 }

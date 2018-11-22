@@ -8,28 +8,30 @@ GeometryRenderPass::GeometryRenderPass(Device *pDevice, VkExtent2D attachmentExt
 
 uint32_t GeometryRenderPass::getColorAttachmentCount() const
 {
-	return 3;
+	return attachments.size() - 1;
 }
 
 std::vector<TextureImage *> GeometryRenderPass::getMaps() const
 {
-	return { pPosMap, pNormalMap, pAlbedoMap };
+	return { pPosMap, pNormalMap, pAlbedoMap, pLightSpacePosMap };
 }
 
 void GeometryRenderPass::createAttachments()
 {
-	VkExtent3D attachmentExtent{
+	const VkExtent3D attachmentExtent{
 		extent.width,
 		extent.height,
 		1
 	};
+
+	const VkFormat geometryFormat = VK_FORMAT_R16G16B16A16_SFLOAT;
 
 	pPosMap = new TextureImage(
 		pDevice,
 		attachmentExtent,
 		0,
 		pDevice->getSampleCount(),
-		VK_FORMAT_R16G16B16A16_SFLOAT,
+		geometryFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -44,7 +46,7 @@ void GeometryRenderPass::createAttachments()
 		attachmentExtent,
 		0,
 		pDevice->getSampleCount(),
-		VK_FORMAT_R16G16B16A16_SFLOAT,
+		geometryFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -68,6 +70,21 @@ void GeometryRenderPass::createAttachments()
 		1
 	);
 	attachments.push_back(pAlbedoMap);
+
+	pLightSpacePosMap = new TextureImage(
+		pDevice,
+		attachmentExtent,
+		0,
+		pDevice->getSampleCount(),
+		geometryFormat,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		VK_IMAGE_ASPECT_COLOR_BIT,
+		VK_IMAGE_VIEW_TYPE_2D,
+		1
+	);
+	attachments.push_back(pLightSpacePosMap);
 
 	pDepthImage = new Image(
 		pDevice,
