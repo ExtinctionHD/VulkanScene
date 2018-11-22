@@ -19,7 +19,8 @@ public:
 		VkVertexInputBindingDescription bindingDescription,
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
 		VkSampleCountFlagBits sampleCount,
-        uint32_t colorAttachmentCount
+        uint32_t colorAttachmentCount,
+        VkBool32 blendEnable
 	);
 
 	~GraphicsPipeline();
@@ -46,6 +47,8 @@ private:
 	VkSampleCountFlagBits sampleCount;
 
 	uint32_t attachmentCount;
+
+	VkBool32 blendEnable;
 
 	void createLayout(std::vector<VkDescriptorSetLayout> descriptorSetLayouts);
 

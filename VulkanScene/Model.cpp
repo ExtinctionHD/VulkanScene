@@ -208,7 +208,8 @@ GraphicsPipeline* Model::createDepthPipeline(
 		getVertexInputBindingDescription(inputBinding),
 		getVertexInputAttributeDescriptions(inputBinding),
 		VK_SAMPLE_COUNT_1_BIT,
-        pRenderPass->getColorAttachmentCount()
+        pRenderPass->getColorAttachmentCount(),
+        VK_FALSE
 	);
 	setPipeline(DEPTH, pPipeline);
 
@@ -234,7 +235,8 @@ GraphicsPipeline* Model::createGeometryPipeline(
 		getVertexInputBindingDescription(inputBinding),
 		getVertexInputAttributeDescriptions(inputBinding),
 		pDevice->getSampleCount(),
-        pRenderPass->getColorAttachmentCount()
+        pRenderPass->getColorAttachmentCount(),
+        VK_FALSE
 	);
 	setPipeline(GEOMETRY, pPipeline);
 
@@ -257,7 +259,8 @@ GraphicsPipeline* Model::createLightingPipeline(
 		getVertexInputBindingDescription(inputBinding),
 		getVertexInputAttributeDescriptions(inputBinding),
 		VK_SAMPLE_COUNT_1_BIT,
-		pRenderPass->getColorAttachmentCount()
+		pRenderPass->getColorAttachmentCount(),
+        VK_FALSE
 	);
 	setPipeline(LIGHTING, pPipeline);
 
@@ -283,7 +286,8 @@ GraphicsPipeline* Model::createFinalPipeline(
 		getVertexInputBindingDescription(inputBinding),
 		getVertexInputAttributeDescriptions(inputBinding),
 		pDevice->getSampleCount(),
-		pRenderPass->getColorAttachmentCount()
+		pRenderPass->getColorAttachmentCount(),
+        VK_TRUE
 	);
 	setPipeline(FINAL, pPipeline);
 

@@ -12,7 +12,8 @@ GraphicsPipeline::GraphicsPipeline(
 	VkVertexInputBindingDescription bindingDescription,
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
     VkSampleCountFlagBits sampleCount,
-    uint32_t colorAttachmentCount
+    uint32_t colorAttachmentCount,
+    VkBool32 blendEnable
 )
 {
 	this->pDevice = pDevice;
@@ -22,6 +23,7 @@ GraphicsPipeline::GraphicsPipeline(
 	this->attributeDescriptions = attributeDescriptions;
 	this->sampleCount = sampleCount;
 	this->attachmentCount = colorAttachmentCount;
+	this->blendEnable = blendEnable;
 
 	createLayout(descriptorSetLayouts);
 
@@ -183,17 +185,17 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
     for (uint32_t i = 0; i < attachmentCount; i++)
     {
 		colorBlendAttachments[i] = VkPipelineColorBlendAttachmentState{
-			VK_TRUE,								// blendEnable;
-			VK_BLEND_FACTOR_SRC_ALPHA,				// srcColorBlendFactor;
-			VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,	// dstColorBlendFactor;
-			VK_BLEND_OP_ADD,						// colorBlendOp;
-			VK_BLEND_FACTOR_ONE,					// srcAlphaBlendFactor;
-			VK_BLEND_FACTOR_ZERO,					// dstAlphaBlendFactor;
-			VK_BLEND_OP_ADD,						// alphaBlendOp;
+			blendEnable,                            // blendEnable;
+			VK_BLEND_FACTOR_SRC_ALPHA,              // srcColorBlendFactor;
+			VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,    // dstColorBlendFactor;
+			VK_BLEND_OP_ADD,                        // colorBlendOp;
+			VK_BLEND_FACTOR_ONE,                    // srcAlphaBlendFactor;
+			VK_BLEND_FACTOR_ZERO,                   // dstAlphaBlendFactor;
+			VK_BLEND_OP_ADD,                        // alphaBlendOp;
 			VK_COLOR_COMPONENT_R_BIT |
 			VK_COLOR_COMPONENT_G_BIT |
 			VK_COLOR_COMPONENT_B_BIT |
-			VK_COLOR_COMPONENT_A_BIT				// colorWriteMask;
+			VK_COLOR_COMPONENT_A_BIT                // colorWriteMask;
 		};
     }
 
