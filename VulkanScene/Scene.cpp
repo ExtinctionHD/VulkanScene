@@ -307,14 +307,28 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		RenderPassType type = shadersDir.first;
 		std::string directory = shadersDir.second;
 
+		std::vector<ShaderModule*> shaders;
+		shaders.push_back(new ShaderModule(pDevice->device, directory + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT));
+        if (type == LIGHTING)
+        {
+            VkSpecializationMapEntry entry{
+			    0,                  // constantID
+			    0,                  // offset
+			    sizeof(uint32_t)    // size
+			};
+			uint32_t sampleCount = pDevice->getSampleCount();
+			shaders.push_back(new ShaderModule(pDevice->device, directory + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT, { entry }, { &sampleCount }));
+        } 
+        else
+		{
+		    shaders.push_back(new ShaderModule(pDevice->device, directory + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT));
+		}
+
 		pipelines.push_back(pCar->createPipeline(
 			{ descriptors.at(type).layout },
             type,
 			renderPasses.at(type),
-			{
-				new ShaderModule(pDevice->device, directory + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-				new ShaderModule(pDevice->device, directory + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
-			}
+            shaders
 		));
 		pTerrain->setPipeline(type, pCar->getPipeline(type));
     }

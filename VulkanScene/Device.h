@@ -59,7 +59,7 @@ private:
 
 	VkSurfaceKHR surface;  // properties of the device are calculated for this pSurface
 
-	VkSampleCountFlagBits sampleCount;
+	VkSampleCountFlagBits sampleCount{};
 
 	void pickPhysicalDevice(
 		VkInstance instance, 

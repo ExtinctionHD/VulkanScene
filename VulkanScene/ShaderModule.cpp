@@ -25,7 +25,54 @@ ShaderModule::ShaderModule(VkDevice device, std::string filename, VkShaderStageF
 	assert(result == VK_SUCCESS);
 }
 
+ShaderModule::ShaderModule(
+    VkDevice device,
+    std::string filename,
+    VkShaderStageFlagBits stage,
+    std::vector<VkSpecializationMapEntry> entries,
+    const std::vector<const void*> &data
+) : ShaderModule(device, filename, stage)
+{
+	assert(entries.size() == data.size());
+
+	this->entries = entries;
+
+	VkSpecializationMapEntry lastEntry = *(--entries.end());
+	size_t size = lastEntry.offset + lastEntry.size;
+
+	pData = malloc(size);
+    for (size_t i = 0; i < data.size(); i++)
+    {
+		memcpy(reinterpret_cast<char*>(pData) + entries[i].offset, data[i], entries[i].size);
+    }
+
+	pSpecializationInfo = new VkSpecializationInfo{
+		uint32_t(entries.size()),
+		this->entries.data(),
+		size,
+		this->pData
+	};
+}
+
 ShaderModule::~ShaderModule()
 {
+	delete pSpecializationInfo;
+	free(pData);
+
 	vkDestroyShaderModule(device, module, nullptr);
+}
+
+VkShaderStageFlagBits ShaderModule::getStage() const
+{
+	return stage;
+}
+
+VkShaderModule ShaderModule::getModule() const
+{
+	return module;
+}
+
+VkSpecializationInfo* ShaderModule::getSpecializationInfo() const
+{
+	return pSpecializationInfo;
 }

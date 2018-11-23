@@ -3,7 +3,7 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
-layout(binding = 0) uniform Lighting {
+layout (binding = 0) uniform Lighting{
 	vec3 color;
 	float ambientStrength;
 	vec3 direction;
@@ -22,13 +22,13 @@ layout (location = 0) in vec2 inUV;
 
 layout (location = 0) out vec4 outColor;
 
-layout (constant_id = 0) const uint NUM_SAMPLES = 8;
+layout (constant_id = 0) const int NUM_SAMPLES = 8;
 
 // Manual resolve for MSAA samples 
 vec4 resolve(sampler2DMS tex, ivec2 uv)
 {
 	vec4 result = vec4(0.0);	   
-	for (int i = 0; i < NUM_SAMPLES; i++)
+	for (int i = 0; i < (NUM_SAMPLES); i++)
 	{
 		vec4 val = texelFetch(tex, uv, i); 
 		result += val;

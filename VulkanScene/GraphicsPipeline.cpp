@@ -72,13 +72,13 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 	for (ShaderModule *pShaderModule : shaderModules)
 	{
 		VkPipelineShaderStageCreateInfo shaderStageCreateInfo{
-			VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,	// sType;
-			nullptr,												// pNext;
-			0,														// flags;
-			pShaderModule->stage,									// stage;
-			pShaderModule->module,									// module;
-			"main",													// pName;
-			nullptr,												// pSpecializationInfo;
+			VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,    // sType;
+			nullptr,                                                // pNext;
+			0,                                                      // flags;
+			pShaderModule->getStage(),                              // stage;
+			pShaderModule->getModule(),                             // module;
+			"main",                                                 // pName;
+			pShaderModule->getSpecializationInfo(),                 // pSpecializationInfo;
 		};
 
 		shaderStages.push_back(shaderStageCreateInfo);

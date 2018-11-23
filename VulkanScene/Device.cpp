@@ -276,7 +276,7 @@ void Device::createLogicalDevice(VkSurfaceKHR surface)
 		layers.data(),							// ppEnabledLayerNames;
 		EXTENSIONS.size(),						// enabledExtensionCount;
 		EXTENSIONS.data(),						// ppEnabledExtensionNames;
-		nullptr									// pEnabledFeatures;
+		&deviceFeatures							// pEnabledFeatures;
 	};
 
 	VkResult result = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device);
