@@ -1,4 +1,5 @@
 ﻿#include "RenderPass.h"
+#include <algorithm>
 
 // public:
 
@@ -10,6 +11,20 @@ RenderPass::~RenderPass()
 VkRenderPass RenderPass::getRenderPass() const
 {
 	return renderPass;
+}
+
+VkSampleCountFlagBits RenderPass::getAttachmentsMaxSampleCount() const
+{
+	Image *maxSampleCount = *std::max_element(
+        attachments.begin(),
+        attachments.end(),
+        [](Image *a, Image *b)
+        {
+		    return a->getSampleCount() < b->getSampleCount();
+        }
+	);
+
+	return maxSampleCount->getSampleCount();
 }
 
 std::vector<VkFramebuffer> RenderPass::getFramebuffers() const

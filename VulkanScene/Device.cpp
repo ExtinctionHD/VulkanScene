@@ -7,12 +7,20 @@
 
 // public:
 
-Device::Device(VkInstance instance, VkSurfaceKHR surface, std::vector<const char *> requiredLayers)
+Device::Device(
+	VkInstance instance, 
+	VkSurfaceKHR surface, 
+	std::vector<const char*> requiredLayers,
+	VkSampleCountFlagBits maxRequiredSampleCount
+)
 {
 	this->surface = surface;
 	layers = requiredLayers;
 
-	pickPhysicalDevice(instance, surface);
+	physicalDevice = pickPhysicalDevice(instance, surface);
+	VkSampleCountFlagBits maxSupportedSampleCount = getMaxSupportedSampleCount(physicalDevice);
+	sampleCount = maxSupportedSampleCount > maxRequiredSampleCount ? maxRequiredSampleCount : maxSupportedSampleCount;
+
 	createLogicalDevice(surface);
 
 	createCommandPool(physicalDevice);
@@ -133,15 +141,12 @@ void Device::endOneTimeCommands(VkCommandBuffer commandBuffer) const
 
 // private:
 
-void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
+VkPhysicalDevice Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface) const
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);  // get count
 
-	if (deviceCount == 0)
-	{
-		std::runtime_error("Failed to find device with vulkan support");
-	}
+	assert(deviceCount);
 
 	std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
 	vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDevices.data());  // get devices
@@ -151,18 +156,14 @@ void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 	{
 		if (isPhysicalDeviceSuitable(device, surface, layers, EXTENSIONS))
 		{
-			physicalDevice = device;
-			sampleCount = getMaxSupportedSampleCount();
+			return  device;
 		}
 	}
 
-	if (physicalDevice == VK_NULL_HANDLE)
-	{
-		std::runtime_error("Failed to find suitable device");
-	}
+	return VK_NULL_HANDLE;
 }
 
-VkSampleCountFlagBits Device::getMaxSupportedSampleCount() const
+VkSampleCountFlagBits Device::getMaxSupportedSampleCount(VkPhysicalDevice physicalDevice) const
 {
 	VkPhysicalDeviceProperties physicalDeviceProperties;
 	vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);

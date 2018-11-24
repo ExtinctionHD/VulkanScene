@@ -13,12 +13,22 @@
 
 Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 {
-	std::vector<const char*> requiredLayers = ENABLE_VALIDATION_LAYERS ?
-		VALIDATION_LAYERS : std::vector<const char*>();
+	const std::string VALIDATION_LAYER = "VK_LAYER_LUNARG_standard_validation";
+	std::vector<const char*> requiredLayers;
+#ifdef _DEBUG 
+	requiredLayers.push_back(VALIDATION_LAYER.c_str());
+#endif
+
+	const std::vector<const char *> EXTENTIONS{
+		VK_KHR_SURFACE_EXTENSION_NAME,
+		"VK_KHR_win32_surface"
+	};
+
+	const VkSampleCountFlagBits SAMPLE_COUNT = VK_SAMPLE_COUNT_4_BIT;
 
 	pInstance = new Instance(requiredLayers, EXTENTIONS);
 	pSurface = new Surface(pInstance->getInstance(),hInstance, hWnd);
-	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers);
+	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers, SAMPLE_COUNT);
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);
 
 	createRenderPasses();

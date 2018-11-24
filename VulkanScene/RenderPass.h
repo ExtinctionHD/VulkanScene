@@ -21,6 +21,8 @@ public:
 
 	virtual std::vector<VkClearValue> getClearValues() const;
 
+	VkSampleCountFlagBits getAttachmentsMaxSampleCount() const;
+
 	void create();
 
 	void recreate(VkExtent2D newExtent);

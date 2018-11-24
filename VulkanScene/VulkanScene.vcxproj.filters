@@ -153,9 +153,6 @@
     <ClInclude Include="DescriptorPool.h">
       <Filter>Файлы заголовков\Vulkan\Other</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Файлы заголовков\Scene\Model</Filter>
-    </ClInclude>
     <ClInclude Include="Controller.h">
       <Filter>Файлы заголовков\App</Filter>
     </ClInclude>
@@ -194,6 +191,9 @@
     </ClInclude>
     <ClInclude Include="LightingRenderPass.h">
       <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Файлы заголовков\Scene\Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -260,9 +260,6 @@
     <ClCompile Include="DescriptorPool.cpp">
       <Filter>Исходные файлы\Vulkan\Other</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Исходные файлы\Scene\Model</Filter>
-    </ClCompile>
     <ClCompile Include="Controller.cpp">
       <Filter>Исходные файлы\App</Filter>
     </ClCompile>
@@ -304,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="LightingRenderPass.cpp">
       <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Исходные файлы\Scene\Mesh</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

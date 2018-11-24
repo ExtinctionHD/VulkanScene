@@ -18,7 +18,8 @@ public:
 	Device(
 		VkInstance instance,
 		VkSurfaceKHR surface,
-		std::vector<const char *> requiredLayers
+		std::vector<const char *> requiredLayers,
+		VkSampleCountFlagBits maxRequiredSampleCount
 	);
 
 	// destroy device
@@ -61,10 +62,10 @@ private:
 
 	VkSampleCountFlagBits sampleCount{};
 
-	void pickPhysicalDevice(
-		VkInstance instance, 
-		VkSurfaceKHR surface
-	);
+    VkPhysicalDevice pickPhysicalDevice(
+        VkInstance instance,
+        VkSurfaceKHR surface
+    ) const;
 
 	// has all required queue families,
 	// support this pSurface (capabilities, formats, present modes)
@@ -76,7 +77,7 @@ private:
 		std::vector<const char *> requiredExtensions
 	);
 
-	VkSampleCountFlagBits getMaxSupportedSampleCount() const;  // max sample count supported by picked GPU
+	VkSampleCountFlagBits getMaxSupportedSampleCount(VkPhysicalDevice physicalDevice) const;  // max sample count supported by picked GPU
 
 	// layers must be supported not only by instance, but also by GPU
 	static bool checkDeviceLayerSupport(VkPhysicalDevice device, std::vector<const char *> requiredLayers);
