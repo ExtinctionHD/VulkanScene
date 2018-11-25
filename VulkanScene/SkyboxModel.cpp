@@ -2,7 +2,7 @@
 
 // public:
 
-SkyboxModel::SkyboxModel(Device *pDevice, std::string texturesDir, std::string extension) : 
+SkyboxModel::SkyboxModel(Device *pDevice, const std::string &texturesDir, const std::string &extension) : 
 	Model(pDevice)
 {
 	const std::vector<std::string> filenames = {

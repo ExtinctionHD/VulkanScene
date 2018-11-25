@@ -7,7 +7,7 @@
 
 // public:
 
-std::vector<char> File::getFileBytes(std::string filename)
+std::vector<char> File::getFileBytes(const std::string &filename)
 {
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);
 

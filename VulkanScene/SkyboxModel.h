@@ -11,7 +11,7 @@ class SkyboxModel : public Model
 public:
 	static const int CUBE_SIDE_COUNT = 6;
 
-	SkyboxModel(Device *pDevice, std::string texturesDir, std::string extension);
+	SkyboxModel(Device *pDevice, const std::string &texturesDir, const std::string &extension);
 	~SkyboxModel();
 
 protected:

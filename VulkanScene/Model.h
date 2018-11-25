@@ -47,21 +47,21 @@ public:
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
 	GraphicsPipeline* createPipeline(
-		std::vector<VkDescriptorSetLayout> layouts,
+	    const std::vector<VkDescriptorSetLayout> &layouts,
 		RenderPassType type,
 		RenderPass *pRenderPass,
-		std::vector<ShaderModule*> shaderModules
+	    const std::vector<ShaderModule*> &shaderModules
 	);
 
 	void setPipeline(RenderPassType type, GraphicsPipeline *pPipeline);
 
-	void renderDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
+	void renderDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
-	void renderGeometry(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
+	void renderGeometry(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
-	void renderLighting(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
+	void renderLighting(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
-	void renderFinal(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
+	void renderFinal(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
 protected:
 	Model(Device *pDevice);

@@ -6,8 +6,13 @@
 
 // public:
 
-TerrainModel::TerrainModel(Device *pDevice, VkExtent2D size, VkExtent2D cellCount, std::string texturesDir, std::string extension) :
-	Model(pDevice)
+TerrainModel::TerrainModel(
+	Device *pDevice, 
+	VkExtent2D size, 
+	VkExtent2D cellCount, 
+	const std::string &texturesDir,
+	const std::string &extension
+) : Model(pDevice)
 {
 	this->size = size;
 	this->cellCount = cellCount;
@@ -39,7 +44,7 @@ std::vector<VkVertexInputAttributeDescription> TerrainModel::getVertexInputAttri
 
 // private:
 
-void TerrainModel::initMaterial(std::string texturesDir, std::string extension)
+void TerrainModel::initMaterial(const std::string &texturesDir, const std::string &extension)
 {
 	const std::vector<aiTextureType> types = {
 		aiTextureType_DIFFUSE,
