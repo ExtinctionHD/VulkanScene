@@ -9,6 +9,8 @@ public:
 
     uint32_t getColorAttachmentCount() const override;
 
+	Image* getColorImage() const;
+
 protected:
     void createAttachments() override;
 

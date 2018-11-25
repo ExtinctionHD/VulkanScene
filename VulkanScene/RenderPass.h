@@ -21,7 +21,7 @@ public:
 
 	virtual std::vector<VkClearValue> getClearValues() const;
 
-	VkSampleCountFlagBits getAttachmentsMaxSampleCount() const;
+	VkSampleCountFlagBits getSampleCount() const;
 
 	void create();
 
@@ -47,6 +47,8 @@ protected:
 	VkExtent2D extent{};
 
 	VkFormat depthAttachmentFormat;
+
+	VkSampleCountFlagBits sampleCount;
 
 	std::vector<Image*> attachments{};
 

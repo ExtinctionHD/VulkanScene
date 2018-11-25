@@ -5,11 +5,17 @@
 LightingRenderPass::LightingRenderPass(Device *pDevice, SwapChain *pSwapChain) : RenderPass(pDevice, pSwapChain->getExtent())
 {
 	this->pSwapChain = pSwapChain;
+	sampleCount = pDevice->getSampleCount();
 }
 
 uint32_t LightingRenderPass::getColorAttachmentCount() const
 {
 	return 1;
+}
+
+Image * LightingRenderPass::getColorImage() const
+{
+	return pColorImage;
 }
 
 void LightingRenderPass::createAttachments()
@@ -24,7 +30,7 @@ void LightingRenderPass::createAttachments()
 		pDevice,
 		attachmentExtent,
 		0,
-		VK_SAMPLE_COUNT_1_BIT,
+		pDevice->getSampleCount(),
 		1,
 		pSwapChain->getImageFormat(),
 		VK_IMAGE_TILING_OPTIMAL,
@@ -66,6 +72,10 @@ void LightingRenderPass::createRenderPass()
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,	        // stencilStoreOp;
 		VK_IMAGE_LAYOUT_UNDEFINED,			        // initialLayout;
 		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,   // finalLayout;
+	};
+
+	std::vector<VkAttachmentDescription> attachmentDescriptions{
+		colorAttachmentDesc
 	};
 
 	// references to attachments
@@ -123,8 +133,8 @@ void LightingRenderPass::createRenderPass()
 		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,	// sType;
 		nullptr,									// pNext;
 		0,											// flags;
-		1,				                            // attachmentCount;
-		&colorAttachmentDesc,				        // pAttachments;
+		attachmentDescriptions.size(),				// attachmentCount;
+		attachmentDescriptions.data(),				// pAttachments;
 		1,											// subpassCount;
 		&subpass,									// pSubpasses;
 		dependencies.size(),						// dependencyCount;
@@ -137,31 +147,27 @@ void LightingRenderPass::createRenderPass()
 
 void LightingRenderPass::createFramebuffers()
 {
-	std::vector<VkImageView> swapChainImageViews = pSwapChain->getImageViews();
+	VkFramebuffer framebuffer;
 
-	framebuffers.resize(swapChainImageViews.size());
+	std::vector<VkImageView> imageViews{
+		pColorImage->view,
+	};
 
-	for (size_t i = 0; i < swapChainImageViews.size(); i++)
-	{
-		std::vector<VkImageView> imageViews{
-			//pColorImage->view,
-			swapChainImageViews[i]
-		};
+	VkFramebufferCreateInfo createInfo{
+		VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
+		nullptr,									// pNext;
+		0,											// flags;
+		renderPass,									// renderPass;
+		imageViews.size(),							// attachmentCount;
+		imageViews.data(),							// pAttachments;
+		extent.width,								// width;
+		extent.height,								// height;
+		1,											// layers;
+	};
 
-		VkFramebufferCreateInfo createInfo{
-			VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
-			nullptr,									// pNext;
-			0,											// flags;
-			renderPass,									// renderPass;
-			imageViews.size(),							// attachmentCount;
-			imageViews.data(),							// pAttachments;
-			extent.width,								// width;
-			extent.height,								// height;
-			1,											// layers;
-		};
+	VkResult result = vkCreateFramebuffer(pDevice->device, &createInfo, nullptr, &framebuffer);
+	assert(result == VK_SUCCESS);
 
-		VkResult result = vkCreateFramebuffer(pDevice->device, &createInfo, nullptr, &framebuffers[i]);
-		assert(result == VK_SUCCESS);
-	}
+	framebuffers.push_back(framebuffer);
 }
 

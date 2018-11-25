@@ -4,6 +4,7 @@
 
 GeometryRenderPass::GeometryRenderPass(Device *pDevice, VkExtent2D attachmentExtent) : RenderPass(pDevice, attachmentExtent)
 {
+	sampleCount = pDevice->getSampleCount();
 }
 
 uint32_t GeometryRenderPass::getColorAttachmentCount() const
@@ -14,6 +15,11 @@ uint32_t GeometryRenderPass::getColorAttachmentCount() const
 std::vector<TextureImage *> GeometryRenderPass::getMaps() const
 {
 	return { pPosMap, pNormalMap, pAlbedoMap, pLightSpacePosMap };
+}
+
+Image * GeometryRenderPass::getDepthImage() const
+{
+	return pDepthImage;
 }
 
 void GeometryRenderPass::createAttachments()

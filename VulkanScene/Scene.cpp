@@ -267,7 +267,8 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 	);
 
     std::vector<TextureImage*> maps = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY))->getMaps();
-	maps.push_back(dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthMap());
+	TextureImage *pShadowsMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthMap();
+	maps.push_back(pShadowsMap);
 
 	descriptors.insert({ LIGHTING, {} });
 	descriptors.at(LIGHTING).set = pDescriptorPool->getDescriptorSet(
@@ -279,8 +280,8 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 
 	descriptors.insert({ FINAL, {} });
 	descriptors.at(FINAL).set = pDescriptorPool->getDescriptorSet(
-		{ pCamera->getSpaceBuffer(), pLighting->getSpaceBuffer() },
-		{ },
+		{ pCamera->getSpaceBuffer(), pLighting->getSpaceBuffer(), pLighting->getAttributesBuffer() },
+		{ pShadowsMap },
 		true,
 		descriptors.at(FINAL).layout
 	);

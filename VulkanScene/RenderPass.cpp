@@ -1,5 +1,4 @@
 ﻿#include "RenderPass.h"
-#include <algorithm>
 
 // public:
 
@@ -13,18 +12,9 @@ VkRenderPass RenderPass::getRenderPass() const
 	return renderPass;
 }
 
-VkSampleCountFlagBits RenderPass::getAttachmentsMaxSampleCount() const
+VkSampleCountFlagBits RenderPass::getSampleCount() const
 {
-	Image *maxSampleCount = *std::max_element(
-        attachments.begin(),
-        attachments.end(),
-        [](Image *a, Image *b)
-        {
-		    return a->getSampleCount() < b->getSampleCount();
-        }
-	);
-
-	return maxSampleCount->getSampleCount();
+	return sampleCount;
 }
 
 std::vector<VkFramebuffer> RenderPass::getFramebuffers() const
@@ -76,6 +66,7 @@ void RenderPass::recreate(VkExtent2D newExtent)
 }
 
 RenderPass::RenderPass(Device *pDevice, VkExtent2D extent)
+    : sampleCount()
 {
     this->pDevice = pDevice;
     this->extent = extent;

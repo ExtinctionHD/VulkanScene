@@ -122,6 +122,9 @@ float getShading(vec4 fragPosLightSpace, float bias)
     return shadow;
 }
 
+const float BIAS_FACTOR = 0.001f;
+const float MIN_BIAS = 0.0001f;
+
 // fragment shader code:
 void main() 
 {
@@ -129,7 +132,7 @@ void main()
 	vec3 V = normalize(light.cameraPos - fragPos);
 	vec3 N = getBumpedNormal(fragNormal, fragTangent, fragTexCoord, normalMap);
 
-	float bias = max(0.0015f * (1.0f - dot(N, light.direction)), 0.00015f);
+	float bias = max(BIAS_FACTOR * (1.0f - dot(N, light.direction)), MIN_BIAS);
 	float illumination = 1.0f - getShading(fragPosLightingSpace, bias);
 
 	float ambientI = getAmbientIntensity();

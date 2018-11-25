@@ -8,6 +8,7 @@ FinalRenderPass::FinalRenderPass(Device *pDevice, SwapChain *pSwapChain)
     : RenderPass(pDevice, pSwapChain->getExtent())
 {
     this->pSwapChain = pSwapChain;
+	sampleCount = pDevice->getSampleCount();
 }
 
 uint32_t FinalRenderPass::getColorAttachmentCount() const
@@ -15,81 +16,18 @@ uint32_t FinalRenderPass::getColorAttachmentCount() const
 	return 1;
 }
 
+void FinalRenderPass::saveRenderPasses(GeometryRenderPass *pGeometryRenderPass, LightingRenderPass *pLightingRenderPass)
+{
+	this->pGeometryRenderPass = pGeometryRenderPass;
+	this->pLightingRenderPass = pLightingRenderPass;
+}
+
 // protected:
 
 void FinalRenderPass::createAttachments()
 {
-	VkExtent3D attachmentExtent{
-		extent.width,
-		extent.height,
-		1
-	};
-
-	// color attachment
-
-	pColorImage = new Image(
-		pDevice,
-		attachmentExtent,
-		0,
-		pDevice->getSampleCount(),
-		1,
-		pSwapChain->getImageFormat(),
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		1
-	);
-	attachments.push_back(pColorImage);
-
-	VkImageSubresourceRange subresourceRange{
-		VK_IMAGE_ASPECT_COLOR_BIT,	// aspectMask;
-		0,							// baseMipLevel;
-		1,							// levelCount;
-		0,							// baseArrayLayer;
-		1,							// layerCount;
-	};
-
-	pColorImage->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
-
-	pColorImage->transitLayout(
-		pDevice,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-		subresourceRange
-	);
-
-	// depth attachment
-
-	pDepthImage = new Image(
-		pDevice,
-		attachmentExtent,
-		0,
-		pDevice->getSampleCount(),
-		1,
-		depthAttachmentFormat,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		1
-	);
-	attachments.push_back(pDepthImage);
-
-	subresourceRange = VkImageSubresourceRange{
-		VK_IMAGE_ASPECT_DEPTH_BIT,	// aspectMask;
-		0,							// baseMipLevel;
-		1,							// levelCount;
-		0,							// baseArrayLayer;
-		1,							// layerCount;
-	};
-
-	pDepthImage->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
-
-	pDepthImage->transitLayout(
-		pDevice,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
-		subresourceRange
-	);
+	 pDepthImage = pGeometryRenderPass->getDepthImage();
+	 pColorImage = pLightingRenderPass->getColorImage();
 }
 
 void FinalRenderPass::createRenderPass()
@@ -100,11 +38,11 @@ void FinalRenderPass::createRenderPass()
 		0,									        // flags;
 		pColorImage->format,		                // format;
 		pColorImage->getSampleCount(),			    // samples;
-		VK_ATTACHMENT_LOAD_OP_CLEAR,		        // loadOp;
+		VK_ATTACHMENT_LOAD_OP_LOAD,		            // loadOp;
 		VK_ATTACHMENT_STORE_OP_STORE,		        // storeOp;
 		VK_ATTACHMENT_LOAD_OP_DONT_CARE,	        // stencilLoadOp;
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,	        // stencilStoreOp;
-		VK_IMAGE_LAYOUT_UNDEFINED,			        // initialLayout;
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,	// initialLayout;
 		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,   // finalLayout;
 	};
 
@@ -112,15 +50,15 @@ void FinalRenderPass::createRenderPass()
 		0,													// flags;
 		pDepthImage->getFormat(),							// format;
 		pDepthImage->getSampleCount(),						// samples;
-		VK_ATTACHMENT_LOAD_OP_CLEAR,						// loadOp;
+		VK_ATTACHMENT_LOAD_OP_LOAD,						    // loadOp;
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,					// storeOp;
 		VK_ATTACHMENT_LOAD_OP_DONT_CARE,					// stencilLoadOp;
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,					// stencilStoreOp;
-		VK_IMAGE_LAYOUT_UNDEFINED,							// initialLayout;
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,			// initialLayout;
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,	// finalLayout;
 	};
 
-	VkAttachmentDescription colorAttachmentResolveDesc{
+	VkAttachmentDescription resolveAttachmentDesc{
 		0,                                  // flags;
 		pSwapChain->getImageFormat(),       // format;
 		VK_SAMPLE_COUNT_1_BIT,              // samples;
@@ -135,7 +73,7 @@ void FinalRenderPass::createRenderPass()
 	std::vector<VkAttachmentDescription> attachmentDescriptions{
 		colorAttachmentDesc,
 		depthAttachmentDesc,
-		colorAttachmentResolveDesc
+		resolveAttachmentDesc
 	};
 
 	// references to attachments
@@ -150,7 +88,7 @@ void FinalRenderPass::createRenderPass()
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL	// layout;
 	};
 
-	VkAttachmentReference colorAttachmentResolveRef{
+	VkAttachmentReference resolveAttachmentRef{
 		2,											// attachment;
 		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL	// layout;
 	};
@@ -164,7 +102,7 @@ void FinalRenderPass::createRenderPass()
 		nullptr,							// pInputAttachmentReferences;
 		1,									// colorAttachmentCount;
 		&colorAttachmentRef,				// pColorAttachmentReferences;
-		&colorAttachmentResolveRef,			// pResolveAttachmentReference;
+		&resolveAttachmentRef,			    // pResolveAttachmentReference;
 		&depthAttachmentRef,				// pDepthStencilAttachmentReference;
 		0,									// preserveAttachmentCount;
 		nullptr								// pPreserveAttachments;

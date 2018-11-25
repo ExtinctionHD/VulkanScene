@@ -5,6 +5,7 @@
 
 DepthRenderPass::DepthRenderPass(Device *pDevice, VkExtent2D attachmentExtent) : RenderPass(pDevice, attachmentExtent)
 {
+	sampleCount = VK_SAMPLE_COUNT_1_BIT;
 }
 
 uint32_t DepthRenderPass::getColorAttachmentCount() const

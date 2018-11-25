@@ -141,9 +141,9 @@ void Vulkan::resize(VkExtent2D newExtent)
 
 	pSwapChain->recreate(newExtent);
 
-	renderPasses.at(FINAL)->recreate(pSwapChain->getExtent());
 	renderPasses.at(GEOMETRY)->recreate(pSwapChain->getExtent());
 	renderPasses.at(LIGHTING)->recreate(pSwapChain->getExtent());
+	renderPasses.at(FINAL)->recreate(pSwapChain->getExtent());
 
 	pScene->resizeExtent(pSwapChain->getExtent());
 
@@ -173,6 +173,13 @@ void Vulkan::createRenderPasses()
 
     for (auto renderPass : renderPasses)
     {
+        if (renderPass.first == FINAL)
+        {
+			dynamic_cast<FinalRenderPass*>(renderPass.second)->saveRenderPasses(
+				dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY)),
+				dynamic_cast<LightingRenderPass*>(renderPasses.at(LIGHTING))
+			);
+        }
 		renderPass.second->create();
     }
 }
@@ -210,11 +217,13 @@ void Vulkan::initGraphicsCommands()
 		result = vkBeginCommandBuffer(graphicCommands[i], &beginInfo);
 		assert(result == VK_SUCCESS);
 
-		beginDepthRenderPass(graphicCommands[i]);
+		recordDepthRenderPassCommands(graphicCommands[i]);
 
-		beginGeometryRenderPass(graphicCommands[i]);
+		recordGeometryRenderPassCommands(graphicCommands[i]);
 
-		beginLightingRenderPass(graphicCommands[i], i);
+		recordLightingRenderPassCommands(graphicCommands[i]);
+
+		recordFinalRenderPassCommands(graphicCommands[i], i);
 
 		result = vkEndCommandBuffer(graphicCommands[i]);
 		assert(result == VK_SUCCESS);
@@ -231,19 +240,19 @@ void Vulkan::beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type,
 	std::vector<VkClearValue> clearValues = renderPasses.at(type)->getClearValues();
 
 	VkRenderPassBeginInfo renderPassBeginInfo{
-	    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,   // sType;
-	    nullptr,                                    // pNext;
-	    renderPasses.at(type)->getRenderPass(),     // renderPass;
-	    renderPasses.at(type)->getFramebuffers()[framebufferIndex],       // framebuffer;
-	    renderArea,									        // renderArea;
-	    uint32_t(clearValues.size()),    // clearValueCount;
-		clearValues.data()     // pClearValues;
+	    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,                   // sType;
+	    nullptr,                                                    // pNext;
+	    renderPasses.at(type)->getRenderPass(),                     // renderPass;
+	    renderPasses.at(type)->getFramebuffers()[framebufferIndex], // framebuffer;
+	    renderArea,                                                 // renderArea;
+	    uint32_t(clearValues.size()),                               // clearValueCount;
+		clearValues.data()                                          // pClearValues;
 	};
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void Vulkan::beginDepthRenderPass(VkCommandBuffer commandBuffer)
+void Vulkan::recordDepthRenderPassCommands(VkCommandBuffer commandBuffer)
 {
 	beginRenderPass(commandBuffer, DEPTH, 0);
 
@@ -252,7 +261,7 @@ void Vulkan::beginDepthRenderPass(VkCommandBuffer commandBuffer)
 	vkCmdEndRenderPass(commandBuffer);
 }
 
-void Vulkan::beginGeometryRenderPass(VkCommandBuffer commandBuffer)
+void Vulkan::recordGeometryRenderPassCommands(VkCommandBuffer commandBuffer)
 {
 	beginRenderPass(commandBuffer, GEOMETRY, 0);
 
@@ -261,16 +270,16 @@ void Vulkan::beginGeometryRenderPass(VkCommandBuffer commandBuffer)
 	vkCmdEndRenderPass(commandBuffer);
 }
 
-void Vulkan::beginLightingRenderPass(VkCommandBuffer commandBuffer, uint32_t index)
+void Vulkan::recordLightingRenderPassCommands(VkCommandBuffer commandBuffer)
 {
-	beginRenderPass(commandBuffer, LIGHTING, index);
+	beginRenderPass(commandBuffer, LIGHTING, 0);
 
 	pScene->renderLighting(commandBuffer);
 
 	vkCmdEndRenderPass(commandBuffer);
 }
 
-void Vulkan::beginFinalRenderPass(VkCommandBuffer commandBuffer, uint32_t index)
+void Vulkan::recordFinalRenderPassCommands(VkCommandBuffer commandBuffer, uint32_t index)
 {
 	beginRenderPass(commandBuffer, FINAL, index);
 

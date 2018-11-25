@@ -67,13 +67,13 @@ private:
 
 	void beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex);
 
-	void beginDepthRenderPass(VkCommandBuffer commandBuffer);
+	void recordDepthRenderPassCommands(VkCommandBuffer commandBuffer);
 
-	void beginGeometryRenderPass(VkCommandBuffer commandBuffer);
+	void recordGeometryRenderPassCommands(VkCommandBuffer commandBuffer);
 
-	void beginLightingRenderPass(VkCommandBuffer commandBuffer, uint32_t index);
+	void recordLightingRenderPassCommands(VkCommandBuffer commandBuffer);
 
-	void beginFinalRenderPass(VkCommandBuffer commandBuffer, uint32_t index);
+	void recordFinalRenderPassCommands(VkCommandBuffer commandBuffer, uint32_t index);
 
 	static void createSemaphore(VkDevice device, VkSemaphore& semaphore);
 };

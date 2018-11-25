@@ -30,7 +30,7 @@ vec4 resolve(sampler2DMS tex, ivec2 uv)
 	vec4 result = vec4(0.0);	   
 	for (int i = 0; i < (NUM_SAMPLES); i++)
 	{
-		vec4 val = texelFetch(tex, uv, 0, i); 
+		vec4 val = texelFetch(tex, uv, i); 
 		result += val;
 	}    
 	// Average resolved samples
@@ -98,12 +98,15 @@ float getShading(vec4 fragPosLightSpace, float bias)
     return shadow;
 }
 
+const float BIAS_FACTOR = 0.001f;
+const float MIN_BIAS = 0.0001f;
+
 vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, vec4 lightSpacePos)
 {
 	vec3 L = normalize(-light.direction);
 	vec3 V = normalize(light.cameraPos - pos);
 
-	float bias = max(0.001f * (1.0f - dot(N, light.direction)), 0.0001f);
+	float bias = max(BIAS_FACTOR * (1.0f - dot(N, light.direction)), MIN_BIAS);
 	float illumination = 1.0f - getShading(lightSpacePos, bias);
 
 	float ambientI = getAmbientIntensity();

@@ -14,6 +14,8 @@ public:
 
 	std::vector<TextureImage*> getMaps() const;
 
+	Image* getDepthImage() const;
+
 protected:
 	void createAttachments() override;
 
