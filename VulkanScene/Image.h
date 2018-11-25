@@ -9,9 +9,9 @@ class Image :
 	public SwapChainImage
 {
 public:
-	Image() {}
+	Image() = default;
 
-	Image(
+    Image(
 		Device *pDevice,
 		VkExtent3D extent,
 		VkImageCreateFlags flags,
@@ -30,6 +30,8 @@ public:
 	VkExtent3D extent{};
 
 	VkImageView view = VK_NULL_HANDLE;
+
+	VkSampleCountFlagBits getSampleCount() const;
 
 	void createImageView(VkImageSubresourceRange subresourceRange, VkImageViewType viewType);
 
@@ -66,6 +68,8 @@ protected:
 private:
 	// memory that stores this image
 	VkDeviceMemory stagingMemory = VK_NULL_HANDLE;
+
+	VkSampleCountFlagBits sampleCount{};
 
 	void allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties);
 };

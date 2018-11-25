@@ -1,10 +1,12 @@
 #include "AssimpModel.h"
 #include "SkyboxModel.h"
 
-#include "Scene.h"
 #include "DepthRenderPass.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/rotate_vector.hpp>
+#include "GeometryRenderPass.h"
+
+#include "Scene.h"
 
 // public:
 
@@ -31,8 +33,10 @@ Scene::~Scene()
 		delete pModel;
 	}
 
-	vkDestroyDescriptorSetLayout(pDevice->device, depthDsLayout, nullptr);
-	vkDestroyDescriptorSetLayout(pDevice->device, sceneDsLayout, nullptr);
+    for (auto descriptorStruct : descriptors)
+    {
+		vkDestroyDescriptorSetLayout(pDevice->device, descriptorStruct.second.layout, nullptr);
+    }
 
 	delete pLighting;
 	delete pCamera;
@@ -58,7 +62,7 @@ uint32_t Scene::getBufferCount() const
 
 uint32_t Scene::getTextureCount() const
 {
-	uint32_t textureCount = 1;
+	uint32_t textureCount = 5;
 
 	for (Model *pModel : models)
 	{
@@ -70,7 +74,7 @@ uint32_t Scene::getTextureCount() const
 
 uint32_t Scene::getDescriptorSetCount() const
 {
-	uint32_t setCount = 2;
+	uint32_t setCount = 4;
 
 	for (Model *pModel : models)
 	{
@@ -97,27 +101,44 @@ void Scene::updateScene()
 	pSkybox->setTransform(translate(glm::mat4(1.0f), pCamera->getPos()));
 }
 
-void Scene::drawDepth(VkCommandBuffer commandBuffer)
+void Scene::renderDepth(VkCommandBuffer commandBuffer)
 {
 	for (Model *pModel : models)
 	{
         if (pModel != pSkybox && pModel != pTerrain)
         {
-			pModel->drawDepth(commandBuffer, { depthDescriptorSet }, pDepthPipeline);
+			pModel->renderDepth(commandBuffer, { descriptors.at(DEPTH).set });
         }
 	}
 }
 
-void Scene::draw(VkCommandBuffer commandBuffer)
+void Scene::renderGeometry(VkCommandBuffer commandBuffer)
 {
 	for (Model *pModel : models)
 	{
-		pModel->drawSolid(commandBuffer, { sceneDescriptorSet });
+		if (pModel != pSkybox)
+		{
+			pModel->renderGeometry(commandBuffer, { descriptors.at(GEOMETRY).set });
+		}
 	}
+}
 
+void Scene::renderLighting(VkCommandBuffer commandBuffer)
+{
 	for (Model *pModel : models)
 	{
-		pModel->drawTransparent(commandBuffer, { sceneDescriptorSet });
+		if (pModel != pSkybox)
+		{
+			pModel->renderLighting(commandBuffer, { descriptors.at(LIGHTING).set });
+		}
+	}
+}
+
+void Scene::renderFinal(VkCommandBuffer commandBuffer)
+{
+	for (Model *pModel : models)
+    {
+		pModel->renderFinal(commandBuffer, { descriptors.at(FINAL).set });
 	}
 }
 
@@ -229,18 +250,40 @@ void Scene::initModels()
 
 void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
 {
-	depthDescriptorSet = pDescriptorPool->getDescriptorSet({ pLighting->getSpaceBuffer() }, { }, true, depthDsLayout);
-
-	auto pDepthMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(depth))->getDepthMap();
-	sceneDescriptorSet = pDescriptorPool->getDescriptorSet(
-		{ 
-		    pCamera->getSpaceBuffer(), 
-		    pLighting->getSpaceBuffer(), 
-		    pLighting->getAttributesBuffer(), 
-		},
-		{ pDepthMap },
+	descriptors.insert({ DEPTH, {} });
+	descriptors.at(DEPTH).set = pDescriptorPool->getDescriptorSet(
+		{ pLighting->getSpaceBuffer() },
+		{ },
 		true,
-		sceneDsLayout
+		descriptors.at(DEPTH).layout
+	);
+
+	descriptors.insert({ GEOMETRY, {} });
+	descriptors.at(GEOMETRY).set = pDescriptorPool->getDescriptorSet(
+		{ pCamera->getSpaceBuffer(), pLighting->getSpaceBuffer() },
+		{ },
+		true,
+		descriptors.at(GEOMETRY).layout
+	);
+
+    std::vector<TextureImage*> maps = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY))->getMaps();
+	TextureImage *pShadowsMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthMap();
+	maps.push_back(pShadowsMap);
+
+	descriptors.insert({ LIGHTING, {} });
+	descriptors.at(LIGHTING).set = pDescriptorPool->getDescriptorSet(
+		{ pLighting->getAttributesBuffer() },
+		maps, 
+		true, 
+		descriptors.at(LIGHTING).layout
+	);
+
+	descriptors.insert({ FINAL, {} });
+	descriptors.at(FINAL).set = pDescriptorPool->getDescriptorSet(
+		{ pCamera->getSpaceBuffer(), pLighting->getSpaceBuffer(), pLighting->getAttributesBuffer() },
+		{ pShadowsMap },
+		true,
+		descriptors.at(FINAL).layout
 	);
 
 	for (Model *pModel : models)
@@ -251,44 +294,53 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 
 void Scene::initPipelines(RenderPassesMap renderPasses)
 {
-	const std::string DEPTH_SHADERS_DIR = File::getExeDir() + "shaders/depth/";
-	const std::string MODELS_SHADERS_DIR = File::getExeDir() + "shaders/models/";
-	const std::string SKY_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
+	const std::string SKYBOX_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
 
-    // create pipeline for rendering scene depth
-	const uint32_t inputBinding = 0;
-	pDepthPipeline = new GraphicsPipeline(
-		pDevice,
-		{ depthDsLayout, Model::getTransformDsLayout() },
-		renderPasses.at(depth),
-		{
-			new ShaderModule(pDevice->device, DEPTH_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, DEPTH_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
-		},
-		Vertex::getBindingDescription(inputBinding),
-		Vertex::getAttributeDescriptions(inputBinding),
-        VK_SAMPLE_COUNT_1_BIT
-	);
-	pipelines.push_back(pDepthPipeline);
+    std::unordered_map<RenderPassType, std::string> shadersDirectories{
+		{ DEPTH, File::getExeDir() + "shaders/depth/" },
+		{ GEOMETRY, File::getExeDir() + "shaders/geometry/" },
+		{ LIGHTING, File::getExeDir() + "shaders/lighting/" },
+		{ FINAL, File::getExeDir() + "shaders/final/" }
+	};
 
-    // create main pipeline
-	pipelines.push_back(pCar->createFinalPipeline(
-		{ sceneDsLayout },
-		renderPasses.at(final),
+    for (auto shadersDir : shadersDirectories)
+    {
+		RenderPassType type = shadersDir.first;
+		std::string directory = shadersDir.second;
+
+		std::vector<ShaderModule*> shaders;
+		shaders.push_back(new ShaderModule(pDevice->device, directory + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT));
+        if (type == LIGHTING)
+        {
+            VkSpecializationMapEntry entry{
+			    0,                  // constantID
+			    0,                  // offset
+			    sizeof(uint32_t)    // size
+			};
+			uint32_t sampleCount = pDevice->getSampleCount();
+			shaders.push_back(new ShaderModule(pDevice->device, directory + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT, { entry }, { &sampleCount }));
+        } 
+        else
 		{
-			new ShaderModule(pDevice->device, MODELS_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, MODELS_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+		    shaders.push_back(new ShaderModule(pDevice->device, directory + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT));
 		}
-	));
-	pTerrain->setPipeline(*--pipelines.end());
 
-    // create pipeline for skybox rendering
-	pipelines.push_back(pSkybox->createFinalPipeline(
-		{ sceneDsLayout },
-		renderPasses.at(final),
+		pipelines.push_back(pCar->createPipeline(
+			{ descriptors.at(type).layout },
+            type,
+			renderPasses.at(type),
+            shaders
+		));
+		pTerrain->setPipeline(type, pCar->getPipeline(type));
+    }
+
+	pipelines.push_back(pSkybox->createPipeline(
+		{ descriptors.at(FINAL).layout },
+        FINAL,
+		renderPasses.at(FINAL),
 		{
-			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, SKY_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+			new ShaderModule(pDevice->device, SKYBOX_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, SKYBOX_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
 		}
 	));
 

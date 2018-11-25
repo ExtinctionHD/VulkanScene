@@ -1,13 +1,5 @@
 #include "Timer.h"
 
-Timer::Timer()
-{
-}
-
-Timer::~Timer()
-{
-}
-
 double Timer::getDeltaSec()
 {
 	double deltaSec = 0;

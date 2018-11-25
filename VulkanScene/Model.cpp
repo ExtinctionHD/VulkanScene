@@ -90,6 +90,11 @@ uint32_t Model::getMeshCount() const
 	return solidMeshes.size();
 }
 
+GraphicsPipeline * Model::getPipeline(RenderPassType type) const
+{
+	return pipelines.at(type);
+}
+
 VkDescriptorSetLayout Model::getTransformDsLayout()
 {
 	return transformDsLayout;
@@ -105,42 +110,40 @@ void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 	}
 }
 
-GraphicsPipeline * Model::createFinalPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules)
-{
-	layouts.push_back(transformDsLayout);
-	layouts.push_back(Material::getDsLayout());
-
-	const uint32_t inputBinding = 0;
-
-	pPipeline = new GraphicsPipeline(
-		pDevice,
-		layouts,
-		pRenderPass,
-		shaderModules,
-		getVertexInputBindingDescription(inputBinding),
-		getVertexInputAttributeDescriptions(inputBinding),
-		pDevice->getSampleCount()
-	);
-
-	return pPipeline;
-}
-
-void Model::setPipeline(GraphicsPipeline * pPipeline)
-{
-	this->pPipeline = pPipeline;
-}
-
-void Model::drawDepth(
-    VkCommandBuffer commandBuffer,
-    std::vector<VkDescriptorSet> descriptorSets,
-    GraphicsPipeline *pDepthPipeline
+GraphicsPipeline * Model::createPipeline(
+    const std::vector<VkDescriptorSetLayout> &layouts,
+    RenderPassType type,
+    RenderPass *pRenderPass,
+    const std::vector<ShaderModule *> &shaderModules
 )
 {
+    switch (type)
+    {
+    case DEPTH:
+		return createDepthPipeline(layouts, pRenderPass, shaderModules);
+    case GEOMETRY:
+		return createGeometryPipeline(layouts, pRenderPass, shaderModules);
+    case LIGHTING:
+		return createLightingPipeline(layouts, pRenderPass, shaderModules);
+    case FINAL:
+		return createFinalPipeline(layouts, pRenderPass, shaderModules);
+    default: 
+        throw std::invalid_argument("No pipeline for this render pass type");
+    }
+}
+
+void Model::setPipeline(RenderPassType type, GraphicsPipeline * pPipeline)
+{
+	pipelines.insert({ type, pPipeline });
+}
+
+void Model::renderDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const
+{
 	descriptorSets.push_back(transformDescriptorSet);
 
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pDepthPipeline->pipeline);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(DEPTH)->pipeline);
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pDepthPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(DEPTH)->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
 
 	for (auto &mesh : solidMeshes)
 	{
@@ -148,38 +151,23 @@ void Model::drawDepth(
 	}
 }
 
-void Model::drawSolid(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
+void Model::renderGeometry(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const
 {
-	descriptorSets.push_back(transformDescriptorSet);
-
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->pipeline);
-
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
-
-	for (auto &mesh : solidMeshes)
-	{
-		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDescriptorSet();
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
-
-		mesh->draw(commandBuffer);
-	}
+	renderMeshes(commandBuffer, descriptorSets, GEOMETRY, solidMeshes);
 }
 
-void Model::drawTransparent(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
+void Model::renderLighting(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const
 {
-	descriptorSets.push_back(transformDescriptorSet);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(LIGHTING)->pipeline);
 
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->pipeline);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(LIGHTING)->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+}
 
-	for (auto &mesh : transparentMeshes)
-	{
-		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDescriptorSet();
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pPipeline->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
-
-		mesh->draw(commandBuffer);
-	}
+void Model::renderFinal(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const
+{
+	renderMeshes(commandBuffer, descriptorSets, FINAL, transparentMeshes);
 }
 
 // protected:
@@ -199,5 +187,126 @@ Model::Model(Device *pDevice)
 uint32_t Model::objectCount = 0;
 
 VkDescriptorSetLayout Model::transformDsLayout = VK_NULL_HANDLE;
+
+GraphicsPipeline* Model::createDepthPipeline(
+	std::vector<VkDescriptorSetLayout> layouts,
+	RenderPass *pRenderPass,
+	std::vector<ShaderModule*> shaderModules
+)
+{
+	layouts.push_back(transformDsLayout);
+
+	const uint32_t inputBinding = 0;
+
+	GraphicsPipeline *pPipeline = new GraphicsPipeline(
+		pDevice,
+		layouts,
+		pRenderPass,
+	    shaderModules,
+		getVertexInputBindingDescription(inputBinding),
+		getVertexInputAttributeDescriptions(inputBinding),
+		pRenderPass->getSampleCount(),
+        pRenderPass->getColorAttachmentCount(),
+        VK_FALSE
+	);
+	setPipeline(DEPTH, pPipeline);
+
+	return pPipeline;
+}
+
+GraphicsPipeline* Model::createGeometryPipeline(
+	std::vector<VkDescriptorSetLayout> layouts,
+	RenderPass *pRenderPass,
+	std::vector<ShaderModule*> shaderModules
+)
+{
+	layouts.push_back(transformDsLayout);
+	layouts.push_back(Material::getDsLayout());
+
+	const uint32_t inputBinding = 0;
+
+	GraphicsPipeline *pPipeline = new GraphicsPipeline(
+		pDevice,
+		layouts,
+		pRenderPass,
+	    shaderModules,
+		getVertexInputBindingDescription(inputBinding),
+		getVertexInputAttributeDescriptions(inputBinding),
+		pRenderPass->getSampleCount(),
+        pRenderPass->getColorAttachmentCount(),
+        VK_FALSE
+	);
+	setPipeline(GEOMETRY, pPipeline);
+
+	return pPipeline;
+}
+
+GraphicsPipeline* Model::createLightingPipeline(
+	std::vector<VkDescriptorSetLayout> layouts,
+	RenderPass *pRenderPass,
+	std::vector<ShaderModule*> shaderModules
+)
+{
+	const uint32_t inputBinding = 0;
+
+	GraphicsPipeline *pPipeline = new GraphicsPipeline(
+		pDevice,
+	    layouts,
+		pRenderPass,
+	    shaderModules,
+		getVertexInputBindingDescription(inputBinding),
+		getVertexInputAttributeDescriptions(inputBinding),
+		pRenderPass->getSampleCount(),
+		pRenderPass->getColorAttachmentCount(),
+        VK_FALSE
+	);
+	setPipeline(LIGHTING, pPipeline);
+
+	return pPipeline;
+}
+
+GraphicsPipeline* Model::createFinalPipeline(
+	std::vector<VkDescriptorSetLayout> layouts,
+	RenderPass * pRenderPass,
+	std::vector<ShaderModule*> shaderModules
+)
+{
+	layouts.push_back(transformDsLayout);
+	layouts.push_back(Material::getDsLayout());
+
+	const uint32_t inputBinding = 0;
+
+	GraphicsPipeline *pPipeline = new GraphicsPipeline(
+		pDevice,
+		layouts,
+		pRenderPass,
+	    shaderModules,
+		getVertexInputBindingDescription(inputBinding),
+		getVertexInputAttributeDescriptions(inputBinding),
+		pRenderPass->getSampleCount(),
+		pRenderPass->getColorAttachmentCount(),
+        VK_TRUE
+	);
+	setPipeline(FINAL, pPipeline);
+
+	return pPipeline;
+}
+
+void Model::renderMeshes(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, RenderPassType type, std::vector<MeshBase*> meshes) const
+{
+	descriptorSets.push_back(transformDescriptorSet);
+
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(type)->pipeline);
+
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(type)->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+
+	for (auto &mesh : meshes)
+	{
+		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDescriptorSet();
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(type)->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
+
+		mesh->draw(commandBuffer);
+	}
+}
 
 

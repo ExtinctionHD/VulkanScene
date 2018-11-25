@@ -118,10 +118,10 @@ TextureImage::TextureImage(
     VkImageAspectFlags aspectFlags,
 	VkImageViewType viewType,
     uint32_t arrayLayers
-) : Image(pDevice, extent, flags, sampleCount, 1, format, tiling, usage, properties, arrayLayers)
+) : Image(pDevice, extent, flags, sampleCount, 1, format, tiling, usage | VK_IMAGE_USAGE_SAMPLED_BIT, properties, arrayLayers)
 {
 	VkImageSubresourceRange subresourceRange{
-		VK_IMAGE_ASPECT_COLOR_BIT,
+		aspectFlags,
 		0,
 		mipLevels,
 		0,

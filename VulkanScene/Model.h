@@ -40,19 +40,28 @@ public:
 
 	uint32_t getMeshCount() const;
 
+	GraphicsPipeline* getPipeline(RenderPassType type) const;
+
 	static VkDescriptorSetLayout getTransformDsLayout();
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool);
 
-	GraphicsPipeline* createFinalPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
+	GraphicsPipeline* createPipeline(
+	    const std::vector<VkDescriptorSetLayout> &layouts,
+		RenderPassType type,
+		RenderPass *pRenderPass,
+	    const std::vector<ShaderModule*> &shaderModules
+	);
 
-	void setPipeline(GraphicsPipeline *pPipeline);
+	void setPipeline(RenderPassType type, GraphicsPipeline *pPipeline);
 
-	void drawDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, GraphicsPipeline *pDepthPipeline);
+	void renderDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
-	void drawSolid(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
+	void renderGeometry(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
-	void drawTransparent(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
+	void renderLighting(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
+
+	void renderFinal(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
 protected:
 	Model(Device *pDevice);
@@ -72,15 +81,25 @@ protected:
 private:
 	static uint32_t objectCount;
 
-	GraphicsPipeline *pPipeline{};
+	std::unordered_map<RenderPassType, GraphicsPipeline*> pipelines;
 
 	glm::mat4 transform{};
 
 	Buffer *pTransformBuffer;
 
-	// descritpor set for mvp buffer
+	// descriptor set for mvp buffer
 	VkDescriptorSet transformDescriptorSet{};
 
 	static VkDescriptorSetLayout transformDsLayout;
+
+	GraphicsPipeline* createDepthPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
+
+	GraphicsPipeline* createGeometryPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
+
+	GraphicsPipeline* createLightingPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
+
+	GraphicsPipeline* createFinalPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
+
+	void renderMeshes(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, RenderPassType type, std::vector<MeshBase*> meshes) const;
 };
 

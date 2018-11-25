@@ -36,6 +36,11 @@ Image::~Image()
 	}
 }
 
+VkSampleCountFlagBits Image::getSampleCount() const
+{
+	return sampleCount;
+}
+
 void Image::createImageView(VkImageSubresourceRange subresourceRange, VkImageViewType viewType)
 {
 	VkImageViewCreateInfo createInfo{
@@ -214,6 +219,7 @@ void Image::createThisImage(
 	device = pDevice->device;
 	this->extent = extent;
 	this->format = format;
+	this->sampleCount = sampleCount;
 
 	VkImageCreateInfo imageInfo{
 		VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,	// sType;

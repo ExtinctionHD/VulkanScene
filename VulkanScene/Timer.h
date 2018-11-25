@@ -8,9 +8,6 @@ using namespace std::chrono;
 class Timer
 {
 public:
-	Timer();
-	~Timer();
-
 	// returns difference between last time point and current time in seconds
 	// and save current time as last time point
 	double getDeltaSec();

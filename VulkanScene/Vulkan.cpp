@@ -2,21 +2,33 @@
 #include <array>
 #include "ShaderModule.h"
 #include "AssimpModel.h"
-
-#include "Vulkan.h"
 #include "FinalRenderPass.h"
 #include "DepthRenderPass.h"
+#include "GeometryRenderPass.h"
+#include "LightingRenderPass.h"
+
+#include "Vulkan.h"
 
 // public:
 
 Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 {
-	std::vector<const char*> requiredLayers = ENABLE_VALIDATION_LAYERS ?
-		VALIDATION_LAYERS : std::vector<const char*>();
+	const std::string VALIDATION_LAYER = "VK_LAYER_LUNARG_standard_validation";
+	std::vector<const char*> requiredLayers;
+#ifdef _DEBUG 
+	requiredLayers.push_back(VALIDATION_LAYER.c_str());
+#endif
+
+	const std::vector<const char *> EXTENTIONS{
+		VK_KHR_SURFACE_EXTENSION_NAME,
+		"VK_KHR_win32_surface"
+	};
+
+	const VkSampleCountFlagBits SAMPLE_COUNT = VK_SAMPLE_COUNT_4_BIT;
 
 	pInstance = new Instance(requiredLayers, EXTENTIONS);
 	pSurface = new Surface(pInstance->getInstance(),hInstance, hWnd);
-	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers);
+	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers, SAMPLE_COUNT);
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);
 
 	createRenderPasses();
@@ -128,7 +140,11 @@ void Vulkan::resize(VkExtent2D newExtent)
 	vkDeviceWaitIdle(pDevice->device);
 
 	pSwapChain->recreate(newExtent);
-	renderPasses.at(final)->recreate(pSwapChain->getExtent());
+
+	renderPasses.at(GEOMETRY)->recreate(pSwapChain->getExtent());
+	renderPasses.at(LIGHTING)->recreate(pSwapChain->getExtent());
+	renderPasses.at(FINAL)->recreate(pSwapChain->getExtent());
+
 	pScene->resizeExtent(pSwapChain->getExtent());
 
 	initGraphicsCommands();
@@ -150,11 +166,20 @@ void Vulkan::createRenderPasses()
 {
 	const VkExtent2D DEPTH_MAP_EXTENT = { 4096, 4096 };
 
-	renderPasses.insert({ depth, new DepthRenderPass(pDevice, DEPTH_MAP_EXTENT) });
-	renderPasses.insert({ final, new FinalRenderPass(pDevice, pSwapChain) });
+	renderPasses.insert({ DEPTH, new DepthRenderPass(pDevice, DEPTH_MAP_EXTENT) });
+	renderPasses.insert({ GEOMETRY, new GeometryRenderPass(pDevice, pSwapChain->getExtent()) });
+	renderPasses.insert({ LIGHTING, new LightingRenderPass(pDevice, pSwapChain) });
+	renderPasses.insert({ FINAL, new FinalRenderPass(pDevice, pSwapChain) });
 
     for (auto renderPass : renderPasses)
     {
+        if (renderPass.first == FINAL)
+        {
+			dynamic_cast<FinalRenderPass*>(renderPass.second)->saveRenderPasses(
+				dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY)),
+				dynamic_cast<LightingRenderPass*>(renderPasses.at(LIGHTING))
+			);
+        }
 		renderPass.second->create();
     }
 }
@@ -192,66 +217,73 @@ void Vulkan::initGraphicsCommands()
 		result = vkBeginCommandBuffer(graphicCommands[i], &beginInfo);
 		assert(result == VK_SUCCESS);
 
-		beginDepthRenderPass(graphicCommands[i]);
+		recordDepthRenderPassCommands(graphicCommands[i]);
 
-		beginFinalRenderPass(graphicCommands[i], i);
+		recordGeometryRenderPassCommands(graphicCommands[i]);
+
+		recordLightingRenderPassCommands(graphicCommands[i]);
+
+		recordFinalRenderPassCommands(graphicCommands[i], i);
 
 		result = vkEndCommandBuffer(graphicCommands[i]);
 		assert(result == VK_SUCCESS);
 	}
 }
 
-void Vulkan::beginDepthRenderPass(VkCommandBuffer commandBuffer)
+void Vulkan::beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex)
 {
-	VkClearValue clearValue;
-	clearValue.depthStencil = { 1.0f, 0 };
-
 	VkRect2D renderArea{
-		{ 0, 0 },                               // offset
-		renderPasses.at(depth)->getExtent()   // extent
+		{ 0, 0 },                           // offset
+		renderPasses.at(type)->getExtent()  // extent
 	};
 
+	std::vector<VkClearValue> clearValues = renderPasses.at(type)->getClearValues();
+
 	VkRenderPassBeginInfo renderPassBeginInfo{
-		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,	    // sType;
-		nullptr,									    // pNext;
-		renderPasses.at(depth)->getRenderPass(),		// renderPass;
-		renderPasses.at(depth)->getFramebuffers()[0], // framebuffer;
-		renderArea,									    // renderArea;
-		1,							                    // clearValueCount;
-		&clearValue							            // pClearValues;
+	    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,                   // sType;
+	    nullptr,                                                    // pNext;
+	    renderPasses.at(type)->getRenderPass(),                     // renderPass;
+	    renderPasses.at(type)->getFramebuffers()[framebufferIndex], // framebuffer;
+	    renderArea,                                                 // renderArea;
+	    uint32_t(clearValues.size()),                               // clearValueCount;
+		clearValues.data()                                          // pClearValues;
 	};
 
 	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
 
-	pScene->drawDepth(commandBuffer);
+void Vulkan::recordDepthRenderPassCommands(VkCommandBuffer commandBuffer)
+{
+	beginRenderPass(commandBuffer, DEPTH, 0);
+
+	pScene->renderDepth(commandBuffer);
 
 	vkCmdEndRenderPass(commandBuffer);
 }
 
-void Vulkan::beginFinalRenderPass(VkCommandBuffer commandBuffer, uint32_t index)
+void Vulkan::recordGeometryRenderPassCommands(VkCommandBuffer commandBuffer)
 {
-	std::array<VkClearValue, 2> clearValues{};
-	clearValues[0].color = CLEAR_COLOR;
-	clearValues[1].depthStencil = { 1.0f, 0 };
+	beginRenderPass(commandBuffer, GEOMETRY, 0);
 
-	VkRect2D renderArea{
-		{ 0, 0 },                           // offset
-		renderPasses.at(final)->getExtent() // extent
-	};
+	pScene->renderGeometry(commandBuffer);
 
-	VkRenderPassBeginInfo renderPassBeginInfo{
-		VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,           // sType;
-		nullptr,                                            // pNext;
-		renderPasses.at(final)->getRenderPass(),            // renderPass;
-		renderPasses.at(final)->getFramebuffers()[index],   // framebuffer;
-		renderArea,                                         // renderArea;
-		clearValues.size(),                                 // clearValueCount;
-		clearValues.data()                                  // pClearValues;
-	};
+	vkCmdEndRenderPass(commandBuffer);
+}
 
-	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+void Vulkan::recordLightingRenderPassCommands(VkCommandBuffer commandBuffer)
+{
+	beginRenderPass(commandBuffer, LIGHTING, 0);
 
-	pScene->draw(commandBuffer);
+	pScene->renderLighting(commandBuffer);
+
+	vkCmdEndRenderPass(commandBuffer);
+}
+
+void Vulkan::recordFinalRenderPassCommands(VkCommandBuffer commandBuffer, uint32_t index)
+{
+	beginRenderPass(commandBuffer, FINAL, index);
+
+	pScene->renderFinal(commandBuffer);
 
 	vkCmdEndRenderPass(commandBuffer);
 }

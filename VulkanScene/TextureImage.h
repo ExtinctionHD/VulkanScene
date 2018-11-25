@@ -8,7 +8,7 @@ class TextureImage :
 	public Image
 {
 public:
-	TextureImage() {}
+	TextureImage() = default;
 
     // loads texture from files
 	// array layer count must be equal to filenames count

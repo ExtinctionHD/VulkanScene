@@ -2,7 +2,7 @@
 
 // public:
 
-SkyboxModel::SkyboxModel(Device *pDevice, std::string texturesDir, std::string extension) : 
+SkyboxModel::SkyboxModel(Device *pDevice, const std::string &texturesDir, const std::string &extension) : 
 	Model(pDevice)
 {
 	const std::vector<std::string> filenames = {
@@ -44,7 +44,7 @@ SkyboxModel::SkyboxModel(Device *pDevice, std::string texturesDir, std::string e
 	materials.insert({ 0, pMaterial });
 	pMaterial->addTexture(aiTextureType_DIFFUSE, pTexture);
 
-	solidMeshes.push_back(new Mesh<Position>(pDevice, cubeVertices, cubeIndices, pMaterial));
+	transparentMeshes.push_back(new Mesh<Position>(pDevice, cubeVertices, cubeIndices, pMaterial));
 }
 
 SkyboxModel::~SkyboxModel()

@@ -7,12 +7,20 @@
 
 // public:
 
-Device::Device(VkInstance instance, VkSurfaceKHR surface, std::vector<const char *> requiredLayers)
+Device::Device(
+	VkInstance instance, 
+	VkSurfaceKHR surface, 
+	std::vector<const char*> requiredLayers,
+	VkSampleCountFlagBits maxRequiredSampleCount
+)
 {
 	this->surface = surface;
 	layers = requiredLayers;
 
-	pickPhysicalDevice(instance, surface);
+	physicalDevice = pickPhysicalDevice(instance, surface);
+	VkSampleCountFlagBits maxSupportedSampleCount = getMaxSupportedSampleCount(physicalDevice);
+	sampleCount = maxSupportedSampleCount > maxRequiredSampleCount ? maxRequiredSampleCount : maxSupportedSampleCount;
+
 	createLogicalDevice(surface);
 
 	createCommandPool(physicalDevice);
@@ -31,6 +39,7 @@ uint32_t Device::findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags 
 
 	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
 	{
+		if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
 		if (typeFilter & (1 << i) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties)
 		{
 			return i;
@@ -133,15 +142,12 @@ void Device::endOneTimeCommands(VkCommandBuffer commandBuffer) const
 
 // private:
 
-void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
+VkPhysicalDevice Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface) const
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);  // get count
 
-	if (deviceCount == 0)
-	{
-		std::runtime_error("Failed to find device with vulkan support");
-	}
+	assert(deviceCount);
 
 	std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
 	vkEnumeratePhysicalDevices(instance, &deviceCount, physicalDevices.data());  // get devices
@@ -151,18 +157,14 @@ void Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface)
 	{
 		if (isPhysicalDeviceSuitable(device, surface, layers, EXTENSIONS))
 		{
-			physicalDevice = device;
-			sampleCount = getMaxSupportedSampleCount();
+			return  device;
 		}
 	}
 
-	if (physicalDevice == VK_NULL_HANDLE)
-	{
-		std::runtime_error("Failed to find suitable device");
-	}
+	return VK_NULL_HANDLE;
 }
 
-VkSampleCountFlagBits Device::getMaxSupportedSampleCount() const
+VkSampleCountFlagBits Device::getMaxSupportedSampleCount(VkPhysicalDevice physicalDevice) const
 {
 	VkPhysicalDeviceProperties physicalDeviceProperties;
 	vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
@@ -182,7 +184,7 @@ VkSampleCountFlagBits Device::getMaxSupportedSampleCount() const
 	return VK_SAMPLE_COUNT_1_BIT;
 }
 
-bool Device::isPhysicalDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface, std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions)
+bool Device::isPhysicalDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface, std::vector<const char*> requiredLayers, std::vector<const char*> requiredExtensions)
 {
 	QueueFamilyIndices indices(device, surface);
 	SurfaceSupportDetails details(device, surface);
@@ -276,7 +278,7 @@ void Device::createLogicalDevice(VkSurfaceKHR surface)
 		layers.data(),							// ppEnabledLayerNames;
 		EXTENSIONS.size(),						// enabledExtensionCount;
 		EXTENSIONS.data(),						// ppEnabledExtensionNames;
-		nullptr									// pEnabledFeatures;
+		&deviceFeatures							// pEnabledFeatures;
 	};
 
 	VkResult result = vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &device);

@@ -29,3 +29,9 @@ private:
 	                                                textures);
 };
 
+struct DescriptorStruct
+{
+	VkDescriptorSet set;
+	VkDescriptorSetLayout layout;
+};
+

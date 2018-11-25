@@ -7,7 +7,7 @@
 class Instance
 {
 public:
-	Instance(std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions);
+	Instance(const std::vector<const char *> &requiredLayers, std::vector<const char *> requiredExtensions);
 	~Instance();
 
 	VkInstance getInstance();

@@ -4,7 +4,14 @@
 class TerrainModel : public Model
 {
 public:
-	TerrainModel(Device *pDevice, VkExtent2D size, VkExtent2D cellCount, std::string texturesDir, std::string extension);
+	TerrainModel(
+		Device *pDevice, 
+		VkExtent2D size, 
+		VkExtent2D cellCount, 
+		const std::string &texturesDir, 
+		const std::string &extension
+	);
+
 	~TerrainModel();
 
 protected:
@@ -20,7 +27,7 @@ private:
 
 	std::vector<TextureImage*> textures;
 
-	void initMaterial(std::string texturesDir, std::string extension);
+	void initMaterial(const std::string &texturesDir, const std::string &extension);
 
 	void initMesh();
 };

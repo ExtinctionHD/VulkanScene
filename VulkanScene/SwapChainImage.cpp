@@ -30,3 +30,8 @@ VkImageView SwapChainImage::getImageView(VkImageSubresourceRange subresourceRang
 
 	return imageView;
 }
+
+VkFormat SwapChainImage::getFormat() const
+{
+	return format;
+}

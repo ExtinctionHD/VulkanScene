@@ -4,6 +4,7 @@
 #include <vector>
 #include "Device.h"
 #include <unordered_map>
+#include "Image.h"
 
 class RenderPass
 {
@@ -15,6 +16,12 @@ public:
 	std::vector<VkFramebuffer> getFramebuffers() const;
 
 	VkExtent2D getExtent() const;
+
+	virtual uint32_t getColorAttachmentCount() const = 0;
+
+	virtual std::vector<VkClearValue> getClearValues() const;
+
+	VkSampleCountFlagBits getSampleCount() const;
 
 	void create();
 
@@ -41,6 +48,12 @@ protected:
 
 	VkFormat depthAttachmentFormat;
 
+	VkSampleCountFlagBits sampleCount;
+
+	std::vector<Image*> attachments{};
+
+	virtual void createAttachments() = 0;
+
 	virtual void createRenderPass() = 0;
 
 	virtual void createFramebuffers() = 0;
@@ -52,8 +65,10 @@ private:
 
 enum RenderPassType
 {
-	depth,
-	final
+	DEPTH,
+    GEOMETRY,
+    LIGHTING,
+	FINAL
 };
 
 typedef std::unordered_map<RenderPassType, RenderPass*> RenderPassesMap;

@@ -10,12 +10,12 @@ public:
 
 	enum Keys
 	{
-		moveForward = 0x57,		// W
-		moveLeft = 0x41,		// A
-		moveBack = 0x53,		// S
-		moveRight = 0x44,		// D
-		moveUp = VK_SPACE,		// Space
-		moveDown = VK_CONTROL,	// Ctrl
+		MOVE_FORWARD = 0x57,    // W
+		MOVE_LEFT = 0x41,       // A
+		MOVE_BACK = 0x53,       // S
+		MOVE_RIGHT = 0x44,      // D
+		MOVE_UP = VK_SPACE,     // Space
+		MOVE_DOWN = VK_CONTROL, // Ctrl
 	};
 
 	// moves and rotates camera

@@ -6,20 +6,22 @@
 class SwapChainImage
 {
 public:
-	VkImage image = VK_NULL_HANDLE;
+	SwapChainImage() = default;
 
-	VkFormat format;
-
-	SwapChainImage() {}
-
-	// save device, image, format
+    // save device, image, format
 	SwapChainImage(VkDevice device, VkImage image, VkFormat format);
+
+	VkFormat format{};
 
 	// create view of saved image
 	VkImageView getImageView(VkImageSubresourceRange subresourceRange) const;
 
+	VkFormat getFormat() const;
+
 protected:
 	// device that provides this buffer and memory
 	VkDevice device{};
+
+	VkImage image = VK_NULL_HANDLE;
 };
 

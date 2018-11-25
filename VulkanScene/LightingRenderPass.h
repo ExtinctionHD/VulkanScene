@@ -1,16 +1,15 @@
-﻿#pragma once
-
+#pragma once
 #include "RenderPass.h"
-#include "TextureImage.h"
+#include "SwapChain.h"
 
-class DepthRenderPass : public RenderPass
+class LightingRenderPass : public RenderPass
 {
 public:
-	DepthRenderPass(Device *pDevice, VkExtent2D attachmentExtent);
+	LightingRenderPass(Device *pDevice, SwapChain *pSwapChain);
 
     uint32_t getColorAttachmentCount() const override;
 
-	TextureImage* getDepthMap() const;
+	Image* getColorImage() const;
 
 protected:
     void createAttachments() override;
@@ -20,6 +19,8 @@ protected:
     void createFramebuffers() override;
 
 private:
-	TextureImage *pDepthMap{};
-    
+	SwapChain *pSwapChain;
+
+	Image *pColorImage{};
 };
+

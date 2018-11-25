@@ -25,23 +25,23 @@ void Controller::keyDownCallback(int key)
 {
 	switch (key)
 	{
-	case Keys::moveForward:
-		pCamera->movement.forward = Camera::Direction::positive;
+	case Keys::MOVE_FORWARD:
+		pCamera->movement.forward = Camera::Direction::POSITIVE;
 		break;
-	case Keys::moveBack:
-		pCamera->movement.forward = Camera::Direction::negative;
+	case Keys::MOVE_BACK:
+		pCamera->movement.forward = Camera::Direction::NEGATIVE;
 		break;
-	case Keys::moveRight:
-		pCamera->movement.right = Camera::Direction::positive;
+	case Keys::MOVE_RIGHT:
+		pCamera->movement.right = Camera::Direction::POSITIVE;
 		break;
-	case Keys::moveLeft:
-		pCamera->movement.right = Camera::Direction::negative;
+	case Keys::MOVE_LEFT:
+		pCamera->movement.right = Camera::Direction::NEGATIVE;
 		break;
-	case Keys::moveUp:
-		pCamera->movement.up = Camera::Direction::positive;
+	case Keys::MOVE_UP:
+		pCamera->movement.up = Camera::Direction::POSITIVE;
 		break;
-	case Keys::moveDown:
-		pCamera->movement.up = Camera::Direction::negative;
+	case Keys::MOVE_DOWN:
+		pCamera->movement.up = Camera::Direction::NEGATIVE;
 		break;
 	default:
 		break;
@@ -52,23 +52,23 @@ void Controller::keyUpCallback(int key)
 {
 	switch (key)
 	{
-	case Keys::moveForward:
-		pCamera->movement.forward = Camera::Direction::none;
+	case Keys::MOVE_FORWARD:
+		pCamera->movement.forward = Camera::Direction::NONE;
 		break;
-	case Keys::moveBack:
-		pCamera->movement.forward = Camera::Direction::none;
+	case Keys::MOVE_BACK:
+		pCamera->movement.forward = Camera::Direction::NONE;
 		break;
-	case Keys::moveRight:
-		pCamera->movement.right = Camera::Direction::none;
+	case Keys::MOVE_RIGHT:
+		pCamera->movement.right = Camera::Direction::NONE;
 		break;
-	case Keys::moveLeft:
-		pCamera->movement.right = Camera::Direction::none;
+	case Keys::MOVE_LEFT:
+		pCamera->movement.right = Camera::Direction::NONE;
 		break;
-	case Keys::moveUp:
-		pCamera->movement.up = Camera::Direction::none;
+	case Keys::MOVE_UP:
+		pCamera->movement.up = Camera::Direction::NONE;
 		break;
-	case Keys::moveDown:
-		pCamera->movement.up = Camera::Direction::none;
+	case Keys::MOVE_DOWN:
+		pCamera->movement.up = Camera::Direction::NONE;
 		break;
 	default:
 		break;

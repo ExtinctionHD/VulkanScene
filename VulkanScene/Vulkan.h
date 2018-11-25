@@ -36,26 +36,6 @@ public:
 	void keyUpCallback(int key);
 
 private:
-	const std::vector<const char *> VALIDATION_LAYERS =
-	{
-		"VK_LAYER_LUNARG_standard_validation"  // some debug layers
-	};
-
-#ifdef _DEBUG  // validation layers enable only in debug mode
-	const bool ENABLE_VALIDATION_LAYERS = true;
-#else
-	const bool ENABLE_VALIDATION_LAYERS = false;
-#endif
-
-	const std::vector<const char *> EXTENTIONS = 
-	{
-		VK_KHR_SURFACE_EXTENSION_NAME,
-		"VK_KHR_win32_surface"
-	};
-
-	// color that clear each frame
-	const VkClearColorValue CLEAR_COLOR = { 0.0f, 0.0f, 0.0f, 1.0f };
-
 	Instance *pInstance;
 
 	// pSurface object for presentation
@@ -85,9 +65,15 @@ private:
 	// initialize rendering commands
 	void initGraphicsCommands();
 
-	void beginDepthRenderPass(VkCommandBuffer commandBuffer);
+	void beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex);
 
-	void beginFinalRenderPass(VkCommandBuffer commandBuffer, uint32_t index);
+	void recordDepthRenderPassCommands(VkCommandBuffer commandBuffer);
+
+	void recordGeometryRenderPassCommands(VkCommandBuffer commandBuffer);
+
+	void recordLightingRenderPassCommands(VkCommandBuffer commandBuffer);
+
+	void recordFinalRenderPassCommands(VkCommandBuffer commandBuffer, uint32_t index);
 
 	static void createSemaphore(VkDevice device, VkSemaphore& semaphore);
 };
