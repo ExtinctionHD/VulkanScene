@@ -125,13 +125,7 @@ void Scene::renderGeometry(VkCommandBuffer commandBuffer)
 
 void Scene::renderLighting(VkCommandBuffer commandBuffer)
 {
-	for (Model *pModel : models)
-	{
-		if (pModel != pSkybox)
-		{
-			pModel->renderLighting(commandBuffer, { descriptors.at(LIGHTING).set });
-		}
-	}
+	Model::renderLighting(commandBuffer, { descriptors.at(LIGHTING).set });
 }
 
 void Scene::renderFinal(VkCommandBuffer commandBuffer)
@@ -295,11 +289,11 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 void Scene::initPipelines(RenderPassesMap renderPasses)
 {
 	const std::string SKYBOX_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
+	const std::string LIGHTING_SHADERS_DIR = File::getExeDir() + "shaders/lighting/";
 
     std::unordered_map<RenderPassType, std::string> shadersDirectories{
 		{ DEPTH, File::getExeDir() + "shaders/depth/" },
 		{ GEOMETRY, File::getExeDir() + "shaders/geometry/" },
-		{ LIGHTING, File::getExeDir() + "shaders/lighting/" },
 		{ FINAL, File::getExeDir() + "shaders/final/" }
 	};
 
@@ -310,20 +304,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 
 		std::vector<ShaderModule*> shaders;
 		shaders.push_back(new ShaderModule(pDevice->device, directory + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT));
-        if (type == LIGHTING)
-        {
-            VkSpecializationMapEntry entry{
-			    0,                  // constantID
-			    0,                  // offset
-			    sizeof(uint32_t)    // size
-			};
-			uint32_t sampleCount = pDevice->getSampleCount();
-			shaders.push_back(new ShaderModule(pDevice->device, directory + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT, { entry }, { &sampleCount }));
-        } 
-        else
-		{
-		    shaders.push_back(new ShaderModule(pDevice->device, directory + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT));
-		}
+        shaders.push_back(new ShaderModule(pDevice->device, directory + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT));
 
 		pipelines.push_back(pCar->createPipeline(
 			{ descriptors.at(type).layout },
@@ -333,6 +314,30 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		));
 		pTerrain->setPipeline(type, pCar->getPipeline(type));
     }
+
+	VkSpecializationMapEntry entry{
+		0,                  // constantID
+		0,                  // offset
+		sizeof(uint32_t)    // size
+	};
+	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
+
+	GraphicsPipeline *pLightingPipeline = new GraphicsPipeline(
+		pDevice,
+		{ descriptors.at(LIGHTING).layout },
+		renderPasses.at(LIGHTING),
+		{
+			new ShaderModule(pDevice->device, LIGHTING_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, LIGHTING_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT, { entry }, { &sampleCount })
+		},
+		{},
+		{},
+		renderPasses.at(LIGHTING)->getSampleCount(),
+		renderPasses.at(LIGHTING)->getColorAttachmentCount(),
+		VK_FALSE
+	);
+	Model::setLightingPipeline(pLightingPipeline);
+	pipelines.push_back(pLightingPipeline);
 
 	pipelines.push_back(pSkybox->createPipeline(
 		{ descriptors.at(FINAL).layout },
