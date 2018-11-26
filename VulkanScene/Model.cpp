@@ -123,8 +123,6 @@ GraphicsPipeline * Model::createPipeline(
 		return createDepthPipeline(layouts, pRenderPass, shaderModules);
     case GEOMETRY:
 		return createGeometryPipeline(layouts, pRenderPass, shaderModules);
-    case LIGHTING:
-		return createLightingPipeline(layouts, pRenderPass, shaderModules);
     case FINAL:
 		return createFinalPipeline(layouts, pRenderPass, shaderModules);
     default: 
@@ -135,6 +133,11 @@ GraphicsPipeline * Model::createPipeline(
 void Model::setPipeline(RenderPassType type, GraphicsPipeline * pPipeline)
 {
 	pipelines.insert({ type, pPipeline });
+}
+
+void Model::setLightingPipeline(GraphicsPipeline *pLightingPipeline)
+{
+	Model::pLightingPipeline = pLightingPipeline;
 }
 
 void Model::renderDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const
@@ -156,11 +159,11 @@ void Model::renderGeometry(VkCommandBuffer commandBuffer, std::vector<VkDescript
 	renderMeshes(commandBuffer, descriptorSets, GEOMETRY, solidMeshes);
 }
 
-void Model::renderLighting(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const
+void Model::renderLighting(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
 {
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(LIGHTING)->pipeline);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pLightingPipeline->pipeline);
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(LIGHTING)->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pLightingPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
 
 	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 }
@@ -188,6 +191,8 @@ uint32_t Model::objectCount = 0;
 
 VkDescriptorSetLayout Model::transformDsLayout = VK_NULL_HANDLE;
 
+GraphicsPipeline *Model::pLightingPipeline;
+
 GraphicsPipeline* Model::createDepthPipeline(
 	std::vector<VkDescriptorSetLayout> layouts,
 	RenderPass *pRenderPass,
@@ -203,7 +208,7 @@ GraphicsPipeline* Model::createDepthPipeline(
 		layouts,
 		pRenderPass,
 	    shaderModules,
-		getVertexInputBindingDescription(inputBinding),
+		{ getVertexInputBindingDescription(inputBinding) },
 		getVertexInputAttributeDescriptions(inputBinding),
 		pRenderPass->getSampleCount(),
         pRenderPass->getColorAttachmentCount(),
@@ -230,37 +235,13 @@ GraphicsPipeline* Model::createGeometryPipeline(
 		layouts,
 		pRenderPass,
 	    shaderModules,
-		getVertexInputBindingDescription(inputBinding),
+		{ getVertexInputBindingDescription(inputBinding) },
 		getVertexInputAttributeDescriptions(inputBinding),
 		pRenderPass->getSampleCount(),
         pRenderPass->getColorAttachmentCount(),
         VK_FALSE
 	);
 	setPipeline(GEOMETRY, pPipeline);
-
-	return pPipeline;
-}
-
-GraphicsPipeline* Model::createLightingPipeline(
-	std::vector<VkDescriptorSetLayout> layouts,
-	RenderPass *pRenderPass,
-	std::vector<ShaderModule*> shaderModules
-)
-{
-	const uint32_t inputBinding = 0;
-
-	GraphicsPipeline *pPipeline = new GraphicsPipeline(
-		pDevice,
-	    layouts,
-		pRenderPass,
-	    shaderModules,
-		getVertexInputBindingDescription(inputBinding),
-		getVertexInputAttributeDescriptions(inputBinding),
-		pRenderPass->getSampleCount(),
-		pRenderPass->getColorAttachmentCount(),
-        VK_FALSE
-	);
-	setPipeline(LIGHTING, pPipeline);
 
 	return pPipeline;
 }
@@ -281,7 +262,7 @@ GraphicsPipeline* Model::createFinalPipeline(
 		layouts,
 		pRenderPass,
 	    shaderModules,
-		getVertexInputBindingDescription(inputBinding),
+		{ getVertexInputBindingDescription(inputBinding) },
 		getVertexInputAttributeDescriptions(inputBinding),
 		pRenderPass->getSampleCount(),
 		pRenderPass->getColorAttachmentCount(),

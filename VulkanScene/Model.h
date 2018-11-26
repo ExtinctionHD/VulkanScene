@@ -55,11 +55,13 @@ public:
 
 	void setPipeline(RenderPassType type, GraphicsPipeline *pPipeline);
 
+	static void setLightingPipeline(GraphicsPipeline *pLightingPipeline);
+
 	void renderDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
 	void renderGeometry(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
-	void renderLighting(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
+	static void renderLighting(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
 
 	void renderFinal(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
@@ -92,11 +94,11 @@ private:
 
 	static VkDescriptorSetLayout transformDsLayout;
 
+	static GraphicsPipeline *pLightingPipeline;
+
 	GraphicsPipeline* createDepthPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
 
 	GraphicsPipeline* createGeometryPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
-
-	GraphicsPipeline* createLightingPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
 
 	GraphicsPipeline* createFinalPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
 

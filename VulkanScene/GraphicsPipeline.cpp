@@ -9,7 +9,7 @@ GraphicsPipeline::GraphicsPipeline(
 	std::vector<VkDescriptorSetLayout> descriptorSetLayouts, 
 	RenderPass *pRenderPass, 
 	std::vector<ShaderModule*> shaderModules,
-	VkVertexInputBindingDescription bindingDescription,
+	std::vector<VkVertexInputBindingDescription> bindingDescriptions,
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
     VkSampleCountFlagBits sampleCount,
     uint32_t colorAttachmentCount,
@@ -19,7 +19,7 @@ GraphicsPipeline::GraphicsPipeline(
 	this->pDevice = pDevice;
 	this->pRenderPass = pRenderPass;
 	this->shaderModules = shaderModules;
-	this->bindingDescription = bindingDescription;
+	this->bindingDescriptions = bindingDescriptions;
 	this->attributeDescriptions = attributeDescriptions;
 	this->sampleCount = sampleCount;
 	this->attachmentCount = colorAttachmentCount;
@@ -88,8 +88,8 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 		VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,	// sType;
 		nullptr,													// pNext;
 		0,															// flags;
-		1,															// vertexBindingDescriptionCount;
-		&bindingDescription,										// pVertexBindingDescriptions;
+		bindingDescriptions.size(),									// vertexBindingDescriptionCount;
+		bindingDescriptions.data(),									// pVertexBindingDescriptions;
 		uint32_t(attributeDescriptions.size()),						// vertexAttributeDescriptionCount;
 		attributeDescriptions.data()								// pVertexAttributeDescriptions;
 	};

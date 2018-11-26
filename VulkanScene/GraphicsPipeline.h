@@ -16,7 +16,7 @@ public:
 		std::vector<VkDescriptorSetLayout> descriptorSetLayouts, 
 		RenderPass *pRenderPass, 
 		std::vector<ShaderModule*> shaderModules,
-		VkVertexInputBindingDescription bindingDescription,
+		std::vector<VkVertexInputBindingDescription> bindingDescriptions,
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
 		VkSampleCountFlagBits sampleCount,
         uint32_t colorAttachmentCount,
@@ -41,7 +41,7 @@ private:
 	std::vector<ShaderModule*> shaderModules;
 
 	// information about input vertices
-	VkVertexInputBindingDescription bindingDescription{};
+	std::vector<VkVertexInputBindingDescription> bindingDescriptions;
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
 
 	VkSampleCountFlagBits sampleCount;
