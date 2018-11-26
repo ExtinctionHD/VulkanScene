@@ -4,7 +4,7 @@
 
 LightingRenderPass::LightingRenderPass(Device *pDevice, SwapChain *pSwapChain) : RenderPass(pDevice, pSwapChain->getExtent())
 {
-	this->pSwapChain = pSwapChain;
+	colorAttachmentFormat = pSwapChain->getImageFormat();
 	sampleCount = pDevice->getSampleCount();
 }
 
@@ -32,7 +32,7 @@ void LightingRenderPass::createAttachments()
 		0,
 		pDevice->getSampleCount(),
 		1,
-		pSwapChain->getImageFormat(),
+		colorAttachmentFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,

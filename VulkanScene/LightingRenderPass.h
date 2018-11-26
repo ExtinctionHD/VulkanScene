@@ -19,7 +19,7 @@ protected:
     void createFramebuffers() override;
 
 private:
-	SwapChain *pSwapChain;
+	VkFormat colorAttachmentFormat;
 
 	Image *pColorImage{};
 };
