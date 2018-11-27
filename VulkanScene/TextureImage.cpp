@@ -89,7 +89,8 @@ TextureImage::TextureImage(
     VkMemoryPropertyFlags properties,
     VkImageAspectFlags aspectFlags,
 	VkImageViewType viewType,
-    uint32_t arrayLayers
+    uint32_t arrayLayers,
+    VkSamplerAddressMode samplerAddressMode
 ) : Image(pDevice, extent, flags, sampleCount, 1, format, tiling, usage | VK_IMAGE_USAGE_SAMPLED_BIT, properties, arrayLayers)
 {
 	VkImageSubresourceRange subresourceRange{
@@ -102,7 +103,7 @@ TextureImage::TextureImage(
 
 	createImageView(subresourceRange, viewType);
 
-	createSampler(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	createSampler(samplerAddressMode);
 }
 
 TextureImage::~TextureImage()

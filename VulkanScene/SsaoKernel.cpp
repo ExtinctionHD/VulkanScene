@@ -73,7 +73,8 @@ void SsaoKernel::createNoiseTexture()
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		VK_IMAGE_VIEW_TYPE_2D,
-		1
+		1,
+		VK_SAMPLER_ADDRESS_MODE_REPEAT
 	);
 
 	std::vector<glm::vec4*> data{ noise.data() };

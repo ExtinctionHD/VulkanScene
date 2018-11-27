@@ -46,7 +46,8 @@ void GeometryRenderPass::createAttachments()
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		VK_IMAGE_VIEW_TYPE_2D,
-		1
+		1,
+        VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
 	attachments.push_back(pPosMap);
 
@@ -61,7 +62,8 @@ void GeometryRenderPass::createAttachments()
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		VK_IMAGE_VIEW_TYPE_2D,
-		1
+		1,
+		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
 	attachments.push_back(pNormalMap);
 
@@ -76,7 +78,8 @@ void GeometryRenderPass::createAttachments()
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		VK_IMAGE_VIEW_TYPE_2D,
-		1
+		1,
+		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
 	attachments.push_back(pAlbedoMap);
 
@@ -91,7 +94,8 @@ void GeometryRenderPass::createAttachments()
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		VK_IMAGE_VIEW_TYPE_2D,
-		1
+		1,
+		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
 	attachments.push_back(pLightSpacePosMap);
 
