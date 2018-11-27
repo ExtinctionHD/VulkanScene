@@ -1,6 +1,7 @@
 #include "GeometryRenderPass.h"
 #include <cassert>
 
+// public:
 
 GeometryRenderPass::GeometryRenderPass(Device *pDevice, VkExtent2D attachmentExtent) : RenderPass(pDevice, attachmentExtent)
 {
@@ -22,6 +23,8 @@ Image * GeometryRenderPass::getDepthImage() const
 	return pDepthImage;
 }
 
+// protected:
+
 void GeometryRenderPass::createAttachments()
 {
 	const VkExtent3D attachmentExtent{
@@ -36,7 +39,7 @@ void GeometryRenderPass::createAttachments()
 		pDevice,
 		attachmentExtent,
 		0,
-		pDevice->getSampleCount(),
+		sampleCount,
 		geometryFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
@@ -51,7 +54,7 @@ void GeometryRenderPass::createAttachments()
 		pDevice,
 		attachmentExtent,
 		0,
-		pDevice->getSampleCount(),
+		sampleCount,
 		geometryFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
@@ -66,7 +69,7 @@ void GeometryRenderPass::createAttachments()
 		pDevice,
 		attachmentExtent,
 		0,
-		pDevice->getSampleCount(),
+		sampleCount,
 		VK_FORMAT_R8G8B8A8_UNORM,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
@@ -81,7 +84,7 @@ void GeometryRenderPass::createAttachments()
 		pDevice,
 		attachmentExtent,
 		0,
-		pDevice->getSampleCount(),
+		sampleCount,
 		geometryFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
@@ -96,7 +99,7 @@ void GeometryRenderPass::createAttachments()
 		pDevice,
         attachmentExtent,
         0,
-		pDevice->getSampleCount(),
+		sampleCount,
         1,
         depthAttachmentFormat,
         VK_IMAGE_TILING_OPTIMAL,
@@ -232,21 +235,5 @@ void GeometryRenderPass::createFramebuffers()
 		imageViews.push_back(pImage->view);
     }
 
-	VkFramebuffer framebuffer;
-	VkFramebufferCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
-		nullptr,									// pNext;
-		0,											// flags;
-		renderPass,									// renderPass;
-		imageViews.size(),							// attachmentCount;
-		imageViews.data(),						    // pAttachments;
-		extent.width,								// width;
-		extent.height,								// height;
-		1,											// layers;
-	};
-
-	VkResult result = vkCreateFramebuffer(pDevice->device, &createInfo, nullptr, &framebuffer);
-	assert(result == VK_SUCCESS);
-
-	framebuffers.push_back(framebuffer);
+	addFramebuffer(imageViews);
 }

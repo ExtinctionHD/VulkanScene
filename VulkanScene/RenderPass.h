@@ -17,7 +17,7 @@ public:
 
 	VkExtent2D getExtent() const;
 
-	virtual uint32_t getColorAttachmentCount() const = 0;
+	virtual uint32_t getColorAttachmentCount() const;
 
 	virtual std::vector<VkClearValue> getClearValues() const;
 
@@ -58,6 +58,8 @@ protected:
 
 	virtual void createFramebuffers() = 0;
 
+	void addFramebuffer(std::vector<VkImageView> imageViews);
+
 private:
 	void cleanup();
 };
@@ -67,6 +69,7 @@ enum RenderPassType
 {
 	DEPTH,
     GEOMETRY,
+    SSAO,
     LIGHTING,
 	FINAL
 };

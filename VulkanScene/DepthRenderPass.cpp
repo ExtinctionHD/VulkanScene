@@ -18,6 +18,8 @@ TextureImage * DepthRenderPass::getDepthMap() const
 	return pDepthMap;
 }
 
+// protected:
+
 void DepthRenderPass::createAttachments()
 {
 	VkExtent3D attachmentExtent{
@@ -30,7 +32,7 @@ void DepthRenderPass::createAttachments()
 		pDevice,
 		attachmentExtent,
 		0,
-		VK_SAMPLE_COUNT_1_BIT,
+		sampleCount,
 		depthAttachmentFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
@@ -41,8 +43,6 @@ void DepthRenderPass::createAttachments()
 	);
 	attachments.push_back(pDepthMap);
 }
-
-// protected:
 
 void DepthRenderPass::createRenderPass()
 {
@@ -127,23 +127,7 @@ void DepthRenderPass::createRenderPass()
 
 void DepthRenderPass::createFramebuffers()
 {
-	VkFramebuffer framebuffer;
-	VkFramebufferCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
-		nullptr,									// pNext;
-		0,											// flags;
-		renderPass,									// renderPass;
-		1,							                // attachmentCount;
-		&pDepthMap->view,						    // pAttachments;
-		extent.width,								// width;
-		extent.height,								// height;
-		1,											// layers;
-	};
-
-	VkResult result = vkCreateFramebuffer(pDevice->device, &createInfo, nullptr, &framebuffer);
-	assert(result == VK_SUCCESS);
-
-	framebuffers.push_back(framebuffer);
+	addFramebuffer({ pDepthMap->view });
 }
 
 // private:

@@ -33,17 +33,17 @@ out gl_PerVertex {
 void main() 
 {
     // position of fragment in world coordinates
-    mat4 mvp = space.matrix * model.matrix;
-
-    fragPos = vec3(mvp * vec4(inPos, 1.0f));
+    fragPos = vec3(model.matrix * vec4(inPos, 1.0f));
     // texture coordinates without changes
     fragUV = inUV;
     // vertex normal vector in world coordinates
-    fragNormal = vec3(mvp * vec4(inNormal, 0.0f));
+    fragNormal = vec3(model.matrix * vec4(inNormal, 0.0f));
     // tangent vector of vertex in world coordinates
-    fragTangent = vec3(mvp * vec4(inTangent, 0.0f));
+    fragTangent = vec3(model.matrix * vec4(inTangent, 0.0f));
     // position of fragment in lighting space
     fragPosInLightSpace = lightSpace.matrix * model.matrix * vec4(inPos, 1.0f);
 
-    gl_Position = space.matrix * model.matrix * vec4(inPos, 1.0f);
+    mat4 mvp = space.matrix * model.matrix;
+    
+    gl_Position = mvp * vec4(inPos, 1.0f);
 }

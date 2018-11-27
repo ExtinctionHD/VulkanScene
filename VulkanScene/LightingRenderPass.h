@@ -7,8 +7,6 @@ class LightingRenderPass : public RenderPass
 public:
 	LightingRenderPass(Device *pDevice, SwapChain *pSwapChain);
 
-    uint32_t getColorAttachmentCount() const override;
-
 	Image* getColorImage() const;
 
 protected:

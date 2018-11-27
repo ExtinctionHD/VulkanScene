@@ -1,4 +1,5 @@
 ﻿#include "RenderPass.h"
+#include <cassert>
 
 // public:
 
@@ -25,6 +26,11 @@ std::vector<VkFramebuffer> RenderPass::getFramebuffers() const
 VkExtent2D RenderPass::getExtent() const
 {
 	return extent;
+}
+
+uint32_t RenderPass::getColorAttachmentCount() const
+{
+	return 1;   // default color attachment count without MRT
 }
 
 std::vector<VkClearValue> RenderPass::getClearValues() const
@@ -76,6 +82,29 @@ RenderPass::RenderPass(Device *pDevice, VkExtent2D extent)
         VK_IMAGE_TILING_OPTIMAL,
         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
     );
+}
+
+void RenderPass::addFramebuffer(std::vector<VkImageView> imageViews)
+{
+
+	VkFramebufferCreateInfo createInfo{
+		VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
+		nullptr,									// pNext;
+		0,											// flags;
+		renderPass,									// renderPass;
+		imageViews.size(),							// attachmentCount;
+		imageViews.data(),							// pAttachments;
+		extent.width,								// width;
+		extent.height,								// height;
+		1,											// layers;
+	};
+
+	VkFramebuffer framebuffer;
+
+	VkResult result = vkCreateFramebuffer(pDevice->device, &createInfo, nullptr, &framebuffer);
+	assert(result == VK_SUCCESS);
+
+	framebuffers.push_back(framebuffer);
 }
 
 void RenderPass::cleanup()
