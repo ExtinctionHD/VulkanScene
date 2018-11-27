@@ -10,9 +10,6 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 {
 	assert(arrayLayers == filenames.size());
 
-	device = pDevice->device;
-	format = VK_FORMAT_R8G8B8A8_UNORM;
-
 	// loads image bytes for each array layer
 	std::vector<stbi_uc*> pixels(arrayLayers);
 	for (uint32_t i = 0; i < arrayLayers; i++)
@@ -20,14 +17,8 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 		pixels[i] = loadPixels(filenames[i]);
 	}
 
-	// staging buffer to map its memory
-	VkDeviceSize arrayLayerSize = extent.width * extent.height * STBI_rgb_alpha;
-	StagingBuffer *pStagingBuffer = new StagingBuffer(pDevice, arrayLayerSize * arrayLayers);
-	for (uint32_t i = 0; i < arrayLayers; i++)
-	{
-		pStagingBuffer->updateData(pixels[i], arrayLayerSize, i * arrayLayerSize);
-		stbi_image_free(pixels[i]);
-	}
+	this->pDevice = pDevice;
+	format = VK_FORMAT_R8G8B8A8_UNORM;
 
 	VkImageCreateFlags flags = 0;
 	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -47,11 +38,10 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 		}
 	}
 
-	mipLevels = static_cast<uint32_t>(std::ceil(
+    mipLevels = static_cast<uint32_t>(std::ceil(
 		std::log2(std::max(extent.width, extent.height)))
 	);
 
-	// texture image can't be mapped
 	createThisImage(
 		pDevice,
 		extent,
@@ -65,44 +55,26 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
 		arrayLayers
 	);
 
-	// before copying the layout of the texture image must be TRANSFER_DST
-	VkImageSubresourceRange subresourceRange{
+	updateData(reinterpret_cast<void**>(pixels.data()), STBI_rgb_alpha);
+
+    // free image pixels
+    for (auto arrayLayerPixels : pixels)
+    {
+		stbi_image_free(arrayLayerPixels);
+    }
+
+	// create other image objects
+	generateMipmaps(pDevice, arrayLayers, VK_IMAGE_ASPECT_COLOR_BIT);
+    
+    VkImageSubresourceRange subresourceRange{
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		0,
 		mipLevels,
 		0,
 		arrayLayers
 	};
-	transitLayout(
-		pDevice,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		subresourceRange
-	);
-
-	std::vector<VkBufferImageCopy> regions(arrayLayers);
-	for (unsigned int i = 0; i < arrayLayers; i++)
-	{
-		regions[i] = VkBufferImageCopy{
-			i * arrayLayerSize,					// bufferOffset;
-			0,									// bufferRowLength;
-			0,									// bufferImageHeight;
-		{
-			VK_IMAGE_ASPECT_COLOR_BIT,
-			0,
-			i,
-			1
-		},									// imageSubresource;
-		{ 0, 0, 0 },						// imageOffset;
-		{ extent.width, extent.height, 1 }	// imageExtent;
-		};
-	}
-	pStagingBuffer->copyToImage(image, regions);
-	delete(pStagingBuffer);
-
-	// create other image objects
-	generateMipmaps(pDevice, arrayLayers, VK_IMAGE_ASPECT_COLOR_BIT);
 	createImageView(subresourceRange, viewType);
+
 	createSampler(VK_SAMPLER_ADDRESS_MODE_REPEAT);
 }
 
@@ -133,12 +105,11 @@ TextureImage::TextureImage(
 	createSampler(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 }
 
-
 TextureImage::~TextureImage()
 {
 	if (sampler != VK_NULL_HANDLE)
 	{
-		vkDestroySampler(device, sampler, nullptr);
+		vkDestroySampler(pDevice->device, sampler, nullptr);
 	}
 }
 
@@ -257,7 +228,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImag
 		if (mipHeight > 1) mipHeight /= 2;
 	}
 
-	// transit last miplevel layout to SHADER
+	// transit last miplevel layout to SHADER_READ_ONLY_OPTIMAL
 	barrier.subresourceRange.baseMipLevel = mipLevels - 1;
 	barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -297,6 +268,6 @@ void TextureImage::createSampler(VkSamplerAddressMode addressMode)
 		VK_FALSE,								// unnormalizedCoordinates;
 	};
 
-	VkResult result = vkCreateSampler(device, &createInfo, nullptr, &sampler);
+	VkResult result = vkCreateSampler(pDevice->device, &createInfo, nullptr, &sampler);
 	assert(result == VK_SUCCESS);
 }

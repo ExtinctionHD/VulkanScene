@@ -1,6 +1,7 @@
 #include <cassert>
 
 #include "Image.h"
+#include "StagingBuffer.h"
 
 // public:
 
@@ -24,15 +25,15 @@ Image::~Image()
 {
 	if (view != VK_NULL_HANDLE)
 	{
-		vkDestroyImageView(device, view, nullptr);
+		vkDestroyImageView(pDevice->device, view, nullptr);
 	}
 	if (image != VK_NULL_HANDLE)
 	{
-		vkDestroyImage(device, image, nullptr);
+		vkDestroyImage(pDevice->device, image, nullptr);
 	}
 	if (stagingMemory != VK_NULL_HANDLE)
 	{
-		vkFreeMemory(device, stagingMemory, nullptr);
+		vkFreeMemory(pDevice->device, stagingMemory, nullptr);
 	}
 }
 
@@ -54,7 +55,7 @@ void Image::createImageView(VkImageSubresourceRange subresourceRange, VkImageVie
 		subresourceRange,							// subresourceRange
 	};
 
-	VkResult result = vkCreateImageView(device, &createInfo, nullptr, &view);
+	VkResult result = vkCreateImageView(pDevice->device, &createInfo, nullptr, &view);
 	assert(result == VK_SUCCESS);
 }
 
@@ -135,45 +136,51 @@ void Image::transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayou
 	pDevice->endOneTimeCommands(commandBuffer);
 }
 
-void Image::updateData(uint8_t *pixels, size_t pixelSize, uint32_t arrayLayer)
+void Image::updateData(void **data, uint32_t pixelSize)
 {
-	void *data;
-	VkDeviceSize size = extent.width * extent.height * pixelSize;
-	vkMapMemory(device, stagingMemory, 0, size, 0, &data);
-
-	VkImageSubresource subresource{
+	VkImageSubresourceRange subresourceRange{
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		0,
-		arrayLayer
+		1,
+		0,
+		arrayLayers
 	};
 
-	VkSubresourceLayout layout;
-	vkGetImageSubresourceLayout(
-		device,
-		image,
-		&subresource,
-		&layout
+	// before copying the layout of the texture image must be TRANSFER_DST
+	transitLayout(
+		pDevice,
+		VK_IMAGE_LAYOUT_UNDEFINED,
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		subresourceRange
 	);
 
-	if (layout.rowPitch == extent.width * pixelSize)
+	// staging buffer to map its memory
+	VkDeviceSize arrayLayerSize = extent.width * extent.height * pixelSize;
+	StagingBuffer *pStagingBuffer = new StagingBuffer(pDevice, arrayLayerSize * arrayLayers);
+	for (uint32_t i = 0; i < arrayLayers; i++)
 	{
-		memcpy(data, pixels, size);
-	}
-	else
-	{
-		uint8_t *dataBytes = reinterpret_cast<uint8_t*>(data);
-
-		for (uint32_t y = 0; y < extent.height; y++)
-		{
-			memcpy(
-				&dataBytes[y * layout.rowPitch],
-				&pixels[y * extent.width * pixelSize],
-				extent.width * pixelSize
-			);
-		}
+		pStagingBuffer->updateData(data[i], arrayLayerSize, i * arrayLayerSize);
 	}
 
-	vkUnmapMemory(device, stagingMemory);
+	std::vector<VkBufferImageCopy> regions(arrayLayers);
+	for (uint32_t i = 0; i < arrayLayers; i++)
+	{
+		regions[i] = VkBufferImageCopy{
+			i * arrayLayerSize,					// bufferOffset;
+			0,									// bufferRowLength;
+			0,									// bufferImageHeight;
+		    {
+			    VK_IMAGE_ASPECT_COLOR_BIT,
+			    0,
+			    i,
+			    1
+		    },									// imageSubresource;
+		    { 0, 0, 0 },						// imageOffset;
+		    { extent.width, extent.height, 1 }	// imageExtent;
+		};
+	}
+	pStagingBuffer->copyToImage(image, regions);
+	delete pStagingBuffer;
 }
 
 void Image::copyImage(Device *pDevice, Image& srcImage, Image& dstImage, VkExtent3D extent, VkImageSubresourceLayers subresourceLayers)
@@ -216,10 +223,12 @@ void Image::createThisImage(
 	uint32_t arrayLayers
 )
 {
-	device = pDevice->device;
+	this->pDevice = pDevice;
 	this->extent = extent;
 	this->format = format;
 	this->sampleCount = sampleCount;
+	this->mipLevels = mipLevels;
+	this->arrayLayers = arrayLayers;
 
 	VkImageCreateInfo imageInfo{
 		VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,	// sType;
@@ -243,12 +252,12 @@ void Image::createThisImage(
 		imageInfo.imageType = VK_IMAGE_TYPE_3D;
 	}
 
-	VkResult result = vkCreateImage(device, &imageInfo, nullptr, &image);
+	VkResult result = vkCreateImage(pDevice->device, &imageInfo, nullptr, &image);
 	assert(result == VK_SUCCESS);
 
 	allocateMemory(pDevice, properties);
 
-	vkBindImageMemory(device, image, stagingMemory, 0);
+	vkBindImageMemory(pDevice->device, image, stagingMemory, 0);
 }
 
 // private:
@@ -256,7 +265,7 @@ void Image::createThisImage(
 void Image::allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties)
 {
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(device, image, &memRequirements);
+	vkGetImageMemoryRequirements(pDevice->device, image, &memRequirements);
 
 	uint32_t memoryTypeIndex = pDevice->findMemoryTypeIndex(
 		memRequirements.memoryTypeBits,
@@ -271,6 +280,6 @@ void Image::allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties)
 		memoryTypeIndex,						// memoryTypeIndex
 	};
 
-	VkResult result = vkAllocateMemory(device, &allocInfo, nullptr, &stagingMemory);
+	VkResult result = vkAllocateMemory(pDevice->device, &allocInfo, nullptr, &stagingMemory);
 	assert(result == VK_SUCCESS);
 }

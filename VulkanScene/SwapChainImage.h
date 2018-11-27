@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include "Device.h"
 
 // class that help create view of swapchain images
 class SwapChainImage
@@ -9,7 +10,7 @@ public:
 	SwapChainImage() = default;
 
     // save device, image, format
-	SwapChainImage(VkDevice device, VkImage image, VkFormat format);
+	SwapChainImage(Device *pDevice, VkImage image, VkFormat format);
 
 	VkFormat format{};
 
@@ -20,7 +21,7 @@ public:
 
 protected:
 	// device that provides this buffer and memory
-	VkDevice device{};
+	Device *pDevice;
 
 	VkImage image = VK_NULL_HANDLE;
 };

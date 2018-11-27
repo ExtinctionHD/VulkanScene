@@ -32,9 +32,6 @@ public:
 
 	~TextureImage();
 
-	// count of mipmap levels
-	uint32_t mipLevels{};
-
 	// image in shader
 	VkSampler sampler{};
 

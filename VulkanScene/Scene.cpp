@@ -1,19 +1,17 @@
 #include "AssimpModel.h"
 #include "SkyboxModel.h"
+#include "GeometryRenderPass.h"
 
 #include "DepthRenderPass.h"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/rotate_vector.hpp>
-#include "GeometryRenderPass.h"
 
 #include "Scene.h"
 
 // public:
 
-Scene::Scene(Device *pDevice, VkExtent2D cameraExtent)
+Scene::Scene(Device *pDevice, VkExtent2D cameraExtent) : pDevice(pDevice), pSsaoKernel(new SsaoKernel(pDevice))
 {
-	this->pDevice = pDevice;
-
 	initCamera(cameraExtent);
 	initLighting();
 	initModels();
@@ -41,6 +39,7 @@ Scene::~Scene()
 	delete pLighting;
 	delete pCamera;
 	delete pController;
+	delete pSsaoKernel;
 }
 
 Controller* Scene::getController() const

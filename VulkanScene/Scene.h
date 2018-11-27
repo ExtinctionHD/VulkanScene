@@ -8,6 +8,7 @@
 #include "File.h"
 #include "Controller.h"
 #include "TerrainModel.h"
+#include "SsaoKernel.h"
 
 // provides scene for rendering
 // contains: camera, lighting, models
@@ -52,6 +53,8 @@ private:
 
 	// scene lighting attributes
 	Lighting *pLighting{};
+
+	SsaoKernel *pSsaoKernel{};
 
 	// scene descriptors
 	std::unordered_map<RenderPassType, DescriptorStruct> descriptors;

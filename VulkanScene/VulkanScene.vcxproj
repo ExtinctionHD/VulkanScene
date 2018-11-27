@@ -44,6 +44,7 @@
     <ClInclude Include="ShaderModule.h" />
     <ClInclude Include="DepthRenderPass.h" />
     <ClInclude Include="SkyboxModel.h" />
+    <ClInclude Include="SsaoKernel.h" />
     <ClInclude Include="SsaoRenderPass.h" />
     <ClInclude Include="StagingBuffer.h" />
     <ClInclude Include="Surface.h" />
@@ -83,6 +84,7 @@
     <ClCompile Include="ShaderModule.cpp" />
     <ClCompile Include="DepthRenderPass.cpp" />
     <ClCompile Include="SkyboxModel.cpp" />
+    <ClCompile Include="SsaoKernel.cpp" />
     <ClCompile Include="SsaoRenderPass.cpp" />
     <ClCompile Include="StagingBuffer.cpp" />
     <ClCompile Include="Surface.cpp" />

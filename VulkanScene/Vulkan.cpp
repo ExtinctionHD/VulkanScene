@@ -8,6 +8,7 @@
 #include "LightingRenderPass.h"
 
 #include "Vulkan.h"
+#include "SsaoRenderPass.h"
 
 // public:
 
@@ -141,9 +142,13 @@ void Vulkan::resize(VkExtent2D newExtent)
 
 	pSwapChain->recreate(newExtent);
 
-	renderPasses.at(GEOMETRY)->recreate(pSwapChain->getExtent());
-	renderPasses.at(LIGHTING)->recreate(pSwapChain->getExtent());
-	renderPasses.at(FINAL)->recreate(pSwapChain->getExtent());
+    for (auto renderPass : renderPasses)
+    {
+        if (renderPass.first != DEPTH)
+        {
+			renderPass.second->recreate(pSwapChain->getExtent());
+        }
+    }
 
 	pScene->resizeExtent(pSwapChain->getExtent());
 
@@ -168,6 +173,7 @@ void Vulkan::createRenderPasses()
 
 	renderPasses.insert({ DEPTH, new DepthRenderPass(pDevice, DEPTH_MAP_EXTENT) });
 	renderPasses.insert({ GEOMETRY, new GeometryRenderPass(pDevice, pSwapChain->getExtent()) });
+	renderPasses.insert({ SSAO, new SsaoRenderPass(pDevice, pSwapChain->getExtent()) });
 	renderPasses.insert({ LIGHTING, new LightingRenderPass(pDevice, pSwapChain) });
 	renderPasses.insert({ FINAL, new FinalRenderPass(pDevice, pSwapChain) });
 
