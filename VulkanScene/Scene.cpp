@@ -49,31 +49,33 @@ Controller* Scene::getController() const
 
 uint32_t Scene::getBufferCount() const
 {
-	uint32_t bufferCount = 2;
+	uint32_t bufferCount = 3;
 
 	for (Model *pModel : models)
 	{
 		bufferCount += pModel->getBufferCount();
 	}
 
-	return bufferCount;
+    // TODO
+	return 0;
 }
 
 uint32_t Scene::getTextureCount() const
 {
-	uint32_t textureCount = 5;
+	uint32_t textureCount = 6;
 
 	for (Model *pModel : models)
 	{
 		textureCount += pModel->getTextureCount();
 	}
 
-	return textureCount;
+	// TODO
+	return 0;
 }
 
 uint32_t Scene::getDescriptorSetCount() const
 {
-	uint32_t setCount = 4;
+	uint32_t setCount = uint32_t(FINAL) + 1;
 
 	for (Model *pModel : models)
 	{
@@ -96,43 +98,47 @@ void Scene::updateScene()
 	pController->controlCamera(deltaSec);
 	pLighting->update(pCamera->getPos());
 
-	// pCar->setTransform(rotate(pCar->getTransform(), glm::radians(30.0f) * float(deltaSec), glm::vec3(0.0f, -1.0f, 0.0f)));
+	pCar->setTransform(rotate(pCar->getTransform(), glm::radians(30.0f) * float(deltaSec), glm::vec3(0.0f, .0f, 1.0f)));
 	pSkybox->setTransform(translate(glm::mat4(1.0f), pCamera->getPos()));
 }
 
-void Scene::renderDepth(VkCommandBuffer commandBuffer)
+void Scene::render(VkCommandBuffer commandBuffer, RenderPassType type)
 {
-	for (Model *pModel : models)
-	{
-        if (pModel != pSkybox && pModel != pTerrain)
-        {
-			pModel->renderDepth(commandBuffer, { descriptors.at(DEPTH).set });
-        }
-	}
-}
-
-void Scene::renderGeometry(VkCommandBuffer commandBuffer)
-{
-	for (Model *pModel : models)
-	{
-		if (pModel != pSkybox)
-		{
-			pModel->renderGeometry(commandBuffer, { descriptors.at(GEOMETRY).set });
-		}
-	}
-}
-
-void Scene::renderLighting(VkCommandBuffer commandBuffer)
-{
-	Model::renderLighting(commandBuffer, { descriptors.at(LIGHTING).set });
-}
-
-void Scene::renderFinal(VkCommandBuffer commandBuffer)
-{
-	for (Model *pModel : models)
+    switch (type)
     {
-		pModel->renderFinal(commandBuffer, { descriptors.at(FINAL).set });
-	}
+    case DEPTH:
+		for (Model *pModel : models)
+		{
+			if (pModel != pSkybox && pModel != pTerrain)
+			{
+				pModel->renderDepth(commandBuffer, { descriptors.at(DEPTH).set });
+			}
+		}
+        break;
+    case GEOMETRY:
+		for (Model *pModel : models)
+		{
+			if (pModel != pSkybox)
+			{
+				pModel->renderGeometry(commandBuffer, { descriptors.at(GEOMETRY).set });
+			}
+		}
+        break;
+    case SSAO:
+		Model::renderFullscreenQuad(commandBuffer, { descriptors.at(SSAO).set }, SSAO);
+        break;
+    case LIGHTING:
+		Model::renderFullscreenQuad(commandBuffer, { descriptors.at(LIGHTING).set }, LIGHTING);
+        break;
+    case FINAL:
+		for (Model *pModel : models)
+		{
+			pModel->renderFinal(commandBuffer, { descriptors.at(FINAL).set });
+		}
+        break;
+    default:
+		throw std::invalid_argument("Can't render scene for this type");
+    }
 }
 
 void Scene::resizeExtent(VkExtent2D newExtent)
@@ -260,7 +266,18 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 	);
 
     std::vector<TextureImage*> maps = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY))->getMaps();
+	maps.push_back(pSsaoKernel->getNoiseTexture());
+
+	descriptors.insert({ SSAO, {} });
+	descriptors.at(SSAO).set = pDescriptorPool->getDescriptorSet(
+		{ pSsaoKernel->getKernelBuffer() },
+		maps,
+		true,
+		descriptors.at(SSAO).layout
+	);
+
 	TextureImage *pShadowsMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthMap();
+	maps = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY))->getMaps();
 	maps.push_back(pShadowsMap);
 
 	descriptors.insert({ LIGHTING, {} });
@@ -287,8 +304,9 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 
 void Scene::initPipelines(RenderPassesMap renderPasses)
 {
-	const std::string SKYBOX_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
+	const std::string SSAO_SHADERS_DIR = File::getExeDir() + "shaders/ssao/";
 	const std::string LIGHTING_SHADERS_DIR = File::getExeDir() + "shaders/lighting/";
+	const std::string SKYBOX_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
 
     std::unordered_map<RenderPassType, std::string> shadersDirectories{
 		{ DEPTH, File::getExeDir() + "shaders/depth/" },
@@ -314,7 +332,38 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		pTerrain->setPipeline(type, pCar->getPipeline(type));
     }
 
-	VkSpecializationMapEntry entry{
+	std::vector<VkSpecializationMapEntry> ssaoConstantEntries;
+	for (uint32_t i = 0; i < 3; i++)
+	{
+		ssaoConstantEntries.push_back({ i, sizeof(uint32_t) * i, sizeof(uint32_t) });
+	}
+
+    ShaderModule *pSsaoFragmentShader = new ShaderModule(
+		pDevice->device,
+		SSAO_SHADERS_DIR + "frag.spv",
+		VK_SHADER_STAGE_FRAGMENT_BIT,
+		ssaoConstantEntries,
+		{ &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS, &pSsaoKernel->NOISE_DIM }
+	);
+
+	GraphicsPipeline *pSsaoPipeline = new GraphicsPipeline(
+		pDevice,
+		{ descriptors.at(SSAO).layout },
+		renderPasses.at(SSAO),
+		{
+			new ShaderModule(pDevice->device, SSAO_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			pSsaoFragmentShader
+		},
+		{},
+		{},
+		renderPasses.at(SSAO)->getSampleCount(),
+		renderPasses.at(SSAO)->getColorAttachmentCount(),
+		VK_FALSE
+	);
+	Model::setStaticPipeline(SSAO, pSsaoPipeline);
+	pipelines.push_back(pSsaoPipeline);
+
+	VkSpecializationMapEntry lightingConstantEntry{
 		0,                  // constantID
 		0,                  // offset
 		sizeof(uint32_t)    // size
@@ -327,7 +376,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		renderPasses.at(LIGHTING),
 		{
 			new ShaderModule(pDevice->device, LIGHTING_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, LIGHTING_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT, { entry }, { &sampleCount })
+			new ShaderModule(pDevice->device, LIGHTING_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT, { lightingConstantEntry }, { &sampleCount })
 		},
 		{},
 		{},
@@ -335,7 +384,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		renderPasses.at(LIGHTING)->getColorAttachmentCount(),
 		VK_FALSE
 	);
-	Model::setLightingPipeline(pLightingPipeline);
+	Model::setStaticPipeline(LIGHTING, pLightingPipeline);
 	pipelines.push_back(pLightingPipeline);
 
 	pipelines.push_back(pSkybox->createPipeline(

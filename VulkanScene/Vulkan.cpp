@@ -223,15 +223,14 @@ void Vulkan::initGraphicsCommands()
 		result = vkBeginCommandBuffer(graphicCommands[i], &beginInfo);
 		assert(result == VK_SUCCESS);
 
-		recordDepthRenderPassCommands(graphicCommands[i]);
-
-		recordGeometryRenderPassCommands(graphicCommands[i]);
-
-		recordLightingRenderPassCommands(graphicCommands[i]);
-
-		recordFinalRenderPassCommands(graphicCommands[i], i);
+		recordRenderPassCommands(graphicCommands[i], DEPTH, 0);
+		recordRenderPassCommands(graphicCommands[i], GEOMETRY, 0);
+		// recordRenderPassCommands(graphicCommands[i], SSAO, 0);
+		recordRenderPassCommands(graphicCommands[i], LIGHTING, 0);
+		recordRenderPassCommands(graphicCommands[i], FINAL, i);
 
 		result = vkEndCommandBuffer(graphicCommands[i]);
+
 		assert(result == VK_SUCCESS);
 	}
 }
@@ -258,38 +257,11 @@ void Vulkan::beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type,
 	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void Vulkan::recordDepthRenderPassCommands(VkCommandBuffer commandBuffer)
+void Vulkan::recordRenderPassCommands(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex)
 {
-	beginRenderPass(commandBuffer, DEPTH, 0);
+	beginRenderPass(commandBuffer, type, framebufferIndex);
 
-	pScene->renderDepth(commandBuffer);
-
-	vkCmdEndRenderPass(commandBuffer);
-}
-
-void Vulkan::recordGeometryRenderPassCommands(VkCommandBuffer commandBuffer)
-{
-	beginRenderPass(commandBuffer, GEOMETRY, 0);
-
-	pScene->renderGeometry(commandBuffer);
-
-	vkCmdEndRenderPass(commandBuffer);
-}
-
-void Vulkan::recordLightingRenderPassCommands(VkCommandBuffer commandBuffer)
-{
-	beginRenderPass(commandBuffer, LIGHTING, 0);
-
-	pScene->renderLighting(commandBuffer);
-
-	vkCmdEndRenderPass(commandBuffer);
-}
-
-void Vulkan::recordFinalRenderPassCommands(VkCommandBuffer commandBuffer, uint32_t index)
-{
-	beginRenderPass(commandBuffer, FINAL, index);
-
-	pScene->renderFinal(commandBuffer);
+	pScene->render(commandBuffer, type);
 
 	vkCmdEndRenderPass(commandBuffer);
 }

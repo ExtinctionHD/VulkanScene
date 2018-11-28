@@ -30,13 +30,7 @@ public:
 
 	void updateScene();
 
-	void renderDepth(VkCommandBuffer commandBuffer);
-
-	void renderGeometry(VkCommandBuffer commandBuffer);
-
-	void renderLighting(VkCommandBuffer commandBuffer);
-
-	void renderFinal(VkCommandBuffer commandBuffer);
+	void render(VkCommandBuffer commandBuffer, RenderPassType type);
 
 	void resizeExtent(VkExtent2D newExtent);
 
