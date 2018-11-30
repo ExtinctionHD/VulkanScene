@@ -50,7 +50,7 @@ void main()
 {
 	outPos = vec4(fragPos, 1.0f);
 
-	outNormal = vec4(getBumpedNormal(fragNormal, fragTangent, fragUV, normalMap), 0.0f);
+	outNormal = vec4(getBumpedNormal(fragNormal, fragTangent, fragUV, normalMap) * 0.5f + 0.5f, 0.0f);
 
 	vec3 albedo = colors.albedo.rgb * texture(albedoMap, fragUV).rgb;
 	float specular = colors.specular.r * texture(specularMap, fragUV).r;

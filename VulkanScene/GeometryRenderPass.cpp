@@ -43,14 +43,12 @@ void GeometryRenderPass::createAttachments()
 		1
 	};
 
-	const VkFormat geometryFormat = VK_FORMAT_R16G16B16A16_SFLOAT;
-
 	pPosMap = new TextureImage(
 		pDevice,
 		attachmentExtent,
 		0,
 		sampleCount,
-		geometryFormat,
+		VK_FORMAT_R16G16B16A16_SFLOAT,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -66,7 +64,7 @@ void GeometryRenderPass::createAttachments()
 		attachmentExtent,
 		0,
 		sampleCount,
-		geometryFormat,
+		VK_FORMAT_R8G8B8A8_UNORM,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,

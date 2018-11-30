@@ -143,7 +143,7 @@ void main()
 	// }
 
 	vec3 pos = resolve(posMap, uv).rgb;
-	vec3 normal = resolve(normalMap, uv).rgb;
+	vec3 normal = resolve(normalMap, uv).rgb * 2.0f - 1.0f;
 	vec4 albedoAndSpec = resolve(albedoMap, uv);
 	vec3 albedo = albedoAndSpec.rgb;
 	float specular = albedoAndSpec.a;
