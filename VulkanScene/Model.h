@@ -55,13 +55,13 @@ public:
 
 	void setPipeline(RenderPassType type, GraphicsPipeline *pPipeline);
 
-	static void setLightingPipeline(GraphicsPipeline *pLightingPipeline);
+	static void setStaticPipeline(RenderPassType type, GraphicsPipeline *pPipeline);
 
 	void renderDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
 	void renderGeometry(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
-	static void renderLighting(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets);
+	static void renderFullscreenQuad(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, RenderPassType type);
 
 	void renderFinal(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
@@ -94,7 +94,7 @@ private:
 
 	static VkDescriptorSetLayout transformDsLayout;
 
-	static GraphicsPipeline *pLightingPipeline;
+	static std::unordered_map<RenderPassType, GraphicsPipeline*> staticPipelines;
 
 	GraphicsPipeline* createDepthPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
 

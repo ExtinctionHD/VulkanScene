@@ -3,11 +3,11 @@
 
 #include "SwapChainImage.h"
 
-SwapChainImage::SwapChainImage(VkDevice device, VkImage image, VkFormat format)
+SwapChainImage::SwapChainImage(Device *pDevice, VkImage image, VkFormat format)
 {
 	this->image = image;
 	this->format = format;
-	this->device = device;
+	this->pDevice = pDevice;
 }
 
 VkImageView SwapChainImage::getImageView(VkImageSubresourceRange subresourceRange) const
@@ -25,7 +25,7 @@ VkImageView SwapChainImage::getImageView(VkImageSubresourceRange subresourceRang
 		subresourceRange,							// subresourceRange
 	};
 
-	VkResult result = vkCreateImageView(device, &createInfo, nullptr, &imageView);
+	VkResult result = vkCreateImageView(pDevice->device, &createInfo, nullptr, &imageView);
 	assert(result == VK_SUCCESS);
 
 	return imageView;

@@ -114,14 +114,12 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, s
 	std::vector<VkWriteDescriptorSet> descriptorWrites(buffersWrites.begin(), buffersWrites.end());
 	descriptorWrites.insert(descriptorWrites.end(), texturesWrites.begin(), texturesWrites.end());
 
-
 	vkUpdateDescriptorSets(pDevice->device, buffersWrites.size(), buffersWrites.data(), 0, nullptr);
 
 	for (size_t i = 0; i < texturesWrites.size(); i++)
 	{
 		vkUpdateDescriptorSets(pDevice->device, 1, &texturesWrites[i], 0, nullptr);
 	}
-	//vkUpdateDescriptorSets(pDevice->device, descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
 
 	return set;
 }

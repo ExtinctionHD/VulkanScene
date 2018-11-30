@@ -3,7 +3,7 @@
 
 // bindings from application:
 
-layout(set = 0, binding = 2) uniform Lighting {
+layout(set = 0, binding = 2) uniform Lighting{
 	vec3 color;
 	float ambientStrength;
 	vec3 direction;
@@ -14,7 +14,7 @@ layout(set = 0, binding = 2) uniform Lighting {
 
 layout(set = 0, binding = 3) uniform sampler2D shadowsMap;
 
-layout(set = 2, binding = 0) uniform Colors {
+layout(set = 2, binding = 0) uniform Colors{
 	vec4 diffuse;
 	vec4 specular;
 	float opacity;
@@ -32,7 +32,7 @@ layout(location = 0) in vec3 fragPos;
 layout(location = 1) in vec2 fragTexCoord;
 layout(location = 2) in vec3 fragNormal;
 layout(location = 3) in vec3 fragTangent;
-layout(location = 4) in vec4 fragPosLightingSpace;
+layout(location = 4) in vec4 fragPosInLightSpace;
 
 // result of fragment shader: color of each fragment
 layout(location = 0) out vec4 outColor;
@@ -133,7 +133,7 @@ void main()
 	vec3 N = getBumpedNormal(fragNormal, fragTangent, fragTexCoord, normalMap);
 
 	float bias = max(BIAS_FACTOR * (1.0f - dot(N, light.direction)), MIN_BIAS);
-	float illumination = 1.0f - getShading(fragPosLightingSpace, bias);
+	float illumination = 1.0f - getShading(fragPosInLightSpace, bias);
 
 	float ambientI = getAmbientIntensity();
 	float diffuseI = getDiffuseIntensity(N, L) * illumination;

@@ -27,13 +27,11 @@ public:
 		VkMemoryPropertyFlags properties,
 	    VkImageAspectFlags aspectFlags,
         VkImageViewType viewType,
-	    uint32_t arrayLayers
+	    uint32_t arrayLayers,
+		VkSamplerAddressMode samplerAddressMode
 	);
 
 	~TextureImage();
-
-	// count of mipmap levels
-	uint32_t mipLevels{};
 
 	// image in shader
 	VkSampler sampler{};

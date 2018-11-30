@@ -11,11 +11,6 @@ FinalRenderPass::FinalRenderPass(Device *pDevice, SwapChain *pSwapChain)
 	sampleCount = pDevice->getSampleCount();
 }
 
-uint32_t FinalRenderPass::getColorAttachmentCount() const
-{
-	return 1;
-}
-
 void FinalRenderPass::saveRenderPasses(GeometryRenderPass *pGeometryRenderPass, LightingRenderPass *pLightingRenderPass)
 {
 	this->pGeometryRenderPass = pGeometryRenderPass;
@@ -157,30 +152,9 @@ void FinalRenderPass::createFramebuffers()
 {
 	std::vector<VkImageView> swapChainImageViews = pSwapChain->getImageViews();
 
-	framebuffers.resize(swapChainImageViews.size());
-
-	for (size_t i = 0; i < swapChainImageViews.size(); i++)
+	for (auto &swapChainImageView : swapChainImageViews)
 	{
-		std::vector<VkImageView> imageViews{
-			pColorImage->view,
-			pDepthImage->view,
-			swapChainImageViews[i]
-		};
-
-		VkFramebufferCreateInfo createInfo{
-			VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
-			nullptr,									// pNext;
-			0,											// flags;
-			renderPass,									// renderPass;
-			imageViews.size(),							// attachmentCount;
-			imageViews.data(),							// pAttachments;
-			extent.width,								// width;
-			extent.height,								// height;
-			1,											// layers;
-		};
-
-		VkResult result = vkCreateFramebuffer(pDevice->device, &createInfo, nullptr, &framebuffers[i]);
-		assert(result == VK_SUCCESS);
+		addFramebuffer({ pColorImage->view, pDepthImage->view, swapChainImageView});
 	}
 }
 

@@ -195,6 +195,15 @@
     <ClInclude Include="Material.h">
       <Filter>Файлы заголовков\Scene\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="SsaoRenderPass.h">
+      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+    </ClInclude>
+    <ClInclude Include="SsaoKernel.h">
+      <Filter>Файлы заголовков\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Space.h">
+      <Filter>Файлы заголовков\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
@@ -304,6 +313,12 @@
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Исходные файлы\Scene\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="SsaoRenderPass.cpp">
+      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+    </ClCompile>
+    <ClCompile Include="SsaoKernel.cpp">
+      <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

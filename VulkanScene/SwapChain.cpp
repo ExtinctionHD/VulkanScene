@@ -196,7 +196,7 @@ void SwapChain::createImageViews()
 
 	for (uint32_t i = 0; i < getImageCount(); i++)
 	{
-		SwapChainImage image(pDevice->device, images[i], imageFormat);
+		SwapChainImage image(pDevice, images[i], imageFormat);
 
 		VkImageSubresourceRange subresourceRange{
 			VK_IMAGE_ASPECT_COLOR_BIT,	// aspectMask;

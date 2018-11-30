@@ -8,6 +8,7 @@
 #include "File.h"
 #include "Controller.h"
 #include "TerrainModel.h"
+#include "SsaoKernel.h"
 
 // provides scene for rendering
 // contains: camera, lighting, models
@@ -29,13 +30,7 @@ public:
 
 	void updateScene();
 
-	void renderDepth(VkCommandBuffer commandBuffer);
-
-	void renderGeometry(VkCommandBuffer commandBuffer);
-
-	void renderLighting(VkCommandBuffer commandBuffer);
-
-	void renderFinal(VkCommandBuffer commandBuffer);
+	void render(VkCommandBuffer commandBuffer, RenderPassType type);
 
 	void resizeExtent(VkExtent2D newExtent);
 
@@ -52,6 +47,8 @@ private:
 
 	// scene lighting attributes
 	Lighting *pLighting{};
+
+	SsaoKernel *pSsaoKernel{};
 
 	// scene descriptors
 	std::unordered_map<RenderPassType, DescriptorStruct> descriptors;

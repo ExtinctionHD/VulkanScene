@@ -3,32 +3,34 @@
 
 // binding from application:
 
-layout(set = 0, binding = 0) uniform SpaceMatrix {
-    mat4 matrix;
+layout(set = 0, binding = 0) uniform SpaceMatrix{
+    mat4 view;
+    mat4 proj;
 } space;
 
-layout(set = 0, binding = 1) uniform LightingSpaceMatrix {
-    mat4 matrix;
-} lightingSpace;
+layout(set = 0, binding = 1) uniform LightSpaceMatrix{
+    mat4 view;
+    mat4 proj;
+} lightSpace;
 
-layout(set = 1, binding = 0) uniform ModelMatrix {
+layout(set = 1, binding = 0) uniform ModelMatrix{
 	mat4 matrix;
 } model;
 
 // input and output values:
 
 // vertex input attributes
-layout(location = 0) in vec3 inPosition;
-layout(location = 1) in vec2 inTexCoord;
+layout(location = 0) in vec3 inPos;
+layout(location = 1) in vec2 inUV;
 layout(location = 2) in vec3 inNormal;
 layout(location = 3) in vec3 inTangent;
 
 // value passed to fragment shader
 layout(location = 0) out vec3 fragPos;
-layout(location = 1) out vec2 fragTexCoord;
+layout(location = 1) out vec2 fragUV;
 layout(location = 2) out vec3 fragNormal;
 layout(location = 3) out vec3 fragTangent;
-layout(location = 4) out vec4 fragPosLightingSpace;
+layout(location = 4) out vec4 fragPosInLightSpace;
 
 // result of vertex shader: position of each vertex
 out gl_PerVertex {
@@ -39,17 +41,17 @@ out gl_PerVertex {
 void main() 
 {	
     // position of fragment in world coordinates
-    fragPos = (model.matrix * vec4(inPosition, 1.0f)).xyz;
+    fragPos = vec3(model.matrix * vec4(inPos, 1.0f));
     // texture coordinates without changes
-    fragTexCoord = inTexCoord;
+    fragUV = inUV;
     // vertex normal vector in world coordinates
-    fragNormal = (model.matrix * vec4(inNormal, 0.0f)).xyz;
+    fragNormal = vec3(model.matrix * vec4(inNormal, 0.0f));
     // tangent vector of vertex in world coordinates
-    fragTangent = (model.matrix * vec4(inTangent, 0.0f)).xyz;
-    // fragment position in lighting space
-    fragPosLightingSpace = lightingSpace.matrix * model.matrix * vec4(inPosition, 1.0f);
-
-    gl_Position = space.matrix * model.matrix * vec4(inPosition, 1.0f);
+    fragTangent = vec3(model.matrix * vec4(inTangent, 0.0f));
+    // position of fragment in lighting space
+    fragPosInLightSpace = lightSpace.proj * lightSpace.view * model.matrix * vec4(inPos, 1.0f);
+    
+    gl_Position = space.proj * space.view * model.matrix * vec4(inPos, 1.0f);
 
     // fixes difference from opengl
     // gl_Position.y = -gl_Position.y;

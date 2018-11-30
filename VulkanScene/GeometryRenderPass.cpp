@@ -1,6 +1,7 @@
 #include "GeometryRenderPass.h"
 #include <cassert>
 
+// public:
 
 GeometryRenderPass::GeometryRenderPass(Device *pDevice, VkExtent2D attachmentExtent) : RenderPass(pDevice, attachmentExtent)
 {
@@ -12,15 +13,27 @@ uint32_t GeometryRenderPass::getColorAttachmentCount() const
 	return attachments.size() - 1;
 }
 
-std::vector<TextureImage *> GeometryRenderPass::getMaps() const
+TextureImage * GeometryRenderPass::getPosMap() const
 {
-	return { pPosMap, pNormalMap, pAlbedoMap, pLightSpacePosMap };
+	return pPosMap;
+}
+
+TextureImage * GeometryRenderPass::getNormalMap() const
+{
+	return pNormalMap;
+}
+
+TextureImage * GeometryRenderPass::getAlbedoMap() const
+{
+	return pAlbedoMap;
 }
 
 Image * GeometryRenderPass::getDepthImage() const
 {
 	return pDepthImage;
 }
+
+// protected:
 
 void GeometryRenderPass::createAttachments()
 {
@@ -36,14 +49,15 @@ void GeometryRenderPass::createAttachments()
 		pDevice,
 		attachmentExtent,
 		0,
-		pDevice->getSampleCount(),
+		sampleCount,
 		geometryFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		VK_IMAGE_VIEW_TYPE_2D,
-		1
+		1,
+        VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
 	attachments.push_back(pPosMap);
 
@@ -51,14 +65,15 @@ void GeometryRenderPass::createAttachments()
 		pDevice,
 		attachmentExtent,
 		0,
-		pDevice->getSampleCount(),
+		sampleCount,
 		geometryFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		VK_IMAGE_VIEW_TYPE_2D,
-		1
+		1,
+		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
 	attachments.push_back(pNormalMap);
 
@@ -66,37 +81,23 @@ void GeometryRenderPass::createAttachments()
 		pDevice,
 		attachmentExtent,
 		0,
-		pDevice->getSampleCount(),
+		sampleCount,
 		VK_FORMAT_R8G8B8A8_UNORM,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		VK_IMAGE_VIEW_TYPE_2D,
-		1
+		1,
+		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
 	attachments.push_back(pAlbedoMap);
-
-	pLightSpacePosMap = new TextureImage(
-		pDevice,
-		attachmentExtent,
-		0,
-		pDevice->getSampleCount(),
-		geometryFormat,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		VK_IMAGE_ASPECT_COLOR_BIT,
-		VK_IMAGE_VIEW_TYPE_2D,
-		1
-	);
-	attachments.push_back(pLightSpacePosMap);
 
 	pDepthImage = new Image(
 		pDevice,
         attachmentExtent,
         0,
-		pDevice->getSampleCount(),
+		sampleCount,
         1,
         depthAttachmentFormat,
         VK_IMAGE_TILING_OPTIMAL,
@@ -232,21 +233,5 @@ void GeometryRenderPass::createFramebuffers()
 		imageViews.push_back(pImage->view);
     }
 
-	VkFramebuffer framebuffer;
-	VkFramebufferCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
-		nullptr,									// pNext;
-		0,											// flags;
-		renderPass,									// renderPass;
-		imageViews.size(),							// attachmentCount;
-		imageViews.data(),						    // pAttachments;
-		extent.width,								// width;
-		extent.height,								// height;
-		1,											// layers;
-	};
-
-	VkResult result = vkCreateFramebuffer(pDevice->device, &createInfo, nullptr, &framebuffer);
-	assert(result == VK_SUCCESS);
-
-	framebuffers.push_back(framebuffer);
+	addFramebuffer(imageViews);
 }

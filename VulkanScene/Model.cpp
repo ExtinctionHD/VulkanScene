@@ -135,9 +135,9 @@ void Model::setPipeline(RenderPassType type, GraphicsPipeline * pPipeline)
 	pipelines.insert({ type, pPipeline });
 }
 
-void Model::setLightingPipeline(GraphicsPipeline *pLightingPipeline)
+void Model::setStaticPipeline(RenderPassType type, GraphicsPipeline *pPipeline)
 {
-	Model::pLightingPipeline = pLightingPipeline;
+	staticPipelines.insert({ type, pPipeline });
 }
 
 void Model::renderDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const
@@ -159,11 +159,11 @@ void Model::renderGeometry(VkCommandBuffer commandBuffer, std::vector<VkDescript
 	renderMeshes(commandBuffer, descriptorSets, GEOMETRY, solidMeshes);
 }
 
-void Model::renderLighting(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets)
+void Model::renderFullscreenQuad(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, RenderPassType type)
 {
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pLightingPipeline->pipeline);
+	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, staticPipelines.at(type)->pipeline);
 
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pLightingPipeline->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, staticPipelines.at(type)->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
 
 	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 }
@@ -191,7 +191,7 @@ uint32_t Model::objectCount = 0;
 
 VkDescriptorSetLayout Model::transformDsLayout = VK_NULL_HANDLE;
 
-GraphicsPipeline *Model::pLightingPipeline;
+std::unordered_map<RenderPassType, GraphicsPipeline*> Model::staticPipelines;
 
 GraphicsPipeline* Model::createDepthPipeline(
 	std::vector<VkDescriptorSetLayout> layouts,

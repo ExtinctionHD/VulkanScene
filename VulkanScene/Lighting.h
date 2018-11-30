@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "Buffer.h"
+#include "Space.h"
 
 class Lighting
 {
@@ -31,13 +32,13 @@ public:
 	void update(glm::vec3 cameraPos);
 
 private:
-	Attributes attributes;
+	Attributes attributes{};
 
-	glm::mat4 projection;
+	glm::mat4 projection{};
 
 	Buffer *pAttributesBuffer;
 
 	Buffer *pSpaceBuffer;
 
-	glm::mat4 getSpaceMatrix() const;
+	Space getSpace() const;
 };

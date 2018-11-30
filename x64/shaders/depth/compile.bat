@@ -1,3 +1,3 @@
-glslangValidator -V depthShader.frag
-glslangValidator -V depthShader.vert
+glslangValidator -V depth.frag
+glslangValidator -V depth.vert
 pause

@@ -40,7 +40,7 @@ public:
 	// load pixels in image memory 
 	// pixel size depend from image format
 	// memory size must be equals width * height * pixel size
-	void updateData(uint8_t * pixels, size_t pixelSize, uint32_t arrayLayer);
+	void updateData(void **data, uint32_t pixelSize);
 
 	static void copyImage(
 		Device *pDevice, 
@@ -51,6 +51,12 @@ public:
 	);
 
 protected:
+	VkSampleCountFlagBits sampleCount{};
+
+	uint32_t mipLevels{};
+
+	uint32_t arrayLayers{};
+
 	// constructor method to use in derived class
 	void createThisImage(
 		Device *pDevice,
@@ -68,8 +74,6 @@ protected:
 private:
 	// memory that stores this image
 	VkDeviceMemory stagingMemory = VK_NULL_HANDLE;
-
-	VkSampleCountFlagBits sampleCount{};
 
 	void allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties);
 };

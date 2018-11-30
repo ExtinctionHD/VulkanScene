@@ -1,75 +1,59 @@
-#include "LightingRenderPass.h"
+#include "SsaoRenderPass.h"
 #include <cassert>
 
 // public:
 
-LightingRenderPass::LightingRenderPass(Device *pDevice, SwapChain *pSwapChain) : RenderPass(pDevice, pSwapChain->getExtent())
+SsaoRenderPass::SsaoRenderPass(Device *pDevice, VkExtent2D attachmentExtent) :RenderPass(pDevice, attachmentExtent)
 {
-	colorAttachmentFormat = pSwapChain->getImageFormat();
-	sampleCount = pDevice->getSampleCount();
+	sampleCount = VK_SAMPLE_COUNT_1_BIT;
 }
 
-Image * LightingRenderPass::getColorImage() const
+TextureImage * SsaoRenderPass::getSsaoMap() const
 {
-	return pColorImage;
+	return pSsaoMap;
 }
 
 // protected:
 
-void LightingRenderPass::createAttachments()
+void SsaoRenderPass::createAttachments()
 {
-	VkExtent3D attachmentExtent{
-		extent.width,
-		extent.height,
-		1
+	const VkExtent3D attachmentExtent{
+	    extent.width,
+	    extent.height,
+	    1
 	};
 
-	pColorImage = new Image(
+	pSsaoMap = new TextureImage(
 		pDevice,
 		attachmentExtent,
 		0,
 		sampleCount,
-		1,
-		colorAttachmentFormat,
+		VK_FORMAT_R8_UNORM,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		1
+		VK_IMAGE_ASPECT_COLOR_BIT,
+		VK_IMAGE_VIEW_TYPE_2D,
+		1,
+		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
-	attachments.push_back(pColorImage);
-
-	VkImageSubresourceRange subresourceRange{
-		VK_IMAGE_ASPECT_COLOR_BIT,	// aspectMask;
-		0,							// baseMipLevel;
-		1,							// levelCount;
-		0,							// baseArrayLayer;
-		1,							// layerCount;
-	};
-
-	pColorImage->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
-
-	pColorImage->transitLayout(
-		pDevice,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-		subresourceRange
-	);
+	attachments.push_back(pSsaoMap);
 }
 
-void LightingRenderPass::createRenderPass()
+void SsaoRenderPass::createRenderPass()
 {
 	// description of attachments
 
 	VkAttachmentDescription colorAttachmentDesc{
 		0,									        // flags;
-		pColorImage->format,		                // format;
-		pColorImage->getSampleCount(),			    // samples;
+		pSsaoMap->format,		                // format;
+		pSsaoMap->getSampleCount(),			    // samples;
 		VK_ATTACHMENT_LOAD_OP_CLEAR,		        // loadOp;
 		VK_ATTACHMENT_STORE_OP_STORE,		        // storeOp;
 		VK_ATTACHMENT_LOAD_OP_DONT_CARE,	        // stencilLoadOp;
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,	        // stencilStoreOp;
 		VK_IMAGE_LAYOUT_UNDEFINED,			        // initialLayout;
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,   // finalLayout;
+		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,   // finalLayout;
 	};
 
 	std::vector<VkAttachmentDescription> attachmentDescriptions{
@@ -143,8 +127,7 @@ void LightingRenderPass::createRenderPass()
 	assert(result == VK_SUCCESS);
 }
 
-void LightingRenderPass::createFramebuffers()
+void SsaoRenderPass::createFramebuffers()
 {
-	addFramebuffer({ pColorImage->view });
+	addFramebuffer({ pSsaoMap->view });
 }
-
