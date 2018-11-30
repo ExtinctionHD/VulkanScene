@@ -13,9 +13,19 @@ uint32_t GeometryRenderPass::getColorAttachmentCount() const
 	return attachments.size() - 1;
 }
 
-std::vector<TextureImage *> GeometryRenderPass::getMaps() const
+TextureImage * GeometryRenderPass::getPosMap() const
 {
-	return { pPosMap, pNormalMap, pAlbedoMap, pLightSpacePosMap };
+	return pPosMap;
+}
+
+TextureImage * GeometryRenderPass::getNormalMap() const
+{
+	return pNormalMap;
+}
+
+TextureImage * GeometryRenderPass::getAlbedoMap() const
+{
+	return pAlbedoMap;
 }
 
 Image * GeometryRenderPass::getDepthImage() const
@@ -82,22 +92,6 @@ void GeometryRenderPass::createAttachments()
 		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
 	attachments.push_back(pAlbedoMap);
-
-	pLightSpacePosMap = new TextureImage(
-		pDevice,
-		attachmentExtent,
-		0,
-		sampleCount,
-		geometryFormat,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		VK_IMAGE_ASPECT_COLOR_BIT,
-		VK_IMAGE_VIEW_TYPE_2D,
-		1,
-		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
-	);
-	attachments.push_back(pLightSpacePosMap);
 
 	pDepthImage = new Image(
 		pDevice,

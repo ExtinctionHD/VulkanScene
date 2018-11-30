@@ -7,6 +7,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 #include "Scene.h"
+#include "SsaoRenderPass.h"
 
 // public:
 
@@ -98,7 +99,6 @@ void Scene::updateScene()
 	pController->controlCamera(deltaSec);
 	pLighting->update(pCamera->getPos());
 
-	pCar->setTransform(rotate(pCar->getTransform(), glm::radians(30.0f) * float(deltaSec), glm::vec3(0.0f, .0f, 1.0f)));
 	pSkybox->setTransform(translate(glm::mat4(1.0f), pCamera->getPos()));
 }
 
@@ -251,49 +251,58 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 {
 	descriptors.insert({ DEPTH, {} });
 	descriptors.at(DEPTH).set = pDescriptorPool->getDescriptorSet(
-		{ pLighting->getSpaceBuffer() },
-		{ },
-		true,
-		descriptors.at(DEPTH).layout
+	    { pLighting->getSpaceBuffer() },
+	    { },
+	    true,
+	    descriptors.at(DEPTH).layout
 	);
 
 	descriptors.insert({ GEOMETRY, {} });
 	descriptors.at(GEOMETRY).set = pDescriptorPool->getDescriptorSet(
-		{ pCamera->getSpaceBuffer(), pLighting->getSpaceBuffer() },
-		{ },
-		true,
-		descriptors.at(GEOMETRY).layout
+	    { pCamera->getSpaceBuffer() },
+	    { },
+	    true,
+	    descriptors.at(GEOMETRY).layout
 	);
 
-    std::vector<TextureImage*> maps = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY))->getMaps();
-	maps.push_back(pSsaoKernel->getNoiseTexture());
+    GeometryRenderPass *pGeometryRenderPass = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY));
+	std::vector<TextureImage*> textures{
+		pGeometryRenderPass->getPosMap(),
+		pGeometryRenderPass->getNormalMap(),
+		pSsaoKernel->getNoiseTexture()
+	};
 
 	descriptors.insert({ SSAO, {} });
 	descriptors.at(SSAO).set = pDescriptorPool->getDescriptorSet(
-		{ pSsaoKernel->getKernelBuffer() },
-		maps,
-		true,
-		descriptors.at(SSAO).layout
+	    { pSsaoKernel->getKernelBuffer(), pCamera->getSpaceBuffer() },
+	    textures,
+	    true,
+	    descriptors.at(SSAO).layout
 	);
 
 	TextureImage *pShadowsMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthMap();
-	maps = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY))->getMaps();
-	maps.push_back(pShadowsMap);
+	textures = std::vector<TextureImage*>{
+		pGeometryRenderPass->getPosMap(),
+		pGeometryRenderPass->getNormalMap(),
+		pGeometryRenderPass->getAlbedoMap(),
+		dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO))->getSsaoMap(),
+		pShadowsMap
+	};
 
 	descriptors.insert({ LIGHTING, {} });
 	descriptors.at(LIGHTING).set = pDescriptorPool->getDescriptorSet(
-		{ pLighting->getAttributesBuffer() },
-		maps, 
-		true, 
-		descriptors.at(LIGHTING).layout
+	    { pLighting->getAttributesBuffer(), pLighting->getSpaceBuffer() },
+	    textures, 
+	    true,
+	    descriptors.at(LIGHTING).layout
 	);
 
 	descriptors.insert({ FINAL, {} });
 	descriptors.at(FINAL).set = pDescriptorPool->getDescriptorSet(
-		{ pCamera->getSpaceBuffer(), pLighting->getSpaceBuffer(), pLighting->getAttributesBuffer() },
-		{ pShadowsMap },
-		true,
-		descriptors.at(FINAL).layout
+	    { pCamera->getSpaceBuffer(), pLighting->getSpaceBuffer(), pLighting->getAttributesBuffer() },
+	    { pShadowsMap },
+	    true,
+	    descriptors.at(FINAL).layout
 	);
 
 	for (Model *pModel : models)
@@ -332,8 +341,9 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		pTerrain->setPipeline(type, pCar->getPipeline(type));
     }
 
+	uint32_t SSAO_CONSTANT_COUNT = 2;
 	std::vector<VkSpecializationMapEntry> ssaoConstantEntries;
-	for (uint32_t i = 0; i < 3; i++)
+	for (uint32_t i = 0; i < SSAO_CONSTANT_COUNT; i++)
 	{
 		ssaoConstantEntries.push_back({ i, sizeof(uint32_t) * i, sizeof(uint32_t) });
 	}
@@ -343,7 +353,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		SSAO_SHADERS_DIR + "frag.spv",
 		VK_SHADER_STAGE_FRAGMENT_BIT,
 		ssaoConstantEntries,
-		{ &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS, &pSsaoKernel->NOISE_DIM }
+		{ &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS }
 	);
 
 	GraphicsPipeline *pSsaoPipeline = new GraphicsPipeline(
@@ -363,12 +373,12 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 	Model::setStaticPipeline(SSAO, pSsaoPipeline);
 	pipelines.push_back(pSsaoPipeline);
 
+	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
 	VkSpecializationMapEntry lightingConstantEntry{
 		0,                  // constantID
 		0,                  // offset
 		sizeof(uint32_t)    // size
 	};
-	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
 
 	GraphicsPipeline *pLightingPipeline = new GraphicsPipeline(
 		pDevice,

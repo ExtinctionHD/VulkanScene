@@ -8,6 +8,8 @@ class SsaoRenderPass :
 public:
 	SsaoRenderPass(Device *pDevice, VkExtent2D attachmentExtent);
 
+	TextureImage* getSsaoMap() const;
+
 protected:
     void createAttachments() override;
 

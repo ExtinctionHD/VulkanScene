@@ -1,5 +1,8 @@
-#include "SsaoKernel.h"
 #include <ctime>
+#include <vector>
+#include <glm/glm.hpp>
+
+#include "SsaoKernel.h"
 
 // public:
 

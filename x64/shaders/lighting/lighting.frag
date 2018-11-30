@@ -12,11 +12,16 @@ layout (binding = 0) uniform Lighting{
 	float specularPower;
 } light;
 
-layout (binding = 1) uniform sampler2DMS posMap;
-layout (binding = 2) uniform sampler2DMS normalMap;
-layout (binding = 3) uniform sampler2DMS albedoMap;
-layout (binding = 4) uniform sampler2DMS lightSpacePosMap;
-layout (binding = 5) uniform sampler2D shadowsMap;
+layout (binding = 1) uniform LightSpace{
+	mat4 view;
+	mat4 proj;
+} lightSpace;
+
+layout (binding = 2) uniform sampler2DMS posMap;
+layout (binding = 3) uniform sampler2DMS normalMap;
+layout (binding = 4) uniform sampler2DMS albedoMap;
+layout (binding = 5) uniform sampler2D ssaoMap;
+layout (binding = 6) uniform sampler2D shadowsMap;
 
 layout (location = 0) in vec2 inUV;
 
@@ -27,7 +32,7 @@ layout (constant_id = 0) const int NUM_SAMPLES = 8;
 // Manual resolve for MSAA samples 
 vec4 resolve(sampler2DMS tex, ivec2 uv)
 {
-	vec4 result = vec4(0.0);	   
+	vec4 result = vec4(0.0f);	   
 	for (int i = 0; i < (NUM_SAMPLES); i++)
 	{
 		vec4 val = texelFetch(tex, uv, i); 
@@ -101,7 +106,7 @@ float getShading(vec4 fragPosLightSpace, float bias)
 const float BIAS_FACTOR = 0.001f;
 const float MIN_BIAS = 0.0001f;
 
-vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, vec4 lightSpacePos)
+vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, vec4 lightSpacePos, float ssao)
 {
 	vec3 L = normalize(-light.direction);
 	vec3 V = normalize(light.cameraPos - pos);
@@ -109,7 +114,7 @@ vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, vec4 light
 	float bias = max(BIAS_FACTOR * (1.0f - dot(N, light.direction)), MIN_BIAS);
 	float illumination = 1.0f - getShading(lightSpacePos, bias);
 
-	float ambientI = getAmbientIntensity();
+	float ambientI = getAmbientIntensity() * ssao;
 	float diffuseI = getDiffuseIntensity(N, L) * illumination;
 	float specularI = getSpecularIntensity(N, L, V, specular) * illumination;
 
@@ -142,7 +147,8 @@ void main()
 	vec4 albedoAndSpec = resolve(albedoMap, uv);
 	vec3 albedo = albedoAndSpec.rgb;
 	float specular = albedoAndSpec.a;
-	vec4 lightSpacePos = resolve(lightSpacePosMap, uv);
+	vec4 lightSpacePos = lightSpace.proj * lightSpace.view * vec4(pos, 1.0f);
+	float ssao = texture(ssaoMap, inUV).r;
 
-	outColor = vec4(calculateLighting(pos, normal, albedo, specular, lightSpacePos), 1.0f);
+	outColor = vec4(calculateLighting(pos, normal, albedo, specular, lightSpacePos, ssao), 1.0f);
 }

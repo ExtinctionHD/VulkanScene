@@ -2,6 +2,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 #include "Camera.h"
+#include "Space.h"
 
 // public:
 
@@ -119,7 +120,7 @@ void Camera::setExtent(VkExtent2D extent)
 
 void Camera::updateSpace()
 {
-	glm::mat4 space = getProjectionMatrix() * getViewMatrix();
+	Space space{ getViewMatrix(), getProjectionMatrix() };
 	pSpaceBuffer->updateData(&space, sizeof(space), 0);
 }
 
@@ -164,7 +165,7 @@ void Camera::initAngles()
 
 void Camera::initSpaceBuffer(Device *pDevice)
 {
-	pSpaceBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(glm::mat4));
+	pSpaceBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_ALL_GRAPHICS, sizeof(Space));
     updateSpace();
 }
 
@@ -177,7 +178,7 @@ glm::mat4 Camera::getProjectionMatrix() const
 {
 	const float aspect = extent.width / float(extent.height);
 	const float zNear = 0.01f;
-	const float zFar = 1000.0f;
+	const float zFar = 100.0f;
 
 	glm::mat4 proj = glm::perspective(glm::radians(fov), aspect, zNear, zFar);
 	proj[1][1] *= -1;

@@ -225,7 +225,7 @@ void Vulkan::initGraphicsCommands()
 
 		recordRenderPassCommands(graphicCommands[i], DEPTH, 0);
 		recordRenderPassCommands(graphicCommands[i], GEOMETRY, 0);
-		// recordRenderPassCommands(graphicCommands[i], SSAO, 0);
+		recordRenderPassCommands(graphicCommands[i], SSAO, 0);
 		recordRenderPassCommands(graphicCommands[i], LIGHTING, 0);
 		recordRenderPassCommands(graphicCommands[i], FINAL, i);
 

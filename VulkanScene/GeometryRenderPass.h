@@ -12,7 +12,11 @@ public:
 
     uint32_t getColorAttachmentCount() const override;
 
-	std::vector<TextureImage*> getMaps() const;
+	TextureImage* getPosMap() const;
+
+	TextureImage* getNormalMap() const;
+
+	TextureImage* getAlbedoMap() const;
 
 	Image* getDepthImage() const;
 
@@ -25,8 +29,6 @@ protected:
 
 private:
 	TextureImage *pPosMap{};
-
-	TextureImage *pLightSpacePosMap{};
 
 	TextureImage *pNormalMap{};
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <vector>
 #include "TextureImage.h"
 #include "Buffer.h"
 #include <random>

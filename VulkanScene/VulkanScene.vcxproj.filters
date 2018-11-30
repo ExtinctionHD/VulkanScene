@@ -201,6 +201,9 @@
     <ClInclude Include="SsaoKernel.h">
       <Filter>Файлы заголовков\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Space.h">
+      <Filter>Файлы заголовков\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">

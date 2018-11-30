@@ -3,8 +3,9 @@
 
 // binding from application:
 
-layout(set = 0, binding = 0) uniform SpaceMatrix {
-	mat4 matrix;
+layout(set = 0, binding = 0) uniform SpaceMatrix{
+    mat4 view;
+    mat4 proj;
 } space;
 
 layout(set = 1, binding = 0) uniform ModelMatrix {
@@ -21,7 +22,7 @@ out gl_PerVertex {
 // vertex shader code
 void main() 
 {	
-    gl_Position = space.matrix * model.matrix * vec4(inPosition, 1.0f);
+    gl_Position = space.proj * space.view * model.matrix * vec4(inPosition, 1.0f);
 
     // fix difference from opengl
     // gl_Position.y = -gl_Position.y;

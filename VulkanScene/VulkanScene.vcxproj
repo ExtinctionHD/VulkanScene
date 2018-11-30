@@ -44,6 +44,7 @@
     <ClInclude Include="ShaderModule.h" />
     <ClInclude Include="DepthRenderPass.h" />
     <ClInclude Include="SkyboxModel.h" />
+    <ClInclude Include="Space.h" />
     <ClInclude Include="SsaoKernel.h" />
     <ClInclude Include="SsaoRenderPass.h" />
     <ClInclude Include="StagingBuffer.h" />

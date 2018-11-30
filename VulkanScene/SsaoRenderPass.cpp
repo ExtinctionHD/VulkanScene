@@ -5,7 +5,12 @@
 
 SsaoRenderPass::SsaoRenderPass(Device *pDevice, VkExtent2D attachmentExtent) :RenderPass(pDevice, attachmentExtent)
 {
-	sampleCount = pDevice->getSampleCount();
+	sampleCount = VK_SAMPLE_COUNT_1_BIT;
+}
+
+TextureImage * SsaoRenderPass::getSsaoMap() const
+{
+	return pSsaoMap;
 }
 
 // protected:
