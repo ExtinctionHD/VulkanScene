@@ -70,6 +70,7 @@ enum RenderPassType
 	DEPTH,
     GEOMETRY,
     SSAO,
+    SSAO_BLUR,
     LIGHTING,
 	FINAL
 };

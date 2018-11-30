@@ -106,7 +106,7 @@ float getShading(vec4 fragPosLightSpace, float bias)
 const float BIAS_FACTOR = 0.001f;
 const float MIN_BIAS = 0.0001f;
 
-vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, vec4 lightSpacePos, float ssao)
+vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, float ssao, vec4 lightSpacePos)
 {
 	vec3 L = normalize(-light.direction);
 	vec3 V = normalize(light.cameraPos - pos);
@@ -147,8 +147,8 @@ void main()
 	vec4 albedoAndSpec = resolve(albedoMap, uv);
 	vec3 albedo = albedoAndSpec.rgb;
 	float specular = albedoAndSpec.a;
-	vec4 lightSpacePos = lightSpace.proj * lightSpace.view * vec4(pos, 1.0f);
 	float ssao = texture(ssaoMap, inUV).r;
+	vec4 lightSpacePos = lightSpace.proj * lightSpace.view * vec4(pos, 1.0f);
 
-	outColor = vec4(calculateLighting(pos, normal, albedo, specular, lightSpacePos, ssao), 1.0f);
+	outColor = vec4(calculateLighting(pos, normal, albedo, specular, ssao, lightSpacePos), 1.0f);
 }

@@ -127,6 +127,9 @@ void Scene::render(VkCommandBuffer commandBuffer, RenderPassType type)
     case SSAO:
 		Model::renderFullscreenQuad(commandBuffer, { descriptors.at(SSAO).set }, SSAO);
         break;
+	case SSAO_BLUR:
+		Model::renderFullscreenQuad(commandBuffer, { descriptors.at(SSAO_BLUR).set }, SSAO_BLUR);
+		break;
     case LIGHTING:
 		Model::renderFullscreenQuad(commandBuffer, { descriptors.at(LIGHTING).set }, LIGHTING);
         break;
@@ -180,9 +183,9 @@ void Scene::initLighting()
     // clouds lighting attributes
 	Lighting::Attributes attributes{
 	    glm::vec3(1.0f, 1.0f, 1.0f),        // color
-	    0.7f,								// ambientStrength
+	    0.8f,								// ambientStrength
 	    glm::vec3(-0.89f, 0.4f, -0.21f),    // direction
-	    0.7f,								// directedStrength
+	    0.8f,								// directedStrength
 	    pCamera->getPos(),                  // cameraPos
 	    8.0f                                // specularPower
 	};
@@ -280,12 +283,20 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 	    descriptors.at(SSAO).layout
 	);
 
+	descriptors.insert({ SSAO_BLUR, {} });
+	descriptors.at(SSAO_BLUR).set = pDescriptorPool->getDescriptorSet(
+		{ },
+		{ dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO))->getSsaoMap() },
+		true,
+		descriptors.at(SSAO_BLUR).layout
+	);
+
 	TextureImage *pShadowsMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthMap();
 	textures = std::vector<TextureImage*>{
 		pGeometryRenderPass->getPosMap(),
 		pGeometryRenderPass->getNormalMap(),
 		pGeometryRenderPass->getAlbedoMap(),
-		dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO))->getSsaoMap(),
+		dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO_BLUR))->getSsaoMap(),
 		pShadowsMap
 	};
 
@@ -314,6 +325,7 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 void Scene::initPipelines(RenderPassesMap renderPasses)
 {
 	const std::string SSAO_SHADERS_DIR = File::getExeDir() + "shaders/ssao/";
+	const std::string SSAO_BLUR_SHADERS_DIR = File::getExeDir() + "shaders/ssaoBlur/";
 	const std::string LIGHTING_SHADERS_DIR = File::getExeDir() + "shaders/lighting/";
 	const std::string SKYBOX_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
 
@@ -341,7 +353,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		pTerrain->setPipeline(type, pCar->getPipeline(type));
     }
 
-	uint32_t SSAO_CONSTANT_COUNT = 2;
+	uint32_t SSAO_CONSTANT_COUNT = 3;
 	std::vector<VkSpecializationMapEntry> ssaoConstantEntries;
 	for (uint32_t i = 0; i < SSAO_CONSTANT_COUNT; i++)
 	{
@@ -353,7 +365,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		SSAO_SHADERS_DIR + "frag.spv",
 		VK_SHADER_STAGE_FRAGMENT_BIT,
 		ssaoConstantEntries,
-		{ &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS }
+		{ &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS, &pSsaoKernel->POWER }
 	);
 
 	GraphicsPipeline *pSsaoPipeline = new GraphicsPipeline(
@@ -372,6 +384,29 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 	);
 	Model::setStaticPipeline(SSAO, pSsaoPipeline);
 	pipelines.push_back(pSsaoPipeline);
+
+	VkSpecializationMapEntry ssaoBlurConstantEntry{
+		0,                  // constantID
+		0,                  // offset
+		sizeof(uint32_t)    // size
+	};
+
+	GraphicsPipeline *pSsaoBlurPipeline = new GraphicsPipeline(
+		pDevice,
+		{ descriptors.at(SSAO_BLUR).layout },
+		renderPasses.at(SSAO_BLUR),
+		{
+			new ShaderModule(pDevice->device, SSAO_BLUR_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, SSAO_BLUR_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT, { ssaoBlurConstantEntry }, { &pSsaoKernel->BLUR_RADIUS })
+		},
+		{},
+		{},
+		renderPasses.at(SSAO_BLUR)->getSampleCount(),
+		renderPasses.at(SSAO_BLUR)->getColorAttachmentCount(),
+		VK_FALSE
+	);
+	Model::setStaticPipeline(SSAO_BLUR, pSsaoBlurPipeline);
+	pipelines.push_back(pSsaoBlurPipeline);
 
 	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
 	VkSpecializationMapEntry lightingConstantEntry{

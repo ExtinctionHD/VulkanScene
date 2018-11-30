@@ -72,7 +72,6 @@ void RenderPass::recreate(VkExtent2D newExtent)
 }
 
 RenderPass::RenderPass(Device *pDevice, VkExtent2D extent)
-    : sampleCount()
 {
     this->pDevice = pDevice;
     this->extent = extent;

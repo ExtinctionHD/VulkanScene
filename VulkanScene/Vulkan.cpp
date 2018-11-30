@@ -174,6 +174,7 @@ void Vulkan::createRenderPasses()
 	renderPasses.insert({ DEPTH, new DepthRenderPass(pDevice, DEPTH_MAP_EXTENT) });
 	renderPasses.insert({ GEOMETRY, new GeometryRenderPass(pDevice, pSwapChain->getExtent()) });
 	renderPasses.insert({ SSAO, new SsaoRenderPass(pDevice, pSwapChain->getExtent()) });
+	renderPasses.insert({ SSAO_BLUR, new SsaoRenderPass(pDevice, pSwapChain->getExtent()) });
 	renderPasses.insert({ LIGHTING, new LightingRenderPass(pDevice, pSwapChain) });
 	renderPasses.insert({ FINAL, new FinalRenderPass(pDevice, pSwapChain) });
 
@@ -226,6 +227,7 @@ void Vulkan::initGraphicsCommands()
 		recordRenderPassCommands(graphicCommands[i], DEPTH, 0);
 		recordRenderPassCommands(graphicCommands[i], GEOMETRY, 0);
 		recordRenderPassCommands(graphicCommands[i], SSAO, 0);
+		recordRenderPassCommands(graphicCommands[i], SSAO_BLUR, 0);
 		recordRenderPassCommands(graphicCommands[i], LIGHTING, 0);
 		recordRenderPassCommands(graphicCommands[i], FINAL, i);
 
