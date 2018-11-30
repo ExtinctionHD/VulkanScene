@@ -9,11 +9,8 @@
 class Buffer : public StagingBuffer
 {
 public:
-	Buffer(Device *pDevice, VkBufferUsageFlags usage, VkShaderStageFlagBits shaderStage, VkDeviceSize size);
+	Buffer(Device *pDevice, VkBufferUsageFlags usage, VkDeviceSize size);
 	~Buffer();
-
-	// shader stage on which the buffer is used
-	VkShaderStageFlagBits shaderStage;
 
 	VkBuffer getBuffer() const;
 

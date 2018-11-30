@@ -37,11 +37,18 @@ DescriptorPool::~DescriptorPool()
 	vkDestroyDescriptorPool(pDevice->device, pool, nullptr);
 }
 
-VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, std::vector<TextureImage*> textures, bool createLayout, VkDescriptorSetLayout& layout)
+VkDescriptorSet DescriptorPool::getDescriptorSet(
+    std::vector<Buffer*> buffers,
+	std::vector<VkShaderStageFlagBits> buffersShaderStages,
+    std::vector<TextureImage*> textures,
+	std::vector<VkShaderStageFlagBits> texturesShaderStages,
+    bool createLayout,
+    VkDescriptorSetLayout &layout
+)
 {
 	if (createLayout)
 	{
-		layout = createDescriptorSetLayout(buffers, textures);
+		layout = createDescriptorSetLayout(buffersShaderStages, texturesShaderStages);
 	}
 
 	VkDescriptorSetAllocateInfo allocateInfo{
@@ -124,33 +131,36 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(std::vector<Buffer*> buffers, s
 	return set;
 }
 
-VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(std::vector<Buffer*> buffers, const std::vector<TextureImage*> &textures)
+VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
+	std::vector<VkShaderStageFlagBits> buffersShaderStages,
+	std::vector<VkShaderStageFlagBits> texturesShaderStages
+)
 {
 	std::vector<VkDescriptorSetLayoutBinding> bindings;
 
 	// add layout bindings of uniform buffers
-	for (size_t i = 0; i < buffers.size(); i++)
+	for (size_t i = 0; i < buffersShaderStages.size(); i++)
 	{
 		VkDescriptorSetLayoutBinding uniformBufferLayoutBinding{
-			i,									// binding;
-			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,	// descriptorType;
-			1,									// descriptorCount;
-			buffers[i]->shaderStage,			// stageFlags;
-			nullptr								// pImmutableSamplers;
+			i,                                  // binding;
+			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,  // descriptorType;
+			1,                                  // descriptorCount;
+			buffersShaderStages[i],             // stageFlags;
+			nullptr                             // pImmutableSamplers;
 		};
 
 		bindings.push_back(uniformBufferLayoutBinding);
 	}
 
 	// add layout bindings of textures
-	for (size_t i = 0; i < textures.size(); i++)
+	for (size_t i = 0; i < texturesShaderStages.size(); i++)
 	{
 		VkDescriptorSetLayoutBinding textureLayoutBinding{
-			buffers.size() + i,							// binding;
-			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	// descriptorType;
-			1,											// descriptorCount;
-			VK_SHADER_STAGE_FRAGMENT_BIT,				// stageFlags;
-			nullptr										// pImmutableSamplers;
+			buffersShaderStages.size() + i,             // binding;
+			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,  // descriptorType;
+			1,                                          // descriptorCount;
+			texturesShaderStages[i],                    // stageFlags;
+			nullptr                                     // pImmutableSamplers;
 		};
 
 		bindings.push_back(textureLayoutBinding);

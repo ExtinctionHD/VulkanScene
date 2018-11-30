@@ -49,7 +49,7 @@ void SsaoKernel::createKernel()
 		kernel[i] = glm::vec4(sample * scale, 0.0f);
 	}
 
-	pKernelBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, kernel.size() * vectorSize);
+	pKernelBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, kernel.size() * vectorSize);
 	pKernelBuffer->updateData(kernel.data(), kernel.size() * vectorSize, 0);
 }
 

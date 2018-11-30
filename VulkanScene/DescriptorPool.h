@@ -15,7 +15,9 @@ public:
 	// returns set of descriptors and create the layout of this descriptor set
 	VkDescriptorSet getDescriptorSet(
 		std::vector<Buffer*> buffers,
+        std::vector<VkShaderStageFlagBits> buffersShaderStages,
 		std::vector<TextureImage*> textures,
+		std::vector<VkShaderStageFlagBits> texturesShaderStages,
 		bool createLayout,
 		VkDescriptorSetLayout& layout
 	);
@@ -26,8 +28,8 @@ private:
 	VkDescriptorPool pool{};
 
 	VkDescriptorSetLayout createDescriptorSetLayout(
-		std::vector<Buffer*> buffers, 
-		const std::vector<TextureImage*> &textures
+		std::vector<VkShaderStageFlagBits> buffersShaderStages,
+		std::vector<VkShaderStageFlagBits> texturesShaderStages
 	);
 };
 

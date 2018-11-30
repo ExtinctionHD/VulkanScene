@@ -7,14 +7,14 @@ Lighting::Lighting(Device *pDevice, Attributes attributes, float spaceRadius)
 {
 	this->attributes = attributes;
 
-	pAttributesBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(attributes));
+	pAttributesBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(attributes));
 	pAttributesBuffer->updateData(&attributes, sizeof(attributes), 0);
 
 	projection = glm::ortho(-spaceRadius, spaceRadius, -spaceRadius, spaceRadius, -spaceRadius, spaceRadius);
 	projection[1][1] *= -1;
 
 	Space space = getSpace();
-	pSpaceBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_ALL_GRAPHICS, sizeof(space));
+	pSpaceBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(space));
 	pSpaceBuffer->updateData(&space, sizeof(space), 0);
 }
 

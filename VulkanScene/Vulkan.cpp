@@ -25,7 +25,7 @@ Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 		"VK_KHR_win32_surface"
 	};
 
-	const VkSampleCountFlagBits SAMPLE_COUNT = VK_SAMPLE_COUNT_4_BIT;
+	const VkSampleCountFlagBits SAMPLE_COUNT = VK_SAMPLE_COUNT_2_BIT;
 
 	pInstance = new Instance(requiredLayers, EXTENTIONS);
 	pSurface = new Surface(pInstance->getInstance(),hInstance, hWnd);

@@ -102,7 +102,14 @@ VkDescriptorSetLayout Model::getTransformDsLayout()
 
 void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 {
-	transformDescriptorSet = pDescriptorPool->getDescriptorSet({ pTransformBuffer }, { }, transformDsLayout == VK_NULL_HANDLE, transformDsLayout);
+	transformDescriptorSet = pDescriptorPool->getDescriptorSet(
+		{ pTransformBuffer },
+		{ VK_SHADER_STAGE_VERTEX_BIT },
+		{},
+		{},
+		transformDsLayout == VK_NULL_HANDLE,
+		transformDsLayout
+	);
 
 	for (auto material : materials)
 	{
@@ -179,7 +186,7 @@ Model::Model(Device *pDevice)
 {
 	this->pDevice = pDevice;
 
-	pTransformBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_VERTEX_BIT, sizeof(transform));
+	pTransformBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(transform));
 	setTransform(glm::mat4(1.0f));
 
 	objectCount++;

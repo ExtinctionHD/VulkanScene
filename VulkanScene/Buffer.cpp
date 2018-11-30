@@ -2,11 +2,9 @@
 
 // public:
 
-Buffer::Buffer(Device *pDevice, VkBufferUsageFlags usage, VkShaderStageFlagBits shaderStage, VkDeviceSize size) :
+Buffer::Buffer(Device *pDevice, VkBufferUsageFlags usage, VkDeviceSize size) :
 	StagingBuffer(pDevice, size)
 {
-	this->shaderStage = shaderStage;
-
 	createBuffer(
 		pDevice,
 		size,

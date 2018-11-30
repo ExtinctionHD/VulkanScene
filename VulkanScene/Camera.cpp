@@ -165,7 +165,7 @@ void Camera::initAngles()
 
 void Camera::initSpaceBuffer(Device *pDevice)
 {
-	pSpaceBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_ALL_GRAPHICS, sizeof(Space));
+	pSpaceBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(Space));
     updateSpace();
 }
 

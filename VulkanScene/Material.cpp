@@ -26,7 +26,7 @@ Material::Material(Device *pDevice)
 		1.0f				// opacity
 	};
 
-	pColorsBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, sizeof(MaterialColors));
+	pColorsBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(MaterialColors));
 	updateColorsBuffer();
 
 	objectCount++;
@@ -100,7 +100,16 @@ std::string Material::getDefaultTexturePath(aiTextureType type)
 
 void Material::initDescriptorSet(DescriptorPool * pDescriptorPool)
 {
-	descriptorSet = pDescriptorPool->getDescriptorSet({ pColorsBuffer }, getTextures(), dsLayout == VK_NULL_HANDLE, dsLayout);
+	std::vector<VkShaderStageFlagBits> texturesShaderStages(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+
+	descriptorSet = pDescriptorPool->getDescriptorSet(
+		{ pColorsBuffer },
+		{ VK_SHADER_STAGE_FRAGMENT_BIT },
+		getTextures(),
+		texturesShaderStages,
+		dsLayout == VK_NULL_HANDLE,
+		dsLayout
+	);
 }
 
 VkDescriptorSet Material::getDescriptorSet() const
