@@ -11,7 +11,7 @@ public:
 	~SsaoKernel();
 
 	const uint32_t SIZE = 64;
-	const uint32_t NOISE_DIM = 2;
+	const uint32_t NOISE_DIM = 3;
 	const float RADIUS = 0.4f;
 	const float POWER = 1.2f;
 	const uint32_t BLUR_RADIUS = NOISE_DIM / 2;

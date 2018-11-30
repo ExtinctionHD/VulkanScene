@@ -353,19 +353,20 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		pTerrain->setPipeline(type, pCar->getPipeline(type));
     }
 
-	uint32_t SSAO_CONSTANT_COUNT = 3;
+	uint32_t SSAO_CONSTANT_COUNT = 4;
 	std::vector<VkSpecializationMapEntry> ssaoConstantEntries;
 	for (uint32_t i = 0; i < SSAO_CONSTANT_COUNT; i++)
 	{
 		ssaoConstantEntries.push_back({ i, sizeof(uint32_t) * i, sizeof(uint32_t) });
 	}
 
+	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
     ShaderModule *pSsaoFragmentShader = new ShaderModule(
 		pDevice->device,
 		SSAO_SHADERS_DIR + "frag.spv",
 		VK_SHADER_STAGE_FRAGMENT_BIT,
 		ssaoConstantEntries,
-		{ &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS, &pSsaoKernel->POWER }
+		{ &sampleCount, &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS, &pSsaoKernel->POWER }
 	);
 
 	GraphicsPipeline *pSsaoPipeline = new GraphicsPipeline(
@@ -408,7 +409,6 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 	Model::setStaticPipeline(SSAO_BLUR, pSsaoBlurPipeline);
 	pipelines.push_back(pSsaoBlurPipeline);
 
-	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
 	VkSpecializationMapEntry lightingConstantEntry{
 		0,                  // constantID
 		0,                  // offset

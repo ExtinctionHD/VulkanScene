@@ -26,5 +26,7 @@ void main()
 		}
 	}
 	outColor = result / (float(n));
-	// outColor = texture(ssaoMap, inUV).r
+	
+	// no blur
+	// outColor = texture(ssaoMap, inUV).r;
 }
