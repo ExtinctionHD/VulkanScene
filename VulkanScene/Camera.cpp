@@ -178,7 +178,7 @@ glm::mat4 Camera::getProjectionMatrix() const
 {
 	const float aspect = extent.width / float(extent.height);
 	const float zNear = 0.01f;
-	const float zFar = 100.0f;
+	const float zFar = 1000.0f;
 
 	glm::mat4 proj = glm::perspective(glm::radians(fov), aspect, zNear, zFar);
 	proj[1][1] *= -1;

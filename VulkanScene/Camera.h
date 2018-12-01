@@ -53,7 +53,7 @@ public:
 
 private:
 	// step of camera movement
-	const float SPEED = 1.0f;
+	const float SPEED = 2.0f;
 
 	// camera rotation sensitivity
 	const float SENSITIVITY = 0.1f;

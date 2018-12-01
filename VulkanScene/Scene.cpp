@@ -171,24 +171,24 @@ void Scene::initLighting()
     // init lighting attributes
 
     // noon lighting attributes
-	//Lighting::Attributes attributes{
-	//	glm::vec3(1.0f, 1.0f, 1.0f),    // color
-	//	0.8f,                           // ambientStrength
-	//	glm::vec3(0.0f, 1.0f, -0.001f), // direction
-	//	0.8f,                           // directedStrength
-	//	pCamera->getPos(),              // cameraPos
-	//	16.0f                           // specularPower
-	//};
+	Lighting::Attributes attributes{
+		glm::vec3(1.0f, 1.0f, 1.0f),    // color
+		0.8f,                           // ambientStrength
+		glm::vec3(0.0f, 1.0f, -0.001f), // direction
+		0.8f,                           // directedStrength
+		pCamera->getPos(),              // cameraPos
+		16.0f                           // specularPower
+	};
 
     // clouds lighting attributes
-	Lighting::Attributes attributes{
-	    glm::vec3(1.0f, 1.0f, 1.0f),        // color
-	    0.8f,								// ambientStrength
-	    glm::vec3(-0.89f, 0.4f, -0.21f),    // direction
-	    0.8f,								// directedStrength
-	    pCamera->getPos(),                  // cameraPos
-	    8.0f                                // specularPower
-	};
+	//Lighting::Attributes attributes{
+	//    glm::vec3(1.0f, 1.0f, 1.0f),        // color
+	//    0.9f,								// ambientStrength
+	//    glm::vec3(-0.89f, 0.4f, -0.21f),    // direction
+	//    0.8f,								// directedStrength
+	//    pCamera->getPos(),                  // cameraPos
+	//    8.0f                                // specularPower
+	//};
 
     // sunset lighting attributes
 	//Lighting::Attributes attributes{
@@ -200,22 +200,24 @@ void Scene::initLighting()
 	//	16.0f								// specularPower
 	//};
 
-	const float spaceRadius = 10.0f;
+	const float spaceRadius = 40.0f;
 
 	pLighting = new Lighting(pDevice, attributes, spaceRadius);
 }
 
 void Scene::initModels()
 {
-	const std::string REGERA_FILE = File::getExeDir() + "models/regera/regera.obj";
-	const std::string MERCEDES_FILE = File::getExeDir() + "models/amgGT/amgGT.obj";
-	const std::string AUDI_FILE = File::getExeDir() + "models/audiA7/audiA7.obj";
-	const std::string VULCAN_FILE = File::getExeDir() + "models/vulcan/vulcan.obj";
+	const std::string REGERA_FILE = File::getExeDir() + "models/Koenigsegg_Regera/regera.obj";
+	const std::string AMG_GT_FILE = File::getExeDir() + "models/Mercedes_Amg_GT/amgGT.obj";
+	const std::string VULCAN_FILE = File::getExeDir() + "models/Aston_Martin_Vulcan/vulcan.obj";
+
+	const std::string HOUSE_FILE = File::getExeDir() + "models/House/house.obj";
 
 	const std::string SUNSET_SKYBOX_DIR = File::getExeDir() + "textures/skyboxSunset/";
 	const std::string CLOUDS_SKYBOX_DIR = File::getExeDir() + "textures/skyboxClouds/";
 	const std::string NOON_SKYBOX_DIR = File::getExeDir() + "textures/skyboxNoon/";
 
+	const std::string GRASS_TERRAIN_DIR = File::getExeDir() + "textures/grass/";
 	const std::string ROCKY_TERRAIN_DIR = File::getExeDir() + "textures/rockyTerrain/";
     const std::string BRICKS_TERRAIN_DIR = File::getExeDir() + "textures/asphaltBricks/";
 
@@ -226,28 +228,29 @@ void Scene::initModels()
 	pCar->scale(glm::vec3(2.050f / pCar->getBaseSize().x));
 	pCar->rotateAxisX(90.0f);
 
-	// mercedes transformations
+	// amg gt transformations
 	/*pCar->scale(glm::vec3(1.953f / pCar->getBaseSize().x));
 	pCar->rotateAxisX(180.0f);*/
-
-    // audi transformations
-	/*pCar->move({ 0.0f, -0.690, 0.0f });
-	pCar->scale(glm::vec3(2.118f / pCar->getBaseSize().x));
-	pCar->rotateAxisX(90.0f);*/
 
     // aston martin transformations
 	/*pCar->scale(glm::vec3(2.063f / pCar->getBaseSize().x));
 	pCar->rotateAxisX(90.0f);*/
 
+	pHouse = new AssimpModel(pDevice, HOUSE_FILE);
+	pHouse->move({ -2.1f, 0.14f, 3.0f });
+	//pHouse->scale(glm::vec3(14.0f / pHouse->getBaseSize().x));
+	pHouse->rotateAxisX(180.0f);
+
 	// initialize skybox model
-	pSkybox = new SkyboxModel(pDevice, CLOUDS_SKYBOX_DIR, ".jpg");
+	pSkybox = new SkyboxModel(pDevice, NOON_SKYBOX_DIR, ".jpg");
 
 	// initialize terrain model
-	pTerrain = new TerrainModel(pDevice, { 2000, 2000 }, { 2000, 2000 }, ROCKY_TERRAIN_DIR, ".jpg");
+	pTerrain = new TerrainModel(pDevice, { 1000, 1000 }, { 1000, 1000 }, GRASS_TERRAIN_DIR, ".jpg");
 
 	models.push_back(pSkybox);
 	models.push_back(pTerrain);
 	models.push_back(pCar);
+	models.push_back(pHouse);
 }
 
 void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
@@ -365,6 +368,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 			renderPasses.at(type),
             shaders
 		));
+		pHouse->setPipeline(type, pCar->getPipeline(type));
 		pTerrain->setPipeline(type, pCar->getPipeline(type));
     }
 

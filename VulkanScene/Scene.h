@@ -55,6 +55,7 @@ private:
 
 	// models
 	AssimpModel *pCar{};
+	AssimpModel *pHouse{};
 	SkyboxModel *pSkybox{};
 	TerrainModel *pTerrain{};
 	std::vector<Model*> models;
