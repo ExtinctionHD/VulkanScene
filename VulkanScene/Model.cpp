@@ -102,12 +102,14 @@ VkDescriptorSetLayout Model::getTransformDsLayout()
 
 void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 {
+    if (transformDsLayout == VK_NULL_HANDLE)
+    {
+		transformDsLayout = pDescriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT }, {});
+    }
+
 	transformDescriptorSet = pDescriptorPool->getDescriptorSet(
 		{ pTransformBuffer },
-		{ VK_SHADER_STAGE_VERTEX_BIT },
 		{},
-		{},
-		transformDsLayout == VK_NULL_HANDLE,
 		transformDsLayout
 	);
 

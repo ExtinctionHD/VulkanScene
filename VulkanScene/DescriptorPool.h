@@ -12,30 +12,27 @@ public:
 	DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t texturesCount, uint32_t setCount);
 	~DescriptorPool();
 
+	VkDescriptorSetLayout createDescriptorSetLayout(
+		std::vector<VkShaderStageFlagBits> buffersShaderStages,
+		std::vector<VkShaderStageFlagBits> texturesShaderStages
+	) const;
+
 	// returns set of descriptors and create the layout of this descriptor set
 	VkDescriptorSet getDescriptorSet(
 		std::vector<Buffer*> buffers,
-        std::vector<VkShaderStageFlagBits> buffersShaderStages,
 		std::vector<TextureImage*> textures,
-		std::vector<VkShaderStageFlagBits> texturesShaderStages,
-		bool createLayout,
-		VkDescriptorSetLayout& layout
-	);
+		VkDescriptorSetLayout layout
+	) const;
 
 private:
 	Device *pDevice;
 
 	VkDescriptorPool pool{};
-
-	VkDescriptorSetLayout createDescriptorSetLayout(
-		std::vector<VkShaderStageFlagBits> buffersShaderStages,
-		std::vector<VkShaderStageFlagBits> texturesShaderStages
-	);
 };
 
 struct DescriptorStruct
 {
-	VkDescriptorSet set;
 	VkDescriptorSetLayout layout;
+	VkDescriptorSet set;
 };
 

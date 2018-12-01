@@ -255,25 +255,21 @@ void Scene::initModels()
 
 void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
 {
-	descriptors.insert({ DEPTH, {} });
-	descriptors.at(DEPTH).set = pDescriptorPool->getDescriptorSet(
-		{ pLighting->getSpaceBuffer() },
-		{ VK_SHADER_STAGE_VERTEX_BIT },
-	    {},
-		{},
-		true,
-		descriptors.at(DEPTH).layout
-	);
+	DescriptorStruct descriptorStruct;
 
-	descriptors.insert({ GEOMETRY, {} });
-	descriptors.at(GEOMETRY).set = pDescriptorPool->getDescriptorSet(
-	    { pCamera->getSpaceBuffer() },
-		{ VK_SHADER_STAGE_VERTEX_BIT },
-	    {},
-		{},
-	    true,
-	    descriptors.at(GEOMETRY).layout
-	);
+    // Depth:
+
+	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT }, {});
+	descriptorStruct.set = pDescriptorPool->getDescriptorSet({ pLighting->getSpaceBuffer() }, {}, descriptorStruct.layout);
+	descriptors.insert({ DEPTH, descriptorStruct });
+
+    // Geometry:
+
+	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT }, {});
+	descriptorStruct.set = pDescriptorPool->getDescriptorSet({ pCamera->getSpaceBuffer() }, {}, descriptorStruct.layout);
+	descriptors.insert({ GEOMETRY, descriptorStruct });
+
+    // Ssao:
 
     GeometryRenderPass *pGeometryRenderPass = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY));
 	std::vector<TextureImage*> textures{
@@ -284,25 +280,28 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 
 	std::vector<VkShaderStageFlagBits> texturesShaderStages(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 
-	descriptors.insert({ SSAO, {} });
-	descriptors.at(SSAO).set = pDescriptorPool->getDescriptorSet(
-		{ pSsaoKernel->getKernelBuffer(), pCamera->getSpaceBuffer() },
-		{ VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_FRAGMENT_BIT },
-		textures,
-		texturesShaderStages,
-		true,
-		descriptors.at(SSAO).layout
+	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout(
+	    {VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_FRAGMENT_BIT},
+	    texturesShaderStages
 	);
+	descriptorStruct.set = pDescriptorPool->getDescriptorSet(
+	    {pSsaoKernel->getKernelBuffer(), pCamera->getSpaceBuffer()},
+	    textures,
+	    descriptorStruct.layout
+	);
+	descriptors.insert({ SSAO, descriptorStruct });
 
-	descriptors.insert({ SSAO_BLUR, {} });
-	descriptors.at(SSAO_BLUR).set = pDescriptorPool->getDescriptorSet(
+    // Ssao blur:
+
+	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout({}, { VK_SHADER_STAGE_FRAGMENT_BIT });
+	descriptorStruct.set = pDescriptorPool->getDescriptorSet(
 		{},
-		{},
-		{ dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO))->getSsaoMap() },
-		{ VK_SHADER_STAGE_FRAGMENT_BIT },
-		true,
-		descriptors.at(SSAO_BLUR).layout
+        { dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO))->getSsaoMap() },
+		descriptorStruct.layout
 	);
+	descriptors.insert({ SSAO_BLUR, descriptorStruct });
+
+    // Lighting:
 
 	TextureImage *pShadowsMap = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthMap();
 	textures = std::vector<TextureImage*>{
@@ -314,25 +313,29 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 	};
 	texturesShaderStages = std::vector<VkShaderStageFlagBits>(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 
-	descriptors.insert({ LIGHTING, {} });
-	descriptors.at(LIGHTING).set = pDescriptorPool->getDescriptorSet(
-		{ pLighting->getAttributesBuffer(), pLighting->getSpaceBuffer() },
+	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout(
 		{ VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_FRAGMENT_BIT },
+		texturesShaderStages
+	);
+	descriptorStruct.set = pDescriptorPool->getDescriptorSet(
+		{ pLighting->getAttributesBuffer(), pLighting->getSpaceBuffer() },
 		textures,
-		texturesShaderStages,
-		true,
-		descriptors.at(LIGHTING).layout
+		descriptorStruct.layout
 	);
+	descriptors.insert({ LIGHTING, descriptorStruct });
 
-	descriptors.insert({ FINAL, {} });
-	descriptors.at(FINAL).set = pDescriptorPool->getDescriptorSet(
-		{ pCamera->getSpaceBuffer(), pLighting->getSpaceBuffer(), pLighting->getAttributesBuffer() },
+    // Final:
+
+	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout(
 		{ VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT },
-		{ pShadowsMap },
-		{ VK_SHADER_STAGE_FRAGMENT_BIT },
-		true,
-		descriptors.at(FINAL).layout
+		{ VK_SHADER_STAGE_FRAGMENT_BIT }
 	);
+	descriptorStruct.set = pDescriptorPool->getDescriptorSet(
+		{ pCamera->getSpaceBuffer(), pLighting->getSpaceBuffer(), pLighting->getAttributesBuffer() },
+		{ pShadowsMap },
+		descriptorStruct.layout
+	);
+	descriptors.insert({ FINAL, descriptorStruct });
 
 	for (Model *pModel : models)
 	{

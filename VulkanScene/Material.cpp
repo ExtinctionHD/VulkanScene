@@ -102,12 +102,14 @@ void Material::initDescriptorSet(DescriptorPool * pDescriptorPool)
 {
 	std::vector<VkShaderStageFlagBits> texturesShaderStages(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 
+    if (dsLayout == VK_NULL_HANDLE)
+    {
+		dsLayout = pDescriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_FRAGMENT_BIT }, texturesShaderStages);
+    }
+
 	descriptorSet = pDescriptorPool->getDescriptorSet(
 		{ pColorsBuffer },
-		{ VK_SHADER_STAGE_FRAGMENT_BIT },
 		getTextures(),
-		texturesShaderStages,
-		dsLayout == VK_NULL_HANDLE,
 		dsLayout
 	);
 }
