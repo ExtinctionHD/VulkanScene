@@ -71,5 +71,7 @@ private:
 	void initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses);
 
 	void initPipelines(RenderPassesMap renderPasses);
+
+	void initStaticPipelines(RenderPassesMap renderPasses);
 };
 

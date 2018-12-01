@@ -28,7 +28,7 @@ Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 	const VkSampleCountFlagBits SAMPLE_COUNT = VK_SAMPLE_COUNT_1_BIT;
 
 	pInstance = new Instance(requiredLayers, EXTENTIONS);
-	pSurface = new Surface(pInstance->getInstance(),hInstance, hWnd);
+	pSurface = new Surface(pInstance->getInstance(), hInstance, hWnd);
 	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers, SAMPLE_COUNT);
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);
 

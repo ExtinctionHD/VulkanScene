@@ -31,8 +31,8 @@ VkExtent2D Window::getClientExtent(HWND hWnd)
 	GetClientRect(hWnd, &rect);
 
 	return { 
-		uint32_t(rect.left - rect.right),  
-		uint32_t(rect.bottom - rect.top) 
+		uint32_t(rect.right - rect.left) ,
+		uint32_t(rect.bottom - rect.top)
 	};
 }
 

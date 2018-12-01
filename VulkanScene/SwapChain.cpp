@@ -154,25 +154,23 @@ VkExtent2D SwapChain::chooseExtent(VkSurfaceCapabilitiesKHR capabilities, VkExte
 	{
 		return capabilities.currentExtent;
 	}
-	else
-	{
-		// extent height and width: (minAvailable <= extent <= maxAvailable) && (extent <= actualExtent)
-		actualExtent.width = (std::max)(
-			capabilities.minImageExtent.width,
-			(std::min)(capabilities.maxImageExtent.width, actualExtent.width)
-		);
-		actualExtent.height = (std::max)(
-			capabilities.minImageExtent.height,
-			(std::min)(capabilities.maxImageExtent.height, actualExtent.height)
-		);
 
-		return actualExtent;
-	}
+    // extent height and width: (minAvailable <= extent <= maxAvailable) && (extent <= actualExtent)
+    actualExtent.width = (std::max)(
+        capabilities.minImageExtent.width,
+        (std::min)(capabilities.maxImageExtent.width, actualExtent.width)
+    );
+    actualExtent.height = (std::max)(
+        capabilities.minImageExtent.height,
+        (std::min)(capabilities.maxImageExtent.height, actualExtent.height)
+    );
+
+    return actualExtent;
 }
 
 uint32_t SwapChain::chooseImageCount(VkSurfaceCapabilitiesKHR capabilities)
 {
-	uint32_t imageCount = capabilities.minImageCount + 1;
+	uint32_t imageCount = capabilities.minImageCount + 2;
 	if (capabilities.maxImageCount > 0 &&
 		imageCount > capabilities.maxImageCount)
 	{

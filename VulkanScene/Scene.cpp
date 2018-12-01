@@ -90,6 +90,7 @@ void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderP
 {
 	initDescriptorSets(pDescriptorPool, renderPasses);
 	initPipelines(renderPasses);
+	initStaticPipelines(renderPasses);
 }
 
 void Scene::updateScene()
@@ -345,9 +346,6 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 
 void Scene::initPipelines(RenderPassesMap renderPasses)
 {
-	const std::string SSAO_SHADERS_DIR = File::getExeDir() + "shaders/ssao/";
-	const std::string SSAO_BLUR_SHADERS_DIR = File::getExeDir() + "shaders/ssaoBlur/";
-	const std::string LIGHTING_SHADERS_DIR = File::getExeDir() + "shaders/lighting/";
 	const std::string SKYBOX_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
 
     std::unordered_map<RenderPassType, std::string> shadersDirectories{
@@ -355,6 +353,16 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		{ GEOMETRY, File::getExeDir() + "shaders/geometry/" },
 		{ FINAL, File::getExeDir() + "shaders/final/" }
 	};
+
+	pipelines.push_back(pSkybox->createPipeline(
+		{ descriptors.at(FINAL).layout },
+		FINAL,
+		renderPasses.at(FINAL),
+		{
+			new ShaderModule(pDevice->device, SKYBOX_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			new ShaderModule(pDevice->device, SKYBOX_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+		}
+	));
 
     for (auto shadersDir : shadersDirectories)
     {
@@ -374,6 +382,15 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		pHouse->setPipeline(type, pCar->getPipeline(type));
 		pTerrain->setPipeline(type, pCar->getPipeline(type));
     }
+}
+
+void Scene::initStaticPipelines(RenderPassesMap renderPasses)
+{
+	const std::string SSAO_SHADERS_DIR = File::getExeDir() + "shaders/ssao/";
+	const std::string SSAO_BLUR_SHADERS_DIR = File::getExeDir() + "shaders/ssaoBlur/";
+	const std::string LIGHTING_SHADERS_DIR = File::getExeDir() + "shaders/lighting/";
+
+    // Ssao:
 
 	uint32_t SSAO_CONSTANT_COUNT = 4;
 	std::vector<VkSpecializationMapEntry> ssaoConstantEntries;
@@ -383,7 +400,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 	}
 
 	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
-    ShaderModule *pSsaoFragmentShader = new ShaderModule(
+	ShaderModule *pSsaoFragmentShader = new ShaderModule(
 		pDevice->device,
 		SSAO_SHADERS_DIR + "frag.spv",
 		VK_SHADER_STAGE_FRAGMENT_BIT,
@@ -408,6 +425,8 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 	Model::setStaticPipeline(SSAO, pSsaoPipeline);
 	pipelines.push_back(pSsaoPipeline);
 
+    // Ssao blur:
+
 	VkSpecializationMapEntry ssaoBlurConstantEntry{
 		0,                  // constantID
 		0,                  // offset
@@ -431,6 +450,8 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 	Model::setStaticPipeline(SSAO_BLUR, pSsaoBlurPipeline);
 	pipelines.push_back(pSsaoBlurPipeline);
 
+    // Lighting:
+
 	VkSpecializationMapEntry lightingConstantEntry{
 		0,                  // constantID
 		0,                  // offset
@@ -453,15 +474,4 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 	);
 	Model::setStaticPipeline(LIGHTING, pLightingPipeline);
 	pipelines.push_back(pLightingPipeline);
-
-	pipelines.push_back(pSkybox->createPipeline(
-		{ descriptors.at(FINAL).layout },
-        FINAL,
-		renderPasses.at(FINAL),
-		{
-			new ShaderModule(pDevice->device, SKYBOX_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, SKYBOX_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
-		}
-	));
-
 }
