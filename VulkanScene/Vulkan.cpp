@@ -25,7 +25,7 @@ Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 		"VK_KHR_win32_surface"
 	};
 
-	const VkSampleCountFlagBits SAMPLE_COUNT = VK_SAMPLE_COUNT_1_BIT;
+	const VkSampleCountFlagBits SAMPLE_COUNT = VK_SAMPLE_COUNT_2_BIT;
 
 	pInstance = new Instance(requiredLayers, EXTENTIONS);
 	pSurface = new Surface(pInstance->getInstance(), hInstance, hWnd);
@@ -153,16 +153,6 @@ void Vulkan::resize(VkExtent2D newExtent)
 	pScene->resizeExtent(pSwapChain->getExtent());
 
 	initGraphicsCommands();
-}
-
-void Vulkan::keyDownCallback(int key)
-{
-	pScene->getController()->keyDownCallback(key);
-}
-
-void Vulkan::keyUpCallback(int key)
-{
-	pScene->getController()->keyUpCallback(key);
 }
 
 // private:

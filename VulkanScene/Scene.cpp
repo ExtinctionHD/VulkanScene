@@ -256,7 +256,7 @@ void Scene::initModels()
 
 void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
 {
-	DescriptorStruct descriptorStruct;
+	DescriptorStruct descriptorStruct{};
 
     // Depth:
 

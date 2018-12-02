@@ -21,7 +21,7 @@ public:
 
 	HWND getHWnd() const;
 
-	int mainLoop();
+	int mainLoop() const;
 
 private:
 	const std::string WINDOW_CLASS = "Vulkan API";
@@ -30,12 +30,12 @@ private:
 	HINSTANCE hInstance;	// instance handler
 	HWND hWnd{};			// window handler
 
-	ATOM registerWindowClass();
+	ATOM registerWindowClass() const;
 
 	// create window
 	void createWindow(int width, int height);
 
-	void showWindow();
+	void showWindow() const;
 
 	// function of window messages processing
 	static LRESULT CALLBACK wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

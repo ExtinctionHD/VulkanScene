@@ -46,7 +46,7 @@ HWND Window::getHWnd() const
 	return hWnd;
 }
 
-int Window::mainLoop()
+int Window::mainLoop() const
 {
 	showWindow();
 
@@ -71,7 +71,7 @@ int Window::mainLoop()
 
 // private:
 
-ATOM Window::registerWindowClass()
+ATOM Window::registerWindowClass() const
 {
 	WNDCLASSEX cex{
 		sizeof(WNDCLASSEX),				// cbSize 
@@ -99,7 +99,7 @@ void Window::createWindow(int width, int height)
 	assert(hWnd);
 }
 
-void Window::showWindow()
+void Window::showWindow() const
 {
 	SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP);
 	SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
@@ -117,14 +117,6 @@ LRESULT Window::wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_SIZE:
 		pVulkan->minimized = wParam == SIZE_MINIMIZED;
 		pVulkan->resize(getClientExtent(hWnd));
-		break;
-
-	case WM_KEYDOWN:
-		pVulkan->keyDownCallback(wParam);
-		break;
-
-	case WM_KEYUP:
-		pVulkan->keyUpCallback(wParam);
 		break;
 
 	case WM_DESTROY:

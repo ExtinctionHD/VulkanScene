@@ -8,7 +8,7 @@ class Controller
 public:
 	Controller(Camera *pCamera);
 
-	enum Keys
+	enum Key
 	{
 		MOVE_FORWARD = 0x57,    // W
 		MOVE_LEFT = 0x41,       // A
@@ -21,11 +21,11 @@ public:
 	// moves and rotates camera
 	void controlCamera(float deltaSec);
 
-	void keyDownCallback(int key);
-
-	void keyUpCallback(int key);
-
 private:
 	Camera *pCamera;
+
+	void setCameraMovement();
+
+	bool isPressed(Key key);
 };
 
