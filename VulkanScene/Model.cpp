@@ -151,16 +151,8 @@ void Model::setStaticPipeline(RenderPassType type, GraphicsPipeline *pPipeline)
 
 void Model::renderDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const
 {
-	descriptorSets.push_back(transformDescriptorSet);
-
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(DEPTH)->pipeline);
-
-	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(DEPTH)->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
-
-	for (auto &mesh : solidMeshes)
-	{
-		mesh->draw(commandBuffer);
-	}
+	renderMeshes(commandBuffer, descriptorSets, DEPTH, solidMeshes);
+	renderMeshes(commandBuffer, descriptorSets, DEPTH, transparentMeshes);
 }
 
 void Model::renderGeometry(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const
@@ -224,6 +216,7 @@ GraphicsPipeline* Model::createDepthPipeline(
 )
 {
 	layouts.push_back(transformDsLayout);
+	layouts.push_back(Material::getDsLayout());
 
 	const uint32_t inputBinding = 0;
 

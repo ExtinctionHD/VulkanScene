@@ -182,7 +182,7 @@ void Scene::initLighting()
     // noon lighting attributes
 	//Lighting::Attributes attributes{
 	//	glm::vec3(1.0f, 1.0f, 1.0f),    // color
-	//	0.9f,                           // ambientStrength
+	//	0.8f,                           // ambientStrength
 	//	glm::vec3(0.0f, 1.0f, -0.001f), // direction
 	//	0.9f,                           // directedStrength
 	//	pCamera->getPos(),              // cameraPos
@@ -192,9 +192,9 @@ void Scene::initLighting()
     // clouds lighting attributes
 	Lighting::Attributes attributes{
 	    glm::vec3(1.0f, 1.0f, 1.0f),        // color
-	    0.8f,								// ambientStrength
+	    0.9f,								// ambientStrength
 	    glm::vec3(-0.89f, 0.4f, -0.21f),    // direction
-	    0.8f,								// directedStrength
+	    0.6f,								// directedStrength
 	    pCamera->getPos(),                  // cameraPos
 	    8.0f                                // specularPower
 	};
@@ -209,7 +209,7 @@ void Scene::initLighting()
 	//	16.0f								// specularPower
 	//};
 
-	const float spaceRadius = 20.0f;
+	const float spaceRadius = 50.0f;
 
 	pLighting = new Lighting(pDevice, attributes, spaceRadius);
 }
@@ -220,6 +220,8 @@ void Scene::initModels()
 	const std::string AMG_GT_FILE = File::getExeDir() + "models/Mercedes_Amg_GT/amgGT.obj";
 	const std::string VULCAN_FILE = File::getExeDir() + "models/Aston_Martin_Vulcan/vulcan.obj";
 	const std::string HOUSE_FILE = File::getExeDir() + "models/House/house.obj";
+    const std::string SUGAR_MARPLE_FILE = File::getExeDir() + "models/Trees/sugarMarple.obj";
+	const std::string NORWAY_MARPLE_FILE = File::getExeDir() + "models/Trees/norwayMarple.obj";
 
 	pRegera = new AssimpModel(pDevice, REGERA_FILE);
 	pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x));
@@ -245,6 +247,18 @@ void Scene::initModels()
 	pHouse->rotateAxisX(180.0f);
 	pHouse->optimizeMemory();
 
+	pSugarMarple = new AssimpModel(pDevice, SUGAR_MARPLE_FILE);
+	pSugarMarple->move({ 11.0f, 0.0f, -1.0 });
+	pSugarMarple->scale(glm::vec3(16.0f / pSugarMarple->getBaseSize().y));
+	pSugarMarple->rotateAxisX(180.0f);
+	pSugarMarple->optimizeMemory();
+
+	pNorwayMarple = new AssimpModel(pDevice, NORWAY_MARPLE_FILE);
+	pNorwayMarple->move({ -8.0f, 0.0f, 16.0 });
+	pNorwayMarple->scale(glm::vec3(20.0f / pNorwayMarple->getBaseSize().y));
+	pNorwayMarple->rotateAxisX(180.0f);
+	pNorwayMarple->optimizeMemory();
+
 	const std::string GRASS_TERRAIN_DIR = File::getExeDir() + "textures/grass/";
 	const std::string ROCKY_TERRAIN_DIR = File::getExeDir() + "textures/rockyTerrain/";
 	const std::string BRICKS_TERRAIN_DIR = File::getExeDir() + "textures/asphaltBricks/";
@@ -257,6 +271,8 @@ void Scene::initModels()
 	models.push_back(pAmgGt);
 	models.push_back(pVulcan);
 	models.push_back(pHouse);
+	models.push_back(pSugarMarple);
+	models.push_back(pNorwayMarple);
 }
 
 void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)

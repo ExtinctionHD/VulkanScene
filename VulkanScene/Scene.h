@@ -58,6 +58,8 @@ private:
 	AssimpModel *pAmgGt{};
 	AssimpModel *pVulcan{};
 	AssimpModel *pHouse{};
+	AssimpModel *pSugarMarple{};
+	AssimpModel *pNorwayMarple{};
 	SkyboxModel *pSkybox{};
 	TerrainModel *pTerrain{};
 	std::vector<Model*> models;
