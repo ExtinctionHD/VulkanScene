@@ -11,10 +11,11 @@
 
 // public:
 
-Scene::Scene(Device *pDevice, VkExtent2D cameraExtent) : pDevice(pDevice), pSsaoKernel(new SsaoKernel(pDevice))
+Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &lightingFile, float shadowsRadius)
+    : pDevice(pDevice), pSsaoKernel(new SsaoKernel(pDevice))
 {
 	initCamera(cameraExtent);
-	initLighting();
+	initLighting(lightingFile, shadowsRadius);
 	initModels();
 
 	pController = new Controller(pCamera);
@@ -167,57 +168,21 @@ void Scene::initCamera(VkExtent2D cameraExtent)
 	pCamera = new Camera(pDevice, pos, forward, up, cameraExtent, fov);
 }
 
-void Scene::initLighting()
+void Scene::initLighting(const std::string &lightingFile, float shadowsRadius)
 {
-	const std::string NOON_SKYBOX_DIR = File::getExeDir() + "textures/skyboxNoon/";
-	const std::string CLOUDS_SKYBOX_DIR = File::getExeDir() + "textures/skyboxClouds/";
-	const std::string SUNSET_SKYBOX_DIR = File::getExeDir() + "textures/skyboxSunset/";
+	std::string skyboxDir;
+	std::string skyboxExtension;
+	pLighting = new Lighting(pDevice, File::getLightingAttributes(lightingFile, skyboxDir, skyboxExtension), shadowsRadius);
 
-	// initialize skybox
-	pSkybox = new SkyboxModel(pDevice, CLOUDS_SKYBOX_DIR, ".jpg");
+	pSkybox = new SkyboxModel(pDevice, skyboxDir, skyboxExtension);
 	models.push_back(pSkybox);
-
-    // init lighting attributes
-
-    // noon lighting attributes
-	//Lighting::Attributes attributes{
-	//	glm::vec3(1.0f, 1.0f, 1.0f),    // color
-	//	0.8f,                           // ambientStrength
-	//	glm::vec3(0.0f, 1.0f, -0.001f), // direction
-	//	0.9f,                           // directedStrength
-	//	pCamera->getPos(),              // cameraPos
-	//	16.0f                           // specularPower
-	//};
-
-    // clouds lighting attributes
-	Lighting::Attributes attributes{
-	    glm::vec3(1.0f, 1.0f, 1.0f),        // color
-	    0.9f,								// ambientStrength
-	    glm::vec3(-0.89f, 0.4f, -0.21f),    // direction
-	    0.6f,								// directedStrength
-	    pCamera->getPos(),                  // cameraPos
-	    8.0f                                // specularPower
-	};
-
-    // sunset lighting attributes
-	//Lighting::Attributes attributes{
-	//	glm::vec3(0.98f, 0.65f, 0.45f),     // color
-	//	0.2f,								// ambientStrength
-	//	glm::vec3(-0.7f, 0.09f, 0.7f),	    // direction (sunset skybox)
-	//	0.6f,								// directedStrength
-	//	pCamera->getPos(),					// cameraPos
-	//	16.0f								// specularPower
-	//};
-
-	const float spaceRadius = 50.0f;
-
-	pLighting = new Lighting(pDevice, attributes, spaceRadius);
 }
 
 void Scene::initModels()
 {
 	const std::string REGERA_FILE = File::getExeDir() + "models/Koenigsegg_Regera/regera.obj";
 	const std::string AMG_GT_FILE = File::getExeDir() + "models/Mercedes_Amg_GT/amgGT.obj";
+	const std::string S63_FILE = File::getExeDir() + "models/Mercedes_S63/s63.obj";;
 	const std::string VULCAN_FILE = File::getExeDir() + "models/Aston_Martin_Vulcan/vulcan.obj";
 	const std::string HOUSE_FILE = File::getExeDir() + "models/House/house.obj";
     const std::string SUGAR_MARPLE_FILE = File::getExeDir() + "models/Trees/sugarMarple.obj";
@@ -227,13 +192,23 @@ void Scene::initModels()
 	pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x));
 	pRegera->rotateAxisX(90.0f);
 	pRegera->optimizeMemory();
+	models.push_back(pRegera);
 
 	pAmgGt = new AssimpModel(pDevice, AMG_GT_FILE);
-	pAmgGt->move({ -4.0f, 0.0f, 7.0 });
+	pAmgGt->move({ -4.2f, 0.0f, 7.0 });
 	pAmgGt->scale(glm::vec3(1.953f / pAmgGt->getBaseSize().x));
 	pAmgGt->rotateAxisY(-5.0f);
 	pAmgGt->rotateAxisX(180.0f);
 	pAmgGt->optimizeMemory();
+	models.push_back(pAmgGt);
+
+	pS63 = new AssimpModel(pDevice, S63_FILE);
+	pS63->move({ -5.5f, 0.0f, 4.5 });
+	pS63->scale(glm::vec3(1.913f / pS63->getBaseSize().x));
+	pS63->rotateAxisY(-20.0f);
+	pS63->rotateAxisX(180.0f);
+	pS63->optimizeMemory();
+	models.push_back(pS63);
 
 	pVulcan = new AssimpModel(pDevice, VULCAN_FILE);
 	pVulcan->move({ 10.0f, 0.0f, 1.0 });
@@ -241,38 +216,34 @@ void Scene::initModels()
 	pVulcan->rotateAxisY(40.0f);
 	pVulcan->rotateAxisX(90.0f);
 	pVulcan->optimizeMemory();
+	models.push_back(pVulcan);
 
 	pHouse = new AssimpModel(pDevice, HOUSE_FILE);
 	pHouse->move({ -2.1f, 0.14f, 3.0f });
 	pHouse->rotateAxisX(180.0f);
 	pHouse->optimizeMemory();
+	models.push_back(pHouse);
 
 	pSugarMarple = new AssimpModel(pDevice, SUGAR_MARPLE_FILE);
 	pSugarMarple->move({ 11.0f, 0.0f, -1.0 });
 	pSugarMarple->scale(glm::vec3(16.0f / pSugarMarple->getBaseSize().y));
 	pSugarMarple->rotateAxisX(180.0f);
 	pSugarMarple->optimizeMemory();
+	models.push_back(pSugarMarple);
 
 	pNorwayMarple = new AssimpModel(pDevice, NORWAY_MARPLE_FILE);
 	pNorwayMarple->move({ -8.0f, 0.0f, 16.0 });
 	pNorwayMarple->scale(glm::vec3(20.0f / pNorwayMarple->getBaseSize().y));
 	pNorwayMarple->rotateAxisX(180.0f);
 	pNorwayMarple->optimizeMemory();
+	models.push_back(pNorwayMarple);
 
 	const std::string GRASS_TERRAIN_DIR = File::getExeDir() + "textures/grass/";
 	const std::string ROCKY_TERRAIN_DIR = File::getExeDir() + "textures/rockyTerrain/";
 	const std::string BRICKS_TERRAIN_DIR = File::getExeDir() + "textures/asphaltBricks/";
 
 	pTerrain = new TerrainModel(pDevice, { 1000, 1000 }, { 1000, 1000 }, GRASS_TERRAIN_DIR, ".jpg");
-
-    // save models
 	models.push_back(pTerrain);
-	models.push_back(pRegera);
-	models.push_back(pAmgGt);
-	models.push_back(pVulcan);
-	models.push_back(pHouse);
-	models.push_back(pSugarMarple);
-	models.push_back(pNorwayMarple);
 }
 
 void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)

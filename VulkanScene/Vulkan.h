@@ -18,7 +18,16 @@ class Vulkan
 {
 public:
 	// create all required objects
-	Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent);
+	Vulkan(
+		HINSTANCE hInstance,
+		HWND hWnd,
+		VkExtent2D frameExtent,
+		VkSampleCountFlagBits sampleCount,
+		bool ssaoEnabled,
+		uint32_t shadowsDim,
+		float shadowsRadius,
+		const std::string &lightingFile
+	);
 
 	// destroy objects: pSurface, callback, instance
 	~Vulkan();
@@ -56,7 +65,9 @@ private:
 	VkSemaphore imageAvailable = VK_NULL_HANDLE;
 	VkSemaphore renderingFinished = VK_NULL_HANDLE;
 
-	void createRenderPasses();
+	bool ssaoEnabled;
+
+	void createRenderPasses(uint32_t shadowsDim);
 
 	// initialize rendering commands
 	void initGraphicsCommands();

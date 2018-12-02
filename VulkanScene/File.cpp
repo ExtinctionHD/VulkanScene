@@ -2,6 +2,8 @@
 #include <Windows.h>
 #include <algorithm>
 #include <cassert>
+#include <string>
+#include <sstream>
 
 #include "File.h"
 
@@ -51,4 +53,51 @@ bool File::exists(const std::string &filename)
 {
 	std::ifstream f(filename.c_str());
 	return f.good();
+}
+
+Lighting::Attributes File::getLightingAttributes(const std::string &filename, std::string &skyboxDir, std::string &skyboxExtension)
+{
+    std::ifstream source;
+	source.open(filename, std::ios_base::in);
+
+	assert(std::getline(source, skyboxDir));
+	skyboxDir = getExeDir() + skyboxDir;
+	assert(std::getline(source, skyboxExtension));
+
+	Lighting::Attributes attributes{};
+	std::string line;
+
+	assert(std::getline(source, line));
+	std::istringstream input(line);
+	float r;
+	input >> r;
+	float g;
+	input >> g;
+	float b;
+	input >> b;
+	attributes.color = glm::vec3(r, g, b);
+
+	assert(std::getline(source, line));
+	input = std::istringstream(line);
+	input >> attributes.ambientStrength;
+
+	assert(std::getline(source, line));
+	input = std::istringstream(line);
+	float x;
+	input >> x;
+	float y;
+	input >> y;
+	float z;
+	input >> z;
+	attributes.direction = glm::vec3(x, y, z);
+
+	assert(std::getline(source, line));
+	input = std::istringstream(line);
+	input >> attributes.directedStrength;
+
+	assert(std::getline(source, line));
+	input = std::istringstream(line);
+	input >> attributes.specularPower;
+
+	return attributes;
 }

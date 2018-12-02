@@ -77,5 +77,5 @@ void main()
 	occlusion = occlusion / float(SSAO_KERNEL_SIZE);
 	occlusion = pow(occlusion, SSAO_POWER);
 
-	outColor = 1.0f - occlusion;
+	outColor = occlusion;
 }

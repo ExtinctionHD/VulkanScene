@@ -11,7 +11,7 @@ public:
 
 	Window(HINSTANCE hInstance, int width, int height);
 
-	void setUserPointer(void *pointer);
+	void setUserPointer(void *pointer) const;
 
 	VkExtent2D getClientExtent() const;
 

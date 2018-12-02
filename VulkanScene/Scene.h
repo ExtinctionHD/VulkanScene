@@ -15,7 +15,7 @@
 class Scene
 {
 public:
-	Scene(Device *pDevice, VkExtent2D cameraExtent);
+	Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &lightingFile, float shadowsRadius);
 	~Scene();
 
 	Controller* getController() const;
@@ -56,6 +56,7 @@ private:
 	// models
 	AssimpModel *pRegera{};
 	AssimpModel *pAmgGt{};
+	AssimpModel *pS63{};
 	AssimpModel *pVulcan{};
 	AssimpModel *pHouse{};
 	AssimpModel *pSugarMarple{};
@@ -68,7 +69,7 @@ private:
 
 	void initCamera(VkExtent2D cameraExtent);
 
-	void initLighting();
+	void initLighting(const std::string &lightingFile, float shadowsRadius);
 
 	void initModels();
 

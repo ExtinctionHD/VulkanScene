@@ -12,7 +12,16 @@
 
 // public:
 
-Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
+Vulkan::Vulkan(
+    HINSTANCE hInstance,
+    HWND hWnd,
+    VkExtent2D frameExtent,
+    VkSampleCountFlagBits sampleCount,
+	bool ssaoEnabled,
+    uint32_t shadowsDim,
+    float shadowsRadius,
+	const std::string &lightingFile
+)
 {
 	const std::string VALIDATION_LAYER = "VK_LAYER_LUNARG_standard_validation";
 	std::vector<const char*> requiredLayers;
@@ -25,16 +34,16 @@ Vulkan::Vulkan(HINSTANCE hInstance, HWND hWnd, VkExtent2D frameExtent)
 		"VK_KHR_win32_surface"
 	};
 
-	const VkSampleCountFlagBits SAMPLE_COUNT = VK_SAMPLE_COUNT_1_BIT;
+	this->ssaoEnabled = ssaoEnabled;
 
 	pInstance = new Instance(requiredLayers, EXTENTIONS);
 	pSurface = new Surface(pInstance->getInstance(), hInstance, hWnd);
-	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers, SAMPLE_COUNT);
+	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers, sampleCount);
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);
 
-	createRenderPasses();
+	createRenderPasses(shadowsDim);
 
-	pScene = new Scene(pDevice, pSwapChain->getExtent());
+	pScene = new Scene(pDevice, pSwapChain->getExtent(), lightingFile, shadowsRadius);
 	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDescriptorSetCount());
 
 	pScene->prepareSceneRendering(pDescriptorPool, renderPasses);
@@ -157,11 +166,11 @@ void Vulkan::resize(VkExtent2D newExtent)
 
 // private:
 
-void Vulkan::createRenderPasses()
+void Vulkan::createRenderPasses(uint32_t shadowsDim)
 {
-	const VkExtent2D DEPTH_MAP_EXTENT = { 4096, 4096 };
+	const VkExtent2D depthMapExtent = { shadowsDim, shadowsDim };
 
-	renderPasses.insert({ DEPTH, new DepthRenderPass(pDevice, DEPTH_MAP_EXTENT) });
+	renderPasses.insert({ DEPTH, new DepthRenderPass(pDevice, depthMapExtent) });
 	renderPasses.insert({ GEOMETRY, new GeometryRenderPass(pDevice, pSwapChain->getExtent()) });
 	renderPasses.insert({ SSAO, new SsaoRenderPass(pDevice, pSwapChain->getExtent()) });
 	renderPasses.insert({ SSAO_BLUR, new SsaoRenderPass(pDevice, pSwapChain->getExtent()) });
@@ -216,8 +225,11 @@ void Vulkan::initGraphicsCommands()
 
 		recordRenderPassCommands(graphicCommands[i], DEPTH, 0);
 		recordRenderPassCommands(graphicCommands[i], GEOMETRY, 0);
-		recordRenderPassCommands(graphicCommands[i], SSAO, 0);
-		recordRenderPassCommands(graphicCommands[i], SSAO_BLUR, 0);
+        if (ssaoEnabled)
+        {
+			recordRenderPassCommands(graphicCommands[i], SSAO, 0);
+			recordRenderPassCommands(graphicCommands[i], SSAO_BLUR, 0);
+        }
 		recordRenderPassCommands(graphicCommands[i], LIGHTING, 0);
 		recordRenderPassCommands(graphicCommands[i], FINAL, i);
 

@@ -15,7 +15,7 @@ Window::Window(HINSTANCE hInstance, int width, int height)
 	createWindow(width, height);
 }
 
-void Window::setUserPointer(void * pointer)
+void Window::setUserPointer(void * pointer) const
 {
 	SetWindowLongPtr(hWnd, GWLP_USERDATA, LONG_PTR(pointer));
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "Lighting.h"
 
 class File
 {
@@ -19,5 +20,7 @@ public:
 
 	// returns true if file exists
 	static bool exists(const std::string &path);
+
+	static Lighting::Attributes getLightingAttributes(const std::string &filename, std::string &skyboxDir, std::string &skyboxExtension);
 };
 

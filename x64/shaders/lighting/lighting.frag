@@ -114,7 +114,7 @@ vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, float ssao
 	float bias = max(BIAS_FACTOR * (1.0f - dot(N, light.direction)), MIN_BIAS);
 	float illumination = 1.0f - getShading(lightSpacePos, bias);
 
-	float ambientI = getAmbientIntensity() * ssao;
+	float ambientI = getAmbientIntensity() * (1.0f - ssao);
 	float diffuseI = getDiffuseIntensity(N, L) * illumination;
 	float specularI = getSpecularIntensity(N, L, V, specular) * illumination;
 
