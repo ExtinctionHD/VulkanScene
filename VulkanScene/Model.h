@@ -65,6 +65,8 @@ public:
 
 	void renderFinal(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
 
+	void optimizeMemory();
+
 protected:
 	Model(Device *pDevice);
 

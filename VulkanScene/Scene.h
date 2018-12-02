@@ -54,7 +54,9 @@ private:
 	std::unordered_map<RenderPassType, DescriptorStruct> descriptors;
 
 	// models
-	AssimpModel *pCar{};
+	AssimpModel *pRegera{};
+	AssimpModel *pAmgGt{};
+	AssimpModel *pVulcan{};
 	AssimpModel *pHouse{};
 	SkyboxModel *pSkybox{};
 	TerrainModel *pTerrain{};

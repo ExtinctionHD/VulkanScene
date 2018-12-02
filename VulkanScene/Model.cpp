@@ -182,6 +182,21 @@ void Model::renderFinal(VkCommandBuffer commandBuffer, std::vector<VkDescriptorS
 	renderMeshes(commandBuffer, descriptorSets, FINAL, transparentMeshes);
 }
 
+void Model::optimizeMemory()
+{
+    for (auto mesh : solidMeshes)
+    {
+		mesh->clearHostIndices();
+		mesh->clearHostVertices();
+    }
+
+	for (auto mesh : transparentMeshes)
+	{
+		mesh->clearHostIndices();
+		mesh->clearHostVertices();
+	}
+}
+
 // protected:
 
 Model::Model(Device *pDevice)

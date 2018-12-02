@@ -3,7 +3,6 @@
 #include <vulkan/vulkan.h>
 #include "Buffer.h"
 #include "Material.h"
-#include "TextureImage.h"
 
 // contains the same members of any mesh
 class MeshBase
@@ -15,6 +14,10 @@ public:
 
 	Material *pMaterial{};
 
+	void clearHostIndices();
+
+	virtual void clearHostVertices() = 0;
+
 protected:
 	MeshBase() = default;
 
@@ -23,6 +26,8 @@ protected:
 	Buffer *pVertexBuffer{};
 
 	Buffer *pIndexBuffer{};
+
+	uint32_t indexCount{};
 
 };
 
