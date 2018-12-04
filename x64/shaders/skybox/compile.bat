@@ -1,3 +1,3 @@
-glslangValidator.exe -V skyboxShader.frag
-glslangValidator.exe -V skyboxShader.vert
+glslangValidator.exe -V skybox.frag
+glslangValidator.exe -V skybox.vert
 pause

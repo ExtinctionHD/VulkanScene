@@ -18,6 +18,7 @@ layout(location = 0) in vec2 inUV;
 void main() 
 {
 	float opacity = colors.opacity * texture(opacityMap, inUV).r;
+	
 	if (opacity < 0.5f)
 	{
 		discard;

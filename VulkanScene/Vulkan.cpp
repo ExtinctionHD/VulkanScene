@@ -6,9 +6,9 @@
 #include "DepthRenderPass.h"
 #include "GeometryRenderPass.h"
 #include "LightingRenderPass.h"
+#include "SsaoRenderPass.h"
 
 #include "Vulkan.h"
-#include "SsaoRenderPass.h"
 
 // public:
 
@@ -19,6 +19,7 @@ Vulkan::Vulkan(
     Settings settings
 )
 {
+
 	const std::string VALIDATION_LAYER = "VK_LAYER_LUNARG_standard_validation";
 	std::vector<const char*> requiredLayers;
 #ifdef _DEBUG 

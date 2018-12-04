@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <atlstr.h>
+#include <iostream>
 
 #define CORRECT_ARGC 9
 
@@ -23,8 +24,8 @@ int APIENTRY wWinMain(
         setting
 	);
 
-	pWindow->setUserPointer(pVulkan);
-	pWindow->mainLoop();
+    pWindow->setUserPointer(pVulkan);
+    pWindow->mainLoop();
 
 	delete(pWindow);
 	delete(pVulkan);

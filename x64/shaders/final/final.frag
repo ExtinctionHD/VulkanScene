@@ -1,8 +1,6 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-// bindings from application:
-
 layout(set = 0, binding = 2) uniform Lighting{
 	vec3 color;
 	float ambientStrength;
@@ -10,7 +8,7 @@ layout(set = 0, binding = 2) uniform Lighting{
 	float directedStrength;
 	vec3 cameraPos;
 	float specularPower;
-} light;
+} lighting;
 
 layout(set = 0, binding = 3) uniform sampler2D shadowsMap;
 
@@ -25,16 +23,12 @@ layout(set = 2, binding = 2) uniform sampler2D specularMap;
 layout(set = 2, binding = 3) uniform sampler2D opacityMap;
 layout(set = 2, binding = 4) uniform sampler2D normalMap;
 
-// input and output values:
+layout(location = 0) in vec3 inPos;
+layout(location = 1) in vec2 inUV;
+layout(location = 2) in vec3 inNormal;
+layout(location = 3) in vec3 inTangent;
+layout(location = 4) in vec4 inPosInLightSpace;
 
-// input data obtained from vertex shader
-layout(location = 0) in vec3 fragPos;
-layout(location = 1) in vec2 fragTexCoord;
-layout(location = 2) in vec3 fragNormal;
-layout(location = 3) in vec3 fragTangent;
-layout(location = 4) in vec4 fragPosInLightSpace;
-
-// result of fragment shader: color of each fragment
 layout(location = 0) out vec4 outColor;
 
 vec3 getBumpedNormal(vec3 normal, vec3 tangent, vec2 uv, sampler2D normalMap)
@@ -63,13 +57,13 @@ vec3 getBumpedNormal(vec3 normal, vec3 tangent, vec2 uv, sampler2D normalMap)
 
 float getAmbientIntensity()
 {
-	return light.ambientStrength;
+	return lighting.ambientStrength;
 }
 
 float getDiffuseIntensity(vec3 N, vec3 L)
 {
 	float diffuseFactor = clamp(dot(N, L), 0.0f, 1.0f);
-	return light.directedStrength * diffuseFactor;
+	return lighting.directedStrength * diffuseFactor;
 }
 
 float getSpecularIntensity(vec3 N, vec3 L, vec3 V)
@@ -79,21 +73,21 @@ float getSpecularIntensity(vec3 N, vec3 L, vec3 V)
 
 	if (specularFactor > 0.0f)
 	{
-		specularFactor = pow(specularFactor, light.specularPower);
+		specularFactor = pow(specularFactor, lighting.specularPower);
 	}
 	else
 	{
 		specularFactor = 0.0f;
 	}
 
-	return light.directedStrength * colors.specular.r * texture(specularMap, fragTexCoord).r * specularFactor;
+	return lighting.directedStrength * colors.specular.r * texture(specularMap, inUV).r * specularFactor;
 }
 
-// 1 - fragment in the shadow, 0 - fragment in the light
-float getShading(vec4 fragPosLightSpace, float bias)
+// 1 - fragment in the shadow, 0 - fragment in the lighting
+float getShading(vec4 inPosLightSpace, float bias)
 {
 	// normalize proj coordiantes
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    vec3 projCoords = inPosLightSpace.xyz / inPosLightSpace.w;
     projCoords = vec3(projCoords.xy * 0.5f + 0.5f, projCoords.z);
 
     float currentDepth = projCoords.z;
@@ -128,23 +122,23 @@ const float MIN_BIAS = 0.0001f;
 // fragment shader code:
 void main() 
 {
-	vec3 L = normalize(-light.direction);
-	vec3 V = normalize(light.cameraPos - fragPos);
-	vec3 N = getBumpedNormal(fragNormal, fragTangent, fragTexCoord, normalMap);
+	vec3 L = normalize(-lighting.direction);
+	vec3 V = normalize(lighting.cameraPos - inPos);
+	vec3 N = getBumpedNormal(inNormal, inTangent, inUV, normalMap);
 
-	float bias = max(BIAS_FACTOR * (1.0f - dot(N, light.direction)), MIN_BIAS);
-	float illumination = 1.0f - getShading(fragPosInLightSpace, bias);
+	float bias = max(BIAS_FACTOR * (1.0f - dot(N, lighting.direction)), MIN_BIAS);
+	float illumination = 1.0f - getShading(inPosInLightSpace, bias);
 
 	float ambientI = getAmbientIntensity();
 	float diffuseI = getDiffuseIntensity(N, L) * illumination;
 	float specularI = getSpecularIntensity(N, L, V) * illumination;
 
-	vec3 diffuseColor = colors.diffuse.rgb * texture(diffuseTexture, fragTexCoord).rgb;
+	vec3 diffuseColor = colors.diffuse.rgb * texture(diffuseTexture, inUV).rgb;
 
-	vec3 lightingComponent = light.color * diffuseColor * (ambientI + diffuseI);
-	vec3 specularComponent = light.color * specularI;
+	vec3 lightingComponent = lighting.color * diffuseColor * (ambientI + diffuseI);
+	vec3 specularComponent = lighting.color * specularI;
 
-	float opacity = colors.opacity * texture(opacityMap, fragTexCoord).r;
+	float opacity = colors.opacity * texture(opacityMap, inUV).r;
 
 	outColor = vec4(lightingComponent + specularComponent, opacity);
 

@@ -398,11 +398,18 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 
 void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 {
+    const std::string FULLSCREEN_SHADERS_DIR = File::getExeDir() + "shaders/fullscreen/";
 	const std::string SSAO_SHADERS_DIR = File::getExeDir() + "shaders/ssao/";
 	const std::string SSAO_BLUR_SHADERS_DIR = File::getExeDir() + "shaders/ssaoBlur/";
 	const std::string LIGHTING_SHADERS_DIR = File::getExeDir() + "shaders/lighting/";
 
-    // Ssao:
+    ShaderModule *pFullscreenVertexShader = new ShaderModule(
+        pDevice->device,
+        FULLSCREEN_SHADERS_DIR + "vert.spv",
+        VK_SHADER_STAGE_VERTEX_BIT
+    );
+
+    #pragma region Ssao
 
 	uint32_t SSAO_CONSTANT_COUNT = 4;
 	std::vector<VkSpecializationMapEntry> ssaoConstantEntries;
@@ -424,10 +431,7 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 		pDevice,
 		{ descriptors.at(SSAO).layout },
 		renderPasses.at(SSAO),
-		{
-			new ShaderModule(pDevice->device, SSAO_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			pSsaoFragmentShader
-		},
+		{ pFullscreenVertexShader, pSsaoFragmentShader },
 		{},
 		{},
 		renderPasses.at(SSAO)->getSampleCount(),
@@ -437,7 +441,9 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	Model::setStaticPipeline(SSAO, pSsaoPipeline);
 	pipelines.push_back(pSsaoPipeline);
 
-    // Ssao blur:
+    #pragma endregion 
+
+    #pragma region SsaoBlur
 
 	VkSpecializationMapEntry ssaoBlurConstantEntry{
 		0,                  // constantID
@@ -445,14 +451,19 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 		sizeof(uint32_t)    // size
 	};
 
+    ShaderModule *pSsaoBlurFragmentShader = new ShaderModule(
+        pDevice->device,
+        SSAO_BLUR_SHADERS_DIR + "frag.spv",
+        VK_SHADER_STAGE_FRAGMENT_BIT,
+        { ssaoBlurConstantEntry },
+        { &pSsaoKernel->BLUR_RADIUS }
+    );
+
 	GraphicsPipeline *pSsaoBlurPipeline = new GraphicsPipeline(
 		pDevice,
 		{ descriptors.at(SSAO_BLUR).layout },
 		renderPasses.at(SSAO_BLUR),
-		{
-			new ShaderModule(pDevice->device, SSAO_BLUR_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, SSAO_BLUR_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT, { ssaoBlurConstantEntry }, { &pSsaoKernel->BLUR_RADIUS })
-		},
+		{ pFullscreenVertexShader, pSsaoBlurFragmentShader },
 		{},
 		{},
 		renderPasses.at(SSAO_BLUR)->getSampleCount(),
@@ -462,7 +473,9 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	Model::setStaticPipeline(SSAO_BLUR, pSsaoBlurPipeline);
 	pipelines.push_back(pSsaoBlurPipeline);
 
-    // Lighting:
+    #pragma endregion 
+
+    #pragma region Lighting
 
 	VkSpecializationMapEntry lightingConstantEntry{
 		0,                  // constantID
@@ -470,14 +483,19 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 		sizeof(uint32_t)    // size
 	};
 
+    ShaderModule *pLightingFragmentShader = new ShaderModule(
+        pDevice->device,
+        LIGHTING_SHADERS_DIR + "frag.spv", 
+        VK_SHADER_STAGE_FRAGMENT_BIT, 
+        { lightingConstantEntry }, 
+        { &sampleCount }
+    );
+
 	GraphicsPipeline *pLightingPipeline = new GraphicsPipeline(
 		pDevice,
 		{ descriptors.at(LIGHTING).layout },
 		renderPasses.at(LIGHTING),
-		{
-			new ShaderModule(pDevice->device, LIGHTING_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, LIGHTING_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT, { lightingConstantEntry }, { &sampleCount })
-		},
+		{ pFullscreenVertexShader, pLightingFragmentShader },
 		{},
 		{},
 		renderPasses.at(LIGHTING)->getSampleCount(),
@@ -486,4 +504,6 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	);
 	Model::setStaticPipeline(LIGHTING, pLightingPipeline);
 	pipelines.push_back(pLightingPipeline);
+
+    #pragma endregion 
 }

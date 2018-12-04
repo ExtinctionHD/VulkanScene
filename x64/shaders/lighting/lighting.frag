@@ -3,6 +3,8 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
+layout (constant_id = 0) const int NUM_SAMPLES = 8;
+
 layout (binding = 0) uniform Lighting{
 	vec3 color;
 	float ambientStrength;
@@ -10,7 +12,7 @@ layout (binding = 0) uniform Lighting{
 	float directedStrength;
 	vec3 cameraPos;
 	float specularPower;
-} light;
+} lighting;
 
 layout (binding = 1) uniform LightSpace{
 	mat4 view;
@@ -27,8 +29,6 @@ layout (location = 0) in vec2 inUV;
 
 layout (location = 0) out vec4 outColor;
 
-layout (constant_id = 0) const int NUM_SAMPLES = 8;
-
 // Manual resolve for MSAA samples 
 vec4 resolve(sampler2DMS tex, ivec2 uv)
 {
@@ -44,13 +44,13 @@ vec4 resolve(sampler2DMS tex, ivec2 uv)
 
 float getAmbientIntensity()
 {
-	return light.ambientStrength;
+	return lighting.ambientStrength;
 }
 
 float getDiffuseIntensity(vec3 N, vec3 L)
 {
 	float diffuseFactor = clamp(dot(N, L), 0.0f, 1.0f);
-	return light.directedStrength * diffuseFactor;
+	return lighting.directedStrength * diffuseFactor;
 }
 
 float getSpecularIntensity(vec3 N, vec3 L, vec3 V, float specular)
@@ -60,17 +60,17 @@ float getSpecularIntensity(vec3 N, vec3 L, vec3 V, float specular)
 
 	if (specularFactor > 0.0f)
 	{
-		specularFactor = pow(specularFactor, light.specularPower);
+		specularFactor = pow(specularFactor, lighting.specularPower);
 	}
 	else
 	{
 		specularFactor = 0.0f;
 	}
 
-	return light.directedStrength * specular * specularFactor;
+	return lighting.directedStrength * specular * specularFactor;
 }
 
-// 1 - fragment in the shadow, 0 - fragment in the light
+// 1 - fragment in the shadow, 0 - fragment in the lighting
 float getShading(vec4 fragPosLightSpace, float bias)
 {
 	// normalize proj coordiantes
@@ -108,18 +108,18 @@ const float MIN_BIAS = 0.0001f;
 
 vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, float ssao, vec4 lightSpacePos)
 {
-	vec3 L = normalize(-light.direction);
-	vec3 V = normalize(light.cameraPos - pos);
+	vec3 L = normalize(-lighting.direction);
+	vec3 V = normalize(lighting.cameraPos - pos);
 
-	float bias = max(BIAS_FACTOR * (1.0f - dot(N, light.direction)), MIN_BIAS);
+	float bias = max(BIAS_FACTOR * (1.0f - dot(N, lighting.direction)), MIN_BIAS);
 	float illumination = 1.0f - getShading(lightSpacePos, bias);
 
 	float ambientI = getAmbientIntensity() * (1.0f - ssao);
 	float diffuseI = getDiffuseIntensity(N, L) * illumination;
 	float specularI = getSpecularIntensity(N, L, V, specular) * illumination;
 
-	vec3 lightingComponent = light.color * albedo * (ambientI + diffuseI);
-	vec3 specularComponent = light.color * specularI;
+	vec3 lightingComponent = lighting.color * albedo * (ambientI + diffuseI);
+	vec3 specularComponent = lighting.color * specularI;
 
 	return lightingComponent + specularComponent;
 }

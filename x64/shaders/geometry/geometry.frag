@@ -3,7 +3,7 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
-layout(set = 2, binding = 0) uniform Colors {
+layout(set = 2, binding = 0) uniform Colors{
 	vec4 albedo;
 	vec4 specular;
 	float opacity;
@@ -14,10 +14,10 @@ layout(set = 2, binding = 2) uniform sampler2D specularMap;
 layout(set = 2, binding = 3) uniform sampler2D opacityMap;
 layout(set = 2, binding = 4) uniform sampler2D normalMap;
 
-layout(location = 0) in vec3 fragPos;
-layout(location = 1) in vec2 fragUV;
-layout(location = 2) in vec3 fragNormal;
-layout(location = 3) in vec3 fragTangent;
+layout(location = 0) in vec3 inPos;
+layout(location = 1) in vec2 inUV;
+layout(location = 2) in vec3 inNormal;
+layout(location = 3) in vec3 inTangent;
 
 layout (location = 0) out vec4 outPos;
 layout (location = 1) out vec4 outNormal;
@@ -48,11 +48,11 @@ vec3 getBumpedNormal(vec3 normal, vec3 tangent, vec2 uv, sampler2D normalMap)
 
 void main() 
 {
-	outPos = vec4(fragPos, 1.0f);
+	outPos = vec4(inPos, 1.0f);
 
-	outNormal = vec4(getBumpedNormal(fragNormal, fragTangent, fragUV, normalMap) * 0.5f + 0.5f, 0.0f);
+	outNormal = vec4(getBumpedNormal(inNormal, inTangent, inUV, normalMap) * 0.5f + 0.5f, 0.0f);
 
-	vec3 albedo = colors.albedo.rgb * texture(albedoMap, fragUV).rgb;
-	float specular = colors.specular.r * texture(specularMap, fragUV).r;
+	vec3 albedo = colors.albedo.rgb * texture(albedoMap, inUV).rgb;
+	float specular = colors.specular.r * texture(specularMap, inUV).r;
 	outAlbedo = vec4(albedo, specular);
 }

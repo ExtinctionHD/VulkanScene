@@ -424,7 +424,8 @@
                 VerticalAlignment="Center"
                 Cursor="Hand"
                 FontSize="16" 
-                Content="LAUNCH" Click="Button_Click"/>
+                Content="LAUNCH"
+                Click="Button_Click"/>
 
     </Grid>
 </Window>

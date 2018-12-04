@@ -55,7 +55,24 @@ namespace Launcher
                 + supercarModels + " "
                 + houseModels + " "
                 + treeModels;
-            Process.Start("VulkanScene.exe", arguments);
+
+            Process vulkanScene = new Process();
+
+            vulkanScene.StartInfo = new ProcessStartInfo("VulkanScene.exe", arguments);
+            vulkanScene.StartInfo.RedirectStandardOutput = true;
+            vulkanScene.StartInfo.UseShellExecute = false;
+
+            vulkanScene.OutputDataReceived += (s, eventArgs) =>
+            {
+                if (!string.IsNullOrEmpty(eventArgs.Data))
+                {
+                    MessageBox.Show(eventArgs.Data);
+                }
+            };
+
+            vulkanScene.Start();
+
+            vulkanScene.BeginOutputReadLine();
         }
 
         private void AntiAliasing_Checked(object sender, RoutedEventArgs e)
