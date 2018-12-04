@@ -1,12 +1,13 @@
 #include "AssimpModel.h"
 #include "SkyboxModel.h"
 #include "GeometryRenderPass.h"
-
+#include "Scene.h"
+#include <iostream>
 #include "DepthRenderPass.h"
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/rotate_vector.hpp>
 
-#include "Scene.h"
 #include "SsaoRenderPass.h"
 
 // public:
@@ -14,6 +15,8 @@
 Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &lightingFile, float shadowsDistance, std::vector<bool> modelsExistence)
     : pDevice(pDevice), pSsaoKernel(new SsaoKernel(pDevice))
 {
+    std::cout << "Creating scene..." << std::endl;
+
 	initCamera(cameraExtent);
 	initLighting(lightingFile, shadowsDistance);
 	initModels(modelsExistence);
@@ -88,7 +91,9 @@ uint32_t Scene::getDescriptorSetCount() const
 }
 
 void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderPassesMap &renderPasses)
-{
+{\
+    std::cout << "Preparing scene rendering..." << std::endl;
+
 	initDescriptorSets(pDescriptorPool, renderPasses);
 	initPipelines(renderPasses);
 	initStaticPipelines(renderPasses);
@@ -193,6 +198,8 @@ void Scene::initModels(std::vector<bool> modelsExistence)
 
     if (modelsExistence[0])
     {
+        std::cout << "Loading Mercedes Amg GT model..." << std::endl;
+
         pAmgGt = new AssimpModel(pDevice, AMG_GT_FILE);
         pAmgGt->move({ -4.2f, 0.0f, 7.0 });
         pAmgGt->scale(glm::vec3(1.953f / pAmgGt->getBaseSize().x));
@@ -200,6 +207,8 @@ void Scene::initModels(std::vector<bool> modelsExistence)
         pAmgGt->rotateAxisX(180.0f);
         pAmgGt->optimizeMemory();
         models.push_back(pAmgGt);
+
+        std::cout << "Loading Mercedes S63 Amg model..." << std::endl;
 
         pS63 = new AssimpModel(pDevice, S63_FILE);
         pS63->move({ -5.5f, 0.0f, 4.5 });
@@ -212,11 +221,15 @@ void Scene::initModels(std::vector<bool> modelsExistence)
 
     if (modelsExistence[1])
     {
+        std::cout << "Loading Koenigsegg Regera model..." << std::endl;
+
         pRegera = new AssimpModel(pDevice, REGERA_FILE);
         pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x));
         pRegera->rotateAxisX(90.0f);
         pRegera->optimizeMemory();
         models.push_back(pRegera);
+
+        std::cout << "Loading Aston Martin Vulcan model..." << std::endl;
 
         pVulcan = new AssimpModel(pDevice, VULCAN_FILE);
         pVulcan->move({ 10.0f, 0.0f, 1.0 });
@@ -229,6 +242,8 @@ void Scene::initModels(std::vector<bool> modelsExistence)
 
     if (modelsExistence[2])
     {
+        std::cout << "Loading house model..." << std::endl;
+
         pHouse = new AssimpModel(pDevice, HOUSE_FILE);
         pHouse->move({ -2.1f, 0.14f, 3.0f });
         pHouse->rotateAxisX(180.0f);
@@ -238,12 +253,16 @@ void Scene::initModels(std::vector<bool> modelsExistence)
 
     if (modelsExistence[3])
     {
+        std::cout << "Loading Sugar marple model..." << std::endl;
+
         pSugarMarple = new AssimpModel(pDevice, SUGAR_MARPLE_FILE);
         pSugarMarple->move({ 11.0f, 0.0f, -1.0 });
         pSugarMarple->scale(glm::vec3(16.0f / pSugarMarple->getBaseSize().y));
         pSugarMarple->rotateAxisX(180.0f);
         pSugarMarple->optimizeMemory();
         models.push_back(pSugarMarple);
+
+        std::cout << "Loading Norway marple model..." << std::endl;
 
         pNorwayMarple = new AssimpModel(pDevice, NORWAY_MARPLE_FILE);
         pNorwayMarple->move({ -8.0f, 0.0f, 16.0 });
@@ -256,6 +275,8 @@ void Scene::initModels(std::vector<bool> modelsExistence)
 	const std::string GRASS_TERRAIN_DIR = File::getExeDir() + "textures/grass/";
 	const std::string ROCKY_TERRAIN_DIR = File::getExeDir() + "textures/rockyTerrain/";
 	const std::string BRICKS_TERRAIN_DIR = File::getExeDir() + "textures/asphaltBricks/";
+
+    std::cout << "Generating terrain model..." << std::endl;
 
 	pTerrain = new TerrainModel(pDevice, { 1000, 1000 }, { 1000, 1000 }, GRASS_TERRAIN_DIR, ".jpg");
 	models.push_back(pTerrain);

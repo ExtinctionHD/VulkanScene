@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Window.h"
 
 // public:
@@ -8,6 +10,8 @@ Window::Window(): hInstance(nullptr)
 
 Window::Window(HINSTANCE hInstance, int width, int height)
 {
+    std::cout << "Creating window..." << std::endl;
+
 	this->hInstance = hInstance;
 
 	registerWindowClass();

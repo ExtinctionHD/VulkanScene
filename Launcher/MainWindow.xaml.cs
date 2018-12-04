@@ -57,22 +57,28 @@ namespace Launcher
                 + treeModels;
 
             Process vulkanScene = new Process();
-
-            vulkanScene.StartInfo = new ProcessStartInfo("VulkanScene.exe", arguments);
-            vulkanScene.StartInfo.RedirectStandardOutput = true;
-            vulkanScene.StartInfo.UseShellExecute = false;
-
-            vulkanScene.OutputDataReceived += (s, eventArgs) =>
+            try
             {
-                if (!string.IsNullOrEmpty(eventArgs.Data))
+                vulkanScene.StartInfo = new ProcessStartInfo("VulkanScene.exe", arguments);
+                vulkanScene.StartInfo.RedirectStandardOutput = true;
+                vulkanScene.StartInfo.UseShellExecute = false;
+
+                vulkanScene.OutputDataReceived += (s, eventArgs) =>
                 {
-                    MessageBox.Show(eventArgs.Data);
-                }
-            };
+                    if (eventArgs.Data != null)
+                    {
+                        Dispatcher.Invoke(() => textblockInfo.Text = eventArgs.Data);
+                    }
+                };
 
-            vulkanScene.Start();
+                vulkanScene.Start();
 
-            vulkanScene.BeginOutputReadLine();
+                vulkanScene.BeginOutputReadLine();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error");
+            }
         }
 
         private void AntiAliasing_Checked(object sender, RoutedEventArgs e)

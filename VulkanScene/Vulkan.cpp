@@ -1,5 +1,6 @@
 #include <set>
 #include <array>
+#include <iostream>
 #include "ShaderModule.h"
 #include "AssimpModel.h"
 #include "FinalRenderPass.h"
@@ -19,6 +20,7 @@ Vulkan::Vulkan(
     Settings settings
 )
 {
+    std::cout << "Loading engine..." << std::endl;
 
 	const std::string VALIDATION_LAYER = "VK_LAYER_LUNARG_standard_validation";
 	std::vector<const char*> requiredLayers;

@@ -24,6 +24,8 @@ int APIENTRY wWinMain(
         setting
 	);
 
+    std::cout << "" << std::endl;
+
     pWindow->setUserPointer(pVulkan);
     pWindow->mainLoop();
 
