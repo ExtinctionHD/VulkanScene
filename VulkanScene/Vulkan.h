@@ -9,6 +9,7 @@
 #include "Scene.h"
 #include "DescriptorPool.h"
 #include <Windows.h>
+#include "Settings.h"
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
 
@@ -18,15 +19,11 @@ class Vulkan
 {
 public:
 	// create all required objects
-	Vulkan(
-		HINSTANCE hInstance,
-		HWND hWnd,
-		VkExtent2D frameExtent,
-		VkSampleCountFlagBits sampleCount,
-		bool ssaoEnabled,
-		uint32_t shadowsDim,
-		float shadowsRadius,
-		const std::string &lightingFile
+    Vulkan(
+        HINSTANCE hInstance,
+        HWND hWnd,
+        VkExtent2D frameExtent,
+        Settings settings
 	);
 
 	// destroy objects: pSurface, callback, instance

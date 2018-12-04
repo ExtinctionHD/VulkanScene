@@ -11,12 +11,12 @@
 
 // public:
 
-Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &lightingFile, float shadowsRadius)
+Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &lightingFile, float shadowsDistance, std::vector<bool> modelsExistence)
     : pDevice(pDevice), pSsaoKernel(new SsaoKernel(pDevice))
 {
 	initCamera(cameraExtent);
-	initLighting(lightingFile, shadowsRadius);
-	initModels();
+	initLighting(lightingFile, shadowsDistance);
+	initModels(modelsExistence);
 
 	pController = new Controller(pCamera);
 }
@@ -168,75 +168,90 @@ void Scene::initCamera(VkExtent2D cameraExtent)
 	pCamera = new Camera(pDevice, pos, forward, up, cameraExtent, fov);
 }
 
-void Scene::initLighting(const std::string &lightingFile, float shadowsRadius)
+void Scene::initLighting(const std::string &lightingFile, float shadowsDistance)
 {
 	std::string skyboxDir;
 	std::string skyboxExtension;
-	pLighting = new Lighting(pDevice, File::getLightingAttributes(lightingFile, skyboxDir, skyboxExtension), shadowsRadius);
+	pLighting = new Lighting(pDevice, File::getLightingAttributes(lightingFile, skyboxDir, skyboxExtension), shadowsDistance);
 
 	pSkybox = new SkyboxModel(pDevice, skyboxDir, skyboxExtension);
 	models.push_back(pSkybox);
 }
 
-void Scene::initModels()
+void Scene::initModels(std::vector<bool> modelsExistence)
 {
-	const std::string REGERA_FILE = File::getExeDir() + "models/Koenigsegg_Regera/regera.obj";
 	const std::string AMG_GT_FILE = File::getExeDir() + "models/Mercedes_Amg_GT/amgGT.obj";
 	const std::string S63_FILE = File::getExeDir() + "models/Mercedes_S63/s63.obj";;
-	const std::string VULCAN_FILE = File::getExeDir() + "models/Aston_Martin_Vulcan/vulcan.obj";
+    const std::string REGERA_FILE = File::getExeDir() + "models/Koenigsegg_Regera/regera.obj";
+    const std::string VULCAN_FILE = File::getExeDir() + "models/Aston_Martin_Vulcan/vulcan.obj";
 	const std::string HOUSE_FILE = File::getExeDir() + "models/House/house.obj";
     const std::string SUGAR_MARPLE_FILE = File::getExeDir() + "models/Trees/sugarMarple.obj";
 	const std::string NORWAY_MARPLE_FILE = File::getExeDir() + "models/Trees/norwayMarple.obj";
 
-	pRegera = new AssimpModel(pDevice, REGERA_FILE);
-	pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x));
-	pRegera->rotateAxisX(90.0f);
-	pRegera->optimizeMemory();
-	models.push_back(pRegera);
+    const int MODELS_GROUP_COUNT = 4;
+    assert(modelsExistence.size() >= MODELS_GROUP_COUNT);
 
-	pAmgGt = new AssimpModel(pDevice, AMG_GT_FILE);
-	pAmgGt->move({ -4.2f, 0.0f, 7.0 });
-	pAmgGt->scale(glm::vec3(1.953f / pAmgGt->getBaseSize().x));
-	pAmgGt->rotateAxisY(-5.0f);
-	pAmgGt->rotateAxisX(180.0f);
-	pAmgGt->optimizeMemory();
-	models.push_back(pAmgGt);
+    if (modelsExistence[0])
+    {
+        pAmgGt = new AssimpModel(pDevice, AMG_GT_FILE);
+        pAmgGt->move({ -4.2f, 0.0f, 7.0 });
+        pAmgGt->scale(glm::vec3(1.953f / pAmgGt->getBaseSize().x));
+        pAmgGt->rotateAxisY(-5.0f);
+        pAmgGt->rotateAxisX(180.0f);
+        pAmgGt->optimizeMemory();
+        models.push_back(pAmgGt);
 
-	pS63 = new AssimpModel(pDevice, S63_FILE);
-	pS63->move({ -5.5f, 0.0f, 4.5 });
-	pS63->scale(glm::vec3(1.913f / pS63->getBaseSize().x));
-	pS63->rotateAxisY(-20.0f);
-	pS63->rotateAxisX(180.0f);
-	pS63->optimizeMemory();
-	models.push_back(pS63);
+        pS63 = new AssimpModel(pDevice, S63_FILE);
+        pS63->move({ -5.5f, 0.0f, 4.5 });
+        pS63->scale(glm::vec3(1.913f / pS63->getBaseSize().x));
+        pS63->rotateAxisY(-20.0f);
+        pS63->rotateAxisX(180.0f);
+        pS63->optimizeMemory();
+        models.push_back(pS63);
+    }
 
-	pVulcan = new AssimpModel(pDevice, VULCAN_FILE);
-	pVulcan->move({ 10.0f, 0.0f, 1.0 });
-	pVulcan->scale(glm::vec3(2.063f / pVulcan->getBaseSize().x));
-	pVulcan->rotateAxisY(40.0f);
-	pVulcan->rotateAxisX(90.0f);
-	pVulcan->optimizeMemory();
-	models.push_back(pVulcan);
+    if (modelsExistence[1])
+    {
+        pRegera = new AssimpModel(pDevice, REGERA_FILE);
+        pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x));
+        pRegera->rotateAxisX(90.0f);
+        pRegera->optimizeMemory();
+        models.push_back(pRegera);
 
-	pHouse = new AssimpModel(pDevice, HOUSE_FILE);
-	pHouse->move({ -2.1f, 0.14f, 3.0f });
-	pHouse->rotateAxisX(180.0f);
-	pHouse->optimizeMemory();
-	models.push_back(pHouse);
+        pVulcan = new AssimpModel(pDevice, VULCAN_FILE);
+        pVulcan->move({ 10.0f, 0.0f, 1.0 });
+        pVulcan->scale(glm::vec3(2.063f / pVulcan->getBaseSize().x));
+        pVulcan->rotateAxisY(40.0f);
+        pVulcan->rotateAxisX(90.0f);
+        pVulcan->optimizeMemory();
+        models.push_back(pVulcan);
+    }
 
-	pSugarMarple = new AssimpModel(pDevice, SUGAR_MARPLE_FILE);
-	pSugarMarple->move({ 11.0f, 0.0f, -1.0 });
-	pSugarMarple->scale(glm::vec3(16.0f / pSugarMarple->getBaseSize().y));
-	pSugarMarple->rotateAxisX(180.0f);
-	pSugarMarple->optimizeMemory();
-	models.push_back(pSugarMarple);
+    if (modelsExistence[2])
+    {
+        pHouse = new AssimpModel(pDevice, HOUSE_FILE);
+        pHouse->move({ -2.1f, 0.14f, 3.0f });
+        pHouse->rotateAxisX(180.0f);
+        pHouse->optimizeMemory();
+        models.push_back(pHouse);
+    }
 
-	pNorwayMarple = new AssimpModel(pDevice, NORWAY_MARPLE_FILE);
-	pNorwayMarple->move({ -8.0f, 0.0f, 16.0 });
-	pNorwayMarple->scale(glm::vec3(20.0f / pNorwayMarple->getBaseSize().y));
-	pNorwayMarple->rotateAxisX(180.0f);
-	pNorwayMarple->optimizeMemory();
-	models.push_back(pNorwayMarple);
+    if (modelsExistence[3])
+    {
+        pSugarMarple = new AssimpModel(pDevice, SUGAR_MARPLE_FILE);
+        pSugarMarple->move({ 11.0f, 0.0f, -1.0 });
+        pSugarMarple->scale(glm::vec3(16.0f / pSugarMarple->getBaseSize().y));
+        pSugarMarple->rotateAxisX(180.0f);
+        pSugarMarple->optimizeMemory();
+        models.push_back(pSugarMarple);
+
+        pNorwayMarple = new AssimpModel(pDevice, NORWAY_MARPLE_FILE);
+        pNorwayMarple->move({ -8.0f, 0.0f, 16.0 });
+        pNorwayMarple->scale(glm::vec3(20.0f / pNorwayMarple->getBaseSize().y));
+        pNorwayMarple->rotateAxisX(180.0f);
+        pNorwayMarple->optimizeMemory();
+        models.push_back(pNorwayMarple);
+    }
 
 	const std::string GRASS_TERRAIN_DIR = File::getExeDir() + "textures/grass/";
 	const std::string ROCKY_TERRAIN_DIR = File::getExeDir() + "textures/rockyTerrain/";

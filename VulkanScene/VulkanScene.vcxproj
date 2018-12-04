@@ -41,6 +41,7 @@
     <ClInclude Include="FinalRenderPass.h" />
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="ShaderModule.h" />
     <ClInclude Include="DepthRenderPass.h" />
     <ClInclude Include="SkyboxModel.h" />

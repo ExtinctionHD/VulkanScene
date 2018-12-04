@@ -16,11 +16,7 @@ Vulkan::Vulkan(
     HINSTANCE hInstance,
     HWND hWnd,
     VkExtent2D frameExtent,
-    VkSampleCountFlagBits sampleCount,
-	bool ssaoEnabled,
-    uint32_t shadowsDim,
-    float shadowsRadius,
-	const std::string &lightingFile
+    Settings settings
 )
 {
 	const std::string VALIDATION_LAYER = "VK_LAYER_LUNARG_standard_validation";
@@ -34,16 +30,17 @@ Vulkan::Vulkan(
 		"VK_KHR_win32_surface"
 	};
 
-	this->ssaoEnabled = ssaoEnabled;
+	this->ssaoEnabled = settings.ssaoEnabled;
 
 	pInstance = new Instance(requiredLayers, EXTENTIONS);
 	pSurface = new Surface(pInstance->getInstance(), hInstance, hWnd);
-	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers, sampleCount);
+	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers, settings.sampleCount);
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);
 
-	createRenderPasses(shadowsDim);
+	createRenderPasses(settings.shadowsDim);
 
-	pScene = new Scene(pDevice, pSwapChain->getExtent(), lightingFile, shadowsRadius);
+    std::string lightingFile = File::getExeDir() + "assets/" + settings.lightingScheme + ".dat";
+	pScene = new Scene(pDevice, pSwapChain->getExtent(), lightingFile, settings.shadowsDistance, settings.modelsExistence);
 	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDescriptorSetCount());
 
 	pScene->prepareSceneRendering(pDescriptorPool, renderPasses);

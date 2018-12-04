@@ -10,12 +10,10 @@
 #include "TerrainModel.h"
 #include "SsaoKernel.h"
 
-// provides scene for rendering
-// contains: camera, lighting, models
 class Scene
 {
 public:
-	Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &lightingFile, float shadowsRadius);
+	Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &lightingFile, float shadowsDistance, std::vector<bool> modelsExistence);
 	~Scene();
 
 	Controller* getController() const;
@@ -69,9 +67,9 @@ private:
 
 	void initCamera(VkExtent2D cameraExtent);
 
-	void initLighting(const std::string &lightingFile, float shadowsRadius);
+	void initLighting(const std::string &lightingFile, float shadowsDistance);
 
-	void initModels();
+	void initModels(std::vector<bool> modelsExistence);
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses);
 

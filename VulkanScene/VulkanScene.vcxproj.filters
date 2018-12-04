@@ -204,6 +204,9 @@
     <ClInclude Include="Space.h">
       <Filter>Файлы заголовков\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Settings.h">
+      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
