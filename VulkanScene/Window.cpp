@@ -127,6 +127,13 @@ LRESULT Window::wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 
+    case WM_KEYDOWN:
+        if (wParam == VK_ESCAPE)
+        {
+            DestroyWindow(hWnd);
+        }
+        break;
+
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}

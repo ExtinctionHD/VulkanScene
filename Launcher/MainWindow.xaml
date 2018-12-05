@@ -428,7 +428,7 @@
                     VerticalAlignment="Center"
                     Cursor="Hand"
                     FontSize="16" 
-                    Content="LAUNCH"
+                    Content="GO!"
                     Click="Button_Click"/>
 
             <TextBlock x:Name="textblockInfo"
