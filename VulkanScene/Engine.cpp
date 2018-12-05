@@ -9,11 +9,11 @@
 #include "LightingRenderPass.h"
 #include "SsaoRenderPass.h"
 
-#include "Vulkan.h"
+#include "Engine.h"
 
 // public:
 
-Vulkan::Vulkan(
+Engine::Engine(
     HINSTANCE hInstance,
     HWND hWnd,
     VkExtent2D frameExtent,
@@ -54,7 +54,7 @@ Vulkan::Vulkan(
 	createSemaphore(pDevice->device, renderingFinished);
 }
 
-Vulkan::~Vulkan()
+Engine::~Engine()
 {
 	vkDeviceWaitIdle(pDevice->device);
 
@@ -73,7 +73,7 @@ Vulkan::~Vulkan()
 	delete(pInstance);
 }
 
-void Vulkan::drawFrame()
+void Engine::drawFrame()
 {
 	pScene->updateScene();
 
@@ -140,7 +140,7 @@ void Vulkan::drawFrame()
 	}
 }
 
-void Vulkan::resize(VkExtent2D newExtent)
+void Engine::resize(VkExtent2D newExtent)
 {
 	if (minimized)
 	{
@@ -166,7 +166,7 @@ void Vulkan::resize(VkExtent2D newExtent)
 
 // private:
 
-void Vulkan::createRenderPasses(uint32_t shadowsDim)
+void Engine::createRenderPasses(uint32_t shadowsDim)
 {
 	const VkExtent2D depthMapExtent = { shadowsDim, shadowsDim };
 
@@ -190,7 +190,7 @@ void Vulkan::createRenderPasses(uint32_t shadowsDim)
     }
 }
 
-void Vulkan::initGraphicsCommands()
+void Engine::initGraphicsCommands()
 {
 	// return old command buffers to pool
 	if (!graphicCommands.empty())
@@ -239,7 +239,7 @@ void Vulkan::initGraphicsCommands()
 	}
 }
 
-void Vulkan::beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex)
+void Engine::beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex)
 {
 	VkRect2D renderArea{
 		{ 0, 0 },                           // offset
@@ -261,7 +261,7 @@ void Vulkan::beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type,
 	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void Vulkan::recordRenderPassCommands(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex)
+void Engine::recordRenderPassCommands(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex)
 {
 	beginRenderPass(commandBuffer, type, framebufferIndex);
 
@@ -270,7 +270,7 @@ void Vulkan::recordRenderPassCommands(VkCommandBuffer commandBuffer, RenderPassT
 	vkCmdEndRenderPass(commandBuffer);
 }
 
-void Vulkan::createSemaphore(VkDevice device, VkSemaphore& semaphore)
+void Engine::createSemaphore(VkDevice device, VkSemaphore& semaphore)
 {
 	if (semaphore != VK_NULL_HANDLE)
 	{

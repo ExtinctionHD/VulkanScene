@@ -57,7 +57,7 @@
     <ClInclude Include="TextureImage.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Vertex.h" />
-    <ClInclude Include="Vulkan.h" />
+    <ClInclude Include="Engine.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -97,7 +97,7 @@
     <ClCompile Include="TextureImage.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Vertex.cpp" />
-    <ClCompile Include="Vulkan.cpp" />
+    <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -64,7 +64,7 @@ int Window::mainLoop() const
 			break;
 		}
 
-		auto pVulkan = reinterpret_cast<Vulkan*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+		auto pVulkan = reinterpret_cast<Engine*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 		pVulkan->drawFrame();
 
 		DispatchMessage(&msg);
@@ -114,7 +114,7 @@ void Window::showWindow() const
 
 LRESULT Window::wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	auto pVulkan = reinterpret_cast<Vulkan*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+	auto pVulkan = reinterpret_cast<Engine*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
 	switch (message)
 	{

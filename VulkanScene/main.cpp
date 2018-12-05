@@ -17,7 +17,7 @@ int APIENTRY wWinMain(
 
 	auto pWindow = new Window(hInstance, 1280, 720);
 
-	auto pVulkan = new Vulkan(
+	auto pVulkan = new Engine(
 		pWindow->getHInstance(), 
 		pWindow->getHWnd(), 
 		pWindow->getClientExtent(),

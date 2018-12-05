@@ -15,11 +15,11 @@
 
 // graphic API class that create all necessary objects
 // and set this as window user pointer
-class Vulkan
+class Engine
 {
 public:
 	// create all required objects
-    Vulkan(
+    Engine(
         HINSTANCE hInstance,
         HWND hWnd,
         VkExtent2D frameExtent,
@@ -27,7 +27,7 @@ public:
 	);
 
 	// destroy objects: pSurface, callback, instance
-	~Vulkan();
+	~Engine();
 
 	bool minimized = false;
 

@@ -13,24 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Исходные файлы\Vulkan">
-      <UniqueIdentifier>{7a470124-682d-4eac-8516-c1d9fc393c5d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Vulkan">
-      <UniqueIdentifier>{b7cf235d-0661-472f-9a21-0c2895a15209}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Vulkan\Device">
-      <UniqueIdentifier>{1cf1f2fb-0bb8-4689-84fa-2f6ad3a14ef0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Vulkan\Device">
-      <UniqueIdentifier>{2acb5c33-3297-4963-b663-8cc98836be15}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Vulkan\Image">
-      <UniqueIdentifier>{8699a64c-1722-4b79-9fd3-0aa5dce5c3de}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Vulkan\Image">
-      <UniqueIdentifier>{728a3b59-0642-404f-9390-3473ab97fc85}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\App">
       <UniqueIdentifier>{fa012e63-ae60-441a-bacd-42a4d51f6f11}</UniqueIdentifier>
     </Filter>
@@ -42,24 +24,6 @@
     </Filter>
     <Filter Include="Файлы заголовков\Static">
       <UniqueIdentifier>{02dadbed-8ac5-4cca-85c6-31981a8247a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Vulkan\Other">
-      <UniqueIdentifier>{3d8820ad-0f15-490a-88dd-eb7fd03788d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Vulkan\Other">
-      <UniqueIdentifier>{e63213be-b5d5-4451-8ff6-fc2c6897251a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Vulkan\Rendering">
-      <UniqueIdentifier>{be8adc87-240d-4eb1-9426-949715dc027b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Vulkan\Rendering">
-      <UniqueIdentifier>{22574b2c-f0d1-4a67-88da-42d2ea061b28}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Vulkan\Buffer">
-      <UniqueIdentifier>{b4ce045f-5ede-4fcc-a436-8631e3a0ddad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Vulkan\Buffer">
-      <UniqueIdentifier>{2056c582-3376-4288-8a5a-303255d200ed}</UniqueIdentifier>
     </Filter>
     <Filter Include="Файлы заголовков\Scene">
       <UniqueIdentifier>{3f71a597-8bf9-405e-9d70-adf7576992c0}</UniqueIdentifier>
@@ -79,31 +43,64 @@
     <Filter Include="Исходные файлы\Scene\Mesh">
       <UniqueIdentifier>{faf84c43-3edd-4785-8b32-1c9e5c2ce548}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Vulkan\Rendering\RenderPass">
+    <Filter Include="Файлы заголовков\Engine">
+      <UniqueIdentifier>{b7cf235d-0661-472f-9a21-0c2895a15209}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Device">
+      <UniqueIdentifier>{2acb5c33-3297-4963-b663-8cc98836be15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Image">
+      <UniqueIdentifier>{8699a64c-1722-4b79-9fd3-0aa5dce5c3de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Other">
+      <UniqueIdentifier>{3d8820ad-0f15-490a-88dd-eb7fd03788d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Rendering">
+      <UniqueIdentifier>{22574b2c-f0d1-4a67-88da-42d2ea061b28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Rendering\RenderPass">
+      <UniqueIdentifier>{10315b15-6edd-48e6-983d-ef9710275833}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Buffer">
+      <UniqueIdentifier>{2056c582-3376-4288-8a5a-303255d200ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine">
+      <UniqueIdentifier>{7a470124-682d-4eac-8516-c1d9fc393c5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Device">
+      <UniqueIdentifier>{1cf1f2fb-0bb8-4689-84fa-2f6ad3a14ef0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Image">
+      <UniqueIdentifier>{728a3b59-0642-404f-9390-3473ab97fc85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Other">
+      <UniqueIdentifier>{e63213be-b5d5-4451-8ff6-fc2c6897251a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Rendering">
+      <UniqueIdentifier>{be8adc87-240d-4eb1-9426-949715dc027b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Rendering\RenderPass">
       <UniqueIdentifier>{33b36251-9252-4da7-b752-89b6a31d5de6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\Vulkan\Rendering\RenderPass">
-      <UniqueIdentifier>{10315b15-6edd-48e6-983d-ef9710275833}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\Engine\Buffer">
+      <UniqueIdentifier>{b4ce045f-5ede-4fcc-a436-8631e3a0ddad}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.h">
-      <Filter>Файлы заголовков\Vulkan\Device</Filter>
+      <Filter>Файлы заголовков\Engine\Device</Filter>
     </ClInclude>
     <ClInclude Include="QueueFamilyIndices.h">
-      <Filter>Файлы заголовков\Vulkan\Device</Filter>
+      <Filter>Файлы заголовков\Engine\Device</Filter>
     </ClInclude>
     <ClInclude Include="SurfaceSupportDetails.h">
-      <Filter>Файлы заголовков\Vulkan\Device</Filter>
-    </ClInclude>
-    <ClInclude Include="Vulkan.h">
-      <Filter>Файлы заголовков\Vulkan</Filter>
+      <Filter>Файлы заголовков\Engine\Device</Filter>
     </ClInclude>
     <ClInclude Include="Image.h">
-      <Filter>Файлы заголовков\Vulkan\Image</Filter>
+      <Filter>Файлы заголовков\Engine\Image</Filter>
     </ClInclude>
     <ClInclude Include="SwapChainImage.h">
-      <Filter>Файлы заголовков\Vulkan\Image</Filter>
+      <Filter>Файлы заголовков\Engine\Image</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Файлы заголовков\App</Filter>
@@ -112,10 +109,10 @@
       <Filter>Файлы заголовков\Static</Filter>
     </ClInclude>
     <ClInclude Include="TextureImage.h">
-      <Filter>Файлы заголовков\Vulkan\Image</Filter>
+      <Filter>Файлы заголовков\Engine\Image</Filter>
     </ClInclude>
     <ClInclude Include="SwapChain.h">
-      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+      <Filter>Файлы заголовков\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Файлы заголовков\Scene</Filter>
@@ -124,22 +121,22 @@
       <Filter>Файлы заголовков\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsPipeline.h">
-      <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="ShaderModule.h">
-      <Filter>Файлы заголовков\Vulkan\Rendering</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Buffer.h">
-      <Filter>Файлы заголовков\Vulkan\Buffer</Filter>
+      <Filter>Файлы заголовков\Engine\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="StagingBuffer.h">
-      <Filter>Файлы заголовков\Vulkan\Buffer</Filter>
+      <Filter>Файлы заголовков\Engine\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="AssimpModel.h">
       <Filter>Файлы заголовков\Scene\Model</Filter>
     </ClInclude>
     <ClInclude Include="Instance.h">
-      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+      <Filter>Файлы заголовков\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>Файлы заголовков\Scene</Filter>
@@ -151,13 +148,13 @@
       <Filter>Файлы заголовков\Scene\Model</Filter>
     </ClInclude>
     <ClInclude Include="DescriptorPool.h">
-      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+      <Filter>Файлы заголовков\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="Controller.h">
       <Filter>Файлы заголовков\App</Filter>
     </ClInclude>
     <ClInclude Include="Surface.h">
-      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+      <Filter>Файлы заголовков\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="TerrainModel.h">
       <Filter>Файлы заголовков\Scene\Model</Filter>
@@ -175,28 +172,28 @@
       <Filter>Файлы заголовков\Scene\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="FinalRenderPass.h">
-      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="RenderPass.h">
-      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="DepthRenderPass.h">
-      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="Lighting.h">
       <Filter>Файлы заголовков\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GeometryRenderPass.h">
-      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="LightingRenderPass.h">
-      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Файлы заголовков\Scene\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="SsaoRenderPass.h">
-      <Filter>Файлы заголовков\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
     </ClInclude>
     <ClInclude Include="SsaoKernel.h">
       <Filter>Файлы заголовков\Scene</Filter>
@@ -205,27 +202,27 @@
       <Filter>Файлы заголовков\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Settings.h">
-      <Filter>Файлы заголовков\Vulkan\Other</Filter>
+      <Filter>Файлы заголовков\Engine\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
-      <Filter>Исходные файлы\Vulkan\Device</Filter>
+      <Filter>Исходные файлы\Engine\Device</Filter>
     </ClCompile>
     <ClCompile Include="QueueFamilyIndices.cpp">
-      <Filter>Исходные файлы\Vulkan\Device</Filter>
+      <Filter>Исходные файлы\Engine\Device</Filter>
     </ClCompile>
     <ClCompile Include="SurfaceSupportDetails.cpp">
-      <Filter>Исходные файлы\Vulkan\Device</Filter>
-    </ClCompile>
-    <ClCompile Include="Vulkan.cpp">
-      <Filter>Исходные файлы\Vulkan</Filter>
+      <Filter>Исходные файлы\Engine\Device</Filter>
     </ClCompile>
     <ClCompile Include="Image.cpp">
-      <Filter>Исходные файлы\Vulkan\Image</Filter>
+      <Filter>Исходные файлы\Engine\Image</Filter>
     </ClCompile>
     <ClCompile Include="SwapChainImage.cpp">
-      <Filter>Исходные файлы\Vulkan\Image</Filter>
+      <Filter>Исходные файлы\Engine\Image</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Исходные файлы\App</Filter>
@@ -234,10 +231,10 @@
       <Filter>Исходные файлы\Static</Filter>
     </ClCompile>
     <ClCompile Include="TextureImage.cpp">
-      <Filter>Исходные файлы\Vulkan\Image</Filter>
+      <Filter>Исходные файлы\Engine\Image</Filter>
     </ClCompile>
     <ClCompile Include="SwapChain.cpp">
-      <Filter>Исходные файлы\Vulkan\Other</Filter>
+      <Filter>Исходные файлы\Engine\Other</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Исходные файлы\Scene</Filter>
@@ -246,19 +243,19 @@
       <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsPipeline.cpp">
-      <Filter>Исходные файлы\Vulkan\Rendering</Filter>
+      <Filter>Исходные файлы\Engine\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="Buffer.cpp">
-      <Filter>Исходные файлы\Vulkan\Buffer</Filter>
+      <Filter>Исходные файлы\Engine\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="StagingBuffer.cpp">
-      <Filter>Исходные файлы\Vulkan\Buffer</Filter>
+      <Filter>Исходные файлы\Engine\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="AssimpModel.cpp">
       <Filter>Исходные файлы\Scene\Model</Filter>
     </ClCompile>
     <ClCompile Include="Instance.cpp">
-      <Filter>Исходные файлы\Vulkan\Other</Filter>
+      <Filter>Исходные файлы\Engine\Other</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Исходные файлы\Scene</Filter>
@@ -270,7 +267,7 @@
       <Filter>Исходные файлы\Scene\Model</Filter>
     </ClCompile>
     <ClCompile Include="DescriptorPool.cpp">
-      <Filter>Исходные файлы\Vulkan\Other</Filter>
+      <Filter>Исходные файлы\Engine\Other</Filter>
     </ClCompile>
     <ClCompile Include="Controller.cpp">
       <Filter>Исходные файлы\App</Filter>
@@ -279,7 +276,7 @@
       <Filter>Исходные файлы\App</Filter>
     </ClCompile>
     <ClCompile Include="Surface.cpp">
-      <Filter>Исходные файлы\Vulkan\Other</Filter>
+      <Filter>Исходные файлы\Engine\Other</Filter>
     </ClCompile>
     <ClCompile Include="TerrainModel.cpp">
       <Filter>Исходные файлы\Scene\Model</Filter>
@@ -294,34 +291,37 @@
       <Filter>Исходные файлы\Scene\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="FinalRenderPass.cpp">
-      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="ShaderModule.cpp">
-      <Filter>Исходные файлы\Vulkan\Rendering</Filter>
+      <Filter>Исходные файлы\Engine\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="RenderPass.cpp">
-      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="DepthRenderPass.cpp">
-      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="Lighting.cpp">
       <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GeometryRenderPass.cpp">
-      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="LightingRenderPass.cpp">
-      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Исходные файлы\Scene\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="SsaoRenderPass.cpp">
-      <Filter>Исходные файлы\Vulkan\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
     </ClCompile>
     <ClCompile Include="SsaoKernel.cpp">
       <Filter>Исходные файлы\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
