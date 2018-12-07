@@ -185,10 +185,10 @@ void Scene::initLighting(const std::string &lightingFile, float shadowsDistance)
 
 void Scene::initModels(std::vector<bool> modelsExistence)
 {
-	const std::string AMG_GT_FILE = File::getExeDir() + "models/Mercedes_Amg_GT/amgGT.obj";
-	const std::string S63_FILE = File::getExeDir() + "models/Mercedes_S63/s63.obj";;
-    const std::string REGERA_FILE = File::getExeDir() + "models/Koenigsegg_Regera/regera.obj";
-    const std::string VULCAN_FILE = File::getExeDir() + "models/Aston_Martin_Vulcan/vulcan.obj";
+	const std::string AMG_GT_FILE = File::getExeDir() + "models/Mercedes Amg GT/amgGt.fbx";
+	const std::string S63_FILE = File::getExeDir() + "models/Mercedes S63/s63.fbx";;
+    const std::string REGERA_FILE = File::getExeDir() + "models/Koenigsegg Regera/regera.fbx";
+    const std::string VULCAN_FILE = File::getExeDir() + "models/Aston Martin Vulcan/vulcan.fbx";
 	const std::string HOUSE_FILE = File::getExeDir() + "models/House/house.obj";
     const std::string SUGAR_MARPLE_FILE = File::getExeDir() + "models/Trees/sugarMarple.obj";
 	const std::string NORWAY_MARPLE_FILE = File::getExeDir() + "models/Trees/norwayMarple.obj";

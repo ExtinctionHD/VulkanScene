@@ -47,10 +47,10 @@ float getAmbientIntensity()
 	return lighting.ambientStrength;
 }
 
-float getDiffuseIntensity(vec3 N, vec3 L)
+float getdirectIntensity(vec3 N, vec3 L)
 {
-	float diffuseFactor = clamp(dot(N, L), 0.0f, 1.0f);
-	return lighting.directedStrength * diffuseFactor;
+	float directFactor = clamp(dot(N, L), 0.0f, 1.0f);
+	return lighting.directedStrength * directFactor;
 }
 
 float getSpecularIntensity(vec3 N, vec3 L, vec3 V, float specular)
@@ -106,19 +106,19 @@ float getShading(vec4 fragPosLightSpace, float bias)
 const float BIAS_FACTOR = 0.001f;
 const float MIN_BIAS = 0.0001f;
 
-vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, float ssao, vec4 lightSpacePos)
+vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, float ssao, vec4 posInLightSpace)
 {
 	vec3 L = normalize(-lighting.direction);
 	vec3 V = normalize(lighting.cameraPos - pos);
 
 	float bias = max(BIAS_FACTOR * (1.0f - dot(N, lighting.direction)), MIN_BIAS);
-	float illumination = 1.0f - getShading(lightSpacePos, bias);
+	float illumination = 1.0f - getShading(posInLightSpace, bias);
 
 	float ambientI = getAmbientIntensity() * (1.0f - ssao);
-	float diffuseI = getDiffuseIntensity(N, L) * illumination;
+	float directI = getdirectIntensity(N, L) * illumination;
 	float specularI = getSpecularIntensity(N, L, V, specular) * illumination;
 
-	vec3 lightingComponent = lighting.color * albedo * (ambientI + diffuseI);
+	vec3 lightingComponent = lighting.color * albedo * (ambientI + directI);
 	vec3 specularComponent = lighting.color * specularI;
 
 	return lightingComponent + specularComponent;
@@ -137,9 +137,9 @@ void main()
 	// 	vec4 albedoAndSpec = texelFetch(albedoMap, uv, i);
 	// 	vec3 albedo = albedoAndSpec.rgb;
 	// 	float specular = albedoAndSpec.a;
-	// 	vec4 lightSpacePos = texelFetch(lightSpacePosMap, uv, i);
+	// 	vec4 posInLightSpace = texelFetch(posInLightSpaceMap, uv, i);
 	//
-	// 	fragColor += calculateLighting(pos, normal, albedo, specular, lightSpacePos);
+	// 	fragColor += calculateLighting(pos, normal, albedo, specular, posInLightSpace);
 	// }
 
 	vec3 pos = resolve(posMap, uv).rgb;
@@ -148,7 +148,7 @@ void main()
 	vec3 albedo = albedoAndSpec.rgb;
 	float specular = albedoAndSpec.a;
 	float ssao = texture(ssaoMap, inUV).r;
-	vec4 lightSpacePos = lightSpace.proj * lightSpace.view * vec4(pos, 1.0f);
+	vec4 posInLightSpace = lightSpace.proj * lightSpace.view * vec4(pos, 1.0f);
 
-	outColor = vec4(calculateLighting(pos, normal, albedo, specular, ssao, lightSpacePos), 1.0f);
+	outColor = vec4(calculateLighting(pos, normal, albedo, specular, ssao, posInLightSpace), 1.0f);
 }

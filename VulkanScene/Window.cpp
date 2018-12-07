@@ -64,8 +64,8 @@ int Window::mainLoop() const
 			break;
 		}
 
-		auto pVulkan = reinterpret_cast<Engine*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
-		pVulkan->drawFrame();
+		auto pEngine = reinterpret_cast<Engine*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+		pEngine->drawFrame();
 
 		DispatchMessage(&msg);
 	}
@@ -109,18 +109,20 @@ void Window::showWindow() const
 	SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_TOPMOST);
 	ShowWindow(hWnd, SW_SHOWMAXIMIZED);
 
+    ShowCursor(FALSE);
+
 	UpdateWindow(hWnd);
 }
 
 LRESULT Window::wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	auto pVulkan = reinterpret_cast<Engine*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+	auto pEngine = reinterpret_cast<Engine*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
 	switch (message)
 	{
 	case WM_SIZE:
-		pVulkan->minimized = wParam == SIZE_MINIMIZED;
-		pVulkan->resize(getClientExtent(hWnd));
+		pEngine->minimized = wParam == SIZE_MINIMIZED;
+		pEngine->resize(getClientExtent(hWnd));
 		break;
 
 	case WM_DESTROY:

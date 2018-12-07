@@ -17,7 +17,7 @@ int APIENTRY wWinMain(
 
 	auto pWindow = new Window(hInstance, 1280, 720);
 
-	auto pVulkan = new Engine(
+	auto pEngine = new Engine(
 		pWindow->getHInstance(), 
 		pWindow->getHWnd(), 
 		pWindow->getClientExtent(),
@@ -26,11 +26,11 @@ int APIENTRY wWinMain(
 
     std::cout << "" << std::endl;
 
-    pWindow->setUserPointer(pVulkan);
+    pWindow->setUserPointer(pEngine);
     pWindow->mainLoop();
 
 	delete(pWindow);
-	delete(pVulkan);
+	delete(pEngine);
 
 	return 0;
 }

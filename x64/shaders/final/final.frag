@@ -116,12 +116,19 @@ float getShading(vec4 inPosLightSpace, float bias)
     return shadow;
 }
 
+const float MIN_OPACITY = 0.1f;
 const float BIAS_FACTOR = 0.001f;
 const float MIN_BIAS = 0.0001f;
 
 // fragment shader code:
 void main() 
 {
+	float opacity = colors.opacity * texture(opacityMap, inUV).r;
+	if (opacity < MIN_OPACITY)
+	{
+		discard;
+	}
+
 	vec3 L = normalize(-lighting.direction);
 	vec3 V = normalize(lighting.cameraPos - inPos);
 	vec3 N = getBumpedNormal(inNormal, inTangent, inUV, normalMap);
@@ -137,8 +144,6 @@ void main()
 
 	vec3 lightingComponent = lighting.color * diffuseColor * (ambientI + diffuseI);
 	vec3 specularComponent = lighting.color * specularI;
-
-	float opacity = colors.opacity * texture(opacityMap, inUV).r;
 
 	outColor = vec4(lightingComponent + specularComponent, opacity);
 

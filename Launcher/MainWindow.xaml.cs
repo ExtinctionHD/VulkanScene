@@ -78,6 +78,7 @@ namespace Launcher
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error");
+                vulkanScene.Kill();
             }
         }
 
