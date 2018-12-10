@@ -185,7 +185,7 @@ void Scene::initLighting(const std::string &lightingFile, float shadowsDistance)
 
 void Scene::initModels(std::vector<bool> modelsExistence)
 {
-	const std::string AMG_GT_FILE = File::getExeDir() + "models/Mercedes Amg GT/amgGt.fbx";
+	const std::string AMG_GT_FILE = File::getExeDir() + "models/Mercedes AMG GT/amgGt.fbx";
 	const std::string S63_FILE = File::getExeDir() + "models/Mercedes S63/s63.fbx";;
     const std::string REGERA_FILE = File::getExeDir() + "models/Koenigsegg Regera/regera.fbx";
     const std::string VULCAN_FILE = File::getExeDir() + "models/Aston Martin Vulcan/vulcan.fbx";
@@ -198,7 +198,7 @@ void Scene::initModels(std::vector<bool> modelsExistence)
 
     if (modelsExistence[0])
     {
-        std::cout << "Loading Mercedes Amg GT model..." << std::endl;
+        std::cout << "Loading Mercedes AMG GT model..." << std::endl;
 
         pAmgGt = new AssimpModel(pDevice, AMG_GT_FILE);
         pAmgGt->move({ -4.2f, 0.0f, 7.0 });
@@ -208,7 +208,7 @@ void Scene::initModels(std::vector<bool> modelsExistence)
         pAmgGt->optimizeMemory();
         models.push_back(pAmgGt);
 
-        std::cout << "Loading Mercedes S63 Amg model..." << std::endl;
+        std::cout << "Loading Mercedes S63 AMG model..." << std::endl;
 
         pS63 = new AssimpModel(pDevice, S63_FILE);
         pS63->move({ -5.5f, 0.0f, 4.5 });
