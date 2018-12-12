@@ -176,8 +176,8 @@
       <AdditionalIncludeDirectories>D:\Education\C++\VulkanAPI\Libraries\Assimp\include;D:\Education\C++\VulkanAPI\Libraries\stb;D:\Education\C++\VulkanAPI\Libraries\glm;D:\Education\C++\VulkanAPI\Libraries\glfw-3.2.1.bin.WIN64\include;D:\Education\C++\VulkanAPI\SDK 1.1.73.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>D:\Education\C++\VulkanAPI\Libraries\assimp\bin\Release;D:\Education\C++\VulkanAPI\Libraries\Assimp\lib\Release;D:\Education\C++\VulkanAPI\Libraries\glfw-3.2.1.bin.WIN64\lib-vc2015;D:\Education\C++\VulkanAPI\SDK 1.1.73.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Education\C++\VulkanAPI\Libraries\assimp\bin\Release;D:\Education\C++\VulkanAPI\Libraries\assimp\lib\Release;D:\Education\C++\VulkanAPI\Libraries\glfw-3.2.1.bin.WIN64\lib-vc2015;D:\Education\C++\VulkanAPI\SDK 1.1.73.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -207,8 +207,8 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>D:\Education\C++\VulkanAPI\Libraries\assimp\bin\Release;D:\Education\C++\VulkanAPI\Libraries\Assimp\lib\Release;D:\Education\C++\VulkanAPI\Libraries\glfw-3.2.1.bin.WIN64\lib-vc2015;D:\Education\C++\VulkanAPI\SDK 1.1.73.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Education\C++\VulkanAPI\Libraries\assimp\bin\Release;D:\Education\C++\VulkanAPI\Libraries\assimp\lib\Release;D:\Education\C++\VulkanAPI\Libraries\glfw-3.2.1.bin.WIN64\lib-vc2015;D:\Education\C++\VulkanAPI\SDK 1.1.73.0\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

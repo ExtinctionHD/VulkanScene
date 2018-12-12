@@ -6,8 +6,6 @@
 #include <map>
 #include "Model.h"
 
-#pragma comment(lib, "assimp-vc140-mt.lib")
-
 // model that loaded from file using Assimp
 class AssimpModel : public Model
 {
