@@ -46,6 +46,8 @@ namespace Launcher
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            const string FILENAME = "VulkanScene.exe";
+
             string arguments = sampleCount + " "
                 + shadowsDim + " "
                 + shadowsDistance + " "
@@ -59,7 +61,7 @@ namespace Launcher
             Process vulkanScene = new Process();
             try
             {
-                vulkanScene.StartInfo = new ProcessStartInfo("VulkanScene.exe", arguments);
+                vulkanScene.StartInfo = new ProcessStartInfo(FILENAME, arguments);
                 vulkanScene.StartInfo.RedirectStandardOutput = true;
                 vulkanScene.StartInfo.UseShellExecute = false;
 
