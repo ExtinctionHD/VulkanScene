@@ -203,10 +203,8 @@ void AssimpModel::initTangents(std::vector<Vertex>& vertices, std::vector<uint32
 			deltaPos = v1.pos - v0.pos;
 
 		glm::vec2 deltaUV1 = v1.uv - v0.uv;
-		glm::vec2 deltaUV2 = v2.uv - v0.uv;
 
 		glm::vec3 tan;
-		glm::vec3 bin;
 
 		if (deltaUV1.s != 0)
 			tan = deltaPos / deltaUV1.s;
@@ -214,8 +212,6 @@ void AssimpModel::initTangents(std::vector<Vertex>& vertices, std::vector<uint32
 			tan = deltaPos / 1.0f;
 
 		tan = glm::normalize(tan - glm::dot(normal, tan) * normal);
-
-		bin = glm::normalize(glm::cross(tan, normal));
 
 		v0.tangent += tan;
 		v1.tangent += tan;
