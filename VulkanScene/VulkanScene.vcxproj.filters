@@ -85,6 +85,12 @@
     <Filter Include="Исходные файлы\Engine\Buffer">
       <UniqueIdentifier>{b4ce045f-5ede-4fcc-a436-8631e3a0ddad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Scene\Asset">
+      <UniqueIdentifier>{d3b322fe-d270-4a5c-a5c9-07edf3d751b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Scene\Asset">
+      <UniqueIdentifier>{f5c954ae-b6d4-493a-a538-28256c52f611}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.h">
@@ -113,12 +119,6 @@
     </ClInclude>
     <ClInclude Include="SwapChain.h">
       <Filter>Файлы заголовков\Engine\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>Файлы заголовков\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Файлы заголовков\Scene</Filter>
     </ClInclude>
     <ClInclude Include="GraphicsPipeline.h">
       <Filter>Файлы заголовков\Engine\Rendering</Filter>
@@ -180,9 +180,6 @@
     <ClInclude Include="DepthRenderPass.h">
       <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
     </ClInclude>
-    <ClInclude Include="Lighting.h">
-      <Filter>Файлы заголовков\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="GeometryRenderPass.h">
       <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
     </ClInclude>
@@ -195,17 +192,26 @@
     <ClInclude Include="SsaoRenderPass.h">
       <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
     </ClInclude>
-    <ClInclude Include="SsaoKernel.h">
-      <Filter>Файлы заголовков\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Space.h">
-      <Filter>Файлы заголовков\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Settings.h">
       <Filter>Файлы заголовков\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Файлы заголовков\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Файлы заголовков\Scene\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighting.h">
+      <Filter>Файлы заголовков\Scene\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="SsaoKernel.h">
+      <Filter>Файлы заголовков\Scene\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Файлы заголовков\Scene\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Space.h">
+      <Filter>Файлы заголовков\Scene\Asset</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -235,12 +241,6 @@
     </ClCompile>
     <ClCompile Include="SwapChain.cpp">
       <Filter>Исходные файлы\Engine\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>Исходные файлы\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GraphicsPipeline.cpp">
       <Filter>Исходные файлы\Engine\Rendering</Filter>
@@ -302,9 +302,6 @@
     <ClCompile Include="DepthRenderPass.cpp">
       <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
     </ClCompile>
-    <ClCompile Include="Lighting.cpp">
-      <Filter>Исходные файлы\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="GeometryRenderPass.cpp">
       <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
     </ClCompile>
@@ -317,11 +314,20 @@
     <ClCompile Include="SsaoRenderPass.cpp">
       <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
     </ClCompile>
-    <ClCompile Include="SsaoKernel.cpp">
-      <Filter>Исходные файлы\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>Исходные файлы\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Исходные файлы\Scene\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Lighting.cpp">
+      <Filter>Исходные файлы\Scene\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="SsaoKernel.cpp">
+      <Filter>Исходные файлы\Scene\Asset</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Исходные файлы\Scene\Asset</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

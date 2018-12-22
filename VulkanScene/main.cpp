@@ -13,7 +13,15 @@ int APIENTRY wWinMain(
 	_In_ int       nCmdShow
 )
 {
-    Settings setting = getSettings(lpCmdLine);
+    // Settings settings = getSettings(lpCmdLine);
+	Settings settings{
+		VK_SAMPLE_COUNT_2_BIT,
+		4096,
+		40.0f,
+		true,
+		"Noon",
+		{ false, false, true, false }
+	};
 
 	auto pWindow = new Window(hInstance, 1280, 720);
 
@@ -21,18 +29,18 @@ int APIENTRY wWinMain(
 		pWindow->getHInstance(), 
 		pWindow->getHWnd(), 
 		pWindow->getClientExtent(),
-        setting
+        settings
 	);
 
     std::cout << "" << std::endl;
 
     pWindow->setUserPointer(pEngine);
-    pWindow->mainLoop();
+    int result = pWindow->mainLoop();
 
 	delete(pWindow);
 	delete(pEngine);
 
-	return 0;
+	return result;
 }
 
 Settings getSettings(LPCWSTR lpCmdLine)

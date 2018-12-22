@@ -264,7 +264,7 @@ void TextureImage::createSampler(VkSamplerAddressMode addressMode)
 		VK_FALSE,								// compareEnable;
 		VK_COMPARE_OP_ALWAYS,					// compareOp;
 		0,										// minLod;
-		mipLevels,								// maxLod;
+		float(mipLevels),						// maxLod;
 		VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,		// borderColor;
 		VK_FALSE,								// unnormalizedCoordinates;
 	};
