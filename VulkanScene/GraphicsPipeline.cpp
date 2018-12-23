@@ -145,7 +145,7 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 		0,							// depthBiasConstantFactor;
 		0,							// depthBiasClamp;
 		0,							// depthBiasSlopeFactor;
-		0,							// lineWidth;
+		1.0f,						// lineWidth;
 	};
 
 	// multisampling (create several samples for each fragment):

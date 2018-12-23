@@ -64,16 +64,16 @@ void Image::transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayou
 	VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
 
 	VkImageMemoryBarrier barrier{
-		VK_STRUCTURE_TYPE_MEMORY_BARRIER,	// sType;
-		nullptr,							// pNext;
-		0,									// srcAccessMask;
-		0,									// dstAccessMask;
-		oldLayout,							// oldLayout;
-		newLayout,							// newLayout;
-		VK_QUEUE_FAMILY_IGNORED,			// srcQueueFamilyIndex;
-		VK_QUEUE_FAMILY_IGNORED,			// dstQueueFamilyIndex;
-		image,								// image;
-		subresourceRange,					// subresourceRange;
+		VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,	// sType;
+		nullptr,								// pNext;
+		0,										// srcAccessMask;
+		0,										// dstAccessMask;
+		oldLayout,								// oldLayout;
+		newLayout,								// newLayout;
+		VK_QUEUE_FAMILY_IGNORED,				// srcQueueFamilyIndex;
+		VK_QUEUE_FAMILY_IGNORED,				// dstQueueFamilyIndex;
+		image,									// image;
+		subresourceRange,						// subresourceRange;
 	};
 
 	VkPipelineStageFlags sourceStage;
@@ -141,7 +141,7 @@ void Image::updateData(void **data, uint32_t pixelSize)
 	VkImageSubresourceRange subresourceRange{
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		0,
-		1,
+		mipLevels,
 		0,
 		arrayLayers
 	};

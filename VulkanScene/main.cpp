@@ -20,7 +20,7 @@ int APIENTRY wWinMain(
 		40.0f,
 		true,
 		"Noon",
-		{ false, false, true, false }
+		{ false, false, false, false }
 	};
 
 	auto pWindow = new Window(hInstance, 1280, 720);

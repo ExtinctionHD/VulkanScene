@@ -41,6 +41,7 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, 
     mipLevels = static_cast<uint32_t>(std::ceil(
 		std::log2(std::max(extent.width, extent.height)))
 	);
+	mipLevels = mipLevels > 0 ? mipLevels : 1;
 
 	createThisImage(
 		pDevice,
@@ -142,7 +143,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImag
 	VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
 
 	VkImageMemoryBarrier barrier{
-		VK_STRUCTURE_TYPE_MEMORY_BARRIER,		// sType;
+		VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,	// sType;
 		nullptr,								// pNext;
 		0,										// srcAccessMask;
 		0,										// dstAccessMask;

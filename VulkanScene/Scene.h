@@ -32,6 +32,8 @@ public:
 
 	void resizeExtent(VkExtent2D newExtent);
 
+	void updateDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses);
+
 private:
 	Device *pDevice;
 

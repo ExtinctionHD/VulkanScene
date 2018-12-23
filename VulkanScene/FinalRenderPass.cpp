@@ -42,14 +42,14 @@ void FinalRenderPass::createRenderPass()
 	};
 
 	VkAttachmentDescription depthAttachmentDesc{
-		0,													// flags;
+		0,											// flags;
 		pDepthImage->getFormat(),							// format;
 		pDepthImage->getSampleCount(),						// samples;
 		VK_ATTACHMENT_LOAD_OP_LOAD,						    // loadOp;
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,					// storeOp;
 		VK_ATTACHMENT_LOAD_OP_DONT_CARE,					// stencilLoadOp;
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,					// stencilStoreOp;
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,			// initialLayout;
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,	// initialLayout;
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,	// finalLayout;
 	};
 

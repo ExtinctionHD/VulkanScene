@@ -38,8 +38,8 @@ DescriptorPool::~DescriptorPool()
 }
 
 VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
-	std::vector<VkShaderStageFlagBits> buffersShaderStages,
-	std::vector<VkShaderStageFlagBits> texturesShaderStages
+	std::vector<VkShaderStageFlags> buffersShaderStages,
+	std::vector<VkShaderStageFlags> texturesShaderStages
 ) const
 {
 	std::vector<VkDescriptorSetLayoutBinding> bindings;
@@ -88,8 +88,6 @@ VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
 }
 
 VkDescriptorSet DescriptorPool::getDescriptorSet(
-    std::vector<Buffer*> buffers,
-    std::vector<TextureImage*> textures,
     VkDescriptorSetLayout layout
 ) const
 {
@@ -105,6 +103,15 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(
 	VkResult result = vkAllocateDescriptorSets(pDevice->device, &allocateInfo, &set);
 	assert(result == VK_SUCCESS);
 
+	return set;
+}
+
+void DescriptorPool::updateDescriptorSet(
+	VkDescriptorSet set, 
+	std::vector<Buffer*> buffers,
+	std::vector<TextureImage*> textures
+) const
+{
 	// write buffers in descriptor set
 	std::vector<VkWriteDescriptorSet> buffersWrites;
 	std::vector<VkDescriptorBufferInfo> buffersInfo(buffers.size());
@@ -164,6 +171,4 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(
 	descriptorWrites.insert(descriptorWrites.end(), texturesWrites.begin(), texturesWrites.end());
 
 	vkUpdateDescriptorSets(pDevice->device, descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
-
-	return set;
 }

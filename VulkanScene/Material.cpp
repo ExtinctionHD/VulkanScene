@@ -100,7 +100,7 @@ std::string Material::getDefaultTexturePath(aiTextureType type)
 
 void Material::initDescriptorSet(DescriptorPool * pDescriptorPool)
 {
-	std::vector<VkShaderStageFlagBits> texturesShaderStages(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
+	std::vector<VkShaderStageFlags> texturesShaderStages(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 
     if (dsLayout == VK_NULL_HANDLE)
     {
@@ -108,9 +108,12 @@ void Material::initDescriptorSet(DescriptorPool * pDescriptorPool)
     }
 
 	descriptorSet = pDescriptorPool->getDescriptorSet(
-		{ pColorsBuffer },
-		getTextures(),
 		dsLayout
+	);
+	pDescriptorPool->updateDescriptorSet(
+		descriptorSet,
+		{ pColorsBuffer },
+		getTextures()
 	);
 }
 

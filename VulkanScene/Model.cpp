@@ -108,9 +108,12 @@ void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
     }
 
 	transformDescriptorSet = pDescriptorPool->getDescriptorSet(
-		{ pTransformBuffer },
-		{},
 		transformDsLayout
+	);
+	pDescriptorPool->updateDescriptorSet(
+		transformDescriptorSet,
+		{ pTransformBuffer },
+		{}
 	);
 
 	for (auto material : materials)

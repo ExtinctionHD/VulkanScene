@@ -159,6 +159,7 @@ void Engine::resize(VkExtent2D newExtent)
         }
     }
 
+	pScene->updateDescriptorSets(pDescriptorPool, renderPasses);
 	pScene->resizeExtent(pSwapChain->getExtent());
 
 	initGraphicsCommands();
