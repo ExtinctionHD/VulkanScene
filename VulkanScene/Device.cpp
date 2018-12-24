@@ -132,7 +132,7 @@ void Device::endOneTimeCommands(VkCommandBuffer commandBuffer) const
 		nullptr,						// pSignalSemaphores;
 	};
 
-	result = vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	result = vkQueueSubmit(graphicsQueue, 1, &submitInfo, nullptr);
 	assert(result == VK_SUCCESS);
 
 	vkQueueWaitIdle(graphicsQueue);  // TODO: replace wait idle to signal semophore
@@ -161,7 +161,7 @@ VkPhysicalDevice Device::pickPhysicalDevice(VkInstance instance, VkSurfaceKHR su
 		}
 	}
 
-	return VK_NULL_HANDLE;
+	return nullptr;
 }
 
 VkSampleCountFlagBits Device::getMaxSupportedSampleCount(VkPhysicalDevice physicalDevice) const

@@ -47,10 +47,10 @@ Material::~Material()
 		defaultTextures.clear();
 	}
 
-	if (objectCount == 0 && dsLayout != VK_NULL_HANDLE)
+	if (objectCount == 0 && dsLayout != nullptr)
 	{
 		vkDestroyDescriptorSetLayout(pDevice->device, dsLayout, nullptr);
-		dsLayout = VK_NULL_HANDLE;
+		dsLayout = nullptr;
 	}
 }
 
@@ -111,7 +111,7 @@ void Material::initDescriptorSet(DescriptorPool * pDescriptorPool)
 {
 	std::vector<VkShaderStageFlags> texturesShaderStages(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 
-    if (dsLayout == VK_NULL_HANDLE)
+    if (dsLayout == nullptr)
     {
 		dsLayout = pDescriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_FRAGMENT_BIT }, texturesShaderStages);
     }
@@ -148,6 +148,6 @@ void Material::initDefaultTextures(Device *pDevice)
 
 uint32_t Material::objectCount = 0;
 
-VkDescriptorSetLayout Material::dsLayout = VK_NULL_HANDLE;
+VkDescriptorSetLayout Material::dsLayout = nullptr;
 
 std::unordered_map<aiTextureType, TextureImage*> Material::defaultTextures;

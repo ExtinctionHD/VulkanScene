@@ -109,7 +109,7 @@ TextureImage::TextureImage(
 
 TextureImage::~TextureImage()
 {
-	if (sampler != VK_NULL_HANDLE)
+	if (sampler != nullptr)
 	{
 		vkDestroySampler(pDevice->device, sampler, nullptr);
 	}

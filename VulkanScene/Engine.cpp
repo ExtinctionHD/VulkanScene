@@ -88,7 +88,7 @@ void Engine::drawFrame()
 		pSwapChain->getSwapchain(),
 		(std::numeric_limits<uint64_t>::max)(),
 		imageAvailable,
-		VK_NULL_HANDLE,
+		nullptr,
 		&imageIndex
 	);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
@@ -114,7 +114,7 @@ void Engine::drawFrame()
 		signalSemaphores.data(),		// pSignalSemaphores;
 	};
 
-	result = vkQueueSubmit(pDevice->graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	result = vkQueueSubmit(pDevice->graphicsQueue, 1, &submitInfo, nullptr);
 	assert(result == VK_SUCCESS);
 
 	std::vector<VkSwapchainKHR> swapChains{ pSwapChain->getSwapchain() };
@@ -273,7 +273,7 @@ void Engine::recordRenderPassCommands(VkCommandBuffer commandBuffer, RenderPassT
 
 void Engine::createSemaphore(VkDevice device, VkSemaphore& semaphore)
 {
-	if (semaphore != VK_NULL_HANDLE)
+	if (semaphore != nullptr)
 	{
 		vkDestroySemaphore(device, semaphore, nullptr);
 	}

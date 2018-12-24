@@ -8,10 +8,10 @@ Model::~Model()
 {
 	objectCount--;
 
-	if (objectCount == 0 && transformDsLayout != VK_NULL_HANDLE)
+	if (objectCount == 0 && transformDsLayout != nullptr)
 	{
 		vkDestroyDescriptorSetLayout(pDevice->device, transformDsLayout, nullptr);
-		transformDsLayout = VK_NULL_HANDLE;
+		transformDsLayout = nullptr;
 	}
 
 	// cleanup materials
@@ -106,7 +106,7 @@ VkDescriptorSetLayout Model::getTransformDsLayout()
 
 void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 {
-    if (transformDsLayout == VK_NULL_HANDLE)
+    if (transformDsLayout == nullptr)
     {
 		transformDsLayout = pDescriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT }, {});
     }
@@ -212,7 +212,7 @@ Model::Model(Device *pDevice)
 
 uint32_t Model::objectCount = 0;
 
-VkDescriptorSetLayout Model::transformDsLayout = VK_NULL_HANDLE;
+VkDescriptorSetLayout Model::transformDsLayout = nullptr;
 
 std::unordered_map<RenderPassType, GraphicsPipeline*> Model::staticPipelines;
 

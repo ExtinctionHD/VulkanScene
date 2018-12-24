@@ -25,6 +25,6 @@ protected:
 	// device that provides this buffer and memory
 	Device *pDevice{};
 
-	VkImage image = VK_NULL_HANDLE;
+	VkImage image = nullptr;
 };
 

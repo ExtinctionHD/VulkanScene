@@ -23,15 +23,15 @@ Image::Image(
 
 Image::~Image()
 {
-	if (view != VK_NULL_HANDLE)
+	if (view != nullptr)
 	{
 		vkDestroyImageView(pDevice->device, view, nullptr);
 	}
-	if (image != VK_NULL_HANDLE)
+	if (image != nullptr)
 	{
 		vkDestroyImage(pDevice->device, image, nullptr);
 	}
-	if (stagingMemory != VK_NULL_HANDLE)
+	if (stagingMemory != nullptr)
 	{
 		vkFreeMemory(pDevice->device, stagingMemory, nullptr);
 	}

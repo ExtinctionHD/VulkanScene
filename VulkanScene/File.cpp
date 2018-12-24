@@ -29,7 +29,7 @@ std::vector<char> File::getFileBytes(const std::string &filename)
 std::string File::getExeDir()
 {
 	char stagingBuffer[MAX_PATH];
-	GetModuleFileName(NULL, stagingBuffer, MAX_PATH);
+	GetModuleFileName(nullptr, stagingBuffer, MAX_PATH);
 	std::string path(stagingBuffer);
 
 	std::replace(path.begin(), path.end(), '\\', '/');

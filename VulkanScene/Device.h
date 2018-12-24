@@ -10,7 +10,7 @@ class Device
 public:
 	VkDevice device{};  // logical device (representation of GPU for vulkan)
 
-	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;  // GPU
+	VkPhysicalDevice physicalDevice = nullptr;  // GPU
 		
 	VkCommandPool commandPool{};  // pool of command buffers of this device
 

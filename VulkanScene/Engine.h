@@ -59,8 +59,8 @@ private:
 	std::vector<VkCommandBuffer> graphicCommands;
 
 	// synchronizing objects
-	VkSemaphore imageAvailable = VK_NULL_HANDLE;
-	VkSemaphore renderingFinished = VK_NULL_HANDLE;
+	VkSemaphore imageAvailable = nullptr;
+	VkSemaphore renderingFinished = nullptr;
 
 	bool ssaoEnabled;
 

@@ -226,11 +226,11 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 		layout,						    // layout;
 		pRenderPass->getRenderPass(),   // renderPass;
 		0,							    // subpass;
-		VK_NULL_HANDLE,				    // basePipelineHandle;
+		nullptr,				    // basePipelineHandle;
 		-1,							    // basePipelineIndex;
 	};
 
-	VkResult result = vkCreateGraphicsPipelines(pDevice->device, VK_NULL_HANDLE, 1, &createInfo, nullptr, &pipeline);
+	VkResult result = vkCreateGraphicsPipelines(pDevice->device, nullptr, 1, &createInfo, nullptr, &pipeline);
 	assert(result == VK_SUCCESS);
 }
 

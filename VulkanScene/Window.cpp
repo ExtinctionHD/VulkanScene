@@ -84,12 +84,12 @@ ATOM Window::registerWindowClass() const
 		0,								// cbClsExtra    
 		0,								// cbWndExtra    
 		hInstance,						// hInstance     
-		0,								// hIcon         
+		nullptr,								// hIcon         
 		LoadCursor(nullptr, IDC_ARROW),	// hCursor       
 		HBRUSH(COLOR_WINDOW + 1),		// hbrBackground 
-		0,								// lpszMenuName  
+		nullptr,								// lpszMenuName  
 		WINDOW_CLASS.data(),			// lpszClassName 
-		0								// hIconSm      
+		nullptr								// hIconSm      
 	};
 
 	return RegisterClassEx(&cex);
