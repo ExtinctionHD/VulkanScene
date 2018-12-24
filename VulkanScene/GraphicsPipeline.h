@@ -4,6 +4,7 @@
 #include <vector>
 #include "RenderPass.h"
 #include "ShaderModule.h"
+#include <memory>
 
 class GraphicsPipeline
 {
@@ -15,7 +16,7 @@ public:
 		Device *pDevice, 
 		std::vector<VkDescriptorSetLayout> descriptorSetLayouts, 
 		RenderPass *pRenderPass, 
-		std::vector<ShaderModule*> shaderModules,
+		std::vector<std::shared_ptr<ShaderModule>> shaderModules,
 		std::vector<VkVertexInputBindingDescription> bindingDescriptions,
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
 		VkSampleCountFlagBits sampleCount,
@@ -38,7 +39,7 @@ private:
 	RenderPass *pRenderPass;
 
 	// shader modules for this pipeline
-	std::vector<ShaderModule*> shaderModules;
+	std::vector<std::shared_ptr<ShaderModule>> shaderModules;
 
 	// information about input vertices
 	std::vector<VkVertexInputBindingDescription> bindingDescriptions;

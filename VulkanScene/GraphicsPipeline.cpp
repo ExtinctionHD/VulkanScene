@@ -8,7 +8,7 @@ GraphicsPipeline::GraphicsPipeline(
 	Device *pDevice,
 	std::vector<VkDescriptorSetLayout> descriptorSetLayouts, 
 	RenderPass *pRenderPass, 
-	std::vector<ShaderModule*> shaderModules,
+	std::vector<std::shared_ptr<ShaderModule>> shaderModules,
 	std::vector<VkVertexInputBindingDescription> bindingDescriptions,
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
     VkSampleCountFlagBits sampleCount,
@@ -32,10 +32,6 @@ GraphicsPipeline::GraphicsPipeline(
 
 GraphicsPipeline::~GraphicsPipeline()
 {
-	for (ShaderModule *pShaderModule : shaderModules)
-	{
-		delete pShaderModule;
-	}
 	vkDestroyPipeline(pDevice->device, pipeline, nullptr);
 	vkDestroyPipelineLayout(pDevice->device, layout, nullptr);
 }
@@ -69,16 +65,16 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 	// shader stages info:
 
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
-	for (ShaderModule *pShaderModule : shaderModules)
+	for (const auto& shaderModule : shaderModules)
 	{
 		VkPipelineShaderStageCreateInfo shaderStageCreateInfo{
 			VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,    // sType;
 			nullptr,                                                // pNext;
 			0,                                                      // flags;
-			pShaderModule->getStage(),                              // stage;
-			pShaderModule->getModule(),                             // module;
+			shaderModule->getStage(),                              // stage;
+			shaderModule->getModule(),                             // module;
 			"main",                                                 // pName;
-			pShaderModule->getSpecializationInfo(),                 // pSpecializationInfo;
+			shaderModule->getSpecializationInfo(),                 // pSpecializationInfo;
 		};
 
 		shaderStages.push_back(shaderStageCreateInfo);

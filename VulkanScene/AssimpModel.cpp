@@ -33,9 +33,9 @@ AssimpModel::AssimpModel(Device *pDevice, const std::string& filename) :
 AssimpModel::~AssimpModel()
 {
 	// cleanup textures
-	for (auto it = textures.begin(); it != textures.end(); ++it)
+	for (const auto& texture : textures)
 	{
-		delete((*it).second);
+		delete texture.second;
 	}
 }
 
@@ -258,6 +258,7 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 	}
 	else
 	{
+		delete pMaterial;
 		pMaterial = materials[index];
 	}
 

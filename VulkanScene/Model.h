@@ -50,7 +50,7 @@ public:
 	    const std::vector<VkDescriptorSetLayout> &layouts,
 		RenderPassType type,
 		RenderPass *pRenderPass,
-	    const std::vector<ShaderModule*> &shaderModules
+	    const std::vector<std::shared_ptr<ShaderModule>> &shaderModules
 	);
 
 	void setPipeline(RenderPassType type, GraphicsPipeline *pPipeline);
@@ -98,11 +98,11 @@ private:
 
 	static std::unordered_map<RenderPassType, GraphicsPipeline*> staticPipelines;
 
-	GraphicsPipeline* createDepthPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
+	GraphicsPipeline* createDepthPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<std::shared_ptr<ShaderModule>> shaderModules);
 
-	GraphicsPipeline* createGeometryPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
+	GraphicsPipeline* createGeometryPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<std::shared_ptr<ShaderModule>> shaderModules);
 
-	GraphicsPipeline* createFinalPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<ShaderModule*> shaderModules);
+	GraphicsPipeline* createFinalPipeline(std::vector<VkDescriptorSetLayout> layouts, RenderPass * pRenderPass, std::vector<std::shared_ptr<ShaderModule>> shaderModules);
 
 	void renderMeshes(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, RenderPassType type, std::vector<MeshBase*> meshes) const;
 };

@@ -440,25 +440,24 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		FINAL,
 		renderPasses.at(FINAL),
 		{
-			new ShaderModule(pDevice->device, SKYBOX_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			new ShaderModule(pDevice->device, SKYBOX_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+			std::make_shared<ShaderModule>(pDevice->device, SKYBOX_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+			std::make_shared<ShaderModule>(pDevice->device, SKYBOX_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
 		}
 	));
 
-    for (auto shadersDir : shadersDirectories)
+    for (const auto& shadersDir : shadersDirectories)
     {
 		RenderPassType type = shadersDir.first;
 		std::string directory = shadersDir.second;
-
-		std::vector<ShaderModule*> shaders;
-		shaders.push_back(new ShaderModule(pDevice->device, directory + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT));
-        shaders.push_back(new ShaderModule(pDevice->device, directory + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT));
 
 		pipelines.push_back(pTerrain->createPipeline(
 			{ descriptors.at(type).layout },
             type,
 			renderPasses.at(type),
-            shaders
+			{
+				std::make_shared<ShaderModule>(pDevice->device, directory + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
+				std::make_shared<ShaderModule>(pDevice->device, directory + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+			}
 		));
         for (auto model : models)
         {
@@ -477,7 +476,7 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	const std::string SSAO_BLUR_SHADERS_DIR = File::getExeDir() + "shaders/ssaoBlur/";
 	const std::string LIGHTING_SHADERS_DIR = File::getExeDir() + "shaders/lighting/";
 
-    ShaderModule *pFullscreenVertexShader = new ShaderModule(
+    const auto fullscreenVertexShader = std::make_shared<ShaderModule>(
         pDevice->device,
         FULLSCREEN_SHADERS_DIR + "vert.spv",
         VK_SHADER_STAGE_VERTEX_BIT
@@ -485,7 +484,7 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 
     #pragma region Ssao
 
-	uint32_t SSAO_CONSTANT_COUNT = 4;
+    const uint32_t SSAO_CONSTANT_COUNT = 4;
 	std::vector<VkSpecializationMapEntry> ssaoConstantEntries;
 	for (uint32_t i = 0; i < SSAO_CONSTANT_COUNT; i++)
 	{
@@ -493,19 +492,19 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	}
 
 	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
-	ShaderModule *pSsaoFragmentShader = new ShaderModule(
+    const auto ssaoFragmentShader = std::make_shared<ShaderModule>(
 		pDevice->device,
 		SSAO_SHADERS_DIR + "frag.spv",
 		VK_SHADER_STAGE_FRAGMENT_BIT,
 		ssaoConstantEntries,
-		{ &sampleCount, &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS, &pSsaoKernel->POWER }
+		std::vector<const void *>{ &sampleCount, &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS, &pSsaoKernel->POWER }
 	);
 
 	GraphicsPipeline *pSsaoPipeline = new GraphicsPipeline(
 		pDevice,
 		{ descriptors.at(SSAO).layout },
 		renderPasses.at(SSAO),
-		{ pFullscreenVertexShader, pSsaoFragmentShader },
+		{ fullscreenVertexShader, ssaoFragmentShader },
 		{},
 		{},
 		renderPasses.at(SSAO)->getSampleCount(),
@@ -519,25 +518,25 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 
     #pragma region SsaoBlur
 
-	VkSpecializationMapEntry ssaoBlurConstantEntry{
+    const VkSpecializationMapEntry ssaoBlurConstantEntry{
 		0,                  // constantID
 		0,                  // offset
 		sizeof(uint32_t)    // size
 	};
 
-    ShaderModule *pSsaoBlurFragmentShader = new ShaderModule(
+    const auto ssaoBlurFragmentShader = std::make_shared<ShaderModule>(
         pDevice->device,
         SSAO_BLUR_SHADERS_DIR + "frag.spv",
         VK_SHADER_STAGE_FRAGMENT_BIT,
-        { ssaoBlurConstantEntry },
-        { &pSsaoKernel->BLUR_RADIUS }
+        std::vector<VkSpecializationMapEntry>{ ssaoBlurConstantEntry },
+        std::vector<const void *>{ &pSsaoKernel->BLUR_RADIUS }
     );
 
 	GraphicsPipeline *pSsaoBlurPipeline = new GraphicsPipeline(
 		pDevice,
 		{ descriptors.at(SSAO_BLUR).layout },
 		renderPasses.at(SSAO_BLUR),
-		{ pFullscreenVertexShader, pSsaoBlurFragmentShader },
+		{ fullscreenVertexShader, ssaoBlurFragmentShader },
 		{},
 		{},
 		renderPasses.at(SSAO_BLUR)->getSampleCount(),
@@ -557,19 +556,19 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 		sizeof(uint32_t)    // size
 	};
 
-    ShaderModule *pLightingFragmentShader = new ShaderModule(
+    auto lightingFragmentShader = std::make_shared<ShaderModule>(
         pDevice->device,
         LIGHTING_SHADERS_DIR + "frag.spv", 
         VK_SHADER_STAGE_FRAGMENT_BIT, 
-        { lightingConstantEntry }, 
-        { &sampleCount }
+        std::vector<VkSpecializationMapEntry>{ lightingConstantEntry }, 
+        std::vector<const void *>{ &sampleCount }
     );
 
 	GraphicsPipeline *pLightingPipeline = new GraphicsPipeline(
 		pDevice,
 		{ descriptors.at(LIGHTING).layout },
 		renderPasses.at(LIGHTING),
-		{ pFullscreenVertexShader, pLightingFragmentShader },
+		{ fullscreenVertexShader, lightingFragmentShader },
 		{},
 		{},
 		renderPasses.at(LIGHTING)->getSampleCount(),

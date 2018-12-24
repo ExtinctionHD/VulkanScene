@@ -21,9 +21,13 @@ Model::~Model()
 	}
 
 	// cleanup meshes
-	for (auto it = solidMeshes.begin(); it != solidMeshes.end(); ++it)
+	for(auto mesh : solidMeshes)
 	{
-		delete(*it);
+		delete mesh;
+	}
+	for (auto mesh : transparentMeshes)
+	{
+		delete mesh;
 	}
 
 	delete(pTransformBuffer);
@@ -126,7 +130,7 @@ GraphicsPipeline * Model::createPipeline(
     const std::vector<VkDescriptorSetLayout> &layouts,
     RenderPassType type,
     RenderPass *pRenderPass,
-    const std::vector<ShaderModule *> &shaderModules
+    const std::vector<std::shared_ptr<ShaderModule>> &shaderModules
 )
 {
     switch (type)
@@ -215,7 +219,7 @@ std::unordered_map<RenderPassType, GraphicsPipeline*> Model::staticPipelines;
 GraphicsPipeline* Model::createDepthPipeline(
 	std::vector<VkDescriptorSetLayout> layouts,
 	RenderPass *pRenderPass,
-	std::vector<ShaderModule*> shaderModules
+	std::vector<std::shared_ptr<ShaderModule>> shaderModules
 )
 {
 	layouts.push_back(transformDsLayout);
@@ -242,7 +246,7 @@ GraphicsPipeline* Model::createDepthPipeline(
 GraphicsPipeline* Model::createGeometryPipeline(
 	std::vector<VkDescriptorSetLayout> layouts,
 	RenderPass *pRenderPass,
-	std::vector<ShaderModule*> shaderModules
+	std::vector<std::shared_ptr<ShaderModule>> shaderModules
 )
 {
 	layouts.push_back(transformDsLayout);
@@ -269,7 +273,7 @@ GraphicsPipeline* Model::createGeometryPipeline(
 GraphicsPipeline* Model::createFinalPipeline(
 	std::vector<VkDescriptorSetLayout> layouts,
 	RenderPass * pRenderPass,
-	std::vector<ShaderModule*> shaderModules
+	std::vector<std::shared_ptr<ShaderModule>> shaderModules
 )
 {
 	layouts.push_back(transformDsLayout);

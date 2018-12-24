@@ -9,6 +9,8 @@ class SwapChainImage
 public:
 	SwapChainImage() = default;
 
+	virtual ~SwapChainImage() = default;
+
     // save device, image, format
 	SwapChainImage(Device *pDevice, VkImage image, VkFormat format);
 
@@ -21,7 +23,7 @@ public:
 
 protected:
 	// device that provides this buffer and memory
-	Device *pDevice;
+	Device *pDevice{};
 
 	VkImage image = VK_NULL_HANDLE;
 };

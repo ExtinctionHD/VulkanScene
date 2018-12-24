@@ -38,6 +38,15 @@ Material::~Material()
 
 	delete(pColorsBuffer);
 
+	if (objectCount == 0 && !defaultTextures.empty())
+	{
+		for (auto texture : defaultTextures)
+		{
+			delete texture.second;
+		}
+		defaultTextures.clear();
+	}
+
 	if (objectCount == 0 && dsLayout != VK_NULL_HANDLE)
 	{
 		vkDestroyDescriptorSetLayout(pDevice->device, dsLayout, nullptr);
