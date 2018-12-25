@@ -31,12 +31,6 @@
     <Filter Include="Исходные файлы\Scene">
       <UniqueIdentifier>{869673bd-6988-44b4-bb84-e3cefad9594a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\Scene\Model">
-      <UniqueIdentifier>{cd26914f-85c0-4cfd-969c-a84e157c5730}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Scene\Model">
-      <UniqueIdentifier>{0ead2906-725d-4a3b-9995-112bde4769e9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы заголовков\Scene\Mesh">
       <UniqueIdentifier>{71a4dc86-6c7d-4601-80e8-ae7a229d5294}</UniqueIdentifier>
     </Filter>
@@ -49,20 +43,11 @@
     <Filter Include="Файлы заголовков\Engine\Device">
       <UniqueIdentifier>{2acb5c33-3297-4963-b663-8cc98836be15}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\Engine\Image">
-      <UniqueIdentifier>{8699a64c-1722-4b79-9fd3-0aa5dce5c3de}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы заголовков\Engine\Other">
       <UniqueIdentifier>{3d8820ad-0f15-490a-88dd-eb7fd03788d2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Файлы заголовков\Engine\Rendering">
       <UniqueIdentifier>{22574b2c-f0d1-4a67-88da-42d2ea061b28}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Engine\Rendering\RenderPass">
-      <UniqueIdentifier>{10315b15-6edd-48e6-983d-ef9710275833}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\Engine\Buffer">
-      <UniqueIdentifier>{2056c582-3376-4288-8a5a-303255d200ed}</UniqueIdentifier>
     </Filter>
     <Filter Include="Исходные файлы\Engine">
       <UniqueIdentifier>{7a470124-682d-4eac-8516-c1d9fc393c5d}</UniqueIdentifier>
@@ -70,26 +55,41 @@
     <Filter Include="Исходные файлы\Engine\Device">
       <UniqueIdentifier>{1cf1f2fb-0bb8-4689-84fa-2f6ad3a14ef0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Engine\Image">
-      <UniqueIdentifier>{728a3b59-0642-404f-9390-3473ab97fc85}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\Engine\Other">
       <UniqueIdentifier>{e63213be-b5d5-4451-8ff6-fc2c6897251a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Исходные файлы\Engine\Rendering">
       <UniqueIdentifier>{be8adc87-240d-4eb1-9426-949715dc027b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Engine\Rendering\RenderPass">
-      <UniqueIdentifier>{33b36251-9252-4da7-b752-89b6a31d5de6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Engine\Buffer">
-      <UniqueIdentifier>{b4ce045f-5ede-4fcc-a436-8631e3a0ddad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\Scene\Asset">
+    <Filter Include="Исходные файлы\Scene\Components">
       <UniqueIdentifier>{d3b322fe-d270-4a5c-a5c9-07edf3d751b9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\Scene\Asset">
+    <Filter Include="Исходные файлы\Scene\Models">
+      <UniqueIdentifier>{0ead2906-725d-4a3b-9995-112bde4769e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Buffers">
+      <UniqueIdentifier>{b4ce045f-5ede-4fcc-a436-8631e3a0ddad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Images">
+      <UniqueIdentifier>{728a3b59-0642-404f-9390-3473ab97fc85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Engine\Rendering\RenderPasses">
+      <UniqueIdentifier>{33b36251-9252-4da7-b752-89b6a31d5de6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Scene\Components">
       <UniqueIdentifier>{f5c954ae-b6d4-493a-a538-28256c52f611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Scene\Models">
+      <UniqueIdentifier>{cd26914f-85c0-4cfd-969c-a84e157c5730}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Buffers">
+      <UniqueIdentifier>{2056c582-3376-4288-8a5a-303255d200ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Images">
+      <UniqueIdentifier>{8699a64c-1722-4b79-9fd3-0aa5dce5c3de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Engine\Rendering\RenderPasses">
+      <UniqueIdentifier>{10315b15-6edd-48e6-983d-ef9710275833}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -103,10 +103,10 @@
       <Filter>Файлы заголовков\Engine\Device</Filter>
     </ClInclude>
     <ClInclude Include="Image.h">
-      <Filter>Файлы заголовков\Engine\Image</Filter>
+      <Filter>Файлы заголовков\Engine\Images</Filter>
     </ClInclude>
     <ClInclude Include="SwapChainImage.h">
-      <Filter>Файлы заголовков\Engine\Image</Filter>
+      <Filter>Файлы заголовков\Engine\Images</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
       <Filter>Файлы заголовков\App</Filter>
@@ -115,7 +115,7 @@
       <Filter>Файлы заголовков\Static</Filter>
     </ClInclude>
     <ClInclude Include="TextureImage.h">
-      <Filter>Файлы заголовков\Engine\Image</Filter>
+      <Filter>Файлы заголовков\Engine\Images</Filter>
     </ClInclude>
     <ClInclude Include="SwapChain.h">
       <Filter>Файлы заголовков\Engine\Other</Filter>
@@ -127,13 +127,13 @@
       <Filter>Файлы заголовков\Engine\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="Buffer.h">
-      <Filter>Файлы заголовков\Engine\Buffer</Filter>
+      <Filter>Файлы заголовков\Engine\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="StagingBuffer.h">
-      <Filter>Файлы заголовков\Engine\Buffer</Filter>
+      <Filter>Файлы заголовков\Engine\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="AssimpModel.h">
-      <Filter>Файлы заголовков\Scene\Model</Filter>
+      <Filter>Файлы заголовков\Scene\Models</Filter>
     </ClInclude>
     <ClInclude Include="Instance.h">
       <Filter>Файлы заголовков\Engine\Other</Filter>
@@ -142,10 +142,10 @@
       <Filter>Файлы заголовков\Scene</Filter>
     </ClInclude>
     <ClInclude Include="SkyboxModel.h">
-      <Filter>Файлы заголовков\Scene\Model</Filter>
+      <Filter>Файлы заголовков\Scene\Models</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
-      <Filter>Файлы заголовков\Scene\Model</Filter>
+      <Filter>Файлы заголовков\Scene\Models</Filter>
     </ClInclude>
     <ClInclude Include="DescriptorPool.h">
       <Filter>Файлы заголовков\Engine\Other</Filter>
@@ -157,7 +157,7 @@
       <Filter>Файлы заголовков\Engine\Other</Filter>
     </ClInclude>
     <ClInclude Include="TerrainModel.h">
-      <Filter>Файлы заголовков\Scene\Model</Filter>
+      <Filter>Файлы заголовков\Scene\Models</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Файлы заголовков\Scene\Mesh</Filter>
@@ -172,25 +172,25 @@
       <Filter>Файлы заголовков\Scene\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="FinalRenderPass.h">
-      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="RenderPass.h">
-      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="DepthRenderPass.h">
-      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="GeometryRenderPass.h">
-      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="LightingRenderPass.h">
-      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Файлы заголовков\Scene\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="SsaoRenderPass.h">
-      <Filter>Файлы заголовков\Engine\Rendering\RenderPass</Filter>
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="Settings.h">
       <Filter>Файлы заголовков\Engine\Other</Filter>
@@ -199,19 +199,19 @@
       <Filter>Файлы заголовков\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>Файлы заголовков\Scene\Asset</Filter>
+      <Filter>Файлы заголовков\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="Lighting.h">
-      <Filter>Файлы заголовков\Scene\Asset</Filter>
+      <Filter>Файлы заголовков\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="SsaoKernel.h">
-      <Filter>Файлы заголовков\Scene\Asset</Filter>
+      <Filter>Файлы заголовков\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
-      <Filter>Файлы заголовков\Scene\Asset</Filter>
+      <Filter>Файлы заголовков\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="Space.h">
-      <Filter>Файлы заголовков\Scene\Asset</Filter>
+      <Filter>Файлы заголовков\Scene\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -225,10 +225,10 @@
       <Filter>Исходные файлы\Engine\Device</Filter>
     </ClCompile>
     <ClCompile Include="Image.cpp">
-      <Filter>Исходные файлы\Engine\Image</Filter>
+      <Filter>Исходные файлы\Engine\Images</Filter>
     </ClCompile>
     <ClCompile Include="SwapChainImage.cpp">
-      <Filter>Исходные файлы\Engine\Image</Filter>
+      <Filter>Исходные файлы\Engine\Images</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Исходные файлы\App</Filter>
@@ -237,7 +237,7 @@
       <Filter>Исходные файлы\Static</Filter>
     </ClCompile>
     <ClCompile Include="TextureImage.cpp">
-      <Filter>Исходные файлы\Engine\Image</Filter>
+      <Filter>Исходные файлы\Engine\Images</Filter>
     </ClCompile>
     <ClCompile Include="SwapChain.cpp">
       <Filter>Исходные файлы\Engine\Other</Filter>
@@ -246,13 +246,13 @@
       <Filter>Исходные файлы\Engine\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="Buffer.cpp">
-      <Filter>Исходные файлы\Engine\Buffer</Filter>
+      <Filter>Исходные файлы\Engine\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="StagingBuffer.cpp">
-      <Filter>Исходные файлы\Engine\Buffer</Filter>
+      <Filter>Исходные файлы\Engine\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="AssimpModel.cpp">
-      <Filter>Исходные файлы\Scene\Model</Filter>
+      <Filter>Исходные файлы\Scene\Models</Filter>
     </ClCompile>
     <ClCompile Include="Instance.cpp">
       <Filter>Исходные файлы\Engine\Other</Filter>
@@ -261,10 +261,10 @@
       <Filter>Исходные файлы\Scene</Filter>
     </ClCompile>
     <ClCompile Include="SkyboxModel.cpp">
-      <Filter>Исходные файлы\Scene\Model</Filter>
+      <Filter>Исходные файлы\Scene\Models</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
-      <Filter>Исходные файлы\Scene\Model</Filter>
+      <Filter>Исходные файлы\Scene\Models</Filter>
     </ClCompile>
     <ClCompile Include="DescriptorPool.cpp">
       <Filter>Исходные файлы\Engine\Other</Filter>
@@ -279,7 +279,7 @@
       <Filter>Исходные файлы\Engine\Other</Filter>
     </ClCompile>
     <ClCompile Include="TerrainModel.cpp">
-      <Filter>Исходные файлы\Scene\Model</Filter>
+      <Filter>Исходные файлы\Scene\Models</Filter>
     </ClCompile>
     <ClCompile Include="MeshBase.cpp">
       <Filter>Исходные файлы\Scene\Mesh</Filter>
@@ -291,43 +291,43 @@
       <Filter>Исходные файлы\Scene\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="FinalRenderPass.cpp">
-      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="ShaderModule.cpp">
       <Filter>Исходные файлы\Engine\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="RenderPass.cpp">
-      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="DepthRenderPass.cpp">
-      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="GeometryRenderPass.cpp">
-      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="LightingRenderPass.cpp">
-      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Исходные файлы\Scene\Mesh</Filter>
     </ClCompile>
     <ClCompile Include="SsaoRenderPass.cpp">
-      <Filter>Исходные файлы\Engine\Rendering\RenderPass</Filter>
+      <Filter>Исходные файлы\Engine\Rendering\RenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="Engine.cpp">
       <Filter>Исходные файлы\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>Исходные файлы\Scene\Asset</Filter>
+      <Filter>Исходные файлы\Scene\Components</Filter>
     </ClCompile>
     <ClCompile Include="Lighting.cpp">
-      <Filter>Исходные файлы\Scene\Asset</Filter>
+      <Filter>Исходные файлы\Scene\Components</Filter>
     </ClCompile>
     <ClCompile Include="SsaoKernel.cpp">
-      <Filter>Исходные файлы\Scene\Asset</Filter>
+      <Filter>Исходные файлы\Scene\Components</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
-      <Filter>Исходные файлы\Scene\Asset</Filter>
+      <Filter>Исходные файлы\Scene\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
