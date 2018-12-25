@@ -43,9 +43,6 @@ public:
 	// adds texture of this type
 	void addTexture(aiTextureType type, TextureImage *pTexture);
 
-	// returns path to default texture of this type
-	static std::string getDefaultTexturePath(aiTextureType type);
-
 	void initDescriptorSet(DescriptorPool *pDescriptorPool);
 
 	VkDescriptorSet getDescriptorSet() const;

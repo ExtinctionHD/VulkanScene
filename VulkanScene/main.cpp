@@ -14,6 +14,7 @@ int APIENTRY wWinMain(
 )
 {
     // Settings settings = getSettings(lpCmdLine);
+
 	Settings settings{
 		VK_SAMPLE_COUNT_2_BIT,
 		4096,

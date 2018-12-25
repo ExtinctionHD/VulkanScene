@@ -95,25 +95,6 @@ void Material::addTexture(aiTextureType type, TextureImage * pTexture)
 	textures.at(type) = pTexture;
 }
 
-std::string Material::getDefaultTexturePath(aiTextureType type)
-{
-    const std::string DEFAULT_TEXTURE_DIR = File::getExeDir() + "textures/default/";
-
-	switch (type)
-	{
-	case aiTextureType_DIFFUSE:
-		return DEFAULT_TEXTURE_DIR + "diffuse.jpg";
-	case aiTextureType_SPECULAR:
-		return DEFAULT_TEXTURE_DIR + "specular.jpg";
-	case aiTextureType_OPACITY:
-		return DEFAULT_TEXTURE_DIR + "opacity.jpg";
-	case aiTextureType_NORMALS:
-		return DEFAULT_TEXTURE_DIR + "normals.jpg";
-	default:
-		throw std::invalid_argument("For this type no default texture");
-	}
-}
-
 void Material::initDescriptorSet(DescriptorPool * pDescriptorPool)
 {
 	std::vector<VkShaderStageFlags> texturesShaderStages(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
