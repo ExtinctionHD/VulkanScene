@@ -17,9 +17,9 @@ int APIENTRY wWinMain(
 	Settings settings{
 		VK_SAMPLE_COUNT_2_BIT,
 		4096,
-		40.0f,
+		50.0f,
 		true,
-		"Sunset",
+		"Clouds",
 		{ false, false, true, false }
 	};
 

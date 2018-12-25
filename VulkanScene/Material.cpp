@@ -62,10 +62,10 @@ const std::vector<aiTextureType> Material::TEXTURES_ORDER = {
 };
 
 std::vector<RgbaUNorm> Material::DEFAULT_TEXTURES_COLORS = {
-	{ UINT8_MAX, UINT8_MAX, UINT8_MAX, UINT8_MAX },
-	{ UINT8_MAX, 0, 0, 0},
-	{ UINT8_MAX, 0, 0, 0},
-	{ 0, 0, UINT8_MAX, 0},
+	{ 255, 255, 255, 255 },
+	{ 255, 255, 255, 255 },
+	{ 255, 255, 255, 255 },
+	{ 127, 127, 255, 255 },
 };
 
 std::vector<TextureImage*> Material::getTextures() const
