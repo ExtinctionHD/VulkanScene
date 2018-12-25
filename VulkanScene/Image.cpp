@@ -1,7 +1,7 @@
 #include <cassert>
+#include "StagingBuffer.h"
 
 #include "Image.h"
-#include "StagingBuffer.h"
 
 // public:
 
@@ -166,17 +166,17 @@ void Image::updateData(void **data, uint32_t pixelSize)
 	for (uint32_t i = 0; i < arrayLayers; i++)
 	{
 		regions[i] = VkBufferImageCopy{
-			i * arrayLayerSize,					// bufferOffset;
-			0,									// bufferRowLength;
-			0,									// bufferImageHeight;
+			i * arrayLayerSize,
+			0,
+			0,
 		    {
 			    VK_IMAGE_ASPECT_COLOR_BIT,
 			    0,
 			    i,
 			    1
-		    },									// imageSubresource;
-		    { 0, 0, 0 },						// imageOffset;
-		    { extent.width, extent.height, 1 }	// imageExtent;
+		    },
+		    { 0, 0, 0 },	
+		    { extent.width, extent.height, 1 }
 		};
 	}
 	pStagingBuffer->copyToImage(image, regions);
@@ -231,21 +231,21 @@ void Image::createThisImage(
 	this->arrayLayers = arrayLayers;
 
 	VkImageCreateInfo imageInfo{
-		VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,	// sType;
-		nullptr,								// pNext;
-		flags,									// flags;
-		VK_IMAGE_TYPE_2D,						// imageType;
-		format,									// format;
-		extent,									// extent;
-		mipLevels,								// mipLevels;
-		arrayLayers,							// arrayLayers;
-		sampleCount,					        // samples;
-		tiling,									// tiling;
-		usage,									// usage;
-		VK_SHARING_MODE_EXCLUSIVE,				// sharingMode;
-		0,										// queueFamilyIndexCount;
-		nullptr,								// pQueueFamilyIndices;
-		VK_IMAGE_LAYOUT_UNDEFINED				// initialLayout;
+		VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+		nullptr,
+		flags,
+		VK_IMAGE_TYPE_2D,
+		format,
+		extent,
+		mipLevels,								
+		arrayLayers,
+		sampleCount,
+		tiling,
+		usage,
+		VK_SHARING_MODE_EXCLUSIVE,
+		0,
+		nullptr,
+		VK_IMAGE_LAYOUT_UNDEFINED
 	};
 	if (extent.depth > 1)
 	{

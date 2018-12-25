@@ -213,6 +213,9 @@
     <ClInclude Include="Space.h">
       <Filter>Файлы заголовков\Scene\Components</Filter>
     </ClInclude>
+    <ClInclude Include="RgbaUNorm.h">
+      <Filter>Файлы заголовков\Scene\Mesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
