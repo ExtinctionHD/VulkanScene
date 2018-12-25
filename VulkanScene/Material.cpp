@@ -61,6 +61,13 @@ const std::vector<aiTextureType> Material::TEXTURES_ORDER = {
 	aiTextureType_NORMALS
 };
 
+std::vector<RgbaUNorm> Material::DEFAULT_TEXTURES_COLORS = {
+	{ UINT8_MAX, UINT8_MAX, UINT8_MAX, UINT8_MAX },
+	{ UINT8_MAX, 0, 0, 0},
+	{ UINT8_MAX, 0, 0, 0},
+	{ 0, 0, UINT8_MAX, 0},
+};
+
 std::vector<TextureImage*> Material::getTextures() const
 {
 	std::vector<TextureImage*> result;
@@ -138,9 +145,40 @@ VkDescriptorSetLayout Material::getDsLayout()
 
 void Material::initDefaultTextures(Device *pDevice)
 {
-	for (aiTextureType type : TEXTURES_ORDER)
+	for (uint32_t i = 0; i < TEXTURES_ORDER.size(); i++)
 	{
-		defaultTextures.insert({ type, new TextureImage(pDevice, { getDefaultTexturePath(type) }, 1) });
+		auto defaultTexture = new TextureImage(
+			pDevice,
+			{ 1, 1, 1 },
+			0,
+			VK_SAMPLE_COUNT_1_BIT,
+			VK_FORMAT_R8G8B8A8_UNORM,
+			VK_IMAGE_TILING_OPTIMAL,
+			VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+			VK_IMAGE_ASPECT_COLOR_BIT,
+			VK_IMAGE_VIEW_TYPE_2D,
+			1,
+			VK_SAMPLER_ADDRESS_MODE_REPEAT
+		);
+
+		void *data = reinterpret_cast<void*>(&DEFAULT_TEXTURES_COLORS[i]);
+		defaultTexture->updateData(&data, sizeof RgbaUNorm);
+
+		defaultTexture->transitLayout(
+			pDevice,
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			{
+				VK_IMAGE_ASPECT_COLOR_BIT,
+				0,
+				1,
+				0,
+				1
+			}
+		);
+
+		defaultTextures.insert({ TEXTURES_ORDER[i], defaultTexture });
 	}
 }
 

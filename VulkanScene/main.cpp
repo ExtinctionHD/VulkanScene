@@ -19,7 +19,7 @@ int APIENTRY wWinMain(
 		4096,
 		40.0f,
 		true,
-		"Noon",
+		"Sunset",
 		{ false, false, true, false }
 	};
 

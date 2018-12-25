@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include "Buffer.h"
 #include "DescriptorPool.h"
+#include "RgbaUNorm.h"
 
 class Material
 {
@@ -64,6 +65,9 @@ private:
 
 	static VkDescriptorSetLayout dsLayout;
 
+	static std::vector<RgbaUNorm> DEFAULT_TEXTURES_COLORS;
+
 	static std::unordered_map<aiTextureType, TextureImage*> defaultTextures;
+
 };
 

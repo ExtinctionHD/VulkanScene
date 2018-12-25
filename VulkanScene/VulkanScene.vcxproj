@@ -40,6 +40,7 @@
     <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="FinalRenderPass.h" />
     <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="RgbaUNorm.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="ShaderModule.h" />
