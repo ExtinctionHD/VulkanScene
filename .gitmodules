@@ -10,3 +10,7 @@
 	path = external/stb
 	url = https://github.com/nothings/stb
 	ignore = dirty
+[submodule "external/json"]
+	path = external/json
+	url = https://github.com/nlohmann/json
+	ignore = dirty

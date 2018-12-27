@@ -42,6 +42,7 @@
     <ClInclude Include="RenderPass.h" />
     <ClInclude Include="RgbaUNorm.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneDao.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="ShaderModule.h" />
     <ClInclude Include="DepthRenderPass.h" />
@@ -84,6 +85,7 @@
     <ClCompile Include="FinalRenderPass.cpp" />
     <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneDao.cpp" />
     <ClCompile Include="ShaderModule.cpp" />
     <ClCompile Include="DepthRenderPass.cpp" />
     <ClCompile Include="SkyboxModel.cpp" />
@@ -174,7 +176,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)external\stb;$(SolutionDir)external\glm;$(SolutionDir)external\assimp\include;$(Vulkan_SDK)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\json\include;$(SolutionDir)external\stb;$(SolutionDir)external\glm;$(SolutionDir)external\assimp\include;$(Vulkan_SDK)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)external\assimp\lib\$(Configuration);$(Vulkan_SDK)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -203,7 +205,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)external\stb;$(SolutionDir)external\glm;$(SolutionDir)external\assimp\include;$(Vulkan_SDK)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\json\include;$(SolutionDir)external\stb;$(SolutionDir)external\glm;$(SolutionDir)external\assimp\include;$(Vulkan_SDK)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
