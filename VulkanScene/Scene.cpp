@@ -12,16 +12,25 @@
 
 // public:
 
-Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &lightingFile, float shadowsDistance, std::vector<bool> modelsExistence)
+Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &sceneFile, float shadowsDistance, std::vector<bool> modelsExistence)
     : pDevice(pDevice), pSsaoKernel(new SsaoKernel(pDevice))
 {
     std::cout << "Creating scene..." << std::endl;
 
-	initCamera(cameraExtent);
-	initLighting(lightingFile, shadowsDistance);
-	initModels(modelsExistence);
+	sceneDao.open(sceneFile);
 
+	glm::vec3 pos{ 0.0f, -3.0f, -6.0f };
+	glm::vec3 forward{ 0.0f, -0.8f, 1.0f };
+	glm::vec3 up{ 0.0f, -1.0f, 0.0f };
+	const float fov = 45.0f;
+	pCamera = new Camera(pDevice, pos, forward, up, cameraExtent, fov);
 	pController = new Controller(pCamera);
+
+	pLighting = new Lighting(pDevice, sceneDao.getLightingAttributes(pCamera->getPos()), shadowsDistance);
+	pSkybox = new SkyboxModel(pDevice, sceneDao.getSkyboxInfo());
+	pTerrain = new TerrainModel(pDevice, { 1.0f, 1.0f }, { 1000, 1000 }, sceneDao.getTerrainInfo());
+
+	initModels(modelsExistence);
 }
 
 Scene::~Scene()
@@ -202,35 +211,17 @@ void Scene::updateDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMa
 
 // private:
 
-void Scene::initCamera(VkExtent2D cameraExtent)
-{
-	glm::vec3 pos{ 0.0f, -3.0f, -6.0f };
-	glm::vec3 forward{ 0.0f, -0.8f, 1.0f };
-	glm::vec3 up{ 0.0f, -1.0f, 0.0f };
-	const float fov = 45.0f;
-
-	pCamera = new Camera(pDevice, pos, forward, up, cameraExtent, fov);
-}
-
-void Scene::initLighting(const std::string &lightingFile, float shadowsDistance)
-{
-	std::string skyboxDir;
-	std::string skyboxExtension;
-	pLighting = new Lighting(pDevice, File::getLightingAttributes(lightingFile, skyboxDir, skyboxExtension), shadowsDistance);
-
-	pSkybox = new SkyboxModel(pDevice, skyboxDir, skyboxExtension);
-	models.push_back(pSkybox);
-}
-
 void Scene::initModels(std::vector<bool> modelsExistence)
 {
-	const std::string AMG_GT_FILE = File::getExeDir() + "models/Mercedes AMG GT/amgGt.fbx";
-	const std::string S63_FILE = File::getExeDir() + "models/Mercedes S63/s63.fbx";;
-    const std::string REGERA_FILE = File::getExeDir() + "models/Koenigsegg Regera/regera.fbx";
-    const std::string VULCAN_FILE = File::getExeDir() + "models/Aston Martin Vulcan/vulcan.fbx";
-	const std::string HOUSE_FILE = File::getExeDir() + "models/House/house.obj";
-    const std::string SUGAR_MARPLE_FILE = File::getExeDir() + "models/Trees/sugarMarple.obj";
-	const std::string NORWAY_MARPLE_FILE = File::getExeDir() + "models/Trees/norwayMarple.obj";
+	models.push_back(pSkybox);
+
+	const std::string AMG_GT_FILE = "models/Mercedes AMG GT/amgGt.fbx";
+	const std::string S63_FILE = "models/Mercedes S63/s63.fbx";
+    const std::string REGERA_FILE = "models/Koenigsegg Regera/regera.fbx";
+    const std::string VULCAN_FILE = "models/Aston Martin Vulcan/vulcan.fbx";
+	const std::string HOUSE_FILE = "models/House/house.obj";
+    const std::string SUGAR_MARPLE_FILE = "models/Trees/sugarMarple.obj";
+	const std::string NORWAY_MARPLE_FILE = "models/Trees/norwayMarple.obj";
 
     const int MODELS_GROUP_COUNT = 4;
     assert(modelsExistence.size() >= MODELS_GROUP_COUNT);
@@ -311,13 +302,6 @@ void Scene::initModels(std::vector<bool> modelsExistence)
         models.push_back(pNorwayMarple);
     }
 
-	const std::string GRASS_TERRAIN_DIR = File::getExeDir() + "textures/grass/";
-	const std::string ROCKY_TERRAIN_DIR = File::getExeDir() + "textures/rockyTerrain/";
-	const std::string BRICKS_TERRAIN_DIR = File::getExeDir() + "textures/asphaltBricks/";
-
-    std::cout << "Generating terrain model..." << std::endl;
-
-	pTerrain = new TerrainModel(pDevice, { 1000, 1000 }, { 1000, 1000 }, GRASS_TERRAIN_DIR, ".jpg");
 	models.push_back(pTerrain);
 }
 
@@ -427,12 +411,12 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 
 void Scene::initPipelines(RenderPassesMap renderPasses)
 {
-	const std::string SKYBOX_SHADERS_DIR = File::getExeDir() + "shaders/skybox/";
+	const std::string SKYBOX_SHADERS_DIR = "shaders/skybox/";
 
     std::unordered_map<RenderPassType, std::string> shadersDirectories{
-		{ DEPTH, File::getExeDir() + "shaders/depth/" },
-		{ GEOMETRY, File::getExeDir() + "shaders/geometry/" },
-		{ FINAL, File::getExeDir() + "shaders/final/" }
+		{ DEPTH, "shaders/depth" },
+		{ GEOMETRY, "shaders/geometry" },
+		{ FINAL, "shaders/final" }
 	};
 
 	pipelines.push_back(pSkybox->createPipeline(
@@ -440,8 +424,8 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		FINAL,
 		renderPasses.at(FINAL),
 		{
-			std::make_shared<ShaderModule>(pDevice->device, SKYBOX_SHADERS_DIR + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-			std::make_shared<ShaderModule>(pDevice->device, SKYBOX_SHADERS_DIR + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+			std::make_shared<ShaderModule>(pDevice->device, File::getPath(SKYBOX_SHADERS_DIR, "vert.spv"), VK_SHADER_STAGE_VERTEX_BIT),
+			std::make_shared<ShaderModule>(pDevice->device, File::getPath(SKYBOX_SHADERS_DIR, "frag.spv"), VK_SHADER_STAGE_FRAGMENT_BIT)
 		}
 	));
 
@@ -455,8 +439,8 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
             type,
 			renderPasses.at(type),
 			{
-				std::make_shared<ShaderModule>(pDevice->device, directory + "vert.spv", VK_SHADER_STAGE_VERTEX_BIT),
-				std::make_shared<ShaderModule>(pDevice->device, directory + "frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT)
+				std::make_shared<ShaderModule>(pDevice->device, File::getPath(directory, "vert.spv"), VK_SHADER_STAGE_VERTEX_BIT),
+				std::make_shared<ShaderModule>(pDevice->device, File::getPath(directory, "frag.spv"), VK_SHADER_STAGE_FRAGMENT_BIT)
 			}
 		));
         for (auto model : models)
@@ -471,14 +455,14 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 
 void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 {
-    const std::string FULLSCREEN_SHADERS_DIR = File::getExeDir() + "shaders/fullscreen/";
-	const std::string SSAO_SHADERS_DIR = File::getExeDir() + "shaders/ssao/";
-	const std::string SSAO_BLUR_SHADERS_DIR = File::getExeDir() + "shaders/ssaoBlur/";
-	const std::string LIGHTING_SHADERS_DIR = File::getExeDir() + "shaders/lighting/";
+    const std::string FULLSCREEN_SHADERS_DIR = "shaders/fullscreen";
+	const std::string SSAO_SHADERS_DIR = "shaders/ssao";
+	const std::string SSAO_BLUR_SHADERS_DIR = "shaders/ssaoBlur";
+	const std::string LIGHTING_SHADERS_DIR = "shaders/lighting";
 
     const auto fullscreenVertexShader = std::make_shared<ShaderModule>(
         pDevice->device,
-        FULLSCREEN_SHADERS_DIR + "vert.spv",
+        File::getPath(FULLSCREEN_SHADERS_DIR, "vert.spv"),
         VK_SHADER_STAGE_VERTEX_BIT
     );
 
@@ -494,7 +478,7 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
     const auto ssaoFragmentShader = std::make_shared<ShaderModule>(
 		pDevice->device,
-		SSAO_SHADERS_DIR + "frag.spv",
+		File::getPath(SSAO_SHADERS_DIR, "frag.spv"),
 		VK_SHADER_STAGE_FRAGMENT_BIT,
 		ssaoConstantEntries,
 		std::vector<const void *>{ &sampleCount, &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS, &pSsaoKernel->POWER }
@@ -526,7 +510,7 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 
     const auto ssaoBlurFragmentShader = std::make_shared<ShaderModule>(
         pDevice->device,
-        SSAO_BLUR_SHADERS_DIR + "frag.spv",
+        File::getPath(SSAO_BLUR_SHADERS_DIR, "frag.spv"),
         VK_SHADER_STAGE_FRAGMENT_BIT,
         std::vector<VkSpecializationMapEntry>{ ssaoBlurConstantEntry },
         std::vector<const void *>{ &pSsaoKernel->BLUR_RADIUS }
@@ -551,14 +535,14 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
     #pragma region Lighting
 
 	VkSpecializationMapEntry lightingConstantEntry{
-		0,                  // constantID
-		0,                  // offset
-		sizeof(uint32_t)    // size
+		0,
+		0,
+		sizeof(uint32_t)
 	};
 
     auto lightingFragmentShader = std::make_shared<ShaderModule>(
         pDevice->device,
-        LIGHTING_SHADERS_DIR + "frag.spv", 
+		File::getPath(LIGHTING_SHADERS_DIR, "frag.spv"),
         VK_SHADER_STAGE_FRAGMENT_BIT, 
         std::vector<VkSpecializationMapEntry>{ lightingConstantEntry }, 
         std::vector<const void *>{ &sampleCount }

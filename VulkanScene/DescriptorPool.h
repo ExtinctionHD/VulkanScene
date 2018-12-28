@@ -9,7 +9,7 @@
 class DescriptorPool
 {
 public:
-	DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t texturesCount, uint32_t setCount);
+	DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t textureCount, uint32_t setCount);
 	~DescriptorPool();
 
 	VkDescriptorSetLayout createDescriptorSetLayout(

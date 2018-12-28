@@ -223,7 +223,10 @@
       <Filter>Файлы заголовков\Scene\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="SceneDao.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Scene\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageSetInfo.h">
+      <Filter>Файлы заголовков\Scene\Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -342,7 +345,7 @@
       <Filter>Исходные файлы\Scene\Components</Filter>
     </ClCompile>
     <ClCompile Include="SceneDao.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\Scene\Data</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

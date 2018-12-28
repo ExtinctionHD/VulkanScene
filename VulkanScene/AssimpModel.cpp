@@ -11,14 +11,14 @@
 
 // public:
 
-AssimpModel::AssimpModel(Device *pDevice, const std::string& filename) :
+AssimpModel::AssimpModel(Device *pDevice, const std::string& path) :
 	Model(pDevice)
 {
-	directory = File::getFileDir(filename);
+	directory = File::getDirectory(path);
 
 	Assimp::Importer importer;
 	const aiScene *pScene = importer.ReadFile(
-		filename, 
+		File::getAbsolute(path),
 		aiProcess_Triangulate | 
 		aiProcess_GenNormals |
 		aiProcess_FlipUVs
@@ -277,18 +277,19 @@ glm::vec4 AssimpModel::getMaterialColor(aiMaterial *pAiMaterial, const char * ke
 
 TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextureType type)
 {
-	aiString path;
-	assert(pAiMaterial->GetTexture(type, 0, &path) == aiReturn_SUCCESS);
+	aiString aiPath;
+	assert(pAiMaterial->GetTexture(type, 0, &aiPath) == aiReturn_SUCCESS);
+	std::string path(aiPath.C_Str());
 
 	TextureImage *pTexture;
-	if (textures.find(path.C_Str()) == textures.end())
+	if (textures.find(path) == textures.end())
 	{
-		pTexture = new TextureImage(pDevice, { directory + path.C_Str() }, 1);
-		textures.insert({ path.C_Str(), pTexture });
+		pTexture = new TextureImage(pDevice, { File::getPath(directory, path) }, 1);
+		textures.insert({ path, pTexture });
 	}
 	else
 	{
-		pTexture = textures[path.C_Str()];
+		pTexture = textures[path];
 	}
 
 	return pTexture;

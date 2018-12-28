@@ -6,12 +6,12 @@
 
 // public:
 
-ShaderModule::ShaderModule(VkDevice device, std::string filename, VkShaderStageFlagBits stage)
+ShaderModule::ShaderModule(VkDevice device, std::string path, VkShaderStageFlagBits stage)
 {
 	this->device = device;
 	this->stage = stage;
 
-	std::vector<char> code = File::getFileBytes(filename);
+	std::vector<char> code = File::getBytes(path);
 
 	VkShaderModuleCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,    // sType;
@@ -27,11 +27,11 @@ ShaderModule::ShaderModule(VkDevice device, std::string filename, VkShaderStageF
 
 ShaderModule::ShaderModule(
     VkDevice device,
-    std::string filename,
+    std::string path,
     VkShaderStageFlagBits stage,
     std::vector<VkSpecializationMapEntry> entries,
     const std::vector<const void*> &data
-) : ShaderModule(device, filename, stage)
+) : ShaderModule(device, path, stage)
 {
 	assert(entries.size() == data.size());
 

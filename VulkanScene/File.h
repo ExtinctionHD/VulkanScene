@@ -7,20 +7,22 @@ class File
 {
 public:
 	// returns bytes of file
-	static std::vector<char> getFileBytes(const std::string &filename);
+	static std::vector<char> getBytes(const std::string &path);
 
 	// returns directory of application executable file
-	static std::string getExeDir();
+	static std::string getExeDirectory();
+
+	static std::string getAbsolute(const std::string& path);
 
 	// returns directory of file
-	static std::string getFileDir(const std::string &path);
+	static std::string getDirectory(const std::string &path);
 
 	// get only filename from full path
-	static std::string getFilename(std::string path);  
+	static std::string getFilename(const std::string& path);
+
+	static std::string getPath(const std::string& directory, const std::string& path);
 
 	// returns true if file exists
 	static bool exists(const std::string &path);
-
-	static Lighting::Attributes getLightingAttributes(const std::string &filename, std::string &skyboxDir, std::string &skyboxExtension);
 };
 

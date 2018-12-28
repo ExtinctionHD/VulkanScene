@@ -1,23 +1,22 @@
 #include "Vertex.h"
 #include "Mesh.h"
+#include "File.h"
 
 #include "TerrainModel.h"
-#include "File.h"
 
 // public:
 
 TerrainModel::TerrainModel(
 	Device *pDevice, 
-	VkExtent2D size, 
+	glm::vec2 cellSize,
 	VkExtent2D cellCount, 
-	const std::string &texturesDir,
-	const std::string &extension
+	ImageSetInfo imageSetInfo
 ) : Model(pDevice)
 {
-	this->size = size;
+	this->cellSize = cellSize;
 	this->cellCount = cellCount;
 
-	initMaterial(texturesDir, extension);
+	initMaterial(imageSetInfo.directory, imageSetInfo.extension);
 	initMesh();
 }
 
@@ -44,7 +43,7 @@ std::vector<VkVertexInputAttributeDescription> TerrainModel::getVertexInputAttri
 
 // private:
 
-void TerrainModel::initMaterial(const std::string &texturesDir, const std::string &extension)
+void TerrainModel::initMaterial(const std::string &texturesDirectory, const std::string &extension)
 {
 	const std::vector<aiTextureType> types = {
 		aiTextureType_DIFFUSE,
@@ -52,19 +51,19 @@ void TerrainModel::initMaterial(const std::string &texturesDir, const std::strin
 		aiTextureType_NORMALS
 	};
 
-	const std::vector<std::string> filenames = {
-		texturesDir + "diffuse" + extension,
-		texturesDir + "specular" + extension,
-		texturesDir + "normals" + extension,
+	const std::vector<std::string> paths = {
+		File::getPath(texturesDirectory, "diffuse" + extension),
+		File::getPath(texturesDirectory, "specular" + extension),
+		File::getPath(texturesDirectory, "normals" + extension),
 	};
 
 	Material *pMaterial = new Material(pDevice);
 
 	for (size_t i = 0; i < types.size(); i++)
 	{
-		if (File::exists(filenames[i]))
+		if (File::exists(paths[i]))
 		{
-			TextureImage *pTexture = new TextureImage(pDevice, { filenames[i] }, 1);
+			TextureImage *pTexture = new TextureImage(pDevice, { paths[i] }, 1);
 			pMaterial->addTexture(types[i], pTexture);
 			textures.push_back(pTexture);
 		}
@@ -75,8 +74,8 @@ void TerrainModel::initMaterial(const std::string &texturesDir, const std::strin
 
 void TerrainModel::initMesh()
 {
-	const float posX = size.width / 2.0f;
-	const float posZ = size.height / 2.0f;
+	const float posX = cellSize.x * cellCount.width / 2.0f;
+	const float posZ = cellSize.y * cellCount.height / 2.0f;
 
 	std::vector<Vertex> vertices;
 

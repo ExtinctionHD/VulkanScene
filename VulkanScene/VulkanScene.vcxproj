@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Controller.h" />
     <ClInclude Include="GeometryRenderPass.h" />
+    <ClInclude Include="ImageSetInfo.h" />
     <ClInclude Include="LightingRenderPass.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />

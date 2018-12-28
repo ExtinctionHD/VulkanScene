@@ -1,15 +1,16 @@
 #pragma once
+
 #include "Model.h"
+#include "ImageSetInfo.h"
 
 class TerrainModel : public Model
 {
 public:
 	TerrainModel(
 		Device *pDevice, 
-		VkExtent2D size, 
-		VkExtent2D cellCount, 
-		const std::string &texturesDir, 
-		const std::string &extension
+		glm::vec2 cellSize,
+		VkExtent2D cellCount,
+		ImageSetInfo imageSetInfo
 	);
 
 	~TerrainModel();
@@ -20,14 +21,14 @@ protected:
 	std::vector<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions(uint32_t inputBinding) override;
 
 private:
-	VkExtent2D size{};
+	glm::vec2 cellSize{};
 
 	// number of cells per side
 	VkExtent2D cellCount{};
 
 	std::vector<TextureImage*> textures;
 
-	void initMaterial(const std::string &texturesDir, const std::string &extension);
+	void initMaterial(const std::string &texturesDirectory, const std::string &extension);
 
 	void initMesh();
 };

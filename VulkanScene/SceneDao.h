@@ -2,17 +2,31 @@
 
 #include <string>
 #include <nlohmann/json.hpp>
+#include "Lighting.h"
+#include "ImageSetInfo.h"
 
 
 class SceneDao
 {
 public:
-	SceneDao(const std::string& filename);
-	~SceneDao() = default;
+	SceneDao() = default;
+	SceneDao(const std::string& path);
 
-	static void saveScene(const std::string& filename);
+	void open(const std::string& path);
+
+	Lighting::Attributes getLightingAttributes(glm::vec3 cameraPos);
+
+	ImageSetInfo getSkyboxInfo();
+
+	ImageSetInfo getTerrainInfo();
+
+	static void saveScene(const std::string& path);
 
 private:
 	nlohmann::json scene;
+
+	static ImageSetInfo getImageSetInfo(nlohmann::json json);
+
+	static glm::vec3 getVec3(nlohmann::json json);
 };
 

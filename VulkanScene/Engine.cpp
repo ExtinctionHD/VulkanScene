@@ -1,5 +1,4 @@
 #include <set>
-#include <array>
 #include <iostream>
 #include "ShaderModule.h"
 #include "AssimpModel.h"
@@ -42,8 +41,7 @@ Engine::Engine(
 
 	createRenderPasses(settings.shadowsDim);
 
-    std::string lightingFile = File::getExeDir() + "assets/" + settings.lightingScheme + ".dat";
-	pScene = new Scene(pDevice, pSwapChain->getExtent(), lightingFile, settings.shadowsDistance, settings.modelsExistence);
+	pScene = new Scene(pDevice, pSwapChain->getExtent(), "assets/SceneSunset.json", settings.shadowsDistance, settings.modelsExistence);
 	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDescriptorSetCount());
 
 	pScene->prepareSceneRendering(pDescriptorPool, renderPasses);
