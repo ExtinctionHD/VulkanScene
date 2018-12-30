@@ -8,24 +8,31 @@
 
 Camera::Camera(Device *pDevice, VkExtent2D extent)
 {
+	this->extent = extent;
+
 	pos = glm::vec3(0.0f, 0.0f, 0.0f);
 	forward = glm::vec3(0.0f, 0.0f, 1.0f);
 	up = glm::vec3(0.0f, -1.0f, 0.0f);
 
-	this->extent = extent;
-	this->fov = 45.0f;
+	fov = 45.0f;
+	speed = 2.0f;
+	sensitivity = 0.1f;
 
 	initAngles();
 	initSpaceBuffer(pDevice);
 }
 
-Camera::Camera(Device *pDevice, glm::vec3 pos, glm::vec3 forward, glm::vec3 up, VkExtent2D extent, float fov)
+Camera::Camera(Device *pDevice, VkExtent2D extent, Attributes attributes)
 {
-	this->pos = pos;
-	this->forward = glm::normalize(forward);
-	this->up = glm::normalize(up);
 	this->extent = extent;
-	this->fov = fov;
+
+	this->pos = attributes.position;
+	this->forward = glm::normalize(attributes.forward);
+	this->up = glm::normalize(attributes.up);
+
+	this->fov = attributes.fov;
+	this->speed = attributes.speed;
+	this->sensitivity = attributes.sensitivity;
 
 	initAngles();
 	initSpaceBuffer(pDevice);
@@ -63,7 +70,7 @@ glm::vec2 Camera::getCenter() const
 
 void Camera::move(float deltaSec)
 {
-	const float DISTANCE = SPEED * deltaSec;
+	const float DISTANCE = speed * deltaSec;
 
 	glm::vec3 direction = forward * float(movement.forward);
 
@@ -86,10 +93,10 @@ void Camera::rotate(float deltaX, float deltaY)
 	const float VERT_ANGLE_LIMIT = 90.0f;
 
 	deltaX = abs(deltaX) < MAX_DELTA ? deltaX : MAX_DELTA * deltaX / abs(deltaX);
-	angleH += (deltaX * SENSITIVITY);
+	angleH += (deltaX * sensitivity);
 
 	deltaY = abs(deltaY) < MAX_DELTA ? deltaY : MAX_DELTA * deltaY / abs(deltaY);
-	angleV += (deltaY * SENSITIVITY);
+	angleV += (deltaY * sensitivity);
 	// set vertical angle limits: -VERT_ANGLE_LIMIT and VERT_ANGLE_LIMIT degrees
 	angleV = abs(angleV) > VERT_ANGLE_LIMIT ? VERT_ANGLE_LIMIT * angleV / abs(angleV) : angleV;
 
@@ -160,7 +167,7 @@ void Camera::initAngles()
 	}
 
 	// vertical camera angle
-	angleV = -glm::degrees(glm::asin(forward.y));
+	angleV = glm::degrees(glm::asin(forward.y));
 }
 
 void Camera::initSpaceBuffer(Device *pDevice)

@@ -9,11 +9,12 @@
 #include "Controller.h"
 #include "TerrainModel.h"
 #include "SsaoKernel.h"
+#include "SceneDao.h"
 
 class Scene
 {
 public:
-	Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &lightingFile, float shadowsDistance, std::vector<bool> modelsExistence);
+	Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &sceneFile, float shadowsDistance, std::vector<bool> modelsExistence);
 	~Scene();
 
 	Controller* getController() const;
@@ -36,6 +37,8 @@ public:
 
 private:
 	Device *pDevice;
+
+	SceneDao sceneDao;
 
 	Controller *pController;
 
@@ -66,10 +69,6 @@ private:
 	std::vector<Model*> models;
 
 	std::vector<GraphicsPipeline*> pipelines;
-
-	void initCamera(VkExtent2D cameraExtent);
-
-	void initLighting(const std::string &lightingFile, float shadowsDistance);
 
 	void initModels(std::vector<bool> modelsExistence);
 

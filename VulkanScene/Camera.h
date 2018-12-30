@@ -11,10 +11,20 @@
 class Camera
 {
 public:
+	struct Attributes
+	{
+		glm::vec3 position;
+		glm::vec3 forward;
+		glm::vec3 up;
+		float fov;
+		float speed;
+		float sensitivity;
+	};
+
     // creates camera located in (0.0, 0.0, 0.0), locking at z axis, with 45.0 degrees field of view
 	Camera(Device *pDevice, VkExtent2D extent);
 
-	Camera(Device *pDevice, glm::vec3 pos, glm::vec3 forward, glm::vec3 up, VkExtent2D extent, float fov);
+	Camera(Device *pDevice, VkExtent2D extent, Attributes attributes);
 
 	~Camera();
 
@@ -52,25 +62,19 @@ public:
 	void updateSpace();
 
 private:
-	// step of camera movement
-	const float SPEED = 2.0f;
-
-	// camera rotation sensitivity
-	const float SENSITIVITY = 0.1f;
-
-	// position of camera
 	glm::vec3 pos{};
 
-	// vector of camera direction
 	glm::vec3 forward{};
 
-	// up vector of camera 
 	glm::vec3 up{};
 
-	// pSurface extent
 	VkExtent2D extent{};
 
 	float fov;
+
+	float speed;
+
+	float sensitivity;
 
 	// horizontal angle
 	// angle 0.0f directed towards z axis

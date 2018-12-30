@@ -6,11 +6,11 @@
 class ShaderModule
 {
 public:
-	ShaderModule(VkDevice device, std::string filename, VkShaderStageFlagBits stage);
+	ShaderModule(VkDevice device, std::string path, VkShaderStageFlagBits stage);
 
 	ShaderModule(
 		VkDevice device, 
-		std::string filename, 
+		std::string path, 
 		VkShaderStageFlagBits stage, 
 		std::vector<VkSpecializationMapEntry> entries,
 	    const std::vector<const void*> &data

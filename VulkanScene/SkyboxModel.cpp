@@ -1,19 +1,26 @@
 #include "SkyboxModel.h"
+#include "File.h"
 
 // public:
 
-SkyboxModel::SkyboxModel(Device *pDevice, const std::string &texturesDir, const std::string &extension) : 
+const std::vector<std::string> SkyboxModel::FILENAMES = {
+	"right",
+	"left",
+	"top",
+	"bottom",
+	"front",
+	"back",
+};
+
+SkyboxModel::SkyboxModel(Device *pDevice, ImageSetInfo imageSetInfo) : 
 	Model(pDevice)
 {
-	const std::vector<std::string> filenames = {
-		texturesDir + "right" + extension,
-		texturesDir + "left" + extension,
-		texturesDir + "top" + extension,
-		texturesDir + "bottom" + extension,
-		texturesDir + "front" + extension,
-		texturesDir + "back" + extension,
-	};
-	pTexture = new TextureImage(pDevice, filenames, CUBE_SIDE_COUNT, true);
+	std::vector<std::string> paths;
+	for (auto& filename : FILENAMES)
+	{
+		paths.push_back(File::getPath(imageSetInfo.directory, filename + imageSetInfo.extension));
+	}
+	pTexture = new TextureImage(pDevice, paths, CUBE_SIDE_COUNT, true);
 
 	const std::vector<Position> cubeVertices{
 		glm::vec3(-1.0f, -1.0f, -1.0f),

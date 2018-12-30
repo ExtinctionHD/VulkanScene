@@ -3,18 +3,20 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "TextureImage.h"
+#include "File.h"
 
 // public:
 
-TextureImage::TextureImage(Device *pDevice, std::vector<std::string> filenames, uint32_t arrayLayers, bool isCube)
+TextureImage::TextureImage(Device *pDevice, std::vector<std::string> paths, uint32_t arrayLayers, bool isCube)
 {
-	assert(arrayLayers == filenames.size());
+	assert(arrayLayers == paths.size());
+
 
 	// loads image bytes for each array layer
 	std::vector<stbi_uc*> pixels(arrayLayers);
 	for (uint32_t i = 0; i < arrayLayers; i++)
 	{
-		pixels[i] = loadPixels(filenames[i]);
+		pixels[i] = loadPixels(paths[i]);
 	}
 
 	this->pDevice = pDevice;
@@ -117,11 +119,11 @@ TextureImage::~TextureImage()
 
 // protected:
 
-stbi_uc* TextureImage::loadPixels(const std::string &filename)
+stbi_uc* TextureImage::loadPixels(const std::string &path)
 {
 	extent.depth = 1;
 	stbi_uc *pixels = stbi_load(
-		filename.c_str(),
+		File::getAbsolute(path).c_str(),
 		reinterpret_cast<int*>(&extent.width),
 		reinterpret_cast<int*>(&extent.height),
 		nullptr,

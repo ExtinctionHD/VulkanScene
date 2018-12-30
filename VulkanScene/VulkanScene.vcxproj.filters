@@ -91,6 +91,12 @@
     <Filter Include="Файлы заголовков\Engine\Rendering\RenderPasses">
       <UniqueIdentifier>{10315b15-6edd-48e6-983d-ef9710275833}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Scene\Data">
+      <UniqueIdentifier>{d28d5e9c-9b4e-41c6-94d2-3280ee38cdcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Scene\Data">
+      <UniqueIdentifier>{4e8c01e8-d98b-4612-8262-d24dbb674e5c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Device.h">
@@ -216,6 +222,12 @@
     <ClInclude Include="RgbaUNorm.h">
       <Filter>Файлы заголовков\Scene\Mesh</Filter>
     </ClInclude>
+    <ClInclude Include="SceneDao.h">
+      <Filter>Файлы заголовков\Scene\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageSetInfo.h">
+      <Filter>Файлы заголовков\Scene\Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
@@ -331,6 +343,9 @@
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Исходные файлы\Scene\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneDao.cpp">
+      <Filter>Исходные файлы\Scene\Data</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

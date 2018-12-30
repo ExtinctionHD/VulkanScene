@@ -1,5 +1,4 @@
 #include <set>
-#include <array>
 #include <iostream>
 #include "ShaderModule.h"
 #include "AssimpModel.h"
@@ -28,22 +27,21 @@ Engine::Engine(
 	requiredLayers.push_back(VALIDATION_LAYER.c_str());
 #endif
 
-	const std::vector<const char *> EXTENTIONS{
+	const std::vector<const char *> EXTENSIONS{
 		VK_KHR_SURFACE_EXTENSION_NAME,
 		"VK_KHR_win32_surface"
 	};
 
 	this->ssaoEnabled = settings.ssaoEnabled;
 
-	pInstance = new Instance(requiredLayers, EXTENTIONS);
+	pInstance = new Instance(requiredLayers, EXTENSIONS);
 	pSurface = new Surface(pInstance->getInstance(), hInstance, hWnd);
 	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers, settings.sampleCount);
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);
 
 	createRenderPasses(settings.shadowsDim);
 
-    std::string lightingFile = File::getExeDir() + "assets/" + settings.lightingScheme + ".dat";
-	pScene = new Scene(pDevice, pSwapChain->getExtent(), lightingFile, settings.shadowsDistance, settings.modelsExistence);
+	pScene = new Scene(pDevice, pSwapChain->getExtent(), "assets/SceneSunset.json", settings.shadowsDistance, settings.modelsExistence);
 	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDescriptorSetCount());
 
 	pScene->prepareSceneRendering(pDescriptorPool, renderPasses);
