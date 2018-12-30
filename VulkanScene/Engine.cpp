@@ -27,14 +27,14 @@ Engine::Engine(
 	requiredLayers.push_back(VALIDATION_LAYER.c_str());
 #endif
 
-	const std::vector<const char *> EXTENTIONS{
+	const std::vector<const char *> EXTENSIONS{
 		VK_KHR_SURFACE_EXTENSION_NAME,
 		"VK_KHR_win32_surface"
 	};
 
 	this->ssaoEnabled = settings.ssaoEnabled;
 
-	pInstance = new Instance(requiredLayers, EXTENTIONS);
+	pInstance = new Instance(requiredLayers, EXTENSIONS);
 	pSurface = new Surface(pInstance->getInstance(), hInstance, hWnd);
 	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers, settings.sampleCount);
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);

@@ -4,6 +4,7 @@
 #include <nlohmann/json.hpp>
 #include "Lighting.h"
 #include "ImageSetInfo.h"
+#include "Camera.h"
 
 
 class SceneDao
@@ -14,11 +15,13 @@ public:
 
 	void open(const std::string& path);
 
-	Lighting::Attributes getLightingAttributes(glm::vec3 cameraPos);
+	Camera::Attributes getCameraAttributes() const;
 
-	ImageSetInfo getSkyboxInfo();
+	Lighting::Attributes getLightingAttributes() const;
 
-	ImageSetInfo getTerrainInfo();
+	ImageSetInfo getSkyboxInfo() const;
+
+	ImageSetInfo getTerrainInfo() const;
 
 	static void saveScene(const std::string& path);
 

@@ -19,16 +19,11 @@ Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &sceneF
 
 	sceneDao.open(sceneFile);
 
-	glm::vec3 pos{ 0.0f, -3.0f, -6.0f };
-	glm::vec3 forward{ 0.0f, -0.8f, 1.0f };
-	glm::vec3 up{ 0.0f, -1.0f, 0.0f };
-	const float fov = 45.0f;
-	pCamera = new Camera(pDevice, pos, forward, up, cameraExtent, fov);
-	pController = new Controller(pCamera);
-
-	pLighting = new Lighting(pDevice, sceneDao.getLightingAttributes(pCamera->getPos()), shadowsDistance);
+	pCamera = new Camera(pDevice, cameraExtent, sceneDao.getCameraAttributes());
+	pLighting = new Lighting(pDevice, sceneDao.getLightingAttributes(), shadowsDistance);
 	pSkybox = new SkyboxModel(pDevice, sceneDao.getSkyboxInfo());
 	pTerrain = new TerrainModel(pDevice, { 1.0f, 1.0f }, { 1000, 1000 }, sceneDao.getTerrainInfo());
+	pController = new Controller(pCamera);
 
 	initModels(modelsExistence);
 }

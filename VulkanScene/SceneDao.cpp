@@ -17,7 +17,23 @@ void SceneDao::open(const std::string& path)
 	stream >> scene;
 }
 
-Lighting::Attributes SceneDao::getLightingAttributes(glm::vec3 cameraPos)
+Camera::Attributes SceneDao::getCameraAttributes() const
+{
+	nlohmann::json camera = scene["camera"];
+
+	Camera::Attributes attributes{
+		getVec3(camera["position"]),
+		getVec3(camera["forward"]),
+		getVec3(camera["up"]),
+		camera["fov"].get<float>(),
+		camera["speed"].get<float>(),
+		camera["sensitivity"].get<float>(),
+	};
+
+	return attributes;
+}
+
+Lighting::Attributes SceneDao::getLightingAttributes() const
 {
 	nlohmann::json lighting = scene["lighting"];
 
@@ -26,19 +42,19 @@ Lighting::Attributes SceneDao::getLightingAttributes(glm::vec3 cameraPos)
 		lighting["ambientStrength"].get<float>(),
 		getVec3(lighting["direction"]),
 		lighting["directedStrength"].get<float>(),
-		cameraPos,
+		getVec3(scene["camera"]["position"]),
 		lighting["specularPower"].get<float>()
 	};
 
 	return attributes;
 }
 
-ImageSetInfo SceneDao::getSkyboxInfo()
+ImageSetInfo SceneDao::getSkyboxInfo() const
 {
 	return getImageSetInfo(scene["skybox"]);
 }
 
-ImageSetInfo SceneDao::getTerrainInfo()
+ImageSetInfo SceneDao::getTerrainInfo() const
 {
 	return getImageSetInfo(scene["terrain"]);
 }
@@ -59,16 +75,37 @@ void SceneDao::saveScene(const std::string& path)
 	scene["lighting"]["color"] = {
 		{ "r", 1.0f },
 		{ "g", 1.0f },
-		{ "b", 1.0f },
+		{ "b", 1.0f }
 	};
 	scene["lighting"]["direction"] = {
 		{ "x", 0.0f },
 		{ "y", 1.0f },
-		{ "z", -0.001f },
+		{ "z", -0.001f }
 	};
 	scene["lighting"]["ambientStrength"] = 0.9f;
 	scene["lighting"]["directedStrength"] = 1.0f;
 	scene["lighting"]["specularPower"] = 16.0f;
+
+	scene["camera"] = {
+		{ "fov", 45.0f },
+		{ "speed", 2.0f },
+		{ "sensitivity", 0.1f }
+	};
+	scene["camera"]["position"] = {
+		{ "x", 0.0f },
+		{ "y", -3.0f },
+		{ "z", -6.0f }
+	};
+	scene["camera"]["forward"] = {
+		{ "x", 0.0f },
+		{ "y", -0.8f },
+		{ "z", 1.0f }
+	};
+	scene["camera"]["up"] = {
+		{ "x", 0.0f },
+		{ "y", -1.0f },
+		{ "z", 0.0f }
+	};
 
 	std::ofstream stream(File::getAbsolute(path));
 	stream << scene;
