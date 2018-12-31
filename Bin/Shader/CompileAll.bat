@@ -1,6 +1,6 @@
 for /d %%i in ("./*.*") do (
     cd ./%%i
-    call compile.bat
+    call Compile.bat
     cd ../
 )
 pause
