@@ -14,7 +14,7 @@
 class Scene
 {
 public:
-	Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &sceneFile, float shadowsDistance, std::vector<bool> modelsExistence);
+	Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &path, float shadowsDistance);
 	~Scene();
 
 	Controller* getController() const;
@@ -70,7 +70,7 @@ private:
 
 	std::vector<GraphicsPipeline*> pipelines;
 
-	void initModels(std::vector<bool> modelsExistence);
+	void initModels();
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses);
 

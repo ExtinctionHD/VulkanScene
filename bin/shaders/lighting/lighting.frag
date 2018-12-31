@@ -71,10 +71,10 @@ float getSpecularIntensity(vec3 N, vec3 L, vec3 V, float specular)
 }
 
 // 1 - fragment in the shadow, 0 - fragment in the lighting
-float getShading(vec4 fragPosLightSpace, float bias)
+float getShading(vec4 posInLightSpace, float bias)
 {
 	// normalize proj coordiantes
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    vec3 projCoords = posInLightSpace.xyz / posInLightSpace.w;
     projCoords = vec3(projCoords.xy * 0.5f + 0.5f, projCoords.z);
 
     float currentDepth = projCoords.z;

@@ -12,7 +12,7 @@
 
 // public:
 
-Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &sceneFile, float shadowsDistance, std::vector<bool> modelsExistence)
+Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &sceneFile, float shadowsDistance)
     : pDevice(pDevice), pSsaoKernel(new SsaoKernel(pDevice))
 {
     std::cout << "Creating scene..." << std::endl;
@@ -25,7 +25,7 @@ Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &sceneF
 	pTerrain = new TerrainModel(pDevice, { 1.0f, 1.0f }, { 1000, 1000 }, sceneDao.getTerrainInfo());
 	pController = new Controller(pCamera);
 
-	initModels(modelsExistence);
+	initModels();
 }
 
 Scene::~Scene()
@@ -103,12 +103,12 @@ void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderP
 
 void Scene::updateScene()
 {
-	double deltaSec = frameTimer.getDeltaSec();
+	const double deltaSec = frameTimer.getDeltaSec();
 
 	pController->controlCamera(deltaSec);
 	pLighting->update(pCamera->getPos());
 
-	pSkybox->setTransform(translate(glm::mat4(1.0f), pCamera->getPos()));
+	pSkybox->setTransformation(translate(glm::mat4(1.0f), pCamera->getPos()), 0);
 }
 
 void Scene::render(VkCommandBuffer commandBuffer, RenderPassType type)
@@ -206,97 +206,41 @@ void Scene::updateDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMa
 
 // private:
 
-void Scene::initModels(std::vector<bool> modelsExistence)
+void Scene::initModels()
 {
-	models.push_back(pSkybox);
-
-	const std::string AMG_GT_FILE = "models/Mercedes AMG GT/amgGt.fbx";
-	const std::string S63_FILE = "models/Mercedes S63/s63.fbx";
     const std::string REGERA_FILE = "models/Koenigsegg Regera/regera.fbx";
-    const std::string VULCAN_FILE = "models/Aston Martin Vulcan/vulcan.fbx";
 	const std::string HOUSE_FILE = "models/House/house.obj";
-    const std::string SUGAR_MARPLE_FILE = "models/Trees/sugarMarple.obj";
-	const std::string NORWAY_MARPLE_FILE = "models/Trees/norwayMarple.obj";
 
-    const int MODELS_GROUP_COUNT = 4;
-    assert(modelsExistence.size() >= MODELS_GROUP_COUNT);
+    pRegera = new AssimpModel(pDevice, REGERA_FILE, 4);
 
-    if (modelsExistence[0])
-    {
-        std::cout << "Loading Mercedes AMG GT model..." << std::endl;
+	pRegera->move({ -6.8f, 0.0f, 5.0 }, 1);
+	pRegera->move({ -4.2f, 0.0f, 6.0 }, 2);
+	pRegera->move({ 10.0f, 0.0f, 1.0 }, 3);
 
-        pAmgGt = new AssimpModel(pDevice, AMG_GT_FILE);
-        pAmgGt->move({ -4.2f, 0.0f, 7.0 });
-        pAmgGt->scale(glm::vec3(1.953f / pAmgGt->getBaseSize().x));
-        pAmgGt->rotateAxisY(-5.0f);
-        pAmgGt->rotateAxisX(180.0f);
-        pAmgGt->optimizeMemory();
-        models.push_back(pAmgGt);
+    pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x), 0);
+	pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x), 1);
+	pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x), 2);
+	pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x), 3);
 
-        std::cout << "Loading Mercedes S63 AMG model..." << std::endl;
+	pRegera->rotateAxisY(-20.0f, 1);
+	pRegera->rotateAxisY(-5.0f, 2);
+	pRegera->rotateAxisY(40.0f, 3);
 
-        pS63 = new AssimpModel(pDevice, S63_FILE);
-        pS63->move({ -5.5f, 0.0f, 4.5 });
-        pS63->scale(glm::vec3(1.913f / pS63->getBaseSize().x));
-        pS63->rotateAxisY(-20.0f);
-        pS63->rotateAxisX(180.0f);
-        pS63->optimizeMemory();
-        models.push_back(pS63);
-    }
+    pRegera->rotateAxisX(90.0f, 0);
+	pRegera->rotateAxisX(90.0f, 1);
+	pRegera->rotateAxisX(90.0f, 2);
+	pRegera->rotateAxisX(90.0f, 3);
 
-    if (modelsExistence[1])
-    {
-        std::cout << "Loading Koenigsegg Regera model..." << std::endl;
+    pRegera->optimizeMemory();
 
-        pRegera = new AssimpModel(pDevice, REGERA_FILE);
-        pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x));
-        pRegera->rotateAxisX(90.0f);
-        pRegera->optimizeMemory();
-        models.push_back(pRegera);
+    pHouse = new AssimpModel(pDevice, HOUSE_FILE, 1);
+    pHouse->move({ -2.1f, 0.14f, 3.0f }, 0);
+    pHouse->rotateAxisX(180.0f, 0);
+    pHouse->optimizeMemory();
 
-        std::cout << "Loading Aston Martin Vulcan model..." << std::endl;
-
-        pVulcan = new AssimpModel(pDevice, VULCAN_FILE);
-        pVulcan->move({ 10.0f, 0.0f, 1.0 });
-        pVulcan->scale(glm::vec3(2.063f / pVulcan->getBaseSize().x));
-        pVulcan->rotateAxisY(40.0f);
-        pVulcan->rotateAxisX(90.0f);
-        pVulcan->optimizeMemory();
-        models.push_back(pVulcan);
-    }
-
-    if (modelsExistence[2])
-    {
-        std::cout << "Loading house model..." << std::endl;
-
-        pHouse = new AssimpModel(pDevice, HOUSE_FILE);
-        pHouse->move({ -2.1f, 0.14f, 3.0f });
-        pHouse->rotateAxisX(180.0f);
-        pHouse->optimizeMemory();
-        models.push_back(pHouse);
-    }
-
-    if (modelsExistence[3])
-    {
-        std::cout << "Loading Sugar marple model..." << std::endl;
-
-        pSugarMarple = new AssimpModel(pDevice, SUGAR_MARPLE_FILE);
-        pSugarMarple->move({ 11.0f, 0.0f, -1.0 });
-        pSugarMarple->scale(glm::vec3(16.0f / pSugarMarple->getBaseSize().y));
-        pSugarMarple->rotateAxisX(180.0f);
-        pSugarMarple->optimizeMemory();
-        models.push_back(pSugarMarple);
-
-        std::cout << "Loading Norway marple model..." << std::endl;
-
-        pNorwayMarple = new AssimpModel(pDevice, NORWAY_MARPLE_FILE);
-        pNorwayMarple->move({ -8.0f, 0.0f, 16.0 });
-        pNorwayMarple->scale(glm::vec3(20.0f / pNorwayMarple->getBaseSize().y));
-        pNorwayMarple->rotateAxisX(180.0f);
-        pNorwayMarple->optimizeMemory();
-        models.push_back(pNorwayMarple);
-    }
-
+	models.push_back(pSkybox);
+	models.push_back(pRegera);
+    models.push_back(pHouse);
 	models.push_back(pTerrain);
 }
 

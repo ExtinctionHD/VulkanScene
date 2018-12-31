@@ -16,13 +16,13 @@ VkVertexInputBindingDescription Position::getBindingDescription(uint32_t binding
 	};
 }
 
-std::vector<VkVertexInputAttributeDescription> Position::getAttributeDescriptions(uint32_t binding)
+std::vector<VkVertexInputAttributeDescription> Position::getAttributeDescriptions(uint32_t binding, uint32_t locationOffset)
 {
 	VkVertexInputAttributeDescription posDescription{
-		0,							// location;
-		binding,					// binding;
-		VK_FORMAT_R32G32B32_SFLOAT,	// format;
-		offsetof(Position, pos)		// offset;
+		locationOffset + 0,
+		binding,	
+		VK_FORMAT_R32G32B32_SFLOAT,
+		offsetof(Position, pos)
 	};
 	return std::vector<VkVertexInputAttributeDescription>{ posDescription };
 }

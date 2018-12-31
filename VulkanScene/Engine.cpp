@@ -41,7 +41,7 @@ Engine::Engine(
 
 	createRenderPasses(settings.shadowsDim);
 
-	pScene = new Scene(pDevice, pSwapChain->getExtent(), "assets/SceneSunset.json", settings.shadowsDistance, settings.modelsExistence);
+	pScene = new Scene(pDevice, pSwapChain->getExtent(), settings.scenePath, settings.shadowsDistance);
 	pDescriptorPool = new DescriptorPool(pDevice, pScene->getBufferCount(), pScene->getTextureCount(), pScene->getDescriptorSetCount());
 
 	pScene->prepareSceneRendering(pDescriptorPool, renderPasses);

@@ -16,9 +16,9 @@ public:
 	~TerrainModel();
 
 protected:
-	VkVertexInputBindingDescription getVertexInputBindingDescription(uint32_t inputBinding) override;
+	VkVertexInputBindingDescription getVertexBindingDescription(uint32_t binding) override;
 
-	std::vector<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions(uint32_t inputBinding) override;
+	std::vector<VkVertexInputAttributeDescription> getVertexAttributeDescriptions(uint32_t binding, uint32_t locationOffset) override;
 
 private:
 	glm::vec2 cellSize{};

@@ -5,40 +5,40 @@
 VkVertexInputBindingDescription Vertex::getBindingDescription(uint32_t binding)
 {
 	return VkVertexInputBindingDescription{
-		binding,					// binding;
-		sizeof(Vertex),				// stride;
-		VK_VERTEX_INPUT_RATE_VERTEX	// inputRate;
+		binding,	
+		sizeof(Vertex),
+		VK_VERTEX_INPUT_RATE_VERTEX
 	};
 }
 
-std::vector<VkVertexInputAttributeDescription> Vertex::getAttributeDescriptions(uint32_t binding)
+std::vector<VkVertexInputAttributeDescription> Vertex::getAttributeDescriptions(uint32_t binding, uint32_t locationOffset)
 {
 	VkVertexInputAttributeDescription posDescription{
-		0,							// location;
-		binding,					// binding;
-		VK_FORMAT_R32G32B32_SFLOAT,	// format;
-		offsetof(Vertex, pos)		// offset;
+		locationOffset + 0,	
+		binding,	
+		VK_FORMAT_R32G32B32_SFLOAT,
+		offsetof(Vertex, pos)
 	};
 
 	VkVertexInputAttributeDescription texDescription{
-		1,							// location;
-		binding,					// binding;
-		VK_FORMAT_R32G32_SFLOAT,	// format;
-		offsetof(Vertex, uv)		// offset;
+		locationOffset + 1,
+		binding,	
+		VK_FORMAT_R32G32_SFLOAT,
+		offsetof(Vertex, uv)
 	};
 
 	VkVertexInputAttributeDescription normalDescription{
-		2,							// location;
-		binding,					// binding;
-		VK_FORMAT_R32G32B32_SFLOAT,	// format;
-		offsetof(Vertex, normal)	// offset;
+		locationOffset + 2,	
+		binding,	
+		VK_FORMAT_R32G32B32_SFLOAT,
+		offsetof(Vertex, normal)
 	};
 
 	VkVertexInputAttributeDescription tangentDescription{
-		3,							// location;
-		binding,					// binding;
-		VK_FORMAT_R32G32B32_SFLOAT,	// format;
-		offsetof(Vertex, tangent)	// offset;
+		locationOffset + 3,
+		binding,	
+		VK_FORMAT_R32G32B32_SFLOAT,
+		offsetof(Vertex, tangent)
 	};
 
 	return std::vector<VkVertexInputAttributeDescription>{ posDescription, texDescription, normalDescription, tangentDescription };

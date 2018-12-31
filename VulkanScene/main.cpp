@@ -20,8 +20,7 @@ int APIENTRY wWinMain(
 		4096,
 		40.0f,
 		true,
-		"Clouds",
-		{ false, false, true, false }
+		"assets/SceneClouds.json",
 	};
 
 	auto pWindow = new Window(hInstance, 1280, 720);
@@ -51,21 +50,13 @@ Settings getSettings(LPCWSTR lpCmdLine)
     assert(argc == CORRECT_ARGC);
 
     std::wstring ws(argv[4]);
-    std::string lightingScheme = std::string(ws.begin(), ws.end());
-
-    std::vector<bool> modelsExistence{
-        bool(_wtoi(argv[5])),
-        bool(_wtoi(argv[6])),
-        bool(_wtoi(argv[7])),
-        bool(_wtoi(argv[8]))
-    };
+    std::string scenePath = std::string(ws.begin(), ws.end());
 
     return Settings{
         VkSampleCountFlagBits(_wtoi(argv[0])),
         uint32_t(_wtoi(argv[1])),
         float(_wtof(argv[2])),
         bool(_wtoi(argv[3])),
-        lightingScheme,
-        modelsExistence
+		scenePath
     };
 }

@@ -6,14 +6,6 @@
 
 Model::~Model()
 {
-	objectCount--;
-
-	if (objectCount == 0 && transformDsLayout != nullptr)
-	{
-		vkDestroyDescriptorSetLayout(pDevice->device, transformDsLayout, nullptr);
-		transformDsLayout = nullptr;
-	}
-
 	// cleanup materials
 	for (auto it = materials.begin(); it != materials.end(); ++it)
 	{
@@ -30,48 +22,55 @@ Model::~Model()
 		delete mesh;
 	}
 
-	delete(pTransformBuffer);
+	delete(pTransformationsBuffer);
 }
 
-glm::mat4 Model::getTransform() const
+glm::mat4 Model::getTransformation(uint32_t index) const
 {
-	return transform;
+	return transformations[index];
 }
 
-void Model::setTransform(glm::mat4 matrix)
+void Model::setTransformations(glm::mat4 matrix)
 {
-	transform = matrix;
-	pTransformBuffer->updateData(&transform, sizeof(transform), 0);
+	const uint32_t count = transformations.size();
+	transformations = std::vector<glm::mat4>(count, matrix);
+	pTransformationsBuffer->updateData(transformations.data(), count * sizeof glm::mat4, 0);
 }
 
-void Model::rotate(glm::vec3 axis, float angle)
+void Model::setTransformation(glm::mat4 matrix, uint32_t index)
 {
-	setTransform(glm::rotate(getTransform(), glm::radians(angle), axis));
+	transformations[index] = matrix;
+	pTransformationsBuffer->updateData(&transformations[index], sizeof glm::mat4, index * sizeof glm::mat4);
 }
 
-void Model::rotateAxisX(float angle)
+void Model::rotate(glm::vec3 axis, float angle, uint32_t index)
 {
-	setTransform(glm::rotate(getTransform(), glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f)));
+	setTransformation(glm::rotate(getTransformation(index), glm::radians(angle), axis), index);
 }
 
-void Model::rotateAxisY(float angle)
+void Model::rotateAxisX(float angle, uint32_t index)
 {
-	setTransform(glm::rotate(getTransform(), glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)));
+	setTransformation(glm::rotate(getTransformation(index), glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f)), index);
 }
 
-void Model::rotateAxisZ(float angle)
+void Model::rotateAxisY(float angle, uint32_t index)
 {
-	setTransform(glm::rotate(getTransform(), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f)));
+	setTransformation(glm::rotate(getTransformation(index), glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)), index);
 }
 
-void Model::move(glm::vec3 distance)
+void Model::rotateAxisZ(float angle, uint32_t index)
 {
-	setTransform(translate(getTransform(), distance));
+	setTransformation(glm::rotate(getTransformation(index), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f)), index);
 }
 
-void Model::scale(glm::vec3 scale)
+void Model::move(glm::vec3 distance, uint32_t index)
 {
-	setTransform(glm::scale(getTransform(), scale));
+	setTransformation(translate(getTransformation(index), distance), index);
+}
+
+void Model::scale(glm::vec3 scale, uint32_t index)
+{
+	setTransformation(glm::scale(getTransformation(index), scale), index);
 }
 
 uint32_t Model::getBufferCount() const 
@@ -99,27 +98,8 @@ GraphicsPipeline * Model::getPipeline(RenderPassType type) const
 	return pipelines.at(type);
 }
 
-VkDescriptorSetLayout Model::getTransformDsLayout()
-{
-	return transformDsLayout;
-}
-
 void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 {
-    if (transformDsLayout == nullptr)
-    {
-		transformDsLayout = pDescriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT }, {});
-    }
-
-	transformDescriptorSet = pDescriptorPool->getDescriptorSet(
-		transformDsLayout
-	);
-	pDescriptorPool->updateDescriptorSet(
-		transformDescriptorSet,
-		{ pTransformBuffer },
-		{}
-	);
-
 	for (auto material : materials)
 	{
 		material.second->initDescriptorSet(pDescriptorPool);
@@ -133,14 +113,23 @@ GraphicsPipeline * Model::createPipeline(
     const std::vector<std::shared_ptr<ShaderModule>> &shaderModules
 )
 {
+	const std::vector<VkVertexInputBindingDescription> bindingDescriptions = {
+		getVertexBindingDescription(0),
+		getTransformationBindingDescription(1)
+	};
+
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions = getVertexAttributeDescriptions(0, 0);
+	std::vector<VkVertexInputAttributeDescription> transformationAttributeDescriptions = getTransformationAttributeDescriptions(1, attributeDescriptions.size());
+	attributeDescriptions.insert(attributeDescriptions.end(), transformationAttributeDescriptions.begin(), transformationAttributeDescriptions.end());
+
     switch (type)
     {
     case DEPTH:
-		return createDepthPipeline(layouts, pRenderPass, shaderModules);
+		return createDepthPipeline(layouts, pRenderPass, shaderModules, bindingDescriptions, attributeDescriptions);
     case GEOMETRY:
-		return createGeometryPipeline(layouts, pRenderPass, shaderModules);
+		return createGeometryPipeline(layouts, pRenderPass, shaderModules, bindingDescriptions, attributeDescriptions);
     case FINAL:
-		return createFinalPipeline(layouts, pRenderPass, shaderModules);
+		return createFinalPipeline(layouts, pRenderPass, shaderModules, bindingDescriptions, attributeDescriptions);
     default: 
         throw std::invalid_argument("No pipeline for this render pass type");
     }
@@ -156,7 +145,7 @@ void Model::setStaticPipeline(RenderPassType type, GraphicsPipeline *pPipeline)
 	staticPipelines.insert({ type, pPipeline });
 }
 
-void Model::renderDepth(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const
+void Model::renderDepth(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet>& descriptorSets) const
 {
 	renderMeshes(commandBuffer, descriptorSets, DEPTH, solidMeshes);
 	renderMeshes(commandBuffer, descriptorSets, DEPTH, transparentMeshes);
@@ -198,42 +187,62 @@ void Model::optimizeMemory()
 
 // protected:
 
-Model::Model(Device *pDevice)
+Model::Model(Device *pDevice, uint32_t count)
 {
 	this->pDevice = pDevice;
+	pTransformationsBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, count * sizeof glm::mat4);
 
-	pTransformBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(transform));
-	setTransform(glm::mat4(1.0f));
-
-	objectCount++;
+	transformations.resize(count);
+	setTransformations(glm::mat4(1.0f));
 }
 
 // private:
 
-uint32_t Model::objectCount = 0;
-
-VkDescriptorSetLayout Model::transformDsLayout = nullptr;
-
 std::unordered_map<RenderPassType, GraphicsPipeline*> Model::staticPipelines;
+
+VkVertexInputBindingDescription Model::getTransformationBindingDescription(uint32_t inputBinding)
+{
+	return VkVertexInputBindingDescription{
+		inputBinding,
+		sizeof(glm::mat4),
+		VK_VERTEX_INPUT_RATE_INSTANCE
+	};
+}
+
+std::vector<VkVertexInputAttributeDescription> Model::getTransformationAttributeDescriptions(uint32_t binding, uint32_t locationOffset)
+{
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+
+	for (int i = 0; i < sizeof glm::mat4 / sizeof glm::vec4; i++)
+	{
+		attributeDescriptions.push_back({
+			locationOffset + i,
+			binding,
+			VK_FORMAT_R32G32B32A32_SFLOAT,
+			i * sizeof glm::vec4
+		});
+	}
+
+	return attributeDescriptions;
+}
 
 GraphicsPipeline* Model::createDepthPipeline(
 	std::vector<VkDescriptorSetLayout> layouts,
 	RenderPass *pRenderPass,
-	std::vector<std::shared_ptr<ShaderModule>> shaderModules
+	std::vector<std::shared_ptr<ShaderModule>> shaderModules,
+	std::vector<VkVertexInputBindingDescription> bindingDescriptions,
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions
 )
 {
-	layouts.push_back(transformDsLayout);
 	layouts.push_back(Material::getDsLayout());
-
-	const uint32_t inputBinding = 0;
 
 	GraphicsPipeline *pPipeline = new GraphicsPipeline(
 		pDevice,
 		layouts,
 		pRenderPass,
 	    shaderModules,
-		{ getVertexInputBindingDescription(inputBinding) },
-		getVertexInputAttributeDescriptions(inputBinding),
+		bindingDescriptions,
+		attributeDescriptions,
 		pRenderPass->getSampleCount(),
         pRenderPass->getColorAttachmentCount(),
         VK_FALSE
@@ -246,21 +255,20 @@ GraphicsPipeline* Model::createDepthPipeline(
 GraphicsPipeline* Model::createGeometryPipeline(
 	std::vector<VkDescriptorSetLayout> layouts,
 	RenderPass *pRenderPass,
-	std::vector<std::shared_ptr<ShaderModule>> shaderModules
+	std::vector<std::shared_ptr<ShaderModule>> shaderModules,
+	std::vector<VkVertexInputBindingDescription> bindingDescriptions,
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions
 )
 {
-	layouts.push_back(transformDsLayout);
 	layouts.push_back(Material::getDsLayout());
-
-	const uint32_t inputBinding = 0;
 
 	GraphicsPipeline *pPipeline = new GraphicsPipeline(
 		pDevice,
 		layouts,
 		pRenderPass,
 	    shaderModules,
-		{ getVertexInputBindingDescription(inputBinding) },
-		getVertexInputAttributeDescriptions(inputBinding),
+		bindingDescriptions,
+		attributeDescriptions,
 		pRenderPass->getSampleCount(),
         pRenderPass->getColorAttachmentCount(),
         VK_FALSE
@@ -273,21 +281,20 @@ GraphicsPipeline* Model::createGeometryPipeline(
 GraphicsPipeline* Model::createFinalPipeline(
 	std::vector<VkDescriptorSetLayout> layouts,
 	RenderPass * pRenderPass,
-	std::vector<std::shared_ptr<ShaderModule>> shaderModules
+	std::vector<std::shared_ptr<ShaderModule>> shaderModules,
+	std::vector<VkVertexInputBindingDescription> bindingDescriptions,
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions
 )
 {
-	layouts.push_back(transformDsLayout);
 	layouts.push_back(Material::getDsLayout());
-
-	const uint32_t inputBinding = 0;
 
 	GraphicsPipeline *pPipeline = new GraphicsPipeline(
 		pDevice,
 		layouts,
 		pRenderPass,
 	    shaderModules,
-		{ getVertexInputBindingDescription(inputBinding) },
-		getVertexInputAttributeDescriptions(inputBinding),
+		bindingDescriptions,
+		attributeDescriptions,
 		pRenderPass->getSampleCount(),
 		pRenderPass->getColorAttachmentCount(),
         VK_TRUE
@@ -299,18 +306,20 @@ GraphicsPipeline* Model::createFinalPipeline(
 
 void Model::renderMeshes(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, RenderPassType type, std::vector<MeshBase*> meshes) const
 {
-	descriptorSets.push_back(transformDescriptorSet);
-
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(type)->pipeline);
 
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(type)->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
+
+	VkBuffer transformationsBuffer = pTransformationsBuffer->getBuffer();
+	VkDeviceSize offset = 0;
+	vkCmdBindVertexBuffers(commandBuffer, 1, 1, &transformationsBuffer, &offset);
 
 	for (auto &mesh : meshes)
 	{
 		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDescriptorSet();
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(type)->layout, descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
 
-		mesh->draw(commandBuffer);
+		mesh->render(commandBuffer, transformations.size());
 	}
 }
 

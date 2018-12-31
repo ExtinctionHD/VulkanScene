@@ -11,8 +11,8 @@
 
 // public:
 
-AssimpModel::AssimpModel(Device *pDevice, const std::string& path) :
-	Model(pDevice)
+AssimpModel::AssimpModel(Device *pDevice, const std::string& path, uint32_t count) :
+	Model(pDevice, count)
 {
 	directory = File::getDirectory(path);
 
@@ -46,14 +46,14 @@ glm::vec3 AssimpModel::getBaseSize() const
 
 // protected:
 
-VkVertexInputBindingDescription AssimpModel::getVertexInputBindingDescription(uint32_t inputBinding)
+VkVertexInputBindingDescription AssimpModel::getVertexBindingDescription(uint32_t binding)
 {
-	return Vertex::getBindingDescription(inputBinding);
+	return Vertex::getBindingDescription(binding);
 }
 
-std::vector<VkVertexInputAttributeDescription> AssimpModel::getVertexInputAttributeDescriptions(uint32_t inputBinding)
+std::vector<VkVertexInputAttributeDescription> AssimpModel::getVertexAttributeDescriptions(uint32_t binding, uint32_t locationOffset)
 {
-	return Vertex::getAttributeDescriptions(inputBinding);
+	return Vertex::getAttributeDescriptions(binding, locationOffset);
 }
 
 // private:

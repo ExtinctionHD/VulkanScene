@@ -3,16 +3,16 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
-layout(set = 2, binding = 0) uniform Colors{
+layout(set = 1, binding = 0) uniform Material{
 	vec4 albedo;
 	vec4 specular;
 	float opacity;
-} colors;
+} material;
 
-layout(set = 2, binding = 1) uniform sampler2D albedoMap;
-layout(set = 2, binding = 2) uniform sampler2D specularMap;
-layout(set = 2, binding = 3) uniform sampler2D opacityMap;
-layout(set = 2, binding = 4) uniform sampler2D normalMap;
+layout(set = 1, binding = 1) uniform sampler2D albedoMap;
+layout(set = 1, binding = 2) uniform sampler2D specularMap;
+layout(set = 1, binding = 3) uniform sampler2D opacityMap;
+layout(set = 1, binding = 4) uniform sampler2D normalMap;
 
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec2 inUV;
@@ -52,7 +52,7 @@ void main()
 
 	outNormal = vec4(getBumpedNormal(inNormal, inTangent, inUV, normalMap) * 0.5f + 0.5f, 0.0f);
 
-	vec3 albedo = colors.albedo.rgb * texture(albedoMap, inUV).rgb;
-	float specular = colors.specular.r * texture(specularMap, inUV).r;
+	vec3 albedo = material.albedo.rgb * texture(albedoMap, inUV).rgb;
+	float specular = material.specular.r * texture(specularMap, inUV).r;
 	outAlbedo = vec4(albedo, specular);
 }

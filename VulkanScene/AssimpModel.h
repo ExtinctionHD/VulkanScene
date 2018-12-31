@@ -10,15 +10,15 @@
 class AssimpModel : public Model
 {
 public:
-	AssimpModel(Device *pDevice, const std::string& path);
+	AssimpModel(Device *pDevice, const std::string& path, uint32_t count);
 	~AssimpModel();
 
 	glm::vec3 getBaseSize() const;
 
 protected:
-	VkVertexInputBindingDescription  getVertexInputBindingDescription(uint32_t inputBinding) override;
+	VkVertexInputBindingDescription  getVertexBindingDescription(uint32_t binding) override;
 
-	std::vector<VkVertexInputAttributeDescription> getVertexInputAttributeDescriptions(uint32_t inputBinding) override;
+	std::vector<VkVertexInputAttributeDescription> getVertexAttributeDescriptions(uint32_t binding, uint32_t locationOffset) override;
 
 private:
 	std::string directory;

@@ -13,7 +13,7 @@ const std::vector<std::string> SkyboxModel::FILENAMES = {
 };
 
 SkyboxModel::SkyboxModel(Device *pDevice, ImageSetInfo imageSetInfo) : 
-	Model(pDevice)
+	Model(pDevice, 1)
 {
 	std::vector<std::string> paths;
 	for (auto& filename : FILENAMES)
@@ -61,14 +61,14 @@ SkyboxModel::~SkyboxModel()
 
 // protected:
 
-VkVertexInputBindingDescription SkyboxModel::getVertexInputBindingDescription(uint32_t inputBinding)
+VkVertexInputBindingDescription SkyboxModel::getVertexBindingDescription(uint32_t binding)
 {
-	return Position::getBindingDescription(inputBinding);
+	return Position::getBindingDescription(binding);
 }
 
-std::vector<VkVertexInputAttributeDescription> SkyboxModel::getVertexInputAttributeDescriptions(uint32_t inputBinding)
+std::vector<VkVertexInputAttributeDescription> SkyboxModel::getVertexAttributeDescriptions(uint32_t binding, uint32_t locationOffset)
 {
-	return Position::getAttributeDescriptions(inputBinding);
+	return Position::getAttributeDescriptions(binding, locationOffset);
 }
 
 // private:

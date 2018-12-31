@@ -12,16 +12,16 @@ layout(set = 0, binding = 2) uniform Lighting{
 
 layout(set = 0, binding = 3) uniform sampler2D shadowsMap;
 
-layout(set = 2, binding = 0) uniform Colors{
+layout(set = 1, binding = 0) uniform Material{
 	vec4 diffuse;
 	vec4 specular;
 	float opacity;
-} colors;
+} material;
 
-layout(set = 2, binding = 1) uniform sampler2D diffuseTexture;
-layout(set = 2, binding = 2) uniform sampler2D specularMap;
-layout(set = 2, binding = 3) uniform sampler2D opacityMap;
-layout(set = 2, binding = 4) uniform sampler2D normalMap;
+layout(set = 1, binding = 1) uniform sampler2D diffuseTexture;
+layout(set = 1, binding = 2) uniform sampler2D specularMap;
+layout(set = 1, binding = 3) uniform sampler2D opacityMap;
+layout(set = 1, binding = 4) uniform sampler2D normalMap;
 
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec2 inUV;
@@ -80,14 +80,14 @@ float getSpecularIntensity(vec3 N, vec3 L, vec3 V)
 		specularFactor = 0.0f;
 	}
 
-	return lighting.directedStrength * colors.specular.r * texture(specularMap, inUV).r * specularFactor;
+	return lighting.directedStrength * material.specular.r * texture(specularMap, inUV).r * specularFactor;
 }
 
 // 1 - fragment in the shadow, 0 - fragment in the lighting
-float getShading(vec4 inPosLightSpace, float bias)
+float getShading(vec4 posInLightSpace, float bias)
 {
 	// normalize proj coordiantes
-    vec3 projCoords = inPosLightSpace.xyz / inPosLightSpace.w;
+    vec3 projCoords = posInLightSpace.xyz / posInLightSpace.w;
     projCoords = vec3(projCoords.xy * 0.5f + 0.5f, projCoords.z);
 
     float currentDepth = projCoords.z;
@@ -120,10 +120,9 @@ const float MIN_OPACITY = 0.1f;
 const float BIAS_FACTOR = 0.001f;
 const float MIN_BIAS = 0.0001f;
 
-// fragment shader code:
 void main() 
 {
-	float opacity = colors.opacity * texture(opacityMap, inUV).r;
+	float opacity = material.opacity * texture(opacityMap, inUV).r;
 	if (opacity < MIN_OPACITY)
 	{
 		discard;
@@ -140,7 +139,7 @@ void main()
 	float diffuseI = getDiffuseIntensity(N, L) * illumination;
 	float specularI = getSpecularIntensity(N, L, V) * illumination;
 
-	vec3 diffuseColor = colors.diffuse.rgb * texture(diffuseTexture, inUV).rgb;
+	vec3 diffuseColor = material.diffuse.rgb * texture(diffuseTexture, inUV).rgb;
 
 	vec3 lightingComponent = lighting.color * diffuseColor * (ambientI + diffuseI);
 	vec3 specularComponent = lighting.color * specularI;

@@ -10,7 +10,7 @@ class MeshBase
 public:
 	virtual ~MeshBase();
 
-	void draw(VkCommandBuffer commandBuffer) const;
+	void render(VkCommandBuffer commandBuffer, uint32_t instanceCount) const;
 
 	Material *pMaterial{};
 

@@ -11,7 +11,7 @@ TerrainModel::TerrainModel(
 	glm::vec2 cellSize,
 	VkExtent2D cellCount, 
 	ImageSetInfo imageSetInfo
-) : Model(pDevice)
+) : Model(pDevice, 1)
 {
 	this->cellSize = cellSize;
 	this->cellCount = cellCount;
@@ -31,14 +31,14 @@ TerrainModel::~TerrainModel()
 
 // protected:
 
-VkVertexInputBindingDescription TerrainModel::getVertexInputBindingDescription(uint32_t inputBinding)
+VkVertexInputBindingDescription TerrainModel::getVertexBindingDescription(uint32_t binding)
 {
-	return Vertex::getBindingDescription(inputBinding);
+	return Vertex::getBindingDescription(binding);
 }
 
-std::vector<VkVertexInputAttributeDescription> TerrainModel::getVertexInputAttributeDescriptions(uint32_t inputBinding)
+std::vector<VkVertexInputAttributeDescription> TerrainModel::getVertexAttributeDescriptions(uint32_t binding, uint32_t locationOffset)
 {
-	return Vertex::getAttributeDescriptions(inputBinding);
+	return Vertex::getAttributeDescriptions(binding, locationOffset);
 }
 
 // private:

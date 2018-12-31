@@ -12,7 +12,5 @@ struct Settings
 
     bool ssaoEnabled;
 
-    std::string lightingScheme;
-
-    std::vector<bool> modelsExistence;
+    std::string scenePath;
 };

@@ -17,6 +17,6 @@ struct Vertex
 	static VkVertexInputBindingDescription getBindingDescription(uint32_t binding);
 
 	// description of each vertex attribute
-	static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions(uint32_t binding);
+	static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions(uint32_t binding, uint32_t locationOffset);
 };
 

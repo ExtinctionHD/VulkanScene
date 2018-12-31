@@ -103,12 +103,12 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 	// view area:
 
 	VkViewport viewport{
-		0,						// x;
-		0,						// y;
-		viewportExtent.width,	// width;
-		viewportExtent.height,	// height;
-		0,						// minDepth;
-		1						// maxDepth;
+		0,
+		0,
+		float(viewportExtent.width),
+		float(viewportExtent.height),
+		0,
+		1
 	};
 
 	VkRect2D scissor{
