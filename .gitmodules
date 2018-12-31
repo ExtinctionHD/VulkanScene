@@ -1,16 +1,16 @@
-[submodule "external/Glm"]
+[submodule "external/glm"]
 	path = external/Glm
 	url = https://github.com/g-truc/glm
 	ignore = dirty
-[submodule "external/Assimp"]
+[submodule "external/assimp"]
 	path = external/Assimp
 	url = https://github.com/assimp/assimp
 	ignore = dirty
-[submodule "external/Stb"]
+[submodule "external/stb"]
 	path = external/Stb
 	url = https://github.com/nothings/stb
 	ignore = dirty
-[submodule "external/Json"]
+[submodule "external/json"]
 	path = external/Json
 	url = https://github.com/nlohmann/json
 	ignore = dirty
