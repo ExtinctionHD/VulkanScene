@@ -211,31 +211,24 @@ void Scene::initModels()
     const std::string REGERA_FILE = "models/Koenigsegg Regera/regera.fbx";
 	const std::string HOUSE_FILE = "models/House/house.obj";
 
-    pRegera = new AssimpModel(pDevice, REGERA_FILE, 4);
-
-	pRegera->move({ -6.8f, 0.0f, 5.0 }, 1);
-	pRegera->move({ -4.2f, 0.0f, 6.0 }, 2);
-	pRegera->move({ 10.0f, 0.0f, 1.0 }, 3);
-
-    pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x), 0);
-	pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x), 1);
-	pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x), 2);
-	pRegera->scale(glm::vec3(2.050f / pRegera->getBaseSize().x), 3);
-
-	pRegera->rotateAxisY(-20.0f, 1);
-	pRegera->rotateAxisY(-5.0f, 2);
-	pRegera->rotateAxisY(40.0f, 3);
-
-    pRegera->rotateAxisX(90.0f, 0);
-	pRegera->rotateAxisX(90.0f, 1);
-	pRegera->rotateAxisX(90.0f, 2);
-	pRegera->rotateAxisX(90.0f, 3);
-
+    pRegera = new AssimpModel(pDevice, REGERA_FILE, 2);
+	Transformation transformation = pRegera->getTransformation(0);
+	transformation.move({ 10.0f, 0.0f, 1.0 });
+	transformation.scale(glm::vec3(2.050f / pRegera->getBaseSize().x));
+	transformation.rotateAxisY(40.0f);
+	transformation.rotateAxisX(90.0f);
+	pRegera->setTransformation(transformation, 0);
+	transformation = pRegera->getTransformation(1);
+	transformation.scale(glm::vec3(2.050f / pRegera->getBaseSize().x));
+	transformation.rotateAxisX(90.0f);
+	pRegera->setTransformation(transformation, 1);
     pRegera->optimizeMemory();
 
     pHouse = new AssimpModel(pDevice, HOUSE_FILE, 1);
-    pHouse->move({ -2.1f, 0.14f, 3.0f }, 0);
-    pHouse->rotateAxisX(180.0f, 0);
+	transformation = pHouse->getTransformation(0);
+	transformation.move({ -2.1f, 0.14f, 3.0f });
+	transformation.rotateAxisX(180.0f);
+	pHouse->setTransformation(transformation, 0);
     pHouse->optimizeMemory();
 
 	models.push_back(pSkybox);

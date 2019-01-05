@@ -10,29 +10,12 @@
 #include "RenderPass.h"
 #include "MeshBase.h"
 #include <map>
+#include "Transformation.h"
 
 class Model
 {
 public:
 	virtual ~Model();
-
-	glm::mat4 getTransformation(uint32_t index) const;
-
-	void setTransformations(glm::mat4 matrix);
-
-	void setTransformation(glm::mat4 matrix, uint32_t index);
-
-	void rotate(glm::vec3 axis, float angle, uint32_t index);
-
-	void rotateAxisX(float angle, uint32_t index);
-
-	void rotateAxisY(float angle, uint32_t index);
-
-	void rotateAxisZ(float angle, uint32_t index);
-
-	void move(glm::vec3 distance, uint32_t index);
-
-	void scale(glm::vec3 scale, uint32_t index);
 
 	uint32_t getBufferCount() const;
 
@@ -41,6 +24,10 @@ public:
 	uint32_t getDescriptorSetCount() const;
 
 	uint32_t getMeshCount() const;
+
+	Transformation getTransformation(uint32_t index);
+
+	void setTransformation(Transformation transformation, uint32_t index);
 
 	GraphicsPipeline* getPipeline(RenderPassType type) const;
 

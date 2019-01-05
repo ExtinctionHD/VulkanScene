@@ -59,6 +59,7 @@
     <ClInclude Include="TerrainModel.h" />
     <ClInclude Include="TextureImage.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Transformation.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Window.h" />
@@ -100,6 +101,7 @@
     <ClCompile Include="TerrainModel.cpp" />
     <ClCompile Include="TextureImage.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Transformation.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Window.cpp" />

@@ -1,6 +1,4 @@
 #include "Model.h"
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/matrix_decompose.hpp>
 
 // public:
 
@@ -25,54 +23,6 @@ Model::~Model()
 	delete(pTransformationsBuffer);
 }
 
-glm::mat4 Model::getTransformation(uint32_t index) const
-{
-	return transformations[index];
-}
-
-void Model::setTransformations(glm::mat4 matrix)
-{
-	const uint32_t count = transformations.size();
-	transformations = std::vector<glm::mat4>(count, matrix);
-	pTransformationsBuffer->updateData(transformations.data(), count * sizeof glm::mat4, 0);
-}
-
-void Model::setTransformation(glm::mat4 matrix, uint32_t index)
-{
-	transformations[index] = matrix;
-	pTransformationsBuffer->updateData(&transformations[index], sizeof glm::mat4, index * sizeof glm::mat4);
-}
-
-void Model::rotate(glm::vec3 axis, float angle, uint32_t index)
-{
-	setTransformation(glm::rotate(getTransformation(index), glm::radians(angle), axis), index);
-}
-
-void Model::rotateAxisX(float angle, uint32_t index)
-{
-	setTransformation(glm::rotate(getTransformation(index), glm::radians(angle), glm::vec3(1.0f, 0.0f, 0.0f)), index);
-}
-
-void Model::rotateAxisY(float angle, uint32_t index)
-{
-	setTransformation(glm::rotate(getTransformation(index), glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)), index);
-}
-
-void Model::rotateAxisZ(float angle, uint32_t index)
-{
-	setTransformation(glm::rotate(getTransformation(index), glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f)), index);
-}
-
-void Model::move(glm::vec3 distance, uint32_t index)
-{
-	setTransformation(translate(getTransformation(index), distance), index);
-}
-
-void Model::scale(glm::vec3 scale, uint32_t index)
-{
-	setTransformation(glm::scale(getTransformation(index), scale), index);
-}
-
 uint32_t Model::getBufferCount() const 
 {
 	return 1 + materials.size();
@@ -91,6 +41,17 @@ uint32_t Model::getDescriptorSetCount() const
 uint32_t Model::getMeshCount() const
 {
 	return solidMeshes.size();
+}
+
+Transformation Model::getTransformation(uint32_t index)
+{
+	return { transformations[index] };
+}
+
+void Model::setTransformation(Transformation transformation, uint32_t index)
+{
+	transformations[index] = transformation.getMatrix();
+	pTransformationsBuffer->updateData(&transformations[index], sizeof glm::mat4, index * sizeof glm::mat4);
 }
 
 GraphicsPipeline * Model::getPipeline(RenderPassType type) const
@@ -190,10 +151,11 @@ void Model::optimizeMemory()
 Model::Model(Device *pDevice, uint32_t count)
 {
 	this->pDevice = pDevice;
+
 	pTransformationsBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, count * sizeof glm::mat4);
 
-	transformations.resize(count);
-	setTransformations(glm::mat4(1.0f));
+	transformations.resize(count, glm::mat4(1.0f));
+	pTransformationsBuffer->updateData(transformations.data(), count * sizeof glm::mat4, 0);
 }
 
 // private:
