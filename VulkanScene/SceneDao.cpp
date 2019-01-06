@@ -59,6 +59,27 @@ ImageSetInfo SceneDao::getTerrainInfo() const
 	return getImageSetInfo(scene["terrain"]);
 }
 
+std::unordered_map<std::string, AssimpModel*> SceneDao::getModels(Device *pDevice) const
+{
+	std::unordered_map<std::string, AssimpModel*> models;
+	nlohmann::json modelsJson = scene["models"];
+
+	for (auto& [modelName, modelJson] : modelsJson.items())
+	{
+		nlohmann::json transformationsJson = modelJson["transformations"];
+		AssimpModel *model = new AssimpModel(pDevice, modelJson["path"], transformationsJson.size());
+
+		for (uint32_t i = 0; i < transformationsJson.size(); i++)
+		{
+			model->setTransformation(getTransformation(transformationsJson[i], model), i);
+		}
+
+		models.insert({ modelName, model });
+	}
+
+	return models;
+}
+
 void SceneDao::saveScene(const std::string& path)
 {
 	nlohmann::json scene;
@@ -107,6 +128,66 @@ void SceneDao::saveScene(const std::string& path)
 		{ "z", 0.0f }
 	};
 
+	scene["models"]["Regera"] = {
+		{ "path", "models/Koenigsegg Regera/Regera.fbx" }
+	};
+	scene["models"]["Regera"]["transformations"][0][0] = {
+		{ "type", "MOVE" },
+		{ "distance", {
+			{ "x", 10.0f },
+			{ "y", 0.0f },
+			{ "z", 1.0f }
+		}}
+	};
+	scene["models"]["Regera"]["transformations"][0][1] = {
+		{ "type", "SCALE" },
+		{ "sizeX", 2.050f },
+		{ "scale", {
+			{ "x", 0.0f },
+			{ "y", -1.0f },
+			{ "z", 0.0f }
+		}}
+	};
+	scene["models"]["Regera"]["transformations"][0][2] = {
+		{ "type", "ROTATE" },
+		{ "angle", 40 },
+		{ "axis", {
+			{ "x", 0.0f },
+			{ "y", 1.0f },
+			{ "z", 0.0f }
+		}}
+	};
+	scene["models"]["Regera"]["transformations"][0][3] = {
+		{ "type", "ROTATE" },
+		{ "angle", 90 },
+		{ "axis", {
+			{ "x", 1.0f },
+			{ "y", 0.0f },
+			{ "z", 0.0f }
+		}}
+	};
+
+	scene["models"]["House"] = {
+		{ "path", "models/House/House.obj" }
+	};
+	scene["models"]["House"]["transformations"][0][0] = {
+		{ "type", "MOVE" },
+		{ "distance", {
+			{ "x", -2.1f },
+			{ "y", 0.14f },
+			{ "z", 3.1f }
+		}}
+	};
+	scene["models"]["House"]["transformations"][0][1] = {
+		{ "type", "ROTATE" },
+		{ "angle", 180 },
+		{ "axis", {
+			{ "x", 1.0f },
+			{ "y", 0.0f },
+			{ "z", 0.0f }
+		}}
+	};
+
 	std::ofstream stream(File::getAbsolute(path));
 	stream << scene;
 }
@@ -141,4 +222,60 @@ glm::vec3 SceneDao::getVec3(nlohmann::json json)
 	}
 
 	return vector;
+}
+
+Transformation SceneDao::getTransformation(nlohmann::json json, AssimpModel *model)
+{
+	Transformation transformation{ glm::mat4(1.0f) };
+
+	for (const auto& transformationJson : json)
+	{
+		std::string type = transformationJson["type"];
+
+		if (type == "MOVE")
+		{
+			transformation.move(getVec3(transformationJson["distance"]));
+		}
+		else if (type == "SCALE")
+		{
+			if (transformationJson.count("size") > 0)
+			{
+				float size = transformationJson["size"]["value"].get<float>();
+
+				if (transformationJson["size"]["axis"] == "x")
+				{
+					transformation.scale(glm::vec3(size / model->getBaseSize().x));
+				}
+				else if (transformationJson["size"]["axis"] == "y")
+				{
+					transformation.scale(glm::vec3(size / model->getBaseSize().y));
+				}
+				else if (transformationJson["size"]["axis"] == "z")
+				{
+					transformation.scale(glm::vec3(size / model->getBaseSize().z));
+				}
+			}
+			else if (transformationJson.count("scale") > 0)
+			{
+				transformation.scale(getVec3(transformationJson["scale"]));
+			}
+			else
+			{
+				throw std::invalid_argument("Invalid scale object in transformation");
+			}
+		}
+		else if (type == "ROTATE")
+		{
+			transformation.rotate(
+				getVec3(transformationJson["axis"]),
+				transformationJson["angle"].get<float>()
+			);
+		}
+		else
+		{
+			throw std::invalid_argument("Invalid transformation type");
+		}
+	}
+
+	return transformation;
 }
