@@ -21,6 +21,13 @@ Camera::Attributes SceneDao::getCameraAttributes() const
 {
 	nlohmann::json camera = scene["camera"];
 
+	if (camera.find("external") != camera.end())
+	{
+		std::ifstream stream(File::getAbsolute(camera["external"]));
+		camera = {};
+		stream >> camera;
+	}
+
 	Camera::Attributes attributes{
 		getVec3(camera["position"]),
 		getVec3(camera["forward"]),
@@ -36,6 +43,13 @@ Camera::Attributes SceneDao::getCameraAttributes() const
 Lighting::Attributes SceneDao::getLightingAttributes() const
 {
 	nlohmann::json lighting = scene["lighting"];
+
+	if (lighting.find("external") != lighting.end())
+	{
+		std::ifstream stream(File::getAbsolute(lighting["external"]));
+		lighting = {};
+		stream >> lighting;
+	}
 
 	Lighting::Attributes attributes{
 		getVec3(lighting["color"]),
@@ -59,25 +73,9 @@ ImageSetInfo SceneDao::getTerrainInfo() const
 	return getImageSetInfo(scene["terrain"]);
 }
 
-std::unordered_map<std::string, AssimpModel*> SceneDao::getModels(Device *pDevice) const
+std::unordered_map<std::string, AssimpModel*> SceneDao::getModels(Device* pDevice)
 {
-	std::unordered_map<std::string, AssimpModel*> models;
-	nlohmann::json modelsJson = scene["models"];
-
-	for (auto& [modelName, modelJson] : modelsJson.items())
-	{
-		nlohmann::json transformationsJson = modelJson["transformations"];
-		AssimpModel *model = new AssimpModel(pDevice, modelJson["path"], transformationsJson.size());
-
-		for (uint32_t i = 0; i < transformationsJson.size(); i++)
-		{
-			model->setTransformation(getTransformation(transformationsJson[i], model), i);
-		}
-
-		models.insert({ modelName, model });
-	}
-
-	return models;
+	return parseModels(pDevice, scene["models"]);
 }
 
 void SceneDao::saveScene(const std::string& path)
@@ -224,6 +222,39 @@ glm::vec3 SceneDao::getVec3(nlohmann::json json)
 	return vector;
 }
 
+std::unordered_map<std::string, AssimpModel*> SceneDao::parseModels(Device *pDevice, nlohmann::json modelsJson)
+{
+	std::unordered_map<std::string, AssimpModel*> models;
+
+	for (const auto&[modelName, modelJson] : modelsJson.items())
+	{
+		if (modelJson.find("external") != modelJson.end())
+		{
+			std::ifstream stream(File::getAbsolute(modelJson["external"]));
+			nlohmann::json externalModelsJson;
+			stream >> externalModelsJson;
+
+			std::unordered_map<std::string, AssimpModel*> externalModels = parseModels(pDevice, externalModelsJson);
+			models.merge(externalModels);
+		}
+		else
+		{
+			nlohmann::json transformationsJson = modelJson["transformations"];
+			AssimpModel *model = new AssimpModel(pDevice, modelJson["path"], transformationsJson.size());
+
+			for (uint32_t i = 0; i < transformationsJson.size(); i++)
+			{
+				model->setTransformation(getTransformation(transformationsJson[i], model), i);
+			}
+
+			models.insert({ modelName, model });
+		}
+
+	}
+
+	return models;
+}
+
 Transformation SceneDao::getTransformation(nlohmann::json json, AssimpModel *model)
 {
 	Transformation transformation{ glm::mat4(1.0f) };
@@ -238,7 +269,7 @@ Transformation SceneDao::getTransformation(nlohmann::json json, AssimpModel *mod
 		}
 		else if (type == "SCALE")
 		{
-			if (transformationJson.count("size") > 0)
+			if (transformationJson.find("size") != transformationJson.end())
 			{
 				float size = transformationJson["size"]["value"].get<float>();
 
@@ -255,7 +286,7 @@ Transformation SceneDao::getTransformation(nlohmann::json json, AssimpModel *mod
 					transformation.scale(glm::vec3(size / model->getBaseSize().z));
 				}
 			}
-			else if (transformationJson.count("scale") > 0)
+			else if (transformationJson.find("scale") != transformationJson.end())
 			{
 				transformation.scale(getVec3(transformationJson["scale"]));
 			}
