@@ -57,20 +57,11 @@ private:
 	std::unordered_map<RenderPassType, DescriptorStruct> descriptors;
 
 	// models
-	AssimpModel *pRegera{};
-	AssimpModel *pAmgGt{};
-	AssimpModel *pS63{};
-	AssimpModel *pVulcan{};
-	AssimpModel *pHouse{};
-	AssimpModel *pSugarMarple{};
-	AssimpModel *pNorwayMarple{};
-	SkyboxModel *pSkybox{};
-	TerrainModel *pTerrain{};
-	std::vector<Model*> models;
+	SkyboxModel *skybox{};
+	TerrainModel *terrain{};
+	std::unordered_map<std::string, AssimpModel*> models;
 
 	std::vector<GraphicsPipeline*> pipelines;
-
-	void initModels();
 
 	void initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses);
 

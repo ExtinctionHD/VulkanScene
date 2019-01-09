@@ -180,6 +180,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)external\json\include;$(SolutionDir)external\stb;$(SolutionDir)external\glm;$(SolutionDir)external\assimp\include;$(Vulkan_SDK)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)external\assimp\lib\$(Configuration);$(Vulkan_SDK)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -209,6 +210,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)external\json\include;$(SolutionDir)external\stb;$(SolutionDir)external\glm;$(SolutionDir)external\assimp\include;$(Vulkan_SDK)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

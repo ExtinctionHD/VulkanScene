@@ -20,7 +20,7 @@ int APIENTRY wWinMain(
 		4096,
 		40.0f,
 		true,
-		"assets/SceneClouds.json",
+		"Assets/FullScene.json",
 	};
 
 	auto pWindow = new Window(hInstance, 1280, 720);

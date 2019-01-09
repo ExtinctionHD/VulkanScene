@@ -116,7 +116,7 @@ float getShading(vec4 posInLightSpace, float bias)
     return shadow;
 }
 
-const float MIN_OPACITY = 0.1f;
+const float MIN_OPACITY = 0.2f;
 const float BIAS_FACTOR = 0.001f;
 const float MIN_BIAS = 0.0001f;
 
