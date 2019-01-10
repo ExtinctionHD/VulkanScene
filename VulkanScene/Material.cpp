@@ -82,7 +82,7 @@ std::vector<TextureImage*> Material::getTextures() const
 
 bool Material::isSolid() const
 {
-	return colors.opacity == 1.0f && textures.at(aiTextureType_OPACITY) == defaultTextures.at(aiTextureType_OPACITY);
+	return colors.opacity == 1.0f; // && textures.at(aiTextureType_OPACITY) == defaultTextures.at(aiTextureType_OPACITY);
 }
 
 void Material::updateColorsBuffer()

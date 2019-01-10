@@ -57,9 +57,14 @@ vec3 getBumpedNormal(vec3 normal, vec3 tangent, vec2 uv, sampler2D normalMap)
 
 void main() 
 {
+	if (texture(opacityMap, inUV).r < 1.0f)
+	{
+		discard;
+	}
+
 	outPos = vec4(inPos, 1.0f);
 
-	vec3 normal = dot(normalize(lighting.cameraPos - inPos), inNormal) < 0 ? -inNormal : inNormal;
+	vec3 normal = dot(normalize(lighting.cameraPos - inPos), inNormal) < 0.0f ? -inNormal : inNormal;
 	outNormal = vec4(getBumpedNormal(normal, inTangent, inUV, normalMap) * 0.5f + 0.5f, 0.0f);
 
 	vec3 albedo = material.albedo.rgb * texture(albedoMap, inUV).rgb;
