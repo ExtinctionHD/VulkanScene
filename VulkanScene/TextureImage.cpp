@@ -7,7 +7,13 @@
 
 // public:
 
-TextureImage::TextureImage(Device *pDevice, std::vector<std::string> paths, uint32_t arrayLayers, bool isCube)
+TextureImage::TextureImage(
+	Device *pDevice, 
+	std::vector<std::string> paths, 
+	uint32_t arrayLayers,
+	bool isCube, 
+	VkFilter filter,
+	VkSamplerAddressMode samplerAddressMode)
 {
 	assert(arrayLayers == paths.size());
 
@@ -67,7 +73,7 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> paths, uint
     }
 
 	// create other image objects
-	generateMipmaps(pDevice, arrayLayers, VK_IMAGE_ASPECT_COLOR_BIT);
+	generateMipmaps(pDevice, arrayLayers, VK_IMAGE_ASPECT_COLOR_BIT, filter);
     
     VkImageSubresourceRange subresourceRange{
 		VK_IMAGE_ASPECT_COLOR_BIT,
@@ -78,7 +84,7 @@ TextureImage::TextureImage(Device *pDevice, std::vector<std::string> paths, uint
 	};
 	createImageView(subresourceRange, viewType);
 
-	createSampler(VK_SAMPLER_ADDRESS_MODE_REPEAT);
+	createSampler(filter, samplerAddressMode);
 }
 
 TextureImage::TextureImage(
@@ -106,7 +112,7 @@ TextureImage::TextureImage(
 
 	createImageView(subresourceRange, viewType);
 
-	createSampler(samplerAddressMode);
+	createSampler(VK_FILTER_LINEAR, samplerAddressMode);
 }
 
 TextureImage::~TextureImage()
@@ -135,7 +141,7 @@ stbi_uc* TextureImage::loadPixels(const std::string &path)
 	return pixels;
 }
 
-void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImageAspectFlags aspectFlags)
+void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImageAspectFlags aspectFlags, VkFilter filter)
 {
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(pDevice->physicalDevice, format, &formatProperties);
@@ -211,7 +217,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImag
 			image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 			image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			1, &blit,
-			VK_FILTER_LINEAR
+			filter
 		);
 
 		// transit current miplevel layout to SHADER_READ_ONLY
@@ -249,21 +255,21 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImag
 	pDevice->endOneTimeCommands(commandBuffer);
 }
 
-void TextureImage::createSampler(VkSamplerAddressMode addressMode)
+void TextureImage::createSampler(VkFilter filter, VkSamplerAddressMode addressMode)
 {
 	VkSamplerCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,	// sType;
 		nullptr,								// pNext;
 		0,										// flags;
-		VK_FILTER_LINEAR,						// magFilter;
-		VK_FILTER_LINEAR,						// minFilter;
+		filter,									// magFilter;
+		filter,									// minFilter;
 		VK_SAMPLER_MIPMAP_MODE_LINEAR,			// mipmapMode;
 		addressMode,			                // addressModeU;
 		addressMode,			                // addressModeV;
 		addressMode,			                // addressModeW;
 		0,										// mipLodBias;
 		VK_TRUE,								// anisotropyEnable;
-		4.0f,									// maxAnisotropy;
+		16.0f,									// maxAnisotropy;
 		VK_FALSE,								// compareEnable;
 		VK_COMPARE_OP_ALWAYS,					// compareOp;
 		0,										// minLod;
@@ -271,6 +277,11 @@ void TextureImage::createSampler(VkSamplerAddressMode addressMode)
 		VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,		// borderColor;
 		VK_FALSE,								// unnormalizedCoordinates;
 	};
+	if (filter == VK_FILTER_NEAREST)
+	{
+		createInfo.anisotropyEnable = VK_FALSE;
+		createInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+	}
 
 	VkResult result = vkCreateSampler(pDevice->device, &createInfo, nullptr, &sampler);
 	assert(result == VK_SUCCESS);

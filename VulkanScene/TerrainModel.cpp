@@ -63,7 +63,7 @@ void TerrainModel::initMaterial(const std::string &texturesDirectory, const std:
 	{
 		if (File::exists(paths[i]))
 		{
-			TextureImage *pTexture = new TextureImage(pDevice, { paths[i] }, 1);
+			TextureImage *pTexture = new TextureImage(pDevice, { paths[i] }, 1, false, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT);
 			pMaterial->addTexture(types[i], pTexture);
 			textures.push_back(pTexture);
 		}

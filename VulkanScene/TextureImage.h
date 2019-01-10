@@ -13,7 +13,14 @@ public:
     // loads texture from files
 	// array layer count must be equal to paths count
 	// images must have same extent
-	TextureImage(Device *pDevice, std::vector<std::string> paths, uint32_t arrayLayers, bool isCube = false);
+	TextureImage(
+		Device *pDevice, 
+		std::vector<std::string> paths, 
+		uint32_t arrayLayers, 
+		bool isCube,
+		VkFilter filter,
+		VkSamplerAddressMode samplerAddressMode
+	);
 
     // creates device local texture
 	TextureImage(
@@ -41,8 +48,8 @@ protected:
 	stbi_uc* loadPixels(const std::string &path);
 
 	// generate mipmap levels and transit image layout to SHADER_READ_ONLY
-	void generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImageAspectFlags aspectFlags);
+	void generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImageAspectFlags aspectFlags, VkFilter filter);
 
-	void createSampler(VkSamplerAddressMode addressMode);
+	void createSampler(VkFilter filter, VkSamplerAddressMode addressMode);
 };
 

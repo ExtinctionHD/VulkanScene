@@ -20,7 +20,7 @@ SkyboxModel::SkyboxModel(Device *pDevice, ImageSetInfo imageSetInfo) :
 	{
 		paths.push_back(File::getPath(imageSetInfo.directory, filename + imageSetInfo.extension));
 	}
-	pTexture = new TextureImage(pDevice, paths, CUBE_SIDE_COUNT, true);
+	pTexture = new TextureImage(pDevice, paths, CUBE_SIDE_COUNT, true, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 	const std::vector<Position> cubeVertices{
 		glm::vec3(-1.0f, -1.0f, -1.0f),

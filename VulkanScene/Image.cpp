@@ -26,14 +26,17 @@ Image::~Image()
 	if (view != nullptr)
 	{
 		vkDestroyImageView(pDevice->device, view, nullptr);
+		view = nullptr;
 	}
 	if (image != nullptr)
 	{
 		vkDestroyImage(pDevice->device, image, nullptr);
+		view = nullptr;
 	}
 	if (stagingMemory != nullptr)
 	{
 		vkFreeMemory(pDevice->device, stagingMemory, nullptr);
+		view = nullptr;
 	}
 }
 

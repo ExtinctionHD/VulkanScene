@@ -284,7 +284,16 @@ TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextur
 	TextureImage *pTexture;
 	if (textures.find(path) == textures.end())
 	{
-		pTexture = new TextureImage(pDevice, { File::getPath(directory, path) }, 1);
+		VkFilter filter = type != aiTextureType_OPACITY ? VK_FILTER_LINEAR : VK_FILTER_NEAREST;
+
+		pTexture = new TextureImage(
+			pDevice, 
+			{File::getPath(directory, path)}, 
+			1, 
+			false, 
+			filter,
+			VK_SAMPLER_ADDRESS_MODE_REPEAT
+		);
 		textures.insert({ path, pTexture });
 	}
 	else

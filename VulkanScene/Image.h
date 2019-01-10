@@ -29,7 +29,7 @@ public:
 	// extent of this image
 	VkExtent3D extent{};
 
-	VkImageView view = nullptr;
+	VkImageView view{};
 
 	VkSampleCountFlagBits getSampleCount() const;
 
@@ -73,7 +73,7 @@ protected:
 
 private:
 	// memory that stores this image
-	VkDeviceMemory stagingMemory = nullptr;
+	VkDeviceMemory stagingMemory{};
 
 	void allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties);
 };

@@ -23,22 +23,19 @@ int APIENTRY wWinMain(
 		"Assets/FullScene.json",
 	};
 
-	auto pWindow = new Window(hInstance, 1280, 720);
+	auto window = Window(hInstance, 1280, 720);
 
-	auto pEngine = new Engine(
-		pWindow->getHInstance(), 
-		pWindow->getHWnd(), 
-		pWindow->getClientExtent(),
+	auto engine = Engine(
+		window.getHInstance(),
+		window.getHWnd(),
+		window.getClientExtent(),
         settings
 	);
 
     std::cout << "" << std::endl;
 
-    pWindow->setUserPointer(pEngine);
-    int result = pWindow->mainLoop();
-
-	delete(pWindow);
-	delete(pEngine);
+	window.setUserPointer(&engine);
+    int result = window.mainLoop();
 
 	return result;
 }
