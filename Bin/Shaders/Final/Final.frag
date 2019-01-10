@@ -130,7 +130,10 @@ void main()
 
 	vec3 L = normalize(-lighting.direction);
 	vec3 V = normalize(lighting.cameraPos - inPos);
-	vec3 N = getBumpedNormal(inNormal, inTangent, inUV, normalMap);
+	vec3 N = normalize(inNormal);
+
+	N = dot(V, N) < 0 ? -N : N;
+	N = getBumpedNormal(N, inTangent, inUV, normalMap);
 
 	float bias = max(BIAS_FACTOR * (1.0f - dot(N, lighting.direction)), MIN_BIAS);
 	float illumination = 1.0f - getShading(inPosInLightSpace, bias);

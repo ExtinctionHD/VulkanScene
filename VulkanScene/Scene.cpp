@@ -228,9 +228,9 @@ void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap 
 
     // Geometry:
 
-	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT }, {});
+	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT }, {});
 	descriptorStruct.set = pDescriptorPool->getDescriptorSet(descriptorStruct.layout);
-	pDescriptorPool->updateDescriptorSet(descriptorStruct.set, { pCamera->getSpaceBuffer() }, {});
+	pDescriptorPool->updateDescriptorSet(descriptorStruct.set, { pCamera->getSpaceBuffer(), pLighting->getAttributesBuffer() }, {});
 	descriptors.insert({ GEOMETRY, descriptorStruct });
 
     // Ssao:

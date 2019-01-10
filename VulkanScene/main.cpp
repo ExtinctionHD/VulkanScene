@@ -20,7 +20,7 @@ int APIENTRY wWinMain(
 		4096,
 		40.0f,
 		true,
-		"Assets/FullScene.json",
+		"Assets/SimpleScene.json",
 	};
 
 	auto window = Window(hInstance, 1280, 720);

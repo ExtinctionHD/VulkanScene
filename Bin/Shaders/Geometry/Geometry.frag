@@ -3,6 +3,15 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
+layout (set = 0, binding = 1) uniform Lighting{
+	vec3 color;
+	float ambientStrength;
+	vec3 direction;
+	float directedStrength;
+	vec3 cameraPos;
+	float specularPower;
+} lighting;
+
 layout(set = 1, binding = 0) uniform Material{
 	vec4 albedo;
 	vec4 specular;
@@ -50,7 +59,8 @@ void main()
 {
 	outPos = vec4(inPos, 1.0f);
 
-	outNormal = vec4(getBumpedNormal(inNormal, inTangent, inUV, normalMap) * 0.5f + 0.5f, 0.0f);
+	vec3 normal = dot(normalize(lighting.cameraPos - inPos), inNormal) < 0 ? -inNormal : inNormal;
+	outNormal = vec4(getBumpedNormal(normal, inTangent, inUV, normalMap) * 0.5f + 0.5f, 0.0f);
 
 	vec3 albedo = material.albedo.rgb * texture(albedoMap, inUV).rgb;
 	float specular = material.specular.r * texture(specularMap, inUV).r;
