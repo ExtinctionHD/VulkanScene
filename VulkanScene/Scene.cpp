@@ -15,15 +15,12 @@
 Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &sceneFile, float shadowsDistance)
     : pDevice(pDevice), pSsaoKernel(new SsaoKernel(pDevice))
 {
-    std::cout << "Creating scene..." << std::endl;
-
 	sceneDao.open(sceneFile);
 
 	pCamera = new Camera(pDevice, cameraExtent, sceneDao.getCameraAttributes());
 	pLighting = new Lighting(pDevice, sceneDao.getLightingAttributes(), shadowsDistance);
 	skybox = new SkyboxModel(pDevice, sceneDao.getSkyboxInfo());
 	terrain = new TerrainModel(pDevice, { 1.0f, 1.0f }, { 1000, 1000 }, sceneDao.getTerrainInfo());
-	pController = new Controller(pCamera);
 
 	models = sceneDao.getModels(pDevice);
 }
@@ -50,13 +47,7 @@ Scene::~Scene()
 
 	delete pLighting;
 	delete pCamera;
-	delete pController;
 	delete pSsaoKernel;
-}
-
-Controller* Scene::getController() const
-{
-	return pController;
 }
 
 uint32_t Scene::getBufferCount() const
@@ -104,10 +95,13 @@ uint32_t Scene::getDescriptorSetCount() const
 	return setCount;
 }
 
-void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderPassesMap &renderPasses)
-{\
-    std::cout << "Preparing scene rendering..." << std::endl;
+Camera* Scene::getCamera() const
+{
+	return pCamera;
+}
 
+void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderPassesMap &renderPasses)
+{
 	initDescriptorSets(pDescriptorPool, renderPasses);
 	initPipelines(renderPasses);
 	initStaticPipelines(renderPasses);
@@ -116,10 +110,11 @@ void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderP
 void Scene::updateScene()
 {
 	const double deltaSec = frameTimer.getDeltaSec();
+	printFps(deltaSec, 0.1);
 
-	pController->controlCamera(deltaSec);
+	pCamera->move(deltaSec);
+	pCamera->updateSpace();
 	pLighting->update(pCamera->getPos());
-
 	skybox->setTransformation(translate(glm::mat4(1.0f), pCamera->getPos()), 0);
 }
 
@@ -472,4 +467,16 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	pipelines.push_back(pLightingPipeline);
 
     #pragma endregion 
+}
+
+void Scene::printFps(double deltaSec, double period)
+{
+	static double time;
+	time += deltaSec;
+
+	if (time > period)
+	{
+		std::cout << "FPS: " << 1 / deltaSec << std::endl;
+		time = 0.0;
+	}
 }

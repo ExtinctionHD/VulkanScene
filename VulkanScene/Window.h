@@ -1,43 +1,45 @@
 #pragma once
 
-#include <Windows.h>
+#include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
 #include <vulkan/vulkan.h>
 #include "Engine.h"
 
 class Window
 {
 public:
-	Window();
+	Window(int width, int height, bool fullScreen);
 
-	Window(HINSTANCE hInstance, int width, int height);
+	~Window();
 
 	void setUserPointer(void *pointer) const;
 
-	VkExtent2D getClientExtent() const;
-
-	static VkExtent2D getClientExtent(HWND hWnd);
-
-	HINSTANCE getHInstance() const;
-
 	HWND getHWnd() const;
 
-	int mainLoop() const;
+	VkExtent2D getClientExtent() const;
+
+	void mainLoop() const;
 
 private:
-	const std::string WINDOW_CLASS = "Vulkan API";
-	const std::string WINDOW_TITLE = "Vulkan scene";
+	enum Key
+	{
+		MOVE_FORWARD = GLFW_KEY_W,
+		MOVE_LEFT = GLFW_KEY_A,
+		MOVE_BACK = GLFW_KEY_S,
+		MOVE_RIGHT = GLFW_KEY_D,
+		MOVE_UP = GLFW_KEY_SPACE,
+		MOVE_DOWN = GLFW_KEY_LEFT_CONTROL,
+	};
 
-	HINSTANCE hInstance;	// instance handler
-	HWND hWnd{};			// window handler
+	GLFWwindow *window;
 
-	ATOM registerWindowClass() const;
+	void controlCamera(Camera *camera) const;
 
-	// create window
-	void createWindow(int width, int height);
+	bool isPressed(int key) const;
 
-	void showWindow() const;
+	static Engine* getEngine(GLFWwindow *window);
 
-	// function of window messages processing
-	static LRESULT CALLBACK wndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	static void framebufferSizeCallback(GLFWwindow *window, int width, int height);
 };
 

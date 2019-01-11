@@ -5,11 +5,11 @@
 
 // public:
 
-Surface::Surface(VkInstance instance, HINSTANCE hInstance, HWND hWnd)
+Surface::Surface(VkInstance instance, HWND hWnd)
 {
 	this->instance = instance;
 
-	createSurface(hInstance, hWnd);
+	createSurface(hWnd);
 }
 
 Surface::~Surface()
@@ -22,14 +22,14 @@ VkSurfaceKHR Surface::getSurface() const
 	return surface;
 }
 
-void Surface::createSurface(HINSTANCE hInstance, HWND hWnd)
+void Surface::createSurface(HWND hWnd)
 {
 	VkWin32SurfaceCreateInfoKHR createInfo{
-		VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,	// sType;
-		nullptr,											// pNext;
-		0,													// flags;
-		hInstance,											// hinstance;
-		hWnd												// hwnd;
+		VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+		nullptr,
+		0,
+		GetModuleHandle(nullptr),
+		hWnd
 	};
 
 	VkResult result = vkCreateWin32SurfaceKHR(instance, &createInfo, nullptr, &surface);

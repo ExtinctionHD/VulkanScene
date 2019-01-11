@@ -20,7 +20,6 @@ class Engine
 public:
 	// create all required objects
     Engine(
-        HINSTANCE hInstance,
         HWND hWnd,
         VkExtent2D frameExtent,
         Settings settings
@@ -30,6 +29,8 @@ public:
 	~Engine();
 
 	bool minimized = false;
+
+	Camera *getCamera() const;
 
 	// executes graphics commands and present result image on window pSurface
 	void drawFrame();
