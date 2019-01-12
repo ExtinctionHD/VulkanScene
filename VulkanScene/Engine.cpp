@@ -1,5 +1,4 @@
 #include <set>
-#include <iostream>
 #include "ShaderModule.h"
 #include "AssimpModel.h"
 #include "FinalRenderPass.h"
@@ -13,14 +12,11 @@
 // public:
 
 Engine::Engine(
-    HINSTANCE hInstance,
     HWND hWnd,
     VkExtent2D frameExtent,
     Settings settings
 )
 {
-    std::cout << "Loading engine..." << std::endl;
-
 	const std::string VALIDATION_LAYER = "VK_LAYER_LUNARG_standard_validation";
 	std::vector<const char*> requiredLayers;
 #ifdef _DEBUG 
@@ -35,7 +31,7 @@ Engine::Engine(
 	this->ssaoEnabled = settings.ssaoEnabled;
 
 	pInstance = new Instance(requiredLayers, EXTENSIONS);
-	pSurface = new Surface(pInstance->getInstance(), hInstance, hWnd);
+	pSurface = new Surface(pInstance->getInstance(), hWnd);
 	pDevice = new Device(pInstance->getInstance(), pSurface->getSurface(), requiredLayers, settings.sampleCount);
 	pSwapChain = new SwapChain(pDevice, pSurface->getSurface(), frameExtent);
 
@@ -69,6 +65,11 @@ Engine::~Engine()
 	delete(pDevice);
 	delete(pSurface);
 	delete(pInstance);
+}
+
+Camera* Engine::getCamera() const
+{
+	return pScene->getCamera();
 }
 
 void Engine::drawFrame()

@@ -56,7 +56,7 @@ Lighting::Attributes SceneDao::getLightingAttributes() const
 		lighting["ambientStrength"].get<float>(),
 		getVec3(lighting["direction"]),
 		lighting["directedStrength"].get<float>(),
-		getVec3(scene["camera"]["position"]),
+		getCameraAttributes().position,
 		lighting["specularPower"].get<float>()
 	};
 

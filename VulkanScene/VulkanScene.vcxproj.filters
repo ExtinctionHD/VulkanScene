@@ -156,9 +156,6 @@
     <ClInclude Include="DescriptorPool.h">
       <Filter>Файлы заголовков\Engine\Other</Filter>
     </ClInclude>
-    <ClInclude Include="Controller.h">
-      <Filter>Файлы заголовков\App</Filter>
-    </ClInclude>
     <ClInclude Include="Surface.h">
       <Filter>Файлы заголовков\Engine\Other</Filter>
     </ClInclude>
@@ -286,9 +283,6 @@
     </ClCompile>
     <ClCompile Include="DescriptorPool.cpp">
       <Filter>Исходные файлы\Engine\Other</Filter>
-    </ClCompile>
-    <ClCompile Include="Controller.cpp">
-      <Filter>Исходные файлы\App</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы\App</Filter>

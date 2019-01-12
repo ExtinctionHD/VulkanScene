@@ -6,7 +6,6 @@
 #include "AssimpModel.h"
 #include "SkyboxModel.h"
 #include "File.h"
-#include "Controller.h"
 #include "TerrainModel.h"
 #include "SsaoKernel.h"
 #include "SceneDao.h"
@@ -17,13 +16,13 @@ public:
 	Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &path, float shadowsDistance);
 	~Scene();
 
-	Controller* getController() const;
-
 	uint32_t getBufferCount() const;
 
 	uint32_t getTextureCount() const;
 
 	uint32_t getDescriptorSetCount() const;
+
+	Camera *getCamera() const;
 
 	void prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderPassesMap &renderPasses);
 
@@ -39,8 +38,6 @@ private:
 	Device *pDevice;
 
 	SceneDao sceneDao;
-
-	Controller *pController;
 
 	// camera attributes
 	Camera *pCamera{};
@@ -68,5 +65,7 @@ private:
 	void initPipelines(RenderPassesMap renderPasses);
 
 	void initStaticPipelines(RenderPassesMap renderPasses);
+
+	static void printFps(double deltaSec, double period);
 };
 

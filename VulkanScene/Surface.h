@@ -7,7 +7,7 @@
 class Surface
 {
 public:
-	Surface(VkInstance instance, HINSTANCE hInstance, HWND hWnd);
+	Surface(VkInstance instance, HWND hWnd);
 	~Surface();
 
 	VkSurfaceKHR getSurface() const;
@@ -17,6 +17,6 @@ private:
 
 	VkInstance instance;
 
-	void createSurface(HINSTANCE hInstance, HWND hWnd);
+	void createSurface(HWND hWnd);
 };
 
