@@ -65,7 +65,5 @@ private:
 	void initPipelines(RenderPassesMap renderPasses);
 
 	void initStaticPipelines(RenderPassesMap renderPasses);
-
-	static void printFps(double deltaSec, double period);
 };
 

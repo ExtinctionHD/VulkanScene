@@ -25,18 +25,18 @@ std::vector<char> File::getBytes(const std::string &path)
 	return stagingBuffer;
 }
 
-std::string File::getExeDirectory()
+std::string File::getBaseDirectory()
 {
 	char stagingBuffer[MAX_PATH];
 	GetModuleFileName(nullptr, stagingBuffer, MAX_PATH);
 	std::string path(stagingBuffer);
 
-	return getDirectory(path);
+	return std::experimental::filesystem::path(path).parent_path().parent_path().string();
 }
 
 std::string File::getAbsolute(const std::string& path)
 {
-	return std::experimental::filesystem::absolute(path, getExeDirectory()).string();
+	return std::experimental::filesystem::absolute(path, getBaseDirectory()).string();
 }
 
 std::string File::getDirectory(const std::string &path)

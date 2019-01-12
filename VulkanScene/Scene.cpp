@@ -110,7 +110,6 @@ void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderP
 void Scene::updateScene()
 {
 	const double deltaSec = frameTimer.getDeltaSec();
-	printFps(deltaSec, 0.1);
 
 	pCamera->move(deltaSec);
 	pCamera->updateSpace();
@@ -467,16 +466,4 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	pipelines.push_back(pLightingPipeline);
 
     #pragma endregion 
-}
-
-void Scene::printFps(double deltaSec, double period)
-{
-	static double time;
-	time += deltaSec;
-
-	if (time > period)
-	{
-		std::cout << "FPS: " << 1 / deltaSec << std::endl;
-		time = 0.0;
-	}
 }

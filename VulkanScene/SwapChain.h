@@ -39,7 +39,7 @@ private:
 
 	// properties
 	VkExtent2D extent{};
-	VkFormat imageFormat;
+	VkFormat imageFormat{};
 
 	// images to rendering that swapchain provides
 	std::vector<VkImage> images;

@@ -2,7 +2,7 @@
 
 // public:
 
-Window::Window(int width, int height, bool fullScreen)
+Window::Window(int width, int height, Mode mode)
 {
 	assert(glfwInit());
 
@@ -10,9 +10,18 @@ Window::Window(int width, int height, bool fullScreen)
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 	GLFWmonitor *monitor = nullptr;
-	if (fullScreen)
+	switch (mode)
 	{
+	case WINDOWED:
+		break;
+	case BORDERLESS_WINDOWED:
+		glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+		break;
+	case FULLSCREEN:
 		monitor = glfwGetPrimaryMonitor();
+		break;
+	default: ;
 	}
 
 	window = glfwCreateWindow(width, height, "Vulkan API", monitor, nullptr);

@@ -170,7 +170,7 @@ VkExtent2D SwapChain::chooseExtent(VkSurfaceCapabilitiesKHR capabilities, VkExte
 
 uint32_t SwapChain::chooseImageCount(VkSurfaceCapabilitiesKHR capabilities)
 {
-	uint32_t imageCount = capabilities.minImageCount + 2;
+	uint32_t imageCount = capabilities.minImageCount + 1;
 	if (capabilities.maxImageCount > 0 &&
 		imageCount > capabilities.maxImageCount)
 	{
@@ -182,7 +182,7 @@ uint32_t SwapChain::chooseImageCount(VkSurfaceCapabilitiesKHR capabilities)
 
 void SwapChain::getImages(uint32_t imageCount)
 {
-	// real count of images can be greater than requsted
+	// real count of images can be greater than requested
 	vkGetSwapchainImagesKHR(pDevice->device, swapChain, &imageCount, nullptr);  // get count
 	images.resize(imageCount);
 	vkGetSwapchainImagesKHR(pDevice->device, swapChain, &imageCount, images.data());  // get images

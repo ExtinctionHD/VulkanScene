@@ -9,7 +9,14 @@
 class Window
 {
 public:
-	Window(int width, int height, bool fullScreen);
+	enum Mode
+	{
+		WINDOWED,
+		BORDERLESS_WINDOWED,
+		FULLSCREEN
+	};
+
+	Window(int width, int height, Mode mode);
 
 	~Window();
 
