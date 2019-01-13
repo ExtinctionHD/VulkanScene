@@ -13,8 +13,9 @@ Device::Device(
     const std::vector<const char*> &requiredLayers,
 	VkSampleCountFlagBits maxRequiredSampleCount)
 {
-	this->surface = surface;
-	physicalDevice = pickPhysicalDevice(instance, requiredLayers);
+	physicalDevice = pickPhysicalDevice(instance, surface, requiredLayers);
+	surfaceSupportDetails = SurfaceSupportDetails(physicalDevice, surface);
+	queueFamilyIndices = QueueFamilyIndices(physicalDevice, surface);
 
 	VkSampleCountFlagBits maxSupportedSampleCount = getMaxSupportedSampleCount(physicalDevice);
 	sampleCount = maxSupportedSampleCount > maxRequiredSampleCount ? maxRequiredSampleCount : maxSupportedSampleCount;
@@ -96,12 +97,12 @@ VkFormat Device::findSupportedFormat(std::vector<VkFormat> requestedFormats, VkI
 
 SurfaceSupportDetails Device::getSurfaceSupportDetails() const
 {
-	return SurfaceSupportDetails(physicalDevice, surface);
+	return surfaceSupportDetails;
 }
 
 QueueFamilyIndices Device::getQueueFamilyIndices() const
 {
-	return QueueFamilyIndices(physicalDevice, surface);
+	return queueFamilyIndices;
 }
 
 VkSampleCountFlagBits Device::getSampleCount() const
@@ -164,7 +165,10 @@ void Device::endOneTimeCommands(VkCommandBuffer commandBuffer) const
 
 // private:
 
-VkPhysicalDevice Device::pickPhysicalDevice(VkInstance instance, const std::vector<const char*>& layers) const
+VkPhysicalDevice Device::pickPhysicalDevice(
+    VkInstance instance,
+    VkSurfaceKHR surface,
+    const std::vector<const char*> &layers) const
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);  // get count
@@ -175,7 +179,7 @@ VkPhysicalDevice Device::pickPhysicalDevice(VkInstance instance, const std::vect
 
 	for (auto device : physicalDevices)
 	{
-		if (isPhysicalDeviceSuitable(device, layers, EXTENSIONS))
+		if (isPhysicalDeviceSuitable(device, surface, layers, EXTENSIONS))
 		{
 			return  device;
 		}
@@ -206,8 +210,9 @@ VkSampleCountFlagBits Device::getMaxSupportedSampleCount(VkPhysicalDevice physic
 
 bool Device::isPhysicalDeviceSuitable(
     VkPhysicalDevice device,
+    VkSurfaceKHR surface,
     const std::vector<const char*>& requiredLayers,
-    const std::vector<const char*>& requiredExtensions) const
+    const std::vector<const char*>& requiredExtensions)
 {
 	QueueFamilyIndices indices(device, surface);
 	SurfaceSupportDetails details(device, surface);
