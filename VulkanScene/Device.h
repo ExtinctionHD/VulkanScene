@@ -57,9 +57,7 @@ private:
 
 	VkPhysicalDevice physicalDevice;  // GPU
 
-	SurfaceSupportDetails surfaceSupportDetails;
-
-	QueueFamilyIndices queueFamilyIndices;
+	VkSurfaceKHR surface;
 
 	VkQueue graphicsQueue;
 
@@ -67,16 +65,15 @@ private:
 
 	VkCommandPool commandPool;
 
-    VkPhysicalDevice pickPhysicalDevice(VkInstance instance, VkSurfaceKHR surface, const std::vector<const char*>& layers) const;
+    VkPhysicalDevice pickPhysicalDevice(VkInstance instance, const std::vector<const char*>& layers) const;
 
 	// has all required queue families,
 	// support this surface (capabilities, formats, present modes)
 	// all required extensions and layers are available
-    static bool isPhysicalDeviceSuitable(
+	bool isPhysicalDeviceSuitable(
         VkPhysicalDevice device,
-		VkSurfaceKHR surface,
         const std::vector<const char*>& requiredLayers,
-        const std::vector<const char*>& requiredExtensions);
+        const std::vector<const char*>& requiredExtensions) const;
 
 	VkSampleCountFlagBits getMaxSupportedSampleCount(VkPhysicalDevice physicalDevice) const;
 
