@@ -24,7 +24,7 @@ public:
 	void recreate(VkExtent2D newExtent);
 
 private:
-	// try to found this pSurface format
+	// try to found this surface format
 	const VkSurfaceFormatKHR PRESENT_FORMAT = { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
 
 	// try to found this present mode
@@ -49,7 +49,7 @@ private:
 
 	void create(VkExtent2D surfaceExtent);
 
-	// swapchain display frames on pSurface, so exactly swapchain sets format of pSurface
+	// swapchain display frames on surface, so exactly swapchain sets format of surface
 	VkSurfaceFormatKHR chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats) const;
 
 	// choose order of displaying framebuffers

@@ -8,67 +8,52 @@
 #include "RenderPass.h"
 #include "Scene.h"
 #include "DescriptorPool.h"
-#include <Windows.h>
 #include "Settings.h"
 #define VK_USE_PLATFORM_WIN32_KHR
 #include <vulkan/vulkan.h>
 
-// graphic API class that create all necessary objects
-// and set this as window user pointer
 class Engine
 {
 public:
-	// create all required objects
-    Engine(
-        HWND hWnd,
-        VkExtent2D frameExtent,
-        Settings settings
-	);
+    Engine(HWND hWnd, VkExtent2D frameExtent, Settings settings);
 
-	// destroy objects: pSurface, callback, instance
 	~Engine();
 
-	bool minimized = false;
+	void setMinimized(bool minimized);
 
-	Camera *getCamera() const;
+	Camera* getCamera() const;
 
-	// executes graphics commands and present result image on window pSurface
 	void drawFrame();
 
-	// rebuild swapchain and all dependent objects for new extension
 	void resize(VkExtent2D newExtent);
 
 private:
-	Instance *pInstance;
+	Instance *instance;
 
-	// pSurface object for presentation
-	Surface *pSurface;
+	Surface *surface;
 
-	// logical and physical device
-	Device *pDevice;
+	Device *device;
 
-	// swapchain object and its images
-	SwapChain *pSwapChain;
+	SwapChain *swapChain;
 
 	RenderPassesMap renderPasses;
 
-	// drawing scene
-	Scene *pScene;
+	Scene *scene;
 
-	DescriptorPool *pDescriptorPool;
+	DescriptorPool *descriptorPool;
 
 	std::vector<VkCommandBuffer> graphicCommands;
 
-	// synchronizing objects
-	VkSemaphore imageAvailable = nullptr;
-	VkSemaphore renderingFinished = nullptr;
+	VkSemaphore imageAvailable{};
+	VkSemaphore renderingFinished{};
 
 	bool ssaoEnabled;
 
+	bool minimized = false;
+
 	void createRenderPasses(uint32_t shadowsDim);
 
-	// initialize rendering commands
-	void initGraphicsCommands();
+	void initGraphicCommands();
 
 	void beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex);
 

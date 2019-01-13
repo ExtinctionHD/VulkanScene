@@ -1,10 +1,10 @@
 #include <fstream>
-#include <Windows.h>
 #include <cassert>
 #include <string>
+#include <experimental/filesystem>
+#include <Windows.h>
 
 #include "File.h"
-#include <experimental/filesystem>
 
 // public:
 

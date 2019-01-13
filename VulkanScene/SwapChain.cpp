@@ -74,7 +74,7 @@ void SwapChain::create(VkExtent2D surfaceExtent)
 		VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,	// sType
 		nullptr,										// pNext
 		0,										        // flags
-		surface,										// pSurface
+		surface,										// surface
 		imageCount,										// minImageCount
 		surfaceFormat.format,							// imageFormat
 		surfaceFormat.colorSpace,						// imageColorSpace

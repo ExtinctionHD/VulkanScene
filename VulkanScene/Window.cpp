@@ -2,7 +2,7 @@
 
 // public:
 
-Window::Window(const int width, const int height, const Mode mode)
+Window::Window(int width, int height, Mode mode)
 {
 	assert(glfwInit());
 
@@ -37,7 +37,7 @@ Window::~Window()
 	glfwTerminate();
 }
 
-void Window::setUserPointer(void* pointer) const
+void Window::setUserPointer(void *pointer) const
 {
 	glfwSetWindowUserPointer(window, pointer);
 }
@@ -74,7 +74,7 @@ void Window::mainLoop() const
 
 // private:
 
-void Window::controlCamera(Camera* camera) const
+void Window::controlCamera(Camera *camera) const
 {
 	static double prevX, prevY;
 	double x, y;
@@ -88,7 +88,7 @@ void Window::controlCamera(Camera* camera) const
 	camera->movement.up = getDirection(MOVE_UP, MOVE_DOWN);
 }
 
-Camera::Direction Window::getDirection(const int positiveKey, const int negativeKey) const
+Camera::Direction Window::getDirection(int positiveKey, int negativeKey) const
 {
 	Camera::Direction direction;
 
@@ -108,22 +108,22 @@ Camera::Direction Window::getDirection(const int positiveKey, const int negative
 	return direction;
 }
 
-bool Window::isPressed(const int key) const
+bool Window::isPressed(int key) const
 {
 	return glfwGetKey(window, key) == GLFW_PRESS;
 }
 
-Engine* Window::getEngine(GLFWwindow* window)
+Engine* Window::getEngine(GLFWwindow *window)
 {
 	return reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
 }
 
-void Window::framebufferSizeCallback(GLFWwindow *window, const int width, const int height)
+void Window::framebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
 	Engine *engine = getEngine(window);
 	if (engine)
 	{
-		engine->minimized = width == 0 || height == 0;
+		engine->setMinimized(width == 0 || height == 0);
 
 		const VkExtent2D extent{
 			uint32_t(width),

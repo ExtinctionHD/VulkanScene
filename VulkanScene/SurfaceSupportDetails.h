@@ -18,7 +18,7 @@ public:
     // initialize all details
 	SurfaceSupportDetails(VkPhysicalDevice device, VkSurfaceKHR surface);
 
-	// this device is suitable for this pSurface
+	// this device is suitable for this surface
 	bool isSuitable() const;
 
 };

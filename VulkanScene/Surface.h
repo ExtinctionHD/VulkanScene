@@ -13,7 +13,7 @@ public:
 	VkSurfaceKHR getSurface() const;
 
 private:
-	VkSurfaceKHR surface{};
+	VkSurfaceKHR surface;
 
 	VkInstance instance;
 

@@ -17,7 +17,7 @@ SurfaceSupportDetails::SurfaceSupportDetails(VkPhysicalDevice device, VkSurfaceK
 	if (formatCount > 0)
 	{
 		formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, formats.data());  // get available pSurface formats
+		vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, formats.data());  // get available surface formats
 	}
 
 	uint32_t presentModeCount;
