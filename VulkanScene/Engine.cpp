@@ -18,7 +18,7 @@ Engine::Engine(HWND hWnd, VkExtent2D frameExtent, Settings settings)
 	requiredLayers.push_back(validationLayer.c_str());
 #endif
 
-	const std::vector<const char *> extensions{
+	const std::vector<const char*> extensions{
 		VK_KHR_SURFACE_EXTENSION_NAME,
         "VK_KHR_win32_surface"
 	};
@@ -37,17 +37,17 @@ Engine::Engine(HWND hWnd, VkExtent2D frameExtent, Settings settings)
 
 	scene->prepareSceneRendering(descriptorPool, renderPasses);
 
-	initGraphicCommands();
+	initGraphicsCommands();
 
-	createSemaphore(device->device, imageAvailable);
-	createSemaphore(device->device, renderingFinished);
+	createSemaphore(device->getVk(), imageAvailable);
+	createSemaphore(device->getVk(), renderingFinished);
 }
 
 Engine::~Engine()
 {
-	vkDeviceWaitIdle(device->device);
-	vkDestroySemaphore(device->device, imageAvailable, nullptr);
-	vkDestroySemaphore(device->device, renderingFinished, nullptr);
+	vkDeviceWaitIdle(device->getVk());
+	vkDestroySemaphore(device->getVk(), imageAvailable, nullptr);
+	vkDestroySemaphore(device->getVk(), renderingFinished, nullptr);
 
     delete scene;
     delete descriptorPool;
@@ -82,7 +82,7 @@ void Engine::drawFrame()
 
 	uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(
-        device->device,
+        device->getVk(),
         swapChain->getSwapchain(),
         UINT64_MAX,
         imageAvailable,
@@ -106,12 +106,12 @@ void Engine::drawFrame()
 		waitSemaphores.data(),
 		waitStages.data(),
 		1,
-		&graphicCommands[imageIndex],
+		&graphicsCommands[imageIndex],
 		signalSemaphores.size(),
 		signalSemaphores.data(),	
 	};
 
-	result = vkQueueSubmit(device->graphicsQueue, 1, &submitInfo, nullptr);
+	result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, nullptr);
 	assert(result == VK_SUCCESS);
 
 	std::vector<VkSwapchainKHR> swapChains{ swapChain->getSwapchain() };
@@ -126,7 +126,7 @@ void Engine::drawFrame()
 		nullptr,
 	};
 
-	result = vkQueuePresentKHR(device->presentQueue, &presentInfo);
+	result = vkQueuePresentKHR(device->getPresentQueue(), &presentInfo);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 	{
 		resize(swapChain->getExtent());
@@ -141,7 +141,7 @@ void Engine::resize(VkExtent2D newExtent)
 {
 	if (!minimized)
 	{
-		vkDeviceWaitIdle(device->device);
+		vkDeviceWaitIdle(device->getVk());
 
 		swapChain->recreate(newExtent);
 
@@ -156,7 +156,7 @@ void Engine::resize(VkExtent2D newExtent)
 		scene->updateDescriptorSets(descriptorPool, renderPasses);
 		scene->resizeExtent(swapChain->getExtent());
 
-		initGraphicCommands();
+		initGraphicsCommands();
 	}
 }
 
@@ -186,28 +186,29 @@ void Engine::createRenderPasses(uint32_t shadowsDim)
     }
 }
 
-void Engine::initGraphicCommands()
+void Engine::initGraphicsCommands()
 {
-	// return old command buffers to pool
-	if (!graphicCommands.empty())
+    const VkCommandPool commandPool = device->getCommandPool();
+
+	if (!graphicsCommands.empty())
 	{
-		vkFreeCommandBuffers(device->device, device->commandPool, graphicCommands.size(), graphicCommands.data());
+		vkFreeCommandBuffers(device->getVk(), commandPool, graphicsCommands.size(), graphicsCommands.data());
 	}
 
-	graphicCommands.resize(swapChain->getImageCount());
+	graphicsCommands.resize(swapChain->getImageCount());
 
 	VkCommandBufferAllocateInfo allocInfo{
 		VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 		nullptr,
-		device->commandPool,
+		commandPool,
 		VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-		graphicCommands.size(),
+		graphicsCommands.size(),
 	};
 
-	VkResult result = vkAllocateCommandBuffers(device->device, &allocInfo, graphicCommands.data());
+	VkResult result = vkAllocateCommandBuffers(device->getVk(), &allocInfo, graphicsCommands.data());
 	assert(result == VK_SUCCESS);
 
-	for (size_t i = 0; i < graphicCommands.size(); i++)
+	for (size_t i = 0; i < graphicsCommands.size(); i++)
 	{
 		VkCommandBufferBeginInfo beginInfo{
 			VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -216,20 +217,20 @@ void Engine::initGraphicCommands()
 			nullptr,
 		};
 
-		result = vkBeginCommandBuffer(graphicCommands[i], &beginInfo);
+		result = vkBeginCommandBuffer(graphicsCommands[i], &beginInfo);
 		assert(result == VK_SUCCESS);
 
-		recordRenderPassCommands(graphicCommands[i], DEPTH, 0);
-		recordRenderPassCommands(graphicCommands[i], GEOMETRY, 0);
+		recordRenderPassCommands(graphicsCommands[i], DEPTH, 0);
+		recordRenderPassCommands(graphicsCommands[i], GEOMETRY, 0);
         if (ssaoEnabled)
         {
-			recordRenderPassCommands(graphicCommands[i], SSAO, 0);
-			recordRenderPassCommands(graphicCommands[i], SSAO_BLUR, 0);
+			recordRenderPassCommands(graphicsCommands[i], SSAO, 0);
+			recordRenderPassCommands(graphicsCommands[i], SSAO_BLUR, 0);
         }
-		recordRenderPassCommands(graphicCommands[i], LIGHTING, 0);
-		recordRenderPassCommands(graphicCommands[i], FINAL, i);
+		recordRenderPassCommands(graphicsCommands[i], LIGHTING, 0);
+		recordRenderPassCommands(graphicsCommands[i], FINAL, i);
 
-		result = vkEndCommandBuffer(graphicCommands[i]);
+		result = vkEndCommandBuffer(graphicsCommands[i]);
 
 		assert(result == VK_SUCCESS);
 	}

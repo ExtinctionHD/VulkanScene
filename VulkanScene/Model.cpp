@@ -68,10 +68,10 @@ void Model::initDescriptorSets(DescriptorPool * pDescriptorPool)
 }
 
 GraphicsPipeline * Model::createPipeline(
-    const std::vector<VkDescriptorSetLayout> &layouts,
+    const std::vector<VkDescriptorSetLayout>& layouts,
     RenderPassType type,
     RenderPass *pRenderPass,
-    const std::vector<std::shared_ptr<ShaderModule>> &shaderModules
+    const std::vector<std::shared_ptr<ShaderModule>>& shaderModules
 )
 {
 	const std::vector<VkVertexInputBindingDescription> bindingDescriptions = {

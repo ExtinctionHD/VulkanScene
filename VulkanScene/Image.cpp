@@ -25,17 +25,17 @@ Image::~Image()
 {
 	if (view != nullptr)
 	{
-		vkDestroyImageView(pDevice->device, view, nullptr);
+		vkDestroyImageView(pDevice->getVk(), view, nullptr);
 		view = nullptr;
 	}
 	if (image != nullptr)
 	{
-		vkDestroyImage(pDevice->device, image, nullptr);
+		vkDestroyImage(pDevice->getVk(), image, nullptr);
 		view = nullptr;
 	}
 	if (stagingMemory != nullptr)
 	{
-		vkFreeMemory(pDevice->device, stagingMemory, nullptr);
+		vkFreeMemory(pDevice->getVk(), stagingMemory, nullptr);
 		view = nullptr;
 	}
 }
@@ -58,7 +58,7 @@ void Image::createImageView(VkImageSubresourceRange subresourceRange, VkImageVie
 		subresourceRange,							// subresourceRange
 	};
 
-	VkResult result = vkCreateImageView(pDevice->device, &createInfo, nullptr, &view);
+	VkResult result = vkCreateImageView(pDevice->getVk(), &createInfo, nullptr, &view);
 	assert(result == VK_SUCCESS);
 }
 
@@ -255,12 +255,12 @@ void Image::createThisImage(
 		imageInfo.imageType = VK_IMAGE_TYPE_3D;
 	}
 
-	VkResult result = vkCreateImage(pDevice->device, &imageInfo, nullptr, &image);
+	VkResult result = vkCreateImage(pDevice->getVk(), &imageInfo, nullptr, &image);
 	assert(result == VK_SUCCESS);
 
 	allocateMemory(pDevice, properties);
 
-	vkBindImageMemory(pDevice->device, image, stagingMemory, 0);
+	vkBindImageMemory(pDevice->getVk(), image, stagingMemory, 0);
 }
 
 // private:
@@ -268,7 +268,7 @@ void Image::createThisImage(
 void Image::allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties)
 {
 	VkMemoryRequirements memRequirements;
-	vkGetImageMemoryRequirements(pDevice->device, image, &memRequirements);
+	vkGetImageMemoryRequirements(pDevice->getVk(), image, &memRequirements);
 
 	uint32_t memoryTypeIndex = pDevice->findMemoryTypeIndex(
 		memRequirements.memoryTypeBits,
@@ -283,6 +283,6 @@ void Image::allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties)
 		memoryTypeIndex,						// memoryTypeIndex
 	};
 
-	VkResult result = vkAllocateMemory(pDevice->device, &allocInfo, nullptr, &stagingMemory);
+	VkResult result = vkAllocateMemory(pDevice->getVk(), &allocInfo, nullptr, &stagingMemory);
 	assert(result == VK_SUCCESS);
 }

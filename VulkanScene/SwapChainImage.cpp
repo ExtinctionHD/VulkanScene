@@ -25,7 +25,7 @@ VkImageView SwapChainImage::getImageView(VkImageSubresourceRange subresourceRang
 		subresourceRange,							// subresourceRange
 	};
 
-	VkResult result = vkCreateImageView(pDevice->device, &createInfo, nullptr, &imageView);
+	VkResult result = vkCreateImageView(pDevice->getVk(), &createInfo, nullptr, &imageView);
 	assert(result == VK_SUCCESS);
 
 	return imageView;

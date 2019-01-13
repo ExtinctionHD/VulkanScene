@@ -42,7 +42,7 @@ Scene::~Scene()
 
     for (const auto& [key, descriptorStruct] : descriptors)
     {
-		vkDestroyDescriptorSetLayout(pDevice->device, descriptorStruct.layout, nullptr);
+		vkDestroyDescriptorSetLayout(pDevice->getVk(), descriptorStruct.layout, nullptr);
     }
 
 	delete pLighting;
@@ -330,8 +330,8 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		FINAL,
 		renderPasses.at(FINAL),
 		{
-			std::make_shared<ShaderModule>(pDevice->device, File::getPath(SKYBOX_SHADERS_DIR, "Vert.spv"), VK_SHADER_STAGE_VERTEX_BIT),
-			std::make_shared<ShaderModule>(pDevice->device, File::getPath(SKYBOX_SHADERS_DIR, "Frag.spv"), VK_SHADER_STAGE_FRAGMENT_BIT)
+			std::make_shared<ShaderModule>(pDevice, File::getPath(SKYBOX_SHADERS_DIR, "Vert.spv"), VK_SHADER_STAGE_VERTEX_BIT),
+			std::make_shared<ShaderModule>(pDevice, File::getPath(SKYBOX_SHADERS_DIR, "Frag.spv"), VK_SHADER_STAGE_FRAGMENT_BIT)
 		}
 	));
 
@@ -345,8 +345,8 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
             type,
 			renderPasses.at(type),
 			{
-				std::make_shared<ShaderModule>(pDevice->device, File::getPath(directory, "Vert.spv"), VK_SHADER_STAGE_VERTEX_BIT),
-				std::make_shared<ShaderModule>(pDevice->device, File::getPath(directory, "Frag.spv"), VK_SHADER_STAGE_FRAGMENT_BIT)
+				std::make_shared<ShaderModule>(pDevice, File::getPath(directory, "Vert.spv"), VK_SHADER_STAGE_VERTEX_BIT),
+				std::make_shared<ShaderModule>(pDevice, File::getPath(directory, "Frag.spv"), VK_SHADER_STAGE_FRAGMENT_BIT)
 			}
 		));
         for (const auto& [key, model] : models)
@@ -364,7 +364,7 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	const std::string LIGHTING_SHADERS_DIR = "Shaders/Lighting";
 
     const auto fullscreenVertexShader = std::make_shared<ShaderModule>(
-        pDevice->device,
+        pDevice,
         File::getPath(FULLSCREEN_SHADERS_DIR, "Vert.spv"),
         VK_SHADER_STAGE_VERTEX_BIT
     );
@@ -380,11 +380,11 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 
 	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
     const auto ssaoFragmentShader = std::make_shared<ShaderModule>(
-		pDevice->device,
+		pDevice,
 		File::getPath(SSAO_SHADERS_DIR, "Frag.spv"),
 		VK_SHADER_STAGE_FRAGMENT_BIT,
 		ssaoConstantEntries,
-		std::vector<const void *>{ &sampleCount, &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS, &pSsaoKernel->POWER }
+		std::vector<const void*>{ &sampleCount, &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS, &pSsaoKernel->POWER }
 	);
 
 	GraphicsPipeline *pSsaoPipeline = new GraphicsPipeline(
@@ -412,11 +412,11 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	};
 
     const auto ssaoBlurFragmentShader = std::make_shared<ShaderModule>(
-        pDevice->device,
+        pDevice,
         File::getPath(SSAO_BLUR_SHADERS_DIR, "Frag.spv"),
         VK_SHADER_STAGE_FRAGMENT_BIT,
         std::vector<VkSpecializationMapEntry>{ ssaoBlurConstantEntry },
-        std::vector<const void *>{ &pSsaoKernel->BLUR_RADIUS }
+        std::vector<const void*>{ &pSsaoKernel->BLUR_RADIUS }
     );
 
 	GraphicsPipeline *pSsaoBlurPipeline = new GraphicsPipeline(
@@ -444,11 +444,11 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	};
 
     auto lightingFragmentShader = std::make_shared<ShaderModule>(
-        pDevice->device,
+        pDevice,
 		File::getPath(LIGHTING_SHADERS_DIR, "Frag.spv"),
         VK_SHADER_STAGE_FRAGMENT_BIT, 
         std::vector<VkSpecializationMapEntry>{ lightingConstantEntry }, 
-        std::vector<const void *>{ &sampleCount }
+        std::vector<const void*>{ &sampleCount }
     );
 
 	GraphicsPipeline *pLightingPipeline = new GraphicsPipeline(

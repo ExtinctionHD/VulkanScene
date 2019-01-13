@@ -100,7 +100,7 @@ void RenderPass::addFramebuffer(std::vector<VkImageView> imageViews)
 
 	VkFramebuffer framebuffer;
 
-	VkResult result = vkCreateFramebuffer(pDevice->device, &createInfo, nullptr, &framebuffer);
+	VkResult result = vkCreateFramebuffer(pDevice->getVk(), &createInfo, nullptr, &framebuffer);
 	assert(result == VK_SUCCESS);
 
 	framebuffers.push_back(framebuffer);
@@ -116,10 +116,10 @@ void RenderPass::cleanup()
 
 	for (VkFramebuffer framebuffer : framebuffers)
 	{
-		vkDestroyFramebuffer(pDevice->device, framebuffer, nullptr);
+		vkDestroyFramebuffer(pDevice->getVk(), framebuffer, nullptr);
 	}
 	framebuffers.clear();
 
-	vkDestroyRenderPass(pDevice->device, renderPass, nullptr);
+	vkDestroyRenderPass(pDevice->getVk(), renderPass, nullptr);
 }
 

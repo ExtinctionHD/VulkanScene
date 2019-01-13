@@ -17,8 +17,8 @@ Buffer::Buffer(Device *pDevice, VkBufferUsageFlags usage, VkDeviceSize size) :
 
 Buffer::~Buffer()
 {
-	vkFreeMemory(pDevice->device, memory, nullptr);
-	vkDestroyBuffer(pDevice->device, buffer, nullptr);
+	vkFreeMemory(pDevice->getVk(), memory, nullptr);
+	vkDestroyBuffer(pDevice->getVk(), buffer, nullptr);
 }
 
 VkBuffer Buffer::getBuffer() const

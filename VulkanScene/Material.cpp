@@ -49,7 +49,7 @@ Material::~Material()
 
 	if (objectCount == 0 && dsLayout != nullptr)
 	{
-		vkDestroyDescriptorSetLayout(pDevice->device, dsLayout, nullptr);
+		vkDestroyDescriptorSetLayout(pDevice->getVk(), dsLayout, nullptr);
 		dsLayout = nullptr;
 	}
 }

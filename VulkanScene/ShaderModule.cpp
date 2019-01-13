@@ -6,7 +6,7 @@
 
 // public:
 
-ShaderModule::ShaderModule(VkDevice device, std::string path, VkShaderStageFlagBits stage)
+ShaderModule::ShaderModule(Device *device, const std::string &path, VkShaderStageFlagBits stage)
 {
 	this->device = device;
 	this->stage = stage;
@@ -14,31 +14,31 @@ ShaderModule::ShaderModule(VkDevice device, std::string path, VkShaderStageFlagB
 	std::vector<char> code = File::getBytes(path);
 
 	VkShaderModuleCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,    // sType;
-		nullptr,                                        // pNext;
-		0,                                              // flags;
-		code.size(),									// codeSize;
-		reinterpret_cast<uint32_t*>(code.data())		// pCode;
+		VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+		nullptr,
+		0,
+		code.size(),
+		reinterpret_cast<uint32_t*>(code.data())
 	};
 
-	VkResult result = vkCreateShaderModule(device, &createInfo, nullptr, &module);
+    const VkResult result = vkCreateShaderModule(device->getVk(), &createInfo, nullptr, &module);
 	assert(result == VK_SUCCESS);
 }
 
 ShaderModule::ShaderModule(
-    VkDevice device,
-    std::string path,
+	Device *device,
+    const std::string &path,
     VkShaderStageFlagBits stage,
     std::vector<VkSpecializationMapEntry> entries,
-    const std::vector<const void*> &data
+    const std::vector<const void*>& data
 ) : ShaderModule(device, path, stage)
 {
 	assert(entries.size() == data.size());
 
 	this->entries = entries;
 
-	VkSpecializationMapEntry lastEntry = *(--entries.end());
-	size_t size = lastEntry.offset + lastEntry.size;
+    const VkSpecializationMapEntry lastEntry = *(--entries.end());
+    const size_t size = lastEntry.offset + lastEntry.size;
 
 	pData = malloc(size);
     for (size_t i = 0; i < data.size(); i++)
@@ -58,8 +58,7 @@ ShaderModule::~ShaderModule()
 {
 	delete pSpecializationInfo;
 	free(pData);
-
-	vkDestroyShaderModule(device, module, nullptr);
+	vkDestroyShaderModule(device->getVk(), module, nullptr);
 }
 
 VkShaderStageFlagBits ShaderModule::getStage() const

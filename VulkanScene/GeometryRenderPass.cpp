@@ -219,7 +219,7 @@ void GeometryRenderPass::createRenderPass()
 		dependencies.data(),						// pDependencies;
 	};
 
-	VkResult result = vkCreateRenderPass(pDevice->device, &createInfo, nullptr, &renderPass);
+	VkResult result = vkCreateRenderPass(pDevice->getVk(), &createInfo, nullptr, &renderPass);
 	assert(result == VK_SUCCESS);
 }
 

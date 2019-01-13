@@ -15,7 +15,6 @@ SwapChain::SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceEx
 
 	create(surfaceExtent);
 
-	// create to each image imageView
 	createImageViews();
 }
 
@@ -63,39 +62,41 @@ void SwapChain::recreate(VkExtent2D newExtent)
 void SwapChain::create(VkExtent2D surfaceExtent)
 {
     // get necessary swapchain properties
-	SurfaceSupportDetails details = pDevice->getSurfaceSupportDetails();
-	VkSurfaceFormatKHR surfaceFormat = chooseSurfaceFormat(details.formats);
-	VkPresentModeKHR presentMode = choosePresentMode(details.presentModes);
-	extent = chooseExtent(details.capabilities, surfaceExtent);
-	uint32_t imageCount = chooseImageCount(details.capabilities);
+	const SurfaceSupportDetails details = pDevice->getSurfaceSupportDetails();
+    const VkSurfaceFormatKHR surfaceFormat = chooseSurfaceFormat(details.getFormats());
+    const VkPresentModeKHR presentMode = choosePresentMode(details.getPresentModes());
+	const VkSurfaceCapabilitiesKHR surfaceCapabilities = details.getCapabilities();
+	const uint32_t imageCount = chooseImageCount(surfaceCapabilities);
+
+	extent = chooseExtent(details.getCapabilities(), surfaceExtent);
 	imageFormat = surfaceFormat.format;
 
 	VkSwapchainCreateInfoKHR createInfo{
-		VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,	// sType
-		nullptr,										// pNext
-		0,										        // flags
-		surface,										// surface
-		imageCount,										// minImageCount
-		surfaceFormat.format,							// imageFormat
-		surfaceFormat.colorSpace,						// imageColorSpace
-		extent,											// imageExtent
-		1,												// imageArrayLayers
-		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,			// imageUsage
-		VK_SHARING_MODE_EXCLUSIVE,						// imageSharingMode
-		0,												// queueFamilyIndexCount
-		nullptr,										// pQueueFamilyIndices
-		details.capabilities.currentTransform,			// preTransform
-		VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,				// compositeAlpha
-		presentMode,									// presentMode
-		VK_TRUE,										// clipped
-		nullptr,										// oldSwapchain
+		VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
+		nullptr,
+		0,
+		surface,
+		imageCount,
+		surfaceFormat.format,
+		surfaceFormat.colorSpace,
+		extent,
+		1,
+		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		VK_SHARING_MODE_EXCLUSIVE,
+		0,
+		nullptr,
+		surfaceCapabilities.currentTransform,			
+		VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,				
+		presentMode,									
+		VK_TRUE,										
+		nullptr,										
 	};
 
 	// concurrent sharing mode only when using different queue families
-	std::vector<uint32_t> indices =
-	{
-		uint32_t(pDevice->getQueueFamilyIndices().graphics),
-		uint32_t(pDevice->getQueueFamilyIndices().present)
+    const QueueFamilyIndices queueFamilyIndices = pDevice->getQueueFamilyIndices();
+	std::vector<uint32_t> indices{
+		queueFamilyIndices.getGraphics(),
+		queueFamilyIndices.getPresent()
 	};
 	if (indices[0] != indices[1])
 	{
@@ -104,7 +105,7 @@ void SwapChain::create(VkExtent2D surfaceExtent)
 		createInfo.pQueueFamilyIndices = indices.data();
 	}
 
-	VkResult result = vkCreateSwapchainKHR(pDevice->device, &createInfo, nullptr, &swapChain);
+    const VkResult result = vkCreateSwapchainKHR(pDevice->getVk(), &createInfo, nullptr, &swapChain);
 	assert(result == VK_SUCCESS);
 
 	// save swapchain images 
@@ -183,9 +184,9 @@ uint32_t SwapChain::chooseImageCount(VkSurfaceCapabilitiesKHR capabilities)
 void SwapChain::getImages(uint32_t imageCount)
 {
 	// real count of images can be greater than requested
-	vkGetSwapchainImagesKHR(pDevice->device, swapChain, &imageCount, nullptr);  // get count
+	vkGetSwapchainImagesKHR(pDevice->getVk(), swapChain, &imageCount, nullptr);  // get count
 	images.resize(imageCount);
-	vkGetSwapchainImagesKHR(pDevice->device, swapChain, &imageCount, images.data());  // get images
+	vkGetSwapchainImagesKHR(pDevice->getVk(), swapChain, &imageCount, images.data());  // get images
 }
 
 void SwapChain::createImageViews()
@@ -212,8 +213,8 @@ void SwapChain::cleanup()
 {
 	for (size_t i = 0; i < imageViews.size(); i++)
 	{
-		vkDestroyImageView(pDevice->device, imageViews[i], nullptr);
+		vkDestroyImageView(pDevice->getVk(), imageViews[i], nullptr);
 	}
 
-	vkDestroySwapchainKHR(pDevice->device, swapChain, nullptr);
+	vkDestroySwapchainKHR(pDevice->getVk(), swapChain, nullptr);
 }

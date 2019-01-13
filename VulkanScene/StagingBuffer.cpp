@@ -21,8 +21,8 @@ StagingBuffer::StagingBuffer(Device * pDevice, VkDeviceSize size)
 
 StagingBuffer::~StagingBuffer()
 {
-	vkFreeMemory(pDevice->device, stagingMemory, nullptr);
-	vkDestroyBuffer(pDevice->device, stagingBuffer, nullptr);
+	vkFreeMemory(pDevice->getVk(), stagingMemory, nullptr);
+	vkDestroyBuffer(pDevice->getVk(), stagingBuffer, nullptr);
 }
 
 void StagingBuffer::updateData(void * data, VkDeviceSize dataSize, VkDeviceSize offset)
@@ -31,9 +31,9 @@ void StagingBuffer::updateData(void * data, VkDeviceSize dataSize, VkDeviceSize 
 
 	// update staging buffer
 	void *bufferData;
-	vkMapMemory(pDevice->device, stagingMemory, offset, dataSize, 0, &bufferData);
+	vkMapMemory(pDevice->getVk(), stagingMemory, offset, dataSize, 0, &bufferData);
 	memcpy(bufferData, data, dataSize);
-	vkUnmapMemory(pDevice->device, stagingMemory);
+	vkUnmapMemory(pDevice->getVk(), stagingMemory);
 }
 
 void StagingBuffer::copyToImage(VkImage image, std::vector<VkBufferImageCopy> regions) const
@@ -70,18 +70,18 @@ void StagingBuffer::createBuffer(Device * pDevice, VkDeviceSize size, VkBufferUs
 		nullptr,								// pQueueFamilyIndices;
 	};
 
-	VkResult result = vkCreateBuffer(pDevice->device, &createInfo, nullptr, pBuffer);
+	VkResult result = vkCreateBuffer(pDevice->getVk(), &createInfo, nullptr, pBuffer);
 	assert(result == VK_SUCCESS);
 
 	allocateMemory(pDevice, pBuffer, pMemory, properties);
 
-	vkBindBufferMemory(pDevice->device, *pBuffer, *pMemory, 0);
+	vkBindBufferMemory(pDevice->getVk(), *pBuffer, *pMemory, 0);
 }
 
 void StagingBuffer::allocateMemory(Device * pDevice, VkBuffer * pBuffer, VkDeviceMemory * pMemory, VkMemoryPropertyFlags properties)
 {
 	VkMemoryRequirements memRequirements;
-	vkGetBufferMemoryRequirements(pDevice->device, *pBuffer, &memRequirements);
+	vkGetBufferMemoryRequirements(pDevice->getVk(), *pBuffer, &memRequirements);
 
 	uint32_t memoryTypeIndex = pDevice->findMemoryTypeIndex(
 		memRequirements.memoryTypeBits,
@@ -96,6 +96,6 @@ void StagingBuffer::allocateMemory(Device * pDevice, VkBuffer * pBuffer, VkDevic
 		memoryTypeIndex,						// memoryTypeIndex
 	};
 
-	VkResult result = vkAllocateMemory(pDevice->device, &allocInfo, nullptr, pMemory);
+	VkResult result = vkAllocateMemory(pDevice->getVk(), &allocInfo, nullptr, pMemory);
 	assert(result == VK_SUCCESS);
 }

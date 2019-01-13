@@ -4,29 +4,26 @@
 #include "QueueFamilyIndices.h"
 #include "SurfaceSupportDetails.h"
 
-// contains logical (can be cast to it) and physical device
 class Device
 {
 public:
-	VkDevice device{};  // logical device (representation of GPU for vulkan)
-
-	VkPhysicalDevice physicalDevice = nullptr;  // GPU
-		
-	VkCommandPool commandPool{};  // pool of command buffers of this device
-
-	// pick physical and create logical device
 	Device(
 		VkInstance instance,
 		VkSurfaceKHR surface,
-		std::vector<const char *> requiredLayers,
-		VkSampleCountFlagBits maxRequiredSampleCount
-	);
+        const std::vector<const char*> &requiredLayers,
+		VkSampleCountFlagBits maxRequiredSampleCount);
 
-	// destroy device
 	~Device();
 
-	VkQueue graphicsQueue{};	// for drawing graphics
-	VkQueue presentQueue{};	// for presenting it on surface
+	VkDevice getVk() const;
+
+	VkQueue getGraphicsQueue() const;
+
+	VkQueue getPresentQueue() const;
+
+	VkCommandPool getCommandPool() const;
+
+	VkFormatProperties getFormatProperties(VkFormat format) const;
 
 	// returns index of memory type with such properties (for this physical device)
 	uint32_t findMemoryTypeIndex(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
@@ -35,12 +32,11 @@ public:
 	VkFormat findSupportedFormat(
 		std::vector<VkFormat> requestedFormats,
 		VkImageTiling tiling,
-		VkFormatFeatureFlags features
-	) const;
+		VkFormatFeatureFlags features) const;
 
-	SurfaceSupportDetails getSurfaceSupportDetails() const;  // detail of picked GPU
+	SurfaceSupportDetails getSurfaceSupportDetails() const;
 
-	QueueFamilyIndices getQueueFamilyIndices() const;  // suitable indices on picked GPU
+	QueueFamilyIndices getQueueFamilyIndices() const;
 
 	VkSampleCountFlagBits getSampleCount() const;
 
@@ -51,42 +47,42 @@ public:
 	void endOneTimeCommands(VkCommandBuffer commandBuffer) const;
 
 private:
-	const std::vector<const char*> EXTENSIONS =
-	{
+	const std::vector<const char*> EXTENSIONS{
 		VK_KHR_SWAPCHAIN_EXTENSION_NAME
 	};
 
-	std::vector<const char*> layers;
+	VkDevice device;
 
-	VkSurfaceKHR surface;  // properties of the device are calculated for this surface
+	VkSampleCountFlagBits sampleCount;
 
-	VkSampleCountFlagBits sampleCount{};
+	VkPhysicalDevice physicalDevice;  // GPU
 
-    VkPhysicalDevice pickPhysicalDevice(
-        VkInstance instance,
-        VkSurfaceKHR surface
-    ) const;
+	VkSurfaceKHR surface;
+
+	VkQueue graphicsQueue;
+
+	VkQueue presentQueue;
+
+	VkCommandPool commandPool;
+
+    VkPhysicalDevice pickPhysicalDevice(VkInstance instance, const std::vector<const char*>& layers) const;
 
 	// has all required queue families,
 	// support this surface (capabilities, formats, present modes)
 	// all required extensions and layers are available
-	static bool isPhysicalDeviceSuitable(
-		VkPhysicalDevice device, 
-		VkSurfaceKHR surface, 
-		std::vector<const char *> requiredLayers, 
-		std::vector<const char *> requiredExtensions
-	);
+	bool isPhysicalDeviceSuitable(
+        VkPhysicalDevice device,
+        const std::vector<const char*>& requiredLayers,
+        const std::vector<const char*>& requiredExtensions) const;
 
-	VkSampleCountFlagBits getMaxSupportedSampleCount(VkPhysicalDevice physicalDevice) const;  // max sample count supported by picked GPU
+	VkSampleCountFlagBits getMaxSupportedSampleCount(VkPhysicalDevice physicalDevice) const;
 
-	// layers must be supported not only by instance, but also by GPU
-	static bool checkDeviceLayerSupport(VkPhysicalDevice device, std::vector<const char *> requiredLayers);
+	static bool checkDeviceLayerSupport(VkPhysicalDevice device, std::vector<const char*> requiredLayers);
 
-	// some extension to instance, some to GPU
-	static bool checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char *> requiredExtensions);
+	static bool checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char*> requiredExtensions);
 
-	void createLogicalDevice(VkSurfaceKHR surface);
+	void createDevice(const std::vector<const char*>& layers);
 
-	void createCommandPool(VkPhysicalDevice physicalDevice);
+	void createCommandPool();
 };
 

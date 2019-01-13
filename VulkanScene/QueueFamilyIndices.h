@@ -5,18 +5,21 @@
 class QueueFamilyIndices
 {
 public:
-	// queue family indices
-	int graphics = -1;	// for drawing
-	int present = -1;	// for presenting on surface
-
-	// base constructor
 	QueueFamilyIndices() = default;
 
     // try to find required queue families and save they indices
 	QueueFamilyIndices(VkPhysicalDevice device, VkSurfaceKHR surface);
 
+	uint32_t getGraphics() const;
+
+	uint32_t getPresent() const;
+
 	// this device have all required queue families (for this surface)
 	bool isComplete() const;
 
+private:
+	// queue family indices
+	int graphics = -1;
+	int present = -1;
 };
 

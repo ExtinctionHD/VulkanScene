@@ -28,13 +28,13 @@ DescriptorPool::DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t t
 		poolSizes.data(),								// pDescriptorPoolSizes;
 	};
 
-	VkResult result = vkCreateDescriptorPool(pDevice->device, &createInfo, nullptr, &pool);
+	VkResult result = vkCreateDescriptorPool(pDevice->getVk(), &createInfo, nullptr, &pool);
 	assert(result == VK_SUCCESS);
 }
 
 DescriptorPool::~DescriptorPool()
 {
-	vkDestroyDescriptorPool(pDevice->device, pool, nullptr);
+	vkDestroyDescriptorPool(pDevice->getVk(), pool, nullptr);
 }
 
 VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
@@ -81,7 +81,7 @@ VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
 	};
 
 	VkDescriptorSetLayout layout;
-	VkResult result = vkCreateDescriptorSetLayout(pDevice->device, &createInfo, nullptr, &layout);
+	VkResult result = vkCreateDescriptorSetLayout(pDevice->getVk(), &createInfo, nullptr, &layout);
 	assert(result == VK_SUCCESS);
 
 	return layout;
@@ -100,7 +100,7 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(
 	};
 
 	VkDescriptorSet set;
-	VkResult result = vkAllocateDescriptorSets(pDevice->device, &allocateInfo, &set);
+	VkResult result = vkAllocateDescriptorSets(pDevice->getVk(), &allocateInfo, &set);
 	assert(result == VK_SUCCESS);
 
 	return set;
@@ -170,5 +170,5 @@ void DescriptorPool::updateDescriptorSet(
 	std::vector<VkWriteDescriptorSet> descriptorWrites(buffersWrites.begin(), buffersWrites.end());
 	descriptorWrites.insert(descriptorWrites.end(), texturesWrites.begin(), texturesWrites.end());
 
-	vkUpdateDescriptorSets(pDevice->device, descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
+	vkUpdateDescriptorSets(pDevice->getVk(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
 }

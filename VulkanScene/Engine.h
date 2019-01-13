@@ -42,7 +42,7 @@ private:
 
 	DescriptorPool *descriptorPool;
 
-	std::vector<VkCommandBuffer> graphicCommands;
+	std::vector<VkCommandBuffer> graphicsCommands;
 
 	VkSemaphore imageAvailable{};
 	VkSemaphore renderingFinished{};
@@ -53,7 +53,7 @@ private:
 
 	void createRenderPasses(uint32_t shadowsDim);
 
-	void initGraphicCommands();
+	void initGraphicsCommands();
 
 	void beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex);
 

@@ -119,7 +119,7 @@ TextureImage::~TextureImage()
 {
 	if (sampler != nullptr)
 	{
-		vkDestroySampler(pDevice->device, sampler, nullptr);
+		vkDestroySampler(pDevice->getVk(), sampler, nullptr);
 	}
 }
 
@@ -143,12 +143,10 @@ stbi_uc* TextureImage::loadPixels(const std::string &path)
 
 void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImageAspectFlags aspectFlags, VkFilter filter)
 {
-	VkFormatProperties formatProperties;
-	vkGetPhysicalDeviceFormatProperties(pDevice->physicalDevice, format, &formatProperties);
+    const auto featureFlags = pDevice->getFormatProperties(format).optimalTilingFeatures;
+	assert(featureFlags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT);
 
-	assert(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT);
-
-	VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
+    VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
 
 	VkImageMemoryBarrier barrier{
 		VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,	// sType;
@@ -283,6 +281,6 @@ void TextureImage::createSampler(VkFilter filter, VkSamplerAddressMode addressMo
 		createInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 	}
 
-	VkResult result = vkCreateSampler(pDevice->device, &createInfo, nullptr, &sampler);
+	VkResult result = vkCreateSampler(pDevice->getVk(), &createInfo, nullptr, &sampler);
 	assert(result == VK_SUCCESS);
 }
