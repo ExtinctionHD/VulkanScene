@@ -26,9 +26,9 @@ Engine::Engine(HWND hWnd, VkExtent2D frameExtent, Settings settings)
 	ssaoEnabled = settings.ssaoEnabled;
 
 	instance = new Instance(requiredLayers, extensions);
-	surface = new Surface(instance->getInstance(), hWnd);
-	device = new Device(instance->getInstance(), surface->getSurface(), requiredLayers, settings.sampleCount);
-	swapChain = new SwapChain(device, surface->getSurface(), frameExtent);
+	surface = new Surface(instance->getVk(), hWnd);
+	device = new Device(instance->getVk(), surface->getVk(), requiredLayers, settings.sampleCount);
+	swapChain = new SwapChain(device, surface->getVk(), frameExtent);
 
 	createRenderPasses(settings.shadowsDim);
 

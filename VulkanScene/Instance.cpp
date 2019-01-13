@@ -3,7 +3,9 @@
 
 #include "Instance.h"
 
-Instance::Instance(const std::vector<const char *> &requiredLayers, std::vector<const char *> requiredExtensions)
+// public:
+
+Instance::Instance(const std::vector<const char*>& requiredLayers, std::vector<const char*> requiredExtensions)
 {
 	if (!requiredLayers.empty())
 	{
@@ -24,49 +26,46 @@ Instance::~Instance()
 	vkDestroyInstance(instance, nullptr);
 }
 
-VkInstance Instance::getInstance()
+VkInstance Instance::getVk() const
 {
 	return instance;
 }
 
 // private:
 
-void Instance::createInstance(std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions)
+void Instance::createInstance(
+    const std::vector<const char*>& requiredLayers,
+    const std::vector<const char*>& requiredExtensions)
 {
-	// required layers
 	assert(checkInstanceLayerSupport(requiredLayers));
-
-	// required extensions
 	assert(checkInstanceExtensionSupport(requiredExtensions));
 
-	// info about application for vulkan
 	VkApplicationInfo appInfo{
-		VK_STRUCTURE_TYPE_APPLICATION_INFO,	// sType
-		nullptr,							// pNext
-		"VulkanScene",						// pApplicationName
-		VK_MAKE_VERSION(1, 0, 0),			// applicationVersion
-		"No Engine",						// pEngineName
-		VK_MAKE_VERSION(1, 0, 0),			// engineVersion
-		VK_API_VERSION_1_0					// apiVersion
+		VK_STRUCTURE_TYPE_APPLICATION_INFO,
+		nullptr,
+		"VulkanScene",
+		VK_MAKE_VERSION(1, 0, 0),
+		"No Engine",
+		VK_MAKE_VERSION(1, 0, 0),
+		VK_API_VERSION_1_0
 	};
 
-	// info for vulkan instance
 	VkInstanceCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,	// sType
-		nullptr,								// pNext
-		0,										// flags
-		&appInfo,								// pApplicationInfo
-		requiredLayers.size(),					// enabledLayerCount
-		requiredLayers.data(),					// ppEnabledLayerNames
-		requiredExtensions.size(),				// enabledExtensionCount
-		requiredExtensions.data()				// ppEnabledExtensionNames
+		VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+		nullptr,
+		0,
+		&appInfo,
+		requiredLayers.size(),
+		requiredLayers.data(),
+		requiredExtensions.size(),
+		requiredExtensions.data()
 	};
 
-	VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
+    const VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
 	assert(result == VK_SUCCESS);
 }
 
-bool Instance::checkInstanceLayerSupport(std::vector<const char*> requiredLayers)
+bool Instance::checkInstanceLayerSupport(const std::vector<const char*>& requiredLayers)
 {
 	uint32_t layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);  // get count
@@ -85,7 +84,7 @@ bool Instance::checkInstanceLayerSupport(std::vector<const char*> requiredLayers
 	return requiredLayerSet.empty();
 }
 
-bool Instance::checkInstanceExtensionSupport(std::vector<const char*> requiredExtensions)
+bool Instance::checkInstanceExtensionSupport(const std::vector<const char*>& requiredExtensions)
 {
 	uint32_t extensionCount;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);  // get count
@@ -104,7 +103,11 @@ bool Instance::checkInstanceExtensionSupport(std::vector<const char*> requiredEx
 	return requiredExtensionSet.empty();
 }
 
-VkResult Instance::vkCreateDebugReportCallbackEXT(VkInstance instance, const VkDebugReportCallbackCreateInfoEXT * pCreateInfo, const VkAllocationCallbacks * pAllocator, VkDebugReportCallbackEXT * pCallback)
+VkResult Instance::vkCreateDebugReportCallbackEXT(
+    VkInstance instance,
+    const VkDebugReportCallbackCreateInfoEXT *pCreateInfo,
+    const VkAllocationCallbacks *pAllocator,
+    VkDebugReportCallbackEXT *pCallback)
 {
 	auto func = PFN_vkCreateDebugReportCallbackEXT(vkGetInstanceProcAddr(
 		instance, "vkCreateDebugReportCallbackEXT"
@@ -120,7 +123,10 @@ VkResult Instance::vkCreateDebugReportCallbackEXT(VkInstance instance, const VkD
 	}
 }
 
-void Instance::vkDestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks * pAllocator)
+void Instance::vkDestroyDebugReportCallbackEXT(
+    VkInstance instance,
+    VkDebugReportCallbackEXT callback,
+    const VkAllocationCallbacks *pAllocator)
 {
 	auto func = PFN_vkDestroyDebugReportCallbackEXT(vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT"));
 	if (func != nullptr)
@@ -152,8 +158,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Instance::validationLayerCallback(
 	int32_t code,
 	const char * layerPrefix,
 	const char * msg,
-	void * userData
-)
+	void * userData)
 {
 	assert(VK_FALSE);
 

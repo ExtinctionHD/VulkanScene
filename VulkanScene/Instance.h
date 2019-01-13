@@ -3,38 +3,38 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-// core object of vulkan api
 class Instance
 {
 public:
-	Instance(const std::vector<const char *> &requiredLayers, std::vector<const char *> requiredExtensions);
+	Instance(const std::vector<const char*>& requiredLayers, std::vector<const char*> requiredExtensions);
 	~Instance();
 
-	VkInstance getInstance();
+	VkInstance getVk() const;
 
 private:
-	VkInstance instance{};
+	VkInstance instance;
 
-	// validation layers callback
-	VkDebugReportCallbackEXT callback{};
+	VkDebugReportCallbackEXT callback;
 
-	void createInstance(std::vector<const char *> requiredLayers, std::vector<const char *> requiredExtensions);
+	void createInstance(
+        const std::vector<const char*>& requiredLayers,
+        const std::vector<const char*>& requiredExtensions);
 
-	static bool checkInstanceLayerSupport(std::vector<const char *> requiredLayers);
-	static bool checkInstanceExtensionSupport(std::vector<const char *> requiredExtensions);
+	static bool checkInstanceLayerSupport(const std::vector<const char*>& requiredLayers);
 
-	// functions from extensions (EXT) need to get before use
+	static bool checkInstanceExtensionSupport(const std::vector<const char*>& requiredExtensions);
+
+	// functions from extensions (EXT) must be obtained before use
 	static VkResult vkCreateDebugReportCallbackEXT(
 		VkInstance instance,
 		const VkDebugReportCallbackCreateInfoEXT *pCreateInfo,
 		const VkAllocationCallbacks *pAllocator,
-		VkDebugReportCallbackEXT *pCallback
-	);
+		VkDebugReportCallbackEXT *pCallback);
+
 	static void vkDestroyDebugReportCallbackEXT(
 		VkInstance instance,
 		VkDebugReportCallbackEXT callback,
-		const VkAllocationCallbacks *pAllocator
-	);
+		const VkAllocationCallbacks *pAllocator);
 
 	void createDebugCallback();
 
@@ -47,7 +47,6 @@ private:
 		int32_t code,
 		const char *layerPrefix,
 		const char *msg,
-		void *userData
-	);
+		void *userData);
 };
 

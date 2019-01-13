@@ -17,10 +17,12 @@ Surface::~Surface()
 	vkDestroySurfaceKHR(instance, surface, nullptr);
 }
 
-VkSurfaceKHR Surface::getSurface() const
+VkSurfaceKHR Surface::getVk() const
 {
 	return surface;
 }
+
+// private:
 
 void Surface::createSurface(HWND hWnd)
 {
@@ -32,6 +34,6 @@ void Surface::createSurface(HWND hWnd)
 		hWnd
 	};
 
-	VkResult result = vkCreateWin32SurfaceKHR(instance, &createInfo, nullptr, &surface);
+    const VkResult result = vkCreateWin32SurfaceKHR(instance, &createInfo, nullptr, &surface);
 	assert(result == VK_SUCCESS);
 }
