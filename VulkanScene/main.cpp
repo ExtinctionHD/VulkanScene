@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-	Settings settings{
+	const Settings settings{
 		VK_SAMPLE_COUNT_2_BIT,
 		4096,
 		40.0f,
@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 		"Assets/SimpleScene.json",
 	};
 
-	auto window = Window(1920, 1080, Window::Mode::BORDERLESS_WINDOWED);
+	auto window = Window(1920, 1080, Window::Mode::BORDERLESS);
 
 	auto engine = Engine(
 		window.getHWnd(),
