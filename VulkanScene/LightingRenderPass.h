@@ -20,6 +20,6 @@ protected:
 private:
 	VkFormat colorAttachmentFormat;
 
-	std::shared_ptr<Image> colorImage{};
+	std::shared_ptr<Image> colorImage;
 };
 

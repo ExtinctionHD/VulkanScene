@@ -18,6 +18,6 @@ protected:
     void createFramebuffers() override;
 
 private:
-	std::shared_ptr<TextureImage> ssaoTexture{};
+	std::shared_ptr<TextureImage> ssaoTexture;
 };
 

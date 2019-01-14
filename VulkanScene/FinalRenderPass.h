@@ -23,12 +23,12 @@ protected:
 private:
     SwapChain *pSwapChain;
 
-	GeometryRenderPass *geometryRenderPass{};
+	GeometryRenderPass *geometryRenderPass;
 
-	LightingRenderPass *lightingRenderPass{};
+	LightingRenderPass *lightingRenderPass;
 
-	std::shared_ptr<Image> colorImage{};
+	std::shared_ptr<Image> colorImage;
 
-	std::shared_ptr<Image> depthImage{};
+	std::shared_ptr<Image> depthImage;
 };
 

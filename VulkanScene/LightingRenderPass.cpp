@@ -42,15 +42,13 @@ void LightingRenderPass::createAttachments()
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		subresourceRange.layerCount
-	);
+		subresourceRange.layerCount);
 	colorImage->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
 	colorImage->transitLayout(
 		device,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-		subresourceRange
-	);
+		subresourceRange);
 
 	attachments = { colorImage };
 }

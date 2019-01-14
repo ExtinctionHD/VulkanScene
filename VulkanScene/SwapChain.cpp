@@ -157,12 +157,10 @@ VkExtent2D SwapChain::chooseExtent(VkSurfaceCapabilitiesKHR capabilities, VkExte
     // extent height and width: (minAvailable <= extent <= maxAvailable) && (extent <= actualExtent)
     actualExtent.width = (std::max)(
         capabilities.minImageExtent.width,
-        (std::min)(capabilities.maxImageExtent.width, actualExtent.width)
-    );
+        (std::min)(capabilities.maxImageExtent.width, actualExtent.width));
     actualExtent.height = (std::max)(
         capabilities.minImageExtent.height,
-        (std::min)(capabilities.maxImageExtent.height, actualExtent.height)
-    );
+        (std::min)(capabilities.maxImageExtent.height, actualExtent.height));
 
     return actualExtent;
 }

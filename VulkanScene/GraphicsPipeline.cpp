@@ -13,8 +13,7 @@ GraphicsPipeline::GraphicsPipeline(
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
     VkSampleCountFlagBits sampleCount,
     uint32_t colorAttachmentCount,
-    VkBool32 blendEnable
-)
+    VkBool32 blendEnable)
 {
 	this->pDevice = pDevice;
 	this->pRenderPass = pRenderPass;

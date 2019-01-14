@@ -109,9 +109,8 @@ VkResult Instance::vkCreateDebugReportCallbackEXT(
     const VkAllocationCallbacks *pAllocator,
     VkDebugReportCallbackEXT *pCallback)
 {
-	auto func = PFN_vkCreateDebugReportCallbackEXT(vkGetInstanceProcAddr(
-		instance, "vkCreateDebugReportCallbackEXT"
-	));
+    const auto func = PFN_vkCreateDebugReportCallbackEXT(
+        vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT"));
 
 	if (func != nullptr)
 	{

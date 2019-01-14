@@ -1,10 +1,10 @@
 #include "Timer.h"
 
-double Timer::getDeltaSec()
+float Timer::getDeltaSec()
 {
-	double deltaSec = 0;
+	float deltaSec = 0;
 
-	time_point<steady_clock> now = high_resolution_clock::now();
+    const time_point<steady_clock> now = high_resolution_clock::now();
 
 	if (lastTimePoint != time_point<steady_clock>::max())
 	{

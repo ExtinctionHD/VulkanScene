@@ -54,8 +54,7 @@ VkExtent2D Window::getClientExtent() const
 	glfwGetFramebufferSize(
 		window,
 		reinterpret_cast<int*>(&extent.width),
-		reinterpret_cast<int*>(&extent.height)
-	);
+		reinterpret_cast<int*>(&extent.height));
 
 	return extent;
 }

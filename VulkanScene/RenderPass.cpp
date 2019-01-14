@@ -32,7 +32,7 @@ uint32_t RenderPass::getColorAttachmentCount() const
 {
 	uint32_t count = 0;
 
-	for (auto image : attachments)
+	for (const auto &image : attachments)
 	{
 		if (image->format != depthAttachmentFormat)
 		{
@@ -46,7 +46,7 @@ uint32_t RenderPass::getColorAttachmentCount() const
 std::vector<VkClearValue> RenderPass::getClearValues() const
 {
 	std::vector<VkClearValue> clearValues;
-    for(auto image : attachments)
+    for(const auto &image : attachments)
     {
 		VkClearValue clearValue{};
 
@@ -90,8 +90,7 @@ RenderPass::RenderPass(Device *device, VkExtent2D extent, VkSampleCountFlagBits 
     depthAttachmentFormat = device->findSupportedFormat(
         DEPTH_FORMATS,
         VK_IMAGE_TILING_OPTIMAL,
-        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-    );
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 }
 
 void RenderPass::addFramebuffer(std::vector<VkImageView> imageViews)

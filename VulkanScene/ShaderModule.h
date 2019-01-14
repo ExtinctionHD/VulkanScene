@@ -14,7 +14,7 @@ public:
         const std::string &path, 
 		VkShaderStageFlagBits stage, 
 		std::vector<VkSpecializationMapEntry> entries,
-	    const std::vector<const void*> &data);
+	    std::vector<const void*> data);
 
 	~ShaderModule();
 
@@ -33,7 +33,7 @@ private:
 
 	std::vector<VkSpecializationMapEntry> entries;
 
-	void *pData{};
+	void *data{};
 
 	VkSpecializationInfo *pSpecializationInfo{};
 };

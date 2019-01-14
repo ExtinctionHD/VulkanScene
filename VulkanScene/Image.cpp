@@ -154,8 +154,7 @@ void Image::updateData(void **data, uint32_t pixelSize)
 		pDevice,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		subresourceRange
-	);
+		subresourceRange);
 
 	// staging buffer to map its memory
 	VkDeviceSize arrayLayerSize = extent.width * extent.height * pixelSize;
@@ -272,8 +271,7 @@ void Image::allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties)
 
 	uint32_t memoryTypeIndex = pDevice->findMemoryTypeIndex(
 		memRequirements.memoryTypeBits,
-		properties
-	);
+		properties);
 
 	VkMemoryAllocateInfo allocInfo =
 	{

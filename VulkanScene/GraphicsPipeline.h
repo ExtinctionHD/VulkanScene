@@ -21,8 +21,7 @@ public:
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
 		VkSampleCountFlagBits sampleCount,
         uint32_t colorAttachmentCount,
-        VkBool32 blendEnable
-	);
+        VkBool32 blendEnable);
 
 	~GraphicsPipeline();
 

@@ -26,12 +26,12 @@ protected:
 	void createFramebuffers() override;
 
 private:
-	std::shared_ptr<TextureImage> posTexture{};
+	std::shared_ptr<TextureImage> posTexture;
 
-	std::shared_ptr<TextureImage> normalTexture{};
+	std::shared_ptr<TextureImage> normalTexture;
 
-	std::shared_ptr<TextureImage> albedoTexture{};
+	std::shared_ptr<TextureImage> albedoTexture;
 
-	std::shared_ptr<Image> depthImage{};
+	std::shared_ptr<Image> depthImage;
 };
 

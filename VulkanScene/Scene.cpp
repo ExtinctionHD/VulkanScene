@@ -12,42 +12,41 @@
 
 // public:
 
-Scene::Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &sceneFile, float shadowsDistance)
-    : pDevice(pDevice), pSsaoKernel(new SsaoKernel(pDevice))
+Scene::Scene(Device *device, VkExtent2D cameraExtent, const std::string &path, float shadowsDistance)
+    : device(device), ssaoKernel(new SsaoKernel(device))
 {
-	sceneDao.open(sceneFile);
+	sceneDao.open(path);
 
-	pCamera = new Camera(pDevice, cameraExtent, sceneDao.getCameraAttributes());
-	pLighting = new Lighting(pDevice, sceneDao.getLightingAttributes(), shadowsDistance);
-	skybox = new SkyboxModel(pDevice, sceneDao.getSkyboxInfo());
-	terrain = new TerrainModel(pDevice, { 1.0f, 1.0f }, { 1000, 1000 }, sceneDao.getTerrainInfo());
+	camera = new Camera(device, cameraExtent, sceneDao.getCameraAttributes());
+	lighting = new Lighting(device, sceneDao.getLightingAttributes(), shadowsDistance);
+	skybox = new SkyboxModel(device, sceneDao.getSkyboxInfo());
+	terrain = new TerrainModel(device, { 1.0f, 1.0f }, { 1000, 1000 }, sceneDao.getTerrainInfo());
 
-	models = sceneDao.getModels(pDevice);
+	models = sceneDao.getModels(device);
 }
 
 Scene::~Scene()
 {
-	for (const auto& pipeline : pipelines)
+	for (auto pipeline : pipelines)
 	{
 		delete pipeline;
 	}
 
 	delete skybox;
 	delete terrain;
-
-	for (const auto& [key, model] : models)
+	for (const auto &[key, model] : models)
 	{
 		delete model;
 	}
 
-    for (const auto& [key, descriptorStruct] : descriptors)
+    for (auto [key, descriptorStruct] : descriptors)
     {
-		vkDestroyDescriptorSetLayout(pDevice->getVk(), descriptorStruct.layout, nullptr);
+		vkDestroyDescriptorSetLayout(device->getVk(), descriptorStruct.layout, nullptr);
     }
 
-	delete pLighting;
-	delete pCamera;
-	delete pSsaoKernel;
+	delete lighting;
+	delete camera;
+	delete ssaoKernel;
 }
 
 uint32_t Scene::getBufferCount() const
@@ -97,24 +96,24 @@ uint32_t Scene::getDescriptorSetCount() const
 
 Camera* Scene::getCamera() const
 {
-	return pCamera;
+	return camera;
 }
 
-void Scene::prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderPassesMap &renderPasses)
+void Scene::prepareSceneRendering(DescriptorPool *descriptorPool, const RenderPassesMap &renderPasses)
 {
-	initDescriptorSets(pDescriptorPool, renderPasses);
+	initDescriptorSets(descriptorPool, renderPasses);
 	initPipelines(renderPasses);
 	initStaticPipelines(renderPasses);
 }
 
 void Scene::updateScene()
 {
-	const double deltaSec = frameTimer.getDeltaSec();
+	const float deltaSec = frameTimer.getDeltaSec();
 
-	pCamera->move(deltaSec);
-	pCamera->updateSpace();
-	pLighting->update(pCamera->getPos());
-	skybox->setTransformation(translate(glm::mat4(1.0f), pCamera->getPos()), 0);
+	camera->move(deltaSec);
+	camera->updateSpace();
+	lighting->update(camera->getPos());
+	skybox->setTransformation(translate(glm::mat4(1.0f), camera->getPos()), 0);
 }
 
 void Scene::render(VkCommandBuffer commandBuffer, RenderPassType type)
@@ -158,166 +157,148 @@ void Scene::render(VkCommandBuffer commandBuffer, RenderPassType type)
 
 void Scene::resizeExtent(VkExtent2D newExtent)
 {
-	pCamera->setExtent(newExtent);
+	camera->setExtent(newExtent);
 
-	for (GraphicsPipeline* pPipeline : pipelines)
+	for (auto pipeline : pipelines)
 	{
-		pPipeline->recreate();
+		pipeline->recreate();
 	}
 }
 
-void Scene::updateDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
+void Scene::updateDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap renderPasses)
 {
 	// Ssao:
 
-	GeometryRenderPass *pGeometryRenderPass = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY));
+    const auto geometryRenderPass = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY));
 	std::vector<TextureImage*> textures{
-		pGeometryRenderPass->getPosTexture().get(),
-		pGeometryRenderPass->getNormalTexture().get(),
-		pSsaoKernel->getNoiseTexture()
+		geometryRenderPass->getPosTexture().get(),
+		geometryRenderPass->getNormalTexture().get(),
+		ssaoKernel->getNoiseTexture()
 	};
-	pDescriptorPool->updateDescriptorSet(
+	descriptorPool->updateDescriptorSet(
 		descriptors.at(SSAO).set,
-		{ pSsaoKernel->getKernelBuffer(), pCamera->getSpaceBuffer() },
-		textures
-	);
+		{ ssaoKernel->getKernelBuffer(), camera->getSpaceBuffer() },
+		textures);
 
 	// Ssao blur:
 
-	pDescriptorPool->updateDescriptorSet(
+	descriptorPool->updateDescriptorSet(
 		descriptors.at(SSAO_BLUR).set,
 		{},
-		{ dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO))->getSsaoTexture().get() }
-	);
+		{ dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO))->getSsaoTexture().get() });
 
 	// Lighting:
 
-	TextureImage *pShadowsTexture = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthTexture().get();
+    const auto shadowsTexture = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthTexture().get();
 	textures = std::vector<TextureImage*>{
-		pGeometryRenderPass->getPosTexture().get(),
-		pGeometryRenderPass->getNormalTexture().get(),
-		pGeometryRenderPass->getAlbedoTexture().get(),
+		geometryRenderPass->getPosTexture().get(),
+		geometryRenderPass->getNormalTexture().get(),
+		geometryRenderPass->getAlbedoTexture().get(),
 		dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO_BLUR))->getSsaoTexture().get(),
-		pShadowsTexture
+		shadowsTexture
 	};
-	pDescriptorPool->updateDescriptorSet(
+	descriptorPool->updateDescriptorSet(
 		descriptors.at(LIGHTING).set,
-		{ pLighting->getAttributesBuffer(), pLighting->getSpaceBuffer() },
-		textures
-	);
+		{ lighting->getAttributesBuffer(), lighting->getSpaceBuffer() },
+		textures);
 }
 
 // private:
 
-void Scene::initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses)
+void Scene::initDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap renderPasses)
 {
 	DescriptorStruct descriptorStruct{};
 
     // Depth:
 
-	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT }, {});
-	descriptorStruct.set = pDescriptorPool->getDescriptorSet(descriptorStruct.layout);
-	pDescriptorPool->updateDescriptorSet(descriptorStruct.set, { pLighting->getSpaceBuffer() }, {});
+	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT }, {});
+	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
+	descriptorPool->updateDescriptorSet(descriptorStruct.set, { lighting->getSpaceBuffer() }, {});
 	descriptors.insert({ DEPTH, descriptorStruct });
 
     // Geometry:
 
-	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT }, {});
-	descriptorStruct.set = pDescriptorPool->getDescriptorSet(descriptorStruct.layout);
-	pDescriptorPool->updateDescriptorSet(descriptorStruct.set, { pCamera->getSpaceBuffer(), pLighting->getAttributesBuffer() }, {});
+	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT }, {});
+	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
+	descriptorPool->updateDescriptorSet(descriptorStruct.set, { camera->getSpaceBuffer(), lighting->getAttributesBuffer() }, {});
 	descriptors.insert({ GEOMETRY, descriptorStruct });
 
     // Ssao:
 
-    GeometryRenderPass *pGeometryRenderPass = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY));
+    const auto geometryRenderPass = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY));
 	std::vector<TextureImage*> textures{
-		pGeometryRenderPass->getPosTexture().get(),
-		pGeometryRenderPass->getNormalTexture().get(),
-		pSsaoKernel->getNoiseTexture()
+		geometryRenderPass->getPosTexture().get(),
+		geometryRenderPass->getNormalTexture().get(),
+		ssaoKernel->getNoiseTexture()
 	};
 
 	std::vector<VkShaderStageFlags> texturesShaderStages(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 
-	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout(
+	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout(
 	    {VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_FRAGMENT_BIT},
-	    texturesShaderStages
-	);
-	descriptorStruct.set = pDescriptorPool->getDescriptorSet(
-	    descriptorStruct.layout
-	);
-	pDescriptorPool->updateDescriptorSet(
+	    texturesShaderStages);
+	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
+	descriptorPool->updateDescriptorSet(
 		descriptorStruct.set,
-		{ pSsaoKernel->getKernelBuffer(), pCamera->getSpaceBuffer() },
-		textures
-	);
+		{ ssaoKernel->getKernelBuffer(), camera->getSpaceBuffer() },
+		textures);
 	descriptors.insert({ SSAO, descriptorStruct });
 
     // Ssao blur:
 
-	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout({}, { VK_SHADER_STAGE_FRAGMENT_BIT });
-	descriptorStruct.set = pDescriptorPool->getDescriptorSet(
-		descriptorStruct.layout
-	);
-	pDescriptorPool->updateDescriptorSet(
+	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout({}, { VK_SHADER_STAGE_FRAGMENT_BIT });
+	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
+	descriptorPool->updateDescriptorSet(
 		descriptorStruct.set,
 		{},
-		{ dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO))->getSsaoTexture().get() }
-	);
+		{ dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO))->getSsaoTexture().get() });
 	descriptors.insert({ SSAO_BLUR, descriptorStruct });
 
     // Lighting:
 
-	TextureImage *pShadowsTexture = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthTexture().get();
+    const auto shadowsTexture = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthTexture().get();
 	textures = std::vector<TextureImage*>{
-		pGeometryRenderPass->getPosTexture().get(),
-		pGeometryRenderPass->getNormalTexture().get(),
-		pGeometryRenderPass->getAlbedoTexture().get(),
+		geometryRenderPass->getPosTexture().get(),
+		geometryRenderPass->getNormalTexture().get(),
+		geometryRenderPass->getAlbedoTexture().get(),
 		dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO_BLUR))->getSsaoTexture().get(),
-		pShadowsTexture
+		shadowsTexture
 	};
 	texturesShaderStages = std::vector<VkShaderStageFlags>(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 
-	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout(
+	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout(
 		{ VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_FRAGMENT_BIT },
-		texturesShaderStages
-	);
-	descriptorStruct.set = pDescriptorPool->getDescriptorSet(
-		descriptorStruct.layout
-	);
-	pDescriptorPool->updateDescriptorSet(
+		texturesShaderStages);
+	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
+	descriptorPool->updateDescriptorSet(
 		descriptorStruct.set,
-		{ pLighting->getAttributesBuffer(), pLighting->getSpaceBuffer() },
-		textures
-	);
+		{ lighting->getAttributesBuffer(), lighting->getSpaceBuffer() },
+		textures);
 	descriptors.insert({ LIGHTING, descriptorStruct });
 
     // Final:
 
-	descriptorStruct.layout = pDescriptorPool->createDescriptorSetLayout(
+	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout(
 		{ VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT },
-		{ VK_SHADER_STAGE_FRAGMENT_BIT }
-	);
-	descriptorStruct.set = pDescriptorPool->getDescriptorSet(
-		descriptorStruct.layout
-	);
-	pDescriptorPool->updateDescriptorSet(
+		{ VK_SHADER_STAGE_FRAGMENT_BIT });
+	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
+	descriptorPool->updateDescriptorSet(
 		descriptorStruct.set,
-		{ pCamera->getSpaceBuffer(), pLighting->getSpaceBuffer(), pLighting->getAttributesBuffer() },
-		{ pShadowsTexture }
-	);
+		{ camera->getSpaceBuffer(), lighting->getSpaceBuffer(), lighting->getAttributesBuffer() },
+		{ shadowsTexture });
 	descriptors.insert({ FINAL, descriptorStruct });
 
-	skybox->initDescriptorSets(pDescriptorPool);
-	terrain->initDescriptorSets(pDescriptorPool);
+	skybox->initDescriptorSets(descriptorPool);
+	terrain->initDescriptorSets(descriptorPool);
 	for (const auto &[key, model] : models)
 	{
-		model->initDescriptorSets(pDescriptorPool);
+		model->initDescriptorSets(descriptorPool);
 	}
 }
 
 void Scene::initPipelines(RenderPassesMap renderPasses)
 {
-	const std::string SKYBOX_SHADERS_DIR = "Shaders/Skybox/";
+	const std::string skyboxShadersDir = "Shaders/Skybox/";
 
     std::unordered_map<RenderPassType, std::string> shadersDirectories{
 		{ DEPTH, "Shaders/Depth" },
@@ -325,30 +306,30 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		{ FINAL, "Shaders/Final" }
 	};
 
+    std::vector<std::shared_ptr<ShaderModule>> shaderModules{
+		std::make_shared<ShaderModule>(device, File::getPath(skyboxShadersDir, "Vert.spv"), VK_SHADER_STAGE_VERTEX_BIT),
+		std::make_shared<ShaderModule>(device, File::getPath(skyboxShadersDir, "Frag.spv"), VK_SHADER_STAGE_FRAGMENT_BIT)
+	};
+
 	pipelines.push_back(skybox->createPipeline(
 		{ descriptors.at(FINAL).layout },
 		FINAL,
 		renderPasses.at(FINAL),
-		{
-			std::make_shared<ShaderModule>(pDevice, File::getPath(SKYBOX_SHADERS_DIR, "Vert.spv"), VK_SHADER_STAGE_VERTEX_BIT),
-			std::make_shared<ShaderModule>(pDevice, File::getPath(SKYBOX_SHADERS_DIR, "Frag.spv"), VK_SHADER_STAGE_FRAGMENT_BIT)
-		}
-	));
+        shaderModules));
 
-    for (const auto &shadersDir : shadersDirectories)
+    for (const auto &[type, directory] : shadersDirectories)
     {
-		RenderPassType type = shadersDir.first;
-		std::string directory = shadersDir.second;
+		shaderModules = std::vector<std::shared_ptr<ShaderModule>>{
+			std::make_shared<ShaderModule>(device, File::getPath(directory, "Vert.spv"), VK_SHADER_STAGE_VERTEX_BIT),
+			std::make_shared<ShaderModule>(device, File::getPath(directory, "Frag.spv"), VK_SHADER_STAGE_FRAGMENT_BIT)
+		};
 
 		pipelines.push_back(terrain->createPipeline(
 			{ descriptors.at(type).layout },
             type,
 			renderPasses.at(type),
-			{
-				std::make_shared<ShaderModule>(pDevice, File::getPath(directory, "Vert.spv"), VK_SHADER_STAGE_VERTEX_BIT),
-				std::make_shared<ShaderModule>(pDevice, File::getPath(directory, "Frag.spv"), VK_SHADER_STAGE_FRAGMENT_BIT)
-			}
-		));
+			shaderModules));
+
         for (const auto &[key, model] : models)
         {
         	model->setPipeline(type, terrain->getPipeline(type));
@@ -358,37 +339,29 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 
 void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 {
-    const std::string FULLSCREEN_SHADERS_DIR = "Shaders/Fullscreen";
-	const std::string SSAO_SHADERS_DIR = "Shaders/Ssao";
-	const std::string SSAO_BLUR_SHADERS_DIR = "Shaders/SsaoBlur";
-	const std::string LIGHTING_SHADERS_DIR = "Shaders/Lighting";
-
     const auto fullscreenVertexShader = std::make_shared<ShaderModule>(
-        pDevice,
-        File::getPath(FULLSCREEN_SHADERS_DIR, "Vert.spv"),
-        VK_SHADER_STAGE_VERTEX_BIT
-    );
+        device,
+		"Shaders/Fullscreen/Vert.spv",
+        VK_SHADER_STAGE_VERTEX_BIT);
 
     #pragma region Ssao
 
-    const uint32_t SSAO_CONSTANT_COUNT = 4;
+    const uint32_t ssaoConstantCount = 4;
 	std::vector<VkSpecializationMapEntry> ssaoConstantEntries;
-	for (uint32_t i = 0; i < SSAO_CONSTANT_COUNT; i++)
+	for (uint32_t i = 0; i < ssaoConstantCount; i++)
 	{
 		ssaoConstantEntries.push_back({ i, sizeof(uint32_t) * i, sizeof(uint32_t) });
 	}
 
 	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
     const auto ssaoFragmentShader = std::make_shared<ShaderModule>(
-		pDevice,
-		File::getPath(SSAO_SHADERS_DIR, "Frag.spv"),
+		device,
+		"Shaders/Ssao/Frag.spv",
 		VK_SHADER_STAGE_FRAGMENT_BIT,
 		ssaoConstantEntries,
-		std::vector<const void*>{ &sampleCount, &pSsaoKernel->SIZE, &pSsaoKernel->RADIUS, &pSsaoKernel->POWER }
-	);
-
-	GraphicsPipeline *pSsaoPipeline = new GraphicsPipeline(
-		pDevice,
+		std::vector<const void*>{ &sampleCount, &ssaoKernel->SIZE, &ssaoKernel->RADIUS, &ssaoKernel->POWER });
+    const auto ssaoPipeline = new GraphicsPipeline(
+		device,
 		{ descriptors.at(SSAO).layout },
 		renderPasses.at(SSAO),
 		{ fullscreenVertexShader, ssaoFragmentShader },
@@ -396,31 +369,29 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 		{},
 		renderPasses.at(SSAO)->getSampleCount(),
 		renderPasses.at(SSAO)->getColorAttachmentCount(),
-		VK_FALSE
-	);
-	Model::setStaticPipeline(SSAO, pSsaoPipeline);
-	pipelines.push_back(pSsaoPipeline);
+		VK_FALSE);
+
+	Model::setStaticPipeline(SSAO, ssaoPipeline);
+	pipelines.push_back(ssaoPipeline);
 
     #pragma endregion 
 
     #pragma region SsaoBlur
 
     const VkSpecializationMapEntry ssaoBlurConstantEntry{
-		0,                  // constantID
-		0,                  // offset
-		sizeof(uint32_t)    // size
+		0,    
+		0,              
+		sizeof(uint32_t)
 	};
 
     const auto ssaoBlurFragmentShader = std::make_shared<ShaderModule>(
-        pDevice,
-        File::getPath(SSAO_BLUR_SHADERS_DIR, "Frag.spv"),
+        device,
+		"Shaders/SsaoBlur/Frag.spv",
         VK_SHADER_STAGE_FRAGMENT_BIT,
         std::vector<VkSpecializationMapEntry>{ ssaoBlurConstantEntry },
-        std::vector<const void*>{ &pSsaoKernel->BLUR_RADIUS }
-    );
-
-	GraphicsPipeline *pSsaoBlurPipeline = new GraphicsPipeline(
-		pDevice,
+        std::vector<const void*>{ &ssaoKernel->BLUR_RADIUS });
+    const auto ssaoBlurPipeline = new GraphicsPipeline(
+		device,
 		{ descriptors.at(SSAO_BLUR).layout },
 		renderPasses.at(SSAO_BLUR),
 		{ fullscreenVertexShader, ssaoBlurFragmentShader },
@@ -428,31 +399,30 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 		{},
 		renderPasses.at(SSAO_BLUR)->getSampleCount(),
 		renderPasses.at(SSAO_BLUR)->getColorAttachmentCount(),
-		VK_FALSE
-	);
-	Model::setStaticPipeline(SSAO_BLUR, pSsaoBlurPipeline);
-	pipelines.push_back(pSsaoBlurPipeline);
+		VK_FALSE);
+
+	Model::setStaticPipeline(SSAO_BLUR, ssaoBlurPipeline);
+	pipelines.push_back(ssaoBlurPipeline);
 
     #pragma endregion 
 
     #pragma region Lighting
 
-	VkSpecializationMapEntry lightingConstantEntry{
+    const VkSpecializationMapEntry lightingConstantEntry{
 		0,
 		0,
 		sizeof(uint32_t)
 	};
 
-    auto lightingFragmentShader = std::make_shared<ShaderModule>(
-        pDevice,
-		File::getPath(LIGHTING_SHADERS_DIR, "Frag.spv"),
+    const auto lightingFragmentShader = std::make_shared<ShaderModule>(
+        device,
+		"Shaders/Lighting/Frag.spv",
         VK_SHADER_STAGE_FRAGMENT_BIT, 
         std::vector<VkSpecializationMapEntry>{ lightingConstantEntry }, 
-        std::vector<const void*>{ &sampleCount }
-    );
+        std::vector<const void*>{ &sampleCount });
 
-	GraphicsPipeline *pLightingPipeline = new GraphicsPipeline(
-		pDevice,
+    const auto lightingPipeline = new GraphicsPipeline(
+		device,
 		{ descriptors.at(LIGHTING).layout },
 		renderPasses.at(LIGHTING),
 		{ fullscreenVertexShader, lightingFragmentShader },
@@ -460,10 +430,10 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 		{},
 		renderPasses.at(LIGHTING)->getSampleCount(),
 		renderPasses.at(LIGHTING)->getColorAttachmentCount(),
-		VK_FALSE
-	);
-	Model::setStaticPipeline(LIGHTING, pLightingPipeline);
-	pipelines.push_back(pLightingPipeline);
+		VK_FALSE);
+
+	Model::setStaticPipeline(LIGHTING, lightingPipeline);
+	pipelines.push_back(lightingPipeline);
 
     #pragma endregion 
 }
