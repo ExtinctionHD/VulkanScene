@@ -10,7 +10,7 @@ public:
 	Device(
 		VkInstance instance,
 		VkSurfaceKHR surface,
-        const std::vector<const char*> &requiredLayers,
+        const std::vector<const char*>& requiredLayers,
 		VkSampleCountFlagBits maxRequiredSampleCount);
 
 	~Device();
@@ -80,9 +80,9 @@ private:
 
 	VkSampleCountFlagBits getMaxSupportedSampleCount(VkPhysicalDevice physicalDevice) const;
 
-	static bool checkDeviceLayerSupport(VkPhysicalDevice device, std::vector<const char*> requiredLayers);
+	static bool checkDeviceLayerSupport(VkPhysicalDevice device, const std::vector<const char*>& requiredLayers);
 
-	static bool checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char*> requiredExtensions);
+	static bool checkDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char*>& requiredExtensions);
 
 	void createDevice(const std::vector<const char*>& layers);
 

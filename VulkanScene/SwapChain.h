@@ -6,12 +6,11 @@
 class SwapChain
 {
 public:
-	SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceExtent);
+	SwapChain(Device *device, VkSurfaceKHR surface, VkExtent2D surfaceExtent);
 
-	// destroy objects: swapchain, imageViews
 	~SwapChain();
 
-	VkSwapchainKHR getSwapchain() const;
+	VkSwapchainKHR getVk() const;
 
 	std::vector<VkImageView> getImageViews() const;
 
@@ -24,44 +23,33 @@ public:
 	void recreate(VkExtent2D newExtent);
 
 private:
-	// try to found this surface format
-	const VkSurfaceFormatKHR PRESENT_FORMAT = { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
+	const VkSurfaceFormatKHR PREFERRED_PRESENT_FORMAT = { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
 
-	// try to found this present mode
 	const VkPresentModeKHR PREFERRED_PRESENT_MODE = VK_PRESENT_MODE_MAILBOX_KHR;
 
-	// device that provide swapchain
-	Device *pDevice;
+	Device *device;
 
 	VkSurfaceKHR surface;
 
-	VkSwapchainKHR swapChain{};
+	VkSwapchainKHR swapChain;
 
-	// properties
-	VkExtent2D extent{};
-	VkFormat imageFormat{};
+	VkExtent2D extent;
+	VkFormat imageFormat;
 
-	// images to rendering that swapchain provides
 	std::vector<VkImage> images;
-
-	// view of each swapchain image
 	std::vector<VkImageView> imageViews;
 
 	void create(VkExtent2D surfaceExtent);
 
-	// swapchain display frames on surface, so exactly swapchain sets format of surface
 	VkSurfaceFormatKHR chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats) const;
 
-	// choose order of displaying framebuffers
 	VkPresentModeKHR choosePresentMode(std::vector<VkPresentModeKHR> availablePresentModes) const;
 
 	static VkExtent2D chooseExtent(VkSurfaceCapabilitiesKHR capabilities, VkExtent2D actualExtent);
 
-	// minimal image count, real count can be great
-	static uint32_t chooseImageCount(VkSurfaceCapabilitiesKHR capabilities);
+	static uint32_t chooseMinImageCount(VkSurfaceCapabilitiesKHR capabilities);
 
-	// get real image count and images themselves
-	void getImages(uint32_t imageCount);
+	void saveImages(uint32_t imageCount);
 
 	void createImageViews();
 

@@ -8,13 +8,12 @@
 
 // public:
 
-SwapChain::SwapChain(Device *pDevice, VkSurfaceKHR surface, VkExtent2D surfaceExtent)
+SwapChain::SwapChain(Device *device, VkSurfaceKHR surface, VkExtent2D surfaceExtent)
 {
-	this->pDevice = pDevice;
+	this->device = device;
 	this->surface = surface;
 
 	create(surfaceExtent);
-
 	createImageViews();
 }
 
@@ -23,7 +22,7 @@ SwapChain::~SwapChain()
 	cleanup();
 }
 
-VkSwapchainKHR SwapChain::getSwapchain() const
+VkSwapchainKHR SwapChain::getVk() const
 {
 	return swapChain;
 }
@@ -62,11 +61,11 @@ void SwapChain::recreate(VkExtent2D newExtent)
 void SwapChain::create(VkExtent2D surfaceExtent)
 {
     // get necessary swapchain properties
-	const SurfaceSupportDetails details = pDevice->getSurfaceSupportDetails();
+	const SurfaceSupportDetails details = device->getSurfaceSupportDetails();
     const VkSurfaceFormatKHR surfaceFormat = chooseSurfaceFormat(details.getFormats());
     const VkPresentModeKHR presentMode = choosePresentMode(details.getPresentModes());
 	const VkSurfaceCapabilitiesKHR surfaceCapabilities = details.getCapabilities();
-	const uint32_t imageCount = chooseImageCount(surfaceCapabilities);
+	const uint32_t minImageCount = chooseMinImageCount(surfaceCapabilities);
 
 	extent = chooseExtent(details.getCapabilities(), surfaceExtent);
 	imageFormat = surfaceFormat.format;
@@ -76,7 +75,7 @@ void SwapChain::create(VkExtent2D surfaceExtent)
 		nullptr,
 		0,
 		surface,
-		imageCount,
+		minImageCount,
 		surfaceFormat.format,
 		surfaceFormat.colorSpace,
 		extent,
@@ -93,7 +92,7 @@ void SwapChain::create(VkExtent2D surfaceExtent)
 	};
 
 	// concurrent sharing mode only when using different queue families
-    const QueueFamilyIndices queueFamilyIndices = pDevice->getQueueFamilyIndices();
+    const QueueFamilyIndices queueFamilyIndices = device->getQueueFamilyIndices();
 	std::vector<uint32_t> indices{
 		queueFamilyIndices.getGraphics(),
 		queueFamilyIndices.getPresent()
@@ -105,11 +104,10 @@ void SwapChain::create(VkExtent2D surfaceExtent)
 		createInfo.pQueueFamilyIndices = indices.data();
 	}
 
-    const VkResult result = vkCreateSwapchainKHR(pDevice->getVk(), &createInfo, nullptr, &swapChain);
+    const VkResult result = vkCreateSwapchainKHR(device->getVk(), &createInfo, nullptr, &swapChain);
 	assert(result == VK_SUCCESS);
 
-	// save swapchain images 
-	getImages(imageCount);
+	saveImages(minImageCount);
 }
 
 VkSurfaceFormatKHR SwapChain::chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR> availableFormats) const
@@ -117,14 +115,14 @@ VkSurfaceFormatKHR SwapChain::chooseSurfaceFormat(std::vector<VkSurfaceFormatKHR
 	// can choose any format
 	if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED)
 	{
-		return PRESENT_FORMAT;
+		return PREFERRED_PRESENT_FORMAT;
 	}
 
 	// try to found preferred format from available
 	for (const auto& availableFormat : availableFormats)
 	{
-		if (availableFormat.format == PRESENT_FORMAT.format &&
-			availableFormat.colorSpace == PRESENT_FORMAT.colorSpace)
+		if (availableFormat.format == PREFERRED_PRESENT_FORMAT.format &&
+			availableFormat.colorSpace == PREFERRED_PRESENT_FORMAT.colorSpace)
 		{
 			return availableFormat;
 		}
@@ -169,7 +167,7 @@ VkExtent2D SwapChain::chooseExtent(VkSurfaceCapabilitiesKHR capabilities, VkExte
     return actualExtent;
 }
 
-uint32_t SwapChain::chooseImageCount(VkSurfaceCapabilitiesKHR capabilities)
+uint32_t SwapChain::chooseMinImageCount(VkSurfaceCapabilitiesKHR capabilities)
 {
 	uint32_t imageCount = capabilities.minImageCount + 1;
 	if (capabilities.maxImageCount > 0 &&
@@ -181,12 +179,12 @@ uint32_t SwapChain::chooseImageCount(VkSurfaceCapabilitiesKHR capabilities)
 	return imageCount;
 }
 
-void SwapChain::getImages(uint32_t imageCount)
+void SwapChain::saveImages(uint32_t imageCount)
 {
 	// real count of images can be greater than requested
-	vkGetSwapchainImagesKHR(pDevice->getVk(), swapChain, &imageCount, nullptr);  // get count
+	vkGetSwapchainImagesKHR(device->getVk(), swapChain, &imageCount, nullptr);  // get count
 	images.resize(imageCount);
-	vkGetSwapchainImagesKHR(pDevice->getVk(), swapChain, &imageCount, images.data());  // get images
+	vkGetSwapchainImagesKHR(device->getVk(), swapChain, &imageCount, images.data());  // get images
 }
 
 void SwapChain::createImageViews()
@@ -195,14 +193,14 @@ void SwapChain::createImageViews()
 
 	for (uint32_t i = 0; i < getImageCount(); i++)
 	{
-		SwapChainImage image(pDevice, images[i], imageFormat);
+		SwapChainImage image(device, images[i], imageFormat);
 
-		VkImageSubresourceRange subresourceRange{
-			VK_IMAGE_ASPECT_COLOR_BIT,	// aspectMask;
-			0,							// baseMipLevel;
-			1,							// levelCount;
-			0,							// baseArrayLayer;
-			1,							// layerCount;
+        const VkImageSubresourceRange subresourceRange{
+			VK_IMAGE_ASPECT_COLOR_BIT,
+			0,
+			1,	
+			0,	
+			1,	
 		};
 
 		imageViews[i] = image.getImageView(subresourceRange);
@@ -211,10 +209,10 @@ void SwapChain::createImageViews()
 
 void SwapChain::cleanup()
 {
-	for (size_t i = 0; i < imageViews.size(); i++)
-	{
-		vkDestroyImageView(pDevice->getVk(), imageViews[i], nullptr);
+	for (auto imageView : imageViews)
+    {
+		vkDestroyImageView(device->getVk(), imageView, nullptr);
 	}
 
-	vkDestroySwapchainKHR(pDevice->getVk(), swapChain, nullptr);
+	vkDestroySwapchainKHR(device->getVk(), swapChain, nullptr);
 }

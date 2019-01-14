@@ -83,7 +83,7 @@ void Engine::drawFrame()
 	uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(
         device->getVk(),
-        swapChain->getSwapchain(),
+        swapChain->getVk(),
         UINT64_MAX,
         imageAvailable,
         nullptr,
@@ -114,7 +114,7 @@ void Engine::drawFrame()
 	result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, nullptr);
 	assert(result == VK_SUCCESS);
 
-	std::vector<VkSwapchainKHR> swapChains{ swapChain->getSwapchain() };
+	std::vector<VkSwapchainKHR> swapChains{ swapChain->getVk() };
 	VkPresentInfoKHR presentInfo{
 		VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
 		nullptr,

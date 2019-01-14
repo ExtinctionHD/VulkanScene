@@ -10,7 +10,7 @@
 Device::Device(
 	VkInstance instance, 
 	VkSurfaceKHR surface,
-    const std::vector<const char*> &requiredLayers,
+    const std::vector<const char*>& requiredLayers,
 	VkSampleCountFlagBits maxRequiredSampleCount)
 {
 	physicalDevice = pickPhysicalDevice(instance, surface, requiredLayers);
@@ -223,7 +223,7 @@ bool Device::isPhysicalDeviceSuitable(
 	return indices.isComplete() && details.isSuitable() && layerSupport && extensionSupport;
 }
 
-bool Device::checkDeviceLayerSupport(VkPhysicalDevice device, std::vector<const char*> requiredLayers)
+bool Device::checkDeviceLayerSupport(VkPhysicalDevice device, const std::vector<const char*>& requiredLayers)
 {
 	uint32_t layerCount;
 	vkEnumerateDeviceLayerProperties(device, &layerCount, nullptr);  // get count
@@ -242,7 +242,7 @@ bool Device::checkDeviceLayerSupport(VkPhysicalDevice device, std::vector<const 
 	return requiredLayerSet.empty();
 }
 
-bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char*> requiredExtensions)
+bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char*>& requiredExtensions)
 {
 	uint32_t extensionCount;
 	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);  // get count
