@@ -71,8 +71,7 @@ GraphicsPipeline * Model::createPipeline(
     const std::vector<VkDescriptorSetLayout>& layouts,
     RenderPassType type,
     RenderPass *pRenderPass,
-    const std::vector<std::shared_ptr<ShaderModule>>& shaderModules
-)
+    const std::vector<std::shared_ptr<ShaderModule>>& shaderModules)
 {
 	const std::vector<VkVertexInputBindingDescription> bindingDescriptions = {
 		getVertexBindingDescription(0),
@@ -193,8 +192,7 @@ GraphicsPipeline* Model::createDepthPipeline(
 	RenderPass *pRenderPass,
 	std::vector<std::shared_ptr<ShaderModule>> shaderModules,
 	std::vector<VkVertexInputBindingDescription> bindingDescriptions,
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions
-)
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions)
 {
 	layouts.push_back(Material::getDsLayout());
 
@@ -207,8 +205,7 @@ GraphicsPipeline* Model::createDepthPipeline(
 		attributeDescriptions,
 		pRenderPass->getSampleCount(),
         pRenderPass->getColorAttachmentCount(),
-        VK_FALSE
-	);
+        VK_FALSE);
 	setPipeline(DEPTH, pPipeline);
 
 	return pPipeline;
@@ -219,8 +216,7 @@ GraphicsPipeline* Model::createGeometryPipeline(
 	RenderPass *pRenderPass,
 	std::vector<std::shared_ptr<ShaderModule>> shaderModules,
 	std::vector<VkVertexInputBindingDescription> bindingDescriptions,
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions
-)
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions)
 {
 	layouts.push_back(Material::getDsLayout());
 
@@ -233,8 +229,7 @@ GraphicsPipeline* Model::createGeometryPipeline(
 		attributeDescriptions,
 		pRenderPass->getSampleCount(),
         pRenderPass->getColorAttachmentCount(),
-        VK_FALSE
-	);
+        VK_FALSE);
 	setPipeline(GEOMETRY, pPipeline);
 
 	return pPipeline;
@@ -245,8 +240,7 @@ GraphicsPipeline* Model::createFinalPipeline(
 	RenderPass * pRenderPass,
 	std::vector<std::shared_ptr<ShaderModule>> shaderModules,
 	std::vector<VkVertexInputBindingDescription> bindingDescriptions,
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions
-)
+	std::vector<VkVertexInputAttributeDescription> attributeDescriptions)
 {
 	layouts.push_back(Material::getDsLayout());
 
@@ -259,8 +253,7 @@ GraphicsPipeline* Model::createFinalPipeline(
 		attributeDescriptions,
 		pRenderPass->getSampleCount(),
 		pRenderPass->getColorAttachmentCount(),
-        VK_TRUE
-	);
+        VK_TRUE);
 	setPipeline(FINAL, pPipeline);
 
 	return pPipeline;

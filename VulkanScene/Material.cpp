@@ -105,13 +105,11 @@ void Material::initDescriptorSet(DescriptorPool * pDescriptorPool)
     }
 
 	descriptorSet = pDescriptorPool->getDescriptorSet(
-		dsLayout
-	);
+		dsLayout);
 	pDescriptorPool->updateDescriptorSet(
 		descriptorSet,
 		{ pColorsBuffer },
-		getTextures()
-	);
+		getTextures());
 }
 
 VkDescriptorSet Material::getDescriptorSet() const
@@ -140,8 +138,7 @@ void Material::initDefaultTextures(Device *pDevice)
 			VK_IMAGE_ASPECT_COLOR_BIT,
 			VK_IMAGE_VIEW_TYPE_2D,
 			1,
-			VK_SAMPLER_ADDRESS_MODE_REPEAT
-		);
+			VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 		void *data = reinterpret_cast<void*>(&DEFAULT_TEXTURES_COLORS[i]);
 		defaultTexture->updateData(&data, sizeof RgbaUNorm);
@@ -156,8 +153,7 @@ void Material::initDefaultTextures(Device *pDevice)
 				1,
 				0,
 				1
-			}
-		);
+			});
 
 		defaultTextures.insert({ TEXTURES_ORDER[i], defaultTexture });
 	}

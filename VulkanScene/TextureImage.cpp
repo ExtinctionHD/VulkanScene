@@ -47,8 +47,7 @@ TextureImage::TextureImage(
 	}
 
     mipLevels = static_cast<uint32_t>(std::ceil(
-		std::log2(std::max(extent.width, extent.height)))
-	);
+		std::log2(std::max(extent.width, extent.height))));
 	mipLevels = mipLevels > 0 ? mipLevels : 1;
 
 	createThisImage(
@@ -61,8 +60,7 @@ TextureImage::TextureImage(
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		arrayLayers
-	);
+		arrayLayers);
 
 	updateData(reinterpret_cast<void**>(pixels.data()), STBI_rgb_alpha);
 
@@ -99,8 +97,18 @@ TextureImage::TextureImage(
     VkImageAspectFlags aspectFlags,
 	VkImageViewType viewType,
     uint32_t arrayLayers,
-    VkSamplerAddressMode samplerAddressMode
-) : Image(pDevice, extent, flags, sampleCount, 1, format, tiling, usage | VK_IMAGE_USAGE_SAMPLED_BIT, properties, arrayLayers)
+    VkSamplerAddressMode samplerAddressMode)
+    : Image(
+        pDevice,
+        extent,
+        flags,
+        sampleCount,
+        1,
+        format,
+        tiling,
+        usage | VK_IMAGE_USAGE_SAMPLED_BIT,
+        properties,
+        arrayLayers)
 {
 	VkImageSubresourceRange subresourceRange{
 		aspectFlags,
@@ -133,8 +141,7 @@ stbi_uc* TextureImage::loadPixels(const std::string &path)
 		reinterpret_cast<int*>(&extent.width),
 		reinterpret_cast<int*>(&extent.height),
 		nullptr,
-		STBI_rgb_alpha
-	);
+		STBI_rgb_alpha);
 
 	assert(pixels);
 
@@ -183,8 +190,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImag
 			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
 			0, nullptr,
 			0, nullptr,
-			1, &barrier
-		);
+			1, &barrier);
 
 		// scale and copy image form this to next miplevel
 		VkImageBlit blit = {};
@@ -215,8 +221,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImag
 			image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 			image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			1, &blit,
-			filter
-		);
+			filter);
 
 		// transit current miplevel layout to SHADER_READ_ONLY
 		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
@@ -228,8 +233,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImag
 			VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 			0, nullptr,
 			0, nullptr,
-			1, &barrier
-		);
+			1, &barrier);
 
 		// next miplevel scale
 		if (mipWidth > 1) mipWidth /= 2;
@@ -247,8 +251,7 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImag
 		VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
 		0, nullptr,
 		0, nullptr,
-		1, &barrier
-	);
+		1, &barrier);
 
 	pDevice->endOneTimeCommands(commandBuffer);
 }

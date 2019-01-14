@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include "SsaoKernel.h"
+#include <chrono>
 
 // public:
 
@@ -77,8 +78,7 @@ void SsaoKernel::createNoiseTexture()
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		VK_IMAGE_VIEW_TYPE_2D,
 		1,
-		VK_SAMPLER_ADDRESS_MODE_REPEAT
-	);
+		VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 	std::vector<glm::vec4*> data{ noise.data() };
 	pNoiseTexture->updateData(reinterpret_cast<void**>(data.data()), vectorSize);
@@ -93,8 +93,7 @@ void SsaoKernel::createNoiseTexture()
 			1,
 			0,
 			1
-		}
-	);
+		});
 }
 
 float SsaoKernel::lerp(float a, float b, float f)

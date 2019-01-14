@@ -15,8 +15,7 @@ StagingBuffer::StagingBuffer(Device * pDevice, VkDeviceSize size)
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		&stagingBuffer,
-		&stagingMemory
-	);
+		&stagingMemory);
 }
 
 StagingBuffer::~StagingBuffer()
@@ -85,8 +84,7 @@ void StagingBuffer::allocateMemory(Device * pDevice, VkBuffer * pBuffer, VkDevic
 
 	uint32_t memoryTypeIndex = pDevice->findMemoryTypeIndex(
 		memRequirements.memoryTypeBits,
-		properties
-	);
+		properties);
 
 	VkMemoryAllocateInfo allocInfo =
 	{

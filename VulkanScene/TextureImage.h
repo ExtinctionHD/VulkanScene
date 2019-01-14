@@ -19,8 +19,7 @@ public:
 		uint32_t arrayLayers, 
 		bool isCube,
 		VkFilter filter,
-		VkSamplerAddressMode samplerAddressMode
-	);
+		VkSamplerAddressMode samplerAddressMode);
 
     // creates device local texture
 	TextureImage(
@@ -35,8 +34,7 @@ public:
 	    VkImageAspectFlags aspectFlags,
         VkImageViewType viewType,
 	    uint32_t arrayLayers,
-		VkSamplerAddressMode samplerAddressMode
-	);
+		VkSamplerAddressMode samplerAddressMode);
 
 	~TextureImage();
 

@@ -14,19 +14,16 @@ public:
 
 	VkDescriptorSetLayout createDescriptorSetLayout(
 		std::vector<VkShaderStageFlags> buffersShaderStages,
-		std::vector<VkShaderStageFlags> texturesShaderStages
-	) const;
+		std::vector<VkShaderStageFlags> texturesShaderStages) const;
 
 	// returns set of descriptors and create the layout of this descriptor set
 	VkDescriptorSet getDescriptorSet(
-		VkDescriptorSetLayout layout
-	) const;
+		VkDescriptorSetLayout layout) const;
 
 	void updateDescriptorSet(
 		VkDescriptorSet set,
 		std::vector<Buffer*> buffers,
-		std::vector<TextureImage*> textures
-	) const;
+		std::vector<TextureImage*> textures) const;
 
 private:
 	Device *pDevice;

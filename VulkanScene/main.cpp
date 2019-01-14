@@ -15,8 +15,7 @@ int main(int argc, char *argv[])
 	auto engine = Engine(
 		window.getHWnd(),
 		window.getClientExtent(),
-        settings
-	);
+        settings);
 
 	window.setUserPointer(&engine);
     window.mainLoop();

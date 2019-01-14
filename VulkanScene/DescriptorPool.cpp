@@ -39,8 +39,7 @@ DescriptorPool::~DescriptorPool()
 
 VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
 	std::vector<VkShaderStageFlags> buffersShaderStages,
-	std::vector<VkShaderStageFlags> texturesShaderStages
-) const
+	std::vector<VkShaderStageFlags> texturesShaderStages) const
 {
 	std::vector<VkDescriptorSetLayoutBinding> bindings;
 
@@ -87,9 +86,7 @@ VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
 	return layout;
 }
 
-VkDescriptorSet DescriptorPool::getDescriptorSet(
-    VkDescriptorSetLayout layout
-) const
+VkDescriptorSet DescriptorPool::getDescriptorSet(VkDescriptorSetLayout layout) const
 {
 	VkDescriptorSetAllocateInfo allocateInfo{
 		VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,	// sType;
@@ -109,8 +106,7 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(
 void DescriptorPool::updateDescriptorSet(
 	VkDescriptorSet set, 
 	std::vector<Buffer*> buffers,
-	std::vector<TextureImage*> textures
-) const
+	std::vector<TextureImage*> textures) const
 {
 	// write buffers in descriptor set
 	std::vector<VkWriteDescriptorSet> buffersWrites;

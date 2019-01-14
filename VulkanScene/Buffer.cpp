@@ -11,8 +11,7 @@ Buffer::Buffer(Device *pDevice, VkBufferUsageFlags usage, VkDeviceSize size) :
 		usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		&buffer,
-		&memory
-	);
+		&memory);
 }
 
 Buffer::~Buffer()

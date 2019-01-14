@@ -37,8 +37,7 @@ public:
 	    const std::vector<VkDescriptorSetLayout> &layouts,
 		RenderPassType type,
 		RenderPass *pRenderPass,
-	    const std::vector<std::shared_ptr<ShaderModule>> &shaderModules
-	);
+	    const std::vector<std::shared_ptr<ShaderModule>> &shaderModules);
 
 	void setPipeline(RenderPassType type, GraphicsPipeline *pPipeline);
 
@@ -87,24 +86,21 @@ private:
 		RenderPass * pRenderPass, 
 		std::vector<std::shared_ptr<ShaderModule>> shaderModules,
 		std::vector<VkVertexInputBindingDescription> bindingDescriptions,
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions
-	);
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions);
 
 	GraphicsPipeline* createGeometryPipeline(
 		std::vector<VkDescriptorSetLayout> layouts,
 		RenderPass * pRenderPass,
 		std::vector<std::shared_ptr<ShaderModule>> shaderModules,
 		std::vector<VkVertexInputBindingDescription> bindingDescriptions,
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions
-	);
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions);
 
 	GraphicsPipeline* createFinalPipeline(
 		std::vector<VkDescriptorSetLayout> layouts,
 		RenderPass * pRenderPass,
 		std::vector<std::shared_ptr<ShaderModule>> shaderModules,
 		std::vector<VkVertexInputBindingDescription> bindingDescriptions,
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions
-	);
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions);
 
 	void renderMeshes(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, RenderPassType type, std::vector<MeshBase*> meshes) const;
 };

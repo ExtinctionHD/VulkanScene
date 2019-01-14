@@ -21,8 +21,7 @@ public:
 		VkImageTiling tiling,
 		VkImageUsageFlags usage,
 		VkMemoryPropertyFlags properties,
-		uint32_t arrayLayers
-	);
+		uint32_t arrayLayers);
 
 	~Image();
 
@@ -47,8 +46,7 @@ public:
 		Image& srcImage, 
 		Image& dstImage,
 		VkExtent3D extent,
-		VkImageSubresourceLayers subresourceLayers
-	);
+		VkImageSubresourceLayers subresourceLayers);
 
 protected:
 	VkSampleCountFlagBits sampleCount{};
@@ -68,8 +66,7 @@ protected:
 		VkImageTiling tiling,
 		VkImageUsageFlags usage,
 		VkMemoryPropertyFlags properties,
-		uint32_t arrayLayers
-	);
+		uint32_t arrayLayers);
 
 private:
 	// memory that stores this image

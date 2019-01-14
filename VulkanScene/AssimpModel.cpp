@@ -21,8 +21,7 @@ AssimpModel::AssimpModel(Device *pDevice, const std::string& path, uint32_t coun
 		File::getAbsolute(path),
 		aiProcess_Triangulate | 
 		aiProcess_GenNormals |
-		aiProcess_FlipUVs
-	);
+		aiProcess_FlipUVs);
 	importer.ApplyPostProcessing(aiProcess_CalcTangentSpace);
 
 	assert(pScene);
@@ -97,24 +96,21 @@ Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScen
 		vertex.pos = glm::vec3(
 			pAiMesh->mVertices[i].x,
 			pAiMesh->mVertices[i].y,
-			pAiMesh->mVertices[i].z
-		);
+			pAiMesh->mVertices[i].z);
 
 		initPosLimits(vertex.pos);
 
 		vertex.normal = glm::vec3(
 			pAiMesh->mNormals[i].x,
 			pAiMesh->mNormals[i].y,
-			pAiMesh->mNormals[i].z
-		);
+			pAiMesh->mNormals[i].z);
 
 		if (pAiMesh->mTangents != nullptr)
 		{
 			vertex.tangent = glm::vec3(
 				pAiMesh->mTangents[i].x,
 				pAiMesh->mTangents[i].y,
-				pAiMesh->mTangents[i].z
-			);
+				pAiMesh->mTangents[i].z);
 		}
 		else
 		{
@@ -125,8 +121,7 @@ Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScen
 		{
 			vertex.uv = glm::vec2(
 				pAiMesh->mTextureCoords[0][i].x,
-				pAiMesh->mTextureCoords[0][i].y
-			);
+				pAiMesh->mTextureCoords[0][i].y);
 		}
 		else
 		{
@@ -292,8 +287,7 @@ TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextur
 			1, 
 			false, 
 			filter,
-			VK_SAMPLER_ADDRESS_MODE_REPEAT
-		);
+			VK_SAMPLER_ADDRESS_MODE_REPEAT);
 		textures.insert({ path, pTexture });
 	}
 	else

@@ -10,8 +10,7 @@ public:
 		Device *pDevice, 
 		glm::vec2 cellSize,
 		VkExtent2D cellCount,
-		ImageSetInfo imageSetInfo
-	);
+		ImageSetInfo imageSetInfo);
 
 	~TerrainModel();
 

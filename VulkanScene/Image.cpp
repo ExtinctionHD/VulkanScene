@@ -15,8 +15,7 @@ Image::Image(
 	VkImageTiling tiling, 
 	VkImageUsageFlags usage, 
 	VkMemoryPropertyFlags properties,
-	uint32_t arrayLayers
-)
+	uint32_t arrayLayers)
 {
 	createThisImage(pDevice, extent, flags, sampleCount, mipLevels, format, tiling, usage, properties, arrayLayers);
 }
@@ -133,8 +132,7 @@ void Image::transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayou
 		0,
 		0, nullptr,
 		0, nullptr,
-		1, &barrier
-	);
+		1, &barrier);
 
 	pDevice->endOneTimeCommands(commandBuffer);
 }
@@ -154,7 +152,7 @@ void Image::updateData(void **data, uint32_t pixelSize)
 		pDevice,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		subresourceRange);
+		subresourceRange);
 
 	// staging buffer to map its memory
 	VkDeviceSize arrayLayerSize = extent.width * extent.height * pixelSize;
@@ -204,8 +202,7 @@ void Image::copyImage(Device *pDevice, Image& srcImage, Image& dstImage, VkExten
 		dstImage.image,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		1,
-		&region
-	);
+		&region);
 
 	pDevice->endOneTimeCommands(commandBuffer);
 }
@@ -222,8 +219,7 @@ void Image::createThisImage(
 	VkImageTiling tiling, 
 	VkImageUsageFlags usage, 
 	VkMemoryPropertyFlags properties, 
-	uint32_t arrayLayers
-)
+	uint32_t arrayLayers)
 {
 	this->pDevice = pDevice;
 	this->extent = extent;
@@ -271,7 +267,7 @@ void Image::allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties)
 
 	uint32_t memoryTypeIndex = pDevice->findMemoryTypeIndex(
 		memRequirements.memoryTypeBits,
-		properties);
+		properties);
 
 	VkMemoryAllocateInfo allocInfo =
 	{

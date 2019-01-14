@@ -179,8 +179,7 @@ void Engine::createRenderPasses(uint32_t shadowsDim)
         {
 			dynamic_cast<FinalRenderPass*>(renderPass)->saveRenderPasses(
 				dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY)),
-				dynamic_cast<LightingRenderPass*>(renderPasses.at(LIGHTING))
-			);
+				dynamic_cast<LightingRenderPass*>(renderPasses.at(LIGHTING)));
         }
 		renderPass->create();
     }

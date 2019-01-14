@@ -299,8 +299,7 @@ Transformation SceneDao::getTransformation(nlohmann::json json, AssimpModel *mod
 		{
 			transformation.rotate(
 				getVec3(transformationJson["axis"]),
-				transformationJson["angle"].get<float>()
-			);
+				transformationJson["angle"].get<float>());
 		}
 		else
 		{

@@ -38,8 +38,7 @@ protected:
 		VkBufferUsageFlags usage,
 		VkMemoryPropertyFlags properties,
 		VkBuffer *pBuffer,
-		VkDeviceMemory *pMemory
-	);
+		VkDeviceMemory *pMemory);
 
 	static void allocateMemory(Device *pDevice, VkBuffer *pBuffer, VkDeviceMemory *pMemory, VkMemoryPropertyFlags properties);
 };

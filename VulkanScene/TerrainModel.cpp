@@ -10,8 +10,7 @@ TerrainModel::TerrainModel(
 	Device *pDevice, 
 	glm::vec2 cellSize,
 	VkExtent2D cellCount, 
-	ImageSetInfo imageSetInfo
-) : Model(pDevice, 1)
+	ImageSetInfo imageSetInfo) : Model(pDevice, 1)
 {
 	this->cellSize = cellSize;
 	this->cellCount = cellCount;
