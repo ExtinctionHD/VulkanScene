@@ -6,7 +6,7 @@
 class Instance
 {
 public:
-	Instance(const std::vector<const char*>& requiredLayers, std::vector<const char*> requiredExtensions);
+	Instance(const std::vector<const char*> &requiredLayers, std::vector<const char*> requiredExtensions);
 	~Instance();
 
 	VkInstance getVk() const;
@@ -17,12 +17,12 @@ private:
 	VkDebugReportCallbackEXT callback;
 
 	void createInstance(
-        const std::vector<const char*>& requiredLayers,
-        const std::vector<const char*>& requiredExtensions);
+        const std::vector<const char*> &requiredLayers,
+        const std::vector<const char*> &requiredExtensions);
 
-	static bool checkInstanceLayerSupport(const std::vector<const char*>& requiredLayers);
+	static bool checkInstanceLayerSupport(const std::vector<const char*> &requiredLayers);
 
-	static bool checkInstanceExtensionSupport(const std::vector<const char*>& requiredExtensions);
+	static bool checkInstanceExtensionSupport(const std::vector<const char*> &requiredExtensions);
 
 	// functions from extensions (EXT) must be obtained before use
 	static VkResult vkCreateDebugReportCallbackEXT(

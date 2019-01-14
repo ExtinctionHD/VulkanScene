@@ -8,7 +8,7 @@ RenderPass::~RenderPass()
 	cleanup();
 }
 
-VkRenderPass RenderPass::getRenderPass() const
+VkRenderPass RenderPass::getVk() const
 {
 	return renderPass;
 }
@@ -30,17 +30,27 @@ VkExtent2D RenderPass::getExtent() const
 
 uint32_t RenderPass::getColorAttachmentCount() const
 {
-	return 1;   // default color attachment count without MRT
+	uint32_t count = 0;
+
+	for (auto image : attachments)
+	{
+		if (image->format != depthAttachmentFormat)
+		{
+			count++;
+		}
+	}
+
+	return count;
 }
 
 std::vector<VkClearValue> RenderPass::getClearValues() const
 {
 	std::vector<VkClearValue> clearValues;
-    for(Image *pImage : attachments)
+    for(auto image : attachments)
     {
 		VkClearValue clearValue{};
 
-        if (pImage->format == depthAttachmentFormat)
+        if (image->format == depthAttachmentFormat)
         {
 			clearValue.depthStencil = { 1.0f, 0 };
         }
@@ -71,12 +81,13 @@ void RenderPass::recreate(VkExtent2D newExtent)
 	create();
 }
 
-RenderPass::RenderPass(Device *pDevice, VkExtent2D extent)
+RenderPass::RenderPass(Device *device, VkExtent2D extent, VkSampleCountFlagBits sampleCount)
 {
-    this->pDevice = pDevice;
+    this->device = device;
     this->extent = extent;
+	this->sampleCount = sampleCount;
 
-    depthAttachmentFormat = pDevice->findSupportedFormat(
+    depthAttachmentFormat = device->findSupportedFormat(
         DEPTH_FORMATS,
         VK_IMAGE_TILING_OPTIMAL,
         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
@@ -85,22 +96,21 @@ RenderPass::RenderPass(Device *pDevice, VkExtent2D extent)
 
 void RenderPass::addFramebuffer(std::vector<VkImageView> imageViews)
 {
-
 	VkFramebufferCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,	// sType;
-		nullptr,									// pNext;
-		0,											// flags;
-		renderPass,									// renderPass;
-		imageViews.size(),							// attachmentCount;
-		imageViews.data(),							// pAttachments;
-		extent.width,								// width;
-		extent.height,								// height;
-		1,											// layers;
+		VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+		nullptr,			
+		0,					
+		renderPass,			
+		imageViews.size(),	
+		imageViews.data(),	
+		extent.width,		
+		extent.height,		
+		1,					
 	};
 
 	VkFramebuffer framebuffer;
 
-	VkResult result = vkCreateFramebuffer(pDevice->getVk(), &createInfo, nullptr, &framebuffer);
+    const VkResult result = vkCreateFramebuffer(device->getVk(), &createInfo, nullptr, &framebuffer);
 	assert(result == VK_SUCCESS);
 
 	framebuffers.push_back(framebuffer);
@@ -108,18 +118,14 @@ void RenderPass::addFramebuffer(std::vector<VkImageView> imageViews)
 
 void RenderPass::cleanup()
 {
-    for (Image *pImage : attachments)
-    {
-		delete pImage;
-    }
 	attachments.clear();
 
-	for (VkFramebuffer framebuffer : framebuffers)
+	for (auto framebuffer : framebuffers)
 	{
-		vkDestroyFramebuffer(pDevice->getVk(), framebuffer, nullptr);
+		vkDestroyFramebuffer(device->getVk(), framebuffer, nullptr);
 	}
 	framebuffers.clear();
 
-	vkDestroyRenderPass(pDevice->getVk(), renderPass, nullptr);
+	vkDestroyRenderPass(device->getVk(), renderPass, nullptr);
 }
 

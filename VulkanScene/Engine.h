@@ -59,6 +59,6 @@ private:
 
 	void recordRenderPassCommands(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex);
 
-	static void createSemaphore(VkDevice device, VkSemaphore& semaphore);
+	static void createSemaphore(VkDevice device, VkSemaphore &semaphore);
 };
 

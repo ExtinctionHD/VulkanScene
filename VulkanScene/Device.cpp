@@ -10,7 +10,7 @@
 Device::Device(
 	VkInstance instance, 
 	VkSurfaceKHR surface,
-    const std::vector<const char*>& requiredLayers,
+    const std::vector<const char*> &requiredLayers,
 	VkSampleCountFlagBits maxRequiredSampleCount)
 {
 	this->surface = surface;
@@ -164,7 +164,7 @@ void Device::endOneTimeCommands(VkCommandBuffer commandBuffer) const
 
 // private:
 
-VkPhysicalDevice Device::pickPhysicalDevice(VkInstance instance, const std::vector<const char*>& layers) const
+VkPhysicalDevice Device::pickPhysicalDevice(VkInstance instance, const std::vector<const char*> &layers) const
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);  // get count
@@ -206,8 +206,8 @@ VkSampleCountFlagBits Device::getMaxSupportedSampleCount(VkPhysicalDevice physic
 
 bool Device::isPhysicalDeviceSuitable(
     VkPhysicalDevice device,
-    const std::vector<const char*>& requiredLayers,
-    const std::vector<const char*>& requiredExtensions) const
+    const std::vector<const char*> &requiredLayers,
+    const std::vector<const char*> &requiredExtensions) const
 {
 	QueueFamilyIndices indices(device, surface);
 	SurfaceSupportDetails details(device, surface);
@@ -218,7 +218,7 @@ bool Device::isPhysicalDeviceSuitable(
 	return indices.isComplete() && details.isSuitable() && layerSupport && extensionSupport;
 }
 
-bool Device::checkDeviceLayerSupport(VkPhysicalDevice device, const std::vector<const char*>& requiredLayers)
+bool Device::checkDeviceLayerSupport(VkPhysicalDevice device, const std::vector<const char*> &requiredLayers)
 {
 	uint32_t layerCount;
 	vkEnumerateDeviceLayerProperties(device, &layerCount, nullptr);  // get count
@@ -228,7 +228,7 @@ bool Device::checkDeviceLayerSupport(VkPhysicalDevice device, const std::vector<
 
 	std::set<std::string> requiredLayerSet(requiredLayers.begin(), requiredLayers.end());
 
-	for (const auto& layer : availableLayers)
+	for (const auto &layer : availableLayers)
 	{
 		requiredLayerSet.erase(layer.layerName);
 	}
@@ -237,7 +237,7 @@ bool Device::checkDeviceLayerSupport(VkPhysicalDevice device, const std::vector<
 	return requiredLayerSet.empty();
 }
 
-bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char*>& requiredExtensions)
+bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char*> &requiredExtensions)
 {
 	uint32_t extensionCount;
 	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);  // get count
@@ -247,7 +247,7 @@ bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device, const std::vec
 
 	std::set<std::string> requiredExtensionSet(requiredExtensions.begin(), requiredExtensions.end());
 
-	for (const auto& layer : availableExtensions)
+	for (const auto &layer : availableExtensions)
 	{
 		requiredExtensionSet.erase(layer.extensionName);
 	}
@@ -256,7 +256,7 @@ bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device, const std::vec
 	return requiredExtensionSet.empty();
 }
 
-void Device::createDevice(const std::vector<const char*>& layers)
+void Device::createDevice(const std::vector<const char*> &layers)
 {
 	QueueFamilyIndices queueFamilyIndices = getQueueFamilyIndices();
 

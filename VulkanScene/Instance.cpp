@@ -5,7 +5,7 @@
 
 // public:
 
-Instance::Instance(const std::vector<const char*>& requiredLayers, std::vector<const char*> requiredExtensions)
+Instance::Instance(const std::vector<const char*> &requiredLayers, std::vector<const char*> requiredExtensions)
 {
 	if (!requiredLayers.empty())
 	{
@@ -34,8 +34,8 @@ VkInstance Instance::getVk() const
 // private:
 
 void Instance::createInstance(
-    const std::vector<const char*>& requiredLayers,
-    const std::vector<const char*>& requiredExtensions)
+    const std::vector<const char*> &requiredLayers,
+    const std::vector<const char*> &requiredExtensions)
 {
 	assert(checkInstanceLayerSupport(requiredLayers));
 	assert(checkInstanceExtensionSupport(requiredExtensions));
@@ -65,7 +65,7 @@ void Instance::createInstance(
 	assert(result == VK_SUCCESS);
 }
 
-bool Instance::checkInstanceLayerSupport(const std::vector<const char*>& requiredLayers)
+bool Instance::checkInstanceLayerSupport(const std::vector<const char*> &requiredLayers)
 {
 	uint32_t layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);  // get count
@@ -75,7 +75,7 @@ bool Instance::checkInstanceLayerSupport(const std::vector<const char*>& require
 
 	std::set<std::string> requiredLayerSet(requiredLayers.begin(), requiredLayers.end());
 
-	for (const auto& layer : availableLayers)
+	for (const auto &layer : availableLayers)
 	{
 		requiredLayerSet.erase(layer.layerName);
 	}
@@ -84,7 +84,7 @@ bool Instance::checkInstanceLayerSupport(const std::vector<const char*>& require
 	return requiredLayerSet.empty();
 }
 
-bool Instance::checkInstanceExtensionSupport(const std::vector<const char*>& requiredExtensions)
+bool Instance::checkInstanceExtensionSupport(const std::vector<const char*> &requiredExtensions)
 {
 	uint32_t extensionCount;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);  // get count
@@ -94,7 +94,7 @@ bool Instance::checkInstanceExtensionSupport(const std::vector<const char*>& req
 
 	std::set<std::string> requiredExtensionSet(requiredExtensions.begin(), requiredExtensions.end());
 
-	for (const auto& layer : availableExtensions)
+	for (const auto &layer : availableExtensions)
 	{
 		requiredExtensionSet.erase(layer.extensionName);
 	}

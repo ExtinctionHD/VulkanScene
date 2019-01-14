@@ -164,9 +164,9 @@ void Engine::resize(VkExtent2D newExtent)
 
 void Engine::createRenderPasses(uint32_t shadowsDim)
 {
-	const VkExtent2D depthMapExtent = { shadowsDim, shadowsDim };
+	const VkExtent2D depthTextureExtent = { shadowsDim, shadowsDim };
 
-	renderPasses.insert({ DEPTH, new DepthRenderPass(device, depthMapExtent) });
+	renderPasses.insert({ DEPTH, new DepthRenderPass(device, depthTextureExtent) });
 	renderPasses.insert({ GEOMETRY, new GeometryRenderPass(device, swapChain->getExtent()) });
 	renderPasses.insert({ SSAO, new SsaoRenderPass(device, swapChain->getExtent()) });
 	renderPasses.insert({ SSAO_BLUR, new SsaoRenderPass(device, swapChain->getExtent()) });
@@ -248,7 +248,7 @@ void Engine::beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type,
 	VkRenderPassBeginInfo renderPassBeginInfo{
 	    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 	    nullptr,
-	    renderPasses.at(type)->getRenderPass(), 
+	    renderPasses.at(type)->getVk(), 
 	    renderPasses.at(type)->getFramebuffers()[framebufferIndex],
 	    renderArea,
 	    uint32_t(clearValues.size()),
@@ -267,7 +267,7 @@ void Engine::recordRenderPassCommands(VkCommandBuffer commandBuffer, RenderPassT
 	vkCmdEndRenderPass(commandBuffer);
 }
 
-void Engine::createSemaphore(VkDevice device, VkSemaphore& semaphore)
+void Engine::createSemaphore(VkDevice device, VkSemaphore &semaphore)
 {
 	if (semaphore)
 	{

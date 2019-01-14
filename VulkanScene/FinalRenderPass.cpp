@@ -4,65 +4,66 @@
 
 // public:
 
-FinalRenderPass::FinalRenderPass(Device *pDevice, SwapChain *pSwapChain)
-    : RenderPass(pDevice, pSwapChain->getExtent())
+FinalRenderPass::FinalRenderPass(Device *device, SwapChain *swapChain)
+    : RenderPass(device, swapChain->getExtent(), device->getSampleCount())
 {
-    this->pSwapChain = pSwapChain;
-	sampleCount = pDevice->getSampleCount();
+    this->pSwapChain = swapChain;
 }
 
-void FinalRenderPass::saveRenderPasses(GeometryRenderPass *pGeometryRenderPass, LightingRenderPass *pLightingRenderPass)
+void FinalRenderPass::saveRenderPasses(GeometryRenderPass *geometryRenderPass, LightingRenderPass *lightingRenderPass)
 {
-	this->pGeometryRenderPass = pGeometryRenderPass;
-	this->pLightingRenderPass = pLightingRenderPass;
+	this->geometryRenderPass = geometryRenderPass;
+	this->lightingRenderPass = lightingRenderPass;
 }
 
 // protected:
 
 void FinalRenderPass::createAttachments()
 {
-	 pDepthImage = pGeometryRenderPass->getDepthImage();
-	 pColorImage = pLightingRenderPass->getColorImage();
+	colorImage = lightingRenderPass->getColorImage();
+    depthImage = geometryRenderPass->getDepthImage();
+
+	attachments = { colorImage, depthImage };
 }
 
 void FinalRenderPass::createRenderPass()
 {
 	// description of attachments
 
-	VkAttachmentDescription colorAttachmentDesc{
-		0,									        // flags;
-		pColorImage->format,		                // format;
-		pColorImage->getSampleCount(),			    // samples;
-		VK_ATTACHMENT_LOAD_OP_LOAD,		            // loadOp;
-		VK_ATTACHMENT_STORE_OP_STORE,		        // storeOp;
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,	        // stencilLoadOp;
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,	        // stencilStoreOp;
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,	// initialLayout;
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,   // finalLayout;
+    const VkAttachmentDescription colorAttachmentDesc{
+		0,								
+		colorImage->format,		                
+		colorImage->getSampleCount(),			 
+		VK_ATTACHMENT_LOAD_OP_LOAD,		         
+		VK_ATTACHMENT_STORE_OP_STORE,		     
+		VK_ATTACHMENT_LOAD_OP_DONT_CARE,	     
+		VK_ATTACHMENT_STORE_OP_DONT_CARE,	     
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 	};
 
-	VkAttachmentDescription depthAttachmentDesc{
-		0,											// flags;
-		pDepthImage->getFormat(),							// format;
-		pDepthImage->getSampleCount(),						// samples;
-		VK_ATTACHMENT_LOAD_OP_LOAD,						    // loadOp;
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,					// storeOp;
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,					// stencilLoadOp;
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,					// stencilStoreOp;
-		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,	// initialLayout;
-		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,	// finalLayout;
+    const VkAttachmentDescription depthAttachmentDesc{
+		0,										
+		depthImage->getFormat(),						
+		depthImage->getSampleCount(),					
+		VK_ATTACHMENT_LOAD_OP_LOAD,						 
+		VK_ATTACHMENT_STORE_OP_DONT_CARE,				
+		VK_ATTACHMENT_LOAD_OP_DONT_CARE,				
+		VK_ATTACHMENT_STORE_OP_DONT_CARE,				
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 	};
 
-	VkAttachmentDescription resolveAttachmentDesc{
-		0,                                  // flags;
-		pSwapChain->getImageFormat(),       // format;
-		VK_SAMPLE_COUNT_1_BIT,              // samples;
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,    // loadOp;
-		VK_ATTACHMENT_STORE_OP_STORE,	    // storeOp;
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,    // stencilLoadOp;
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,   // stencilStoreOp;
-		VK_IMAGE_LAYOUT_UNDEFINED,		    // initialLayout;
-		VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,    // finalLayout;
+    const VkAttachmentDescription resolveAttachmentDesc{
+		0,                         
+		pSwapChain->getImageFormat(),    
+		VK_SAMPLE_COUNT_1_BIT,           
+		VK_ATTACHMENT_LOAD_OP_DONT_CARE, 
+		VK_ATTACHMENT_STORE_OP_STORE,	 
+		VK_ATTACHMENT_LOAD_OP_DONT_CARE, 
+		VK_ATTACHMENT_STORE_OP_DONT_CARE,
+		VK_IMAGE_LAYOUT_UNDEFINED,		 
+		VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, 
 	};
 
 	std::vector<VkAttachmentDescription> attachmentDescriptions{
@@ -74,55 +75,55 @@ void FinalRenderPass::createRenderPass()
 	// references to attachments
 
 	VkAttachmentReference colorAttachmentRef{
-		0,											// attachment;
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL	// layout;
+		0,							
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
 	};
 
 	VkAttachmentReference depthAttachmentRef{
-		1,													// attachment;
-		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL	// layout;
+		1,									
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
 	};
 
 	VkAttachmentReference resolveAttachmentRef{
-		2,											// attachment;
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL	// layout;
+		2,							
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
 	};
 
 	// subpass and it dependencies (contain references)
 
 	VkSubpassDescription subpass{
-		0,									// flags;
-		VK_PIPELINE_BIND_POINT_GRAPHICS,	// pipelineBindPoint;
-		0,									// inputAttachmentCount;
-		nullptr,							// pInputAttachmentReferences;
-		1,									// colorAttachmentCount;
-		&colorAttachmentRef,				// pColorAttachmentReferences;
-		&resolveAttachmentRef,			    // pResolveAttachmentReference;
-		&depthAttachmentRef,				// pDepthStencilAttachmentReference;
-		0,									// preserveAttachmentCount;
-		nullptr								// pPreserveAttachments;
+		0,						
+		VK_PIPELINE_BIND_POINT_GRAPHICS,
+		0,								
+		nullptr,						
+		1,								
+		&colorAttachmentRef,			
+		&resolveAttachmentRef,			
+		&depthAttachmentRef,			
+		0,								
+		nullptr							
 	};
 
-	VkSubpassDependency inputDependency{
-		VK_SUBPASS_EXTERNAL,							// srcSubpass;
-		0,												// dstSubpass;
-		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,			// srcStageMask;
-		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	// dstStageMask;
-		VK_ACCESS_MEMORY_READ_BIT,						// srcAccessMask;
+    const VkSubpassDependency inputDependency{
+		VK_SUBPASS_EXTERNAL,							
+		0,												
+		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,			
+		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	
+		VK_ACCESS_MEMORY_READ_BIT,						
 		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | 
-		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	        // dstAccessMask;
-		VK_DEPENDENCY_BY_REGION_BIT,                    // dependencyFlags;
+		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	        
+		VK_DEPENDENCY_BY_REGION_BIT,                    
 	};
 
-	VkSubpassDependency outputDependency{
-		0,												// srcSubpass;
-		VK_SUBPASS_EXTERNAL,							// dstSubpass;
-		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	// srcStageMask;
-		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,			// dstStageMask;
+    const VkSubpassDependency outputDependency{
+		0,									
+		VK_SUBPASS_EXTERNAL,							
+		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	
+		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,			
 		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | 
-		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	        // srcAccessMask;
-		VK_ACCESS_MEMORY_READ_BIT,						// dstAccessMask;
-		VK_DEPENDENCY_BY_REGION_BIT,					// dependencyFlags;
+		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	        
+		VK_ACCESS_MEMORY_READ_BIT,						
+		VK_DEPENDENCY_BY_REGION_BIT,					
 	};
 
 	std::vector<VkSubpassDependency> dependencies{
@@ -133,18 +134,18 @@ void FinalRenderPass::createRenderPass()
 	// render pass (contain descriptions)
 
 	VkRenderPassCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,	// sType;
-		nullptr,									// pNext;
-		0,											// flags;
-		attachmentDescriptions.size(),				// attachmentCount;
-		attachmentDescriptions.data(),				// pAttachments;
-		1,											// subpassCount;
-		&subpass,									// pSubpasses;
-		dependencies.size(),						// dependencyCount;
-		dependencies.data(),						// pDependencies;
+		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,	
+		nullptr,									
+		0,											
+		attachmentDescriptions.size(),				
+		attachmentDescriptions.data(),				
+		1,											
+		&subpass,									
+		dependencies.size(),						
+		dependencies.data(),						
 	};
 
-	VkResult result = vkCreateRenderPass(pDevice->getVk(), &createInfo, nullptr, &renderPass);
+    const VkResult result = vkCreateRenderPass(device->getVk(), &createInfo, nullptr, &renderPass);
 	assert(result == VK_SUCCESS);
 }
 
@@ -152,9 +153,9 @@ void FinalRenderPass::createFramebuffers()
 {
 	std::vector<VkImageView> swapChainImageViews = pSwapChain->getImageViews();
 
-	for (auto &swapChainImageView : swapChainImageViews)
+	for (auto swapChainImageView : swapChainImageViews)
 	{
-		addFramebuffer({ pColorImage->view, pDepthImage->view, swapChainImageView});
+		addFramebuffer({ colorImage->view, depthImage->view, swapChainImageView});
 	}
 }
 

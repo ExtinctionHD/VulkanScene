@@ -1,36 +1,32 @@
-#include "GeometryRenderPass.h"
 #include <cassert>
+
+#include "GeometryRenderPass.h"
 
 // public:
 
-GeometryRenderPass::GeometryRenderPass(Device *pDevice, VkExtent2D attachmentExtent) : RenderPass(pDevice, attachmentExtent)
+GeometryRenderPass::GeometryRenderPass(Device *device, VkExtent2D attachmentExtent)
+    : RenderPass(device, attachmentExtent, device->getSampleCount())
 {
-	sampleCount = pDevice->getSampleCount();
 }
 
-uint32_t GeometryRenderPass::getColorAttachmentCount() const
+std::shared_ptr<TextureImage> GeometryRenderPass::getPosTexture() const
 {
-	return attachments.size() - 1;
+	return posTexture;
 }
 
-TextureImage * GeometryRenderPass::getPosMap() const
+std::shared_ptr<TextureImage> GeometryRenderPass::getNormalTexture() const
 {
-	return pPosMap;
+	return normalTexture;
 }
 
-TextureImage * GeometryRenderPass::getNormalMap() const
+std::shared_ptr<TextureImage> GeometryRenderPass::getAlbedoTexture() const
 {
-	return pNormalMap;
+	return albedoTexture;
 }
 
-TextureImage * GeometryRenderPass::getAlbedoMap() const
+std::shared_ptr<Image> GeometryRenderPass::getDepthImage() const
 {
-	return pAlbedoMap;
-}
-
-Image * GeometryRenderPass::getDepthImage() const
-{
-	return pDepthImage;
+	return depthImage;
 }
 
 // protected:
@@ -43,8 +39,8 @@ void GeometryRenderPass::createAttachments()
 		1
 	};
 
-	pPosMap = new TextureImage(
-		pDevice,
+	posTexture = std::make_shared<TextureImage>(
+		device,
 		attachmentExtent,
 		0,
 		sampleCount,
@@ -57,10 +53,9 @@ void GeometryRenderPass::createAttachments()
 		1,
         VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
-	attachments.push_back(pPosMap);
 
-	pNormalMap = new TextureImage(
-		pDevice,
+	normalTexture = std::make_shared<TextureImage>(
+		device,
 		attachmentExtent,
 		0,
 		sampleCount,
@@ -73,10 +68,9 @@ void GeometryRenderPass::createAttachments()
 		1,
 		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
-	attachments.push_back(pNormalMap);
 
-	pAlbedoMap = new TextureImage(
-		pDevice,
+	albedoTexture = std::make_shared<TextureImage>(
+		device,
 		attachmentExtent,
 		0,
 		sampleCount,
@@ -89,60 +83,56 @@ void GeometryRenderPass::createAttachments()
 		1,
 		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
-	attachments.push_back(pAlbedoMap);
 
-	pDepthImage = new Image(
-		pDevice,
+	const VkImageSubresourceRange subresourceRange{
+		VK_IMAGE_ASPECT_DEPTH_BIT,
+		0,
+		1,
+		0,
+		1,
+	};
+	depthImage = std::make_shared<Image>(
+		device,
         attachmentExtent,
         0,
 		sampleCount,
-        1,
+        subresourceRange.levelCount,
         depthAttachmentFormat,
         VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        1
+        subresourceRange.layerCount
 	);
-	attachments.push_back(pDepthImage);
-
-	VkImageSubresourceRange subresourceRange = VkImageSubresourceRange{
-		VK_IMAGE_ASPECT_DEPTH_BIT,	// aspectMask;
-		0,							// baseMipLevel;
-		1,							// levelCount;
-		0,							// baseArrayLayer;
-		1,							// layerCount;
-	};
-
-	pDepthImage->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
-
-	pDepthImage->transitLayout(
-		pDevice,
+	depthImage->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
+	depthImage->transitLayout(
+		device,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 		subresourceRange
 	);
+
+	attachments = { posTexture, normalTexture, albedoTexture, depthImage };
 }
 
 void GeometryRenderPass::createRenderPass()
 {
 	std::vector<VkAttachmentDescription> attachmentDescriptions;
 
-	// Init attachment properties
-	for (Image *pImage : attachments)
+	for (const auto &image : attachments)
 	{
 		VkAttachmentDescription attachmentDesc{
-		    0,                                          // flags;
-		    pImage->format,                             // format;
-		    pImage->getSampleCount(),					// samples;
-		    VK_ATTACHMENT_LOAD_OP_CLEAR,                // loadOp;
-		    VK_ATTACHMENT_STORE_OP_STORE,               // storeOp;
-		    VK_ATTACHMENT_LOAD_OP_DONT_CARE,            // stencilLoadOp;
-		    VK_ATTACHMENT_STORE_OP_DONT_CARE,           // stencilStoreOp;
-		    VK_IMAGE_LAYOUT_UNDEFINED,                  // initialLayout;
-		    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,   // finalLayout;
+		    0,                                 
+			image->format,                           
+			image->getSampleCount(),				
+		    VK_ATTACHMENT_LOAD_OP_CLEAR,             
+		    VK_ATTACHMENT_STORE_OP_STORE,            
+		    VK_ATTACHMENT_LOAD_OP_DONT_CARE,         
+		    VK_ATTACHMENT_STORE_OP_DONT_CARE,        
+		    VK_IMAGE_LAYOUT_UNDEFINED,               
+		    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 		};
 
-        if (pImage == pDepthImage)
+        if (image == depthImage)
         {
 			attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			attachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
@@ -151,55 +141,54 @@ void GeometryRenderPass::createRenderPass()
 		attachmentDescriptions.push_back(attachmentDesc);
 	}
 
-	std::vector<VkAttachmentReference> colorAttachmentReferences;
-
-    for (size_t i = 0; i < attachments.size() - 1; i++)
+	std::vector<VkAttachmentReference> colorAttachmentReferences(getColorAttachmentCount());
+    for (size_t i = 0; i < colorAttachmentReferences.size(); i++)
     {
-		VkAttachmentReference colorAttachmentRef{
-			i,                                          // attachment;
-			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL    // layout;
+        const VkAttachmentReference colorAttachmentRef{
+			i,
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
 		};
-		colorAttachmentReferences.push_back(colorAttachmentRef);
+		colorAttachmentReferences[i] = colorAttachmentRef;
     }
 
 	VkAttachmentReference depthAttachmentRef{
-		attachments.size() - 1,								// attachment;
-		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL	// layout;
+		attachments.size() - 1,				
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
 	};
 
 	VkSubpassDescription subpass{
-		0,									// flags;
-		VK_PIPELINE_BIND_POINT_GRAPHICS,	// pipelineBindPoint;
-		0,									// inputAttachmentCount;
-		nullptr,							// pInputAttachmentReferences;
-		colorAttachmentReferences.size(),	// colorAttachmentCount;
-		colorAttachmentReferences.data(),	// pColorAttachmentReferences;
-		nullptr,							// pResolveAttachmentReference;
-		&depthAttachmentRef,				// pDepthStencilAttachmentReference;
-		0,									// preserveAttachmentCount;
-		nullptr								// pPreserveAttachments;
+		0,							
+		VK_PIPELINE_BIND_POINT_GRAPHICS,	
+		0,									
+		nullptr,							
+		colorAttachmentReferences.size(),	
+		colorAttachmentReferences.data(),	
+		nullptr,							
+		&depthAttachmentRef,				
+		0,									
+		nullptr								
 	};
 
-	VkSubpassDependency inputDependency{
-		VK_SUBPASS_EXTERNAL,                            // srcSubpass;
-		0,                                              // dstSubpass;
-		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,           // srcStageMask;
-		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,  // dstStageMask;
-		VK_ACCESS_MEMORY_READ_BIT,                      // srcAccessMask;
+    const VkSubpassDependency inputDependency{
+		VK_SUBPASS_EXTERNAL,                            
+		0,                                              
+		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,           
+		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,  
+		VK_ACCESS_MEMORY_READ_BIT,                      
 		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | 
-		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,           // dstAccessMask;
-		VK_DEPENDENCY_BY_REGION_BIT,                    // dependencyFlags;
+		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,           
+		VK_DEPENDENCY_BY_REGION_BIT,                    
 	};
 
-	VkSubpassDependency outputDependency{
-		0,                                              // srcSubpass;
-		VK_SUBPASS_EXTERNAL,                            // dstSubpass;
-		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,  // srcStageMask;
-		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,           // dstStageMask;
+    const VkSubpassDependency outputDependency{
+		0,                                    
+		VK_SUBPASS_EXTERNAL,                            
+		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,  
+		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,           
 		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
-		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,           // srcAccessMask;
-		VK_ACCESS_MEMORY_READ_BIT,                      // dstAccessMask;
-		VK_DEPENDENCY_BY_REGION_BIT,                    // dependencyFlags;
+		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,           
+		VK_ACCESS_MEMORY_READ_BIT,                      
+		VK_DEPENDENCY_BY_REGION_BIT,                    
 	};
 
 	std::vector<VkSubpassDependency> dependencies{
@@ -208,27 +197,27 @@ void GeometryRenderPass::createRenderPass()
 	};
 
 	VkRenderPassCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,	// sType;
-		nullptr,									// pNext;
-		0,											// flags;
-		attachmentDescriptions.size(),				// attachmentCount;
-		attachmentDescriptions.data(),				// pAttachments;
-		1,											// subpassCount;
-		&subpass,									// pSubpasses;
-		dependencies.size(),						// dependencyCount;
-		dependencies.data(),						// pDependencies;
+		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+		nullptr,									
+		0,											
+		attachmentDescriptions.size(),				
+		attachmentDescriptions.data(),				
+		1,											
+		&subpass,									
+		dependencies.size(),						
+		dependencies.data(),						
 	};
 
-	VkResult result = vkCreateRenderPass(pDevice->getVk(), &createInfo, nullptr, &renderPass);
+    const VkResult result = vkCreateRenderPass(device->getVk(), &createInfo, nullptr, &renderPass);
 	assert(result == VK_SUCCESS);
 }
 
 void GeometryRenderPass::createFramebuffers()
 {
 	std::vector<VkImageView> imageViews;
-    for(Image *pImage : attachments)
+    for(const auto &image : attachments)
     {
-		imageViews.push_back(pImage->view);
+		imageViews.push_back(image->view);
     }
 
 	addFramebuffer(imageViews);

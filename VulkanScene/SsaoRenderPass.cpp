@@ -3,14 +3,13 @@
 
 // public:
 
-SsaoRenderPass::SsaoRenderPass(Device *pDevice, VkExtent2D attachmentExtent) :RenderPass(pDevice, attachmentExtent)
+SsaoRenderPass::SsaoRenderPass(Device *device, VkExtent2D attachmentExtent) :RenderPass(device, attachmentExtent, VK_SAMPLE_COUNT_1_BIT)
 {
-	sampleCount = VK_SAMPLE_COUNT_1_BIT;
 }
 
-TextureImage * SsaoRenderPass::getSsaoMap() const
+std::shared_ptr<TextureImage> SsaoRenderPass::getSsaoTexture() const
 {
-	return pSsaoMap;
+	return ssaoTexture;
 }
 
 // protected:
@@ -23,8 +22,8 @@ void SsaoRenderPass::createAttachments()
 	    1
 	};
 
-	pSsaoMap = new TextureImage(
-		pDevice,
+	ssaoTexture = std::make_shared<TextureImage>(
+		device,
 		attachmentExtent,
 		0,
 		sampleCount,
@@ -37,23 +36,24 @@ void SsaoRenderPass::createAttachments()
 		1,
 		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER
 	);
-	attachments.push_back(pSsaoMap);
+
+	attachments = { ssaoTexture };
 }
 
 void SsaoRenderPass::createRenderPass()
 {
 	// description of attachments
 
-	VkAttachmentDescription colorAttachmentDesc{
-		0,									        // flags;
-		pSsaoMap->format,		                // format;
-		pSsaoMap->getSampleCount(),			    // samples;
-		VK_ATTACHMENT_LOAD_OP_CLEAR,		        // loadOp;
-		VK_ATTACHMENT_STORE_OP_STORE,		        // storeOp;
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,	        // stencilLoadOp;
-		VK_ATTACHMENT_STORE_OP_DONT_CARE,	        // stencilStoreOp;
-		VK_IMAGE_LAYOUT_UNDEFINED,			        // initialLayout;
-		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,   // finalLayout;
+    const VkAttachmentDescription colorAttachmentDesc{
+		0,								
+		ssaoTexture->format,		             
+		ssaoTexture->getSampleCount(),			 
+		VK_ATTACHMENT_LOAD_OP_CLEAR,		     
+		VK_ATTACHMENT_STORE_OP_STORE,		     
+		VK_ATTACHMENT_LOAD_OP_DONT_CARE,	     
+		VK_ATTACHMENT_STORE_OP_DONT_CARE,	     
+		VK_IMAGE_LAYOUT_UNDEFINED,			     
+		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 	};
 
 	std::vector<VkAttachmentDescription> attachmentDescriptions{
@@ -63,45 +63,45 @@ void SsaoRenderPass::createRenderPass()
 	// references to attachments
 
 	VkAttachmentReference colorAttachmentRef{
-		0,											// attachment;
-		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL	// layout;
+		0,							
+		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
 	};
 
 	// subpass and it dependencies (contain references)
 
 	VkSubpassDescription subpass{
-		0,									// flags;
-		VK_PIPELINE_BIND_POINT_GRAPHICS,	// pipelineBindPoint;
-		0,									// inputAttachmentCount;
-		nullptr,							// pInputAttachmentReferences;
-		1,									// colorAttachmentCount;
-		&colorAttachmentRef,				// pColorAttachmentReferences;
-		nullptr,			                // pResolveAttachmentReference;
-		nullptr,				            // pDepthStencilAttachmentReference;
-		0,									// preserveAttachmentCount;
-		nullptr								// pPreserveAttachments;
+		0,							
+		VK_PIPELINE_BIND_POINT_GRAPHICS,	
+		0,									
+		nullptr,							
+		1,									
+		&colorAttachmentRef,				
+		nullptr,			                
+		nullptr,				            
+		0,									
+		nullptr								
 	};
 
-	VkSubpassDependency inputDependency{
-		VK_SUBPASS_EXTERNAL,							// srcSubpass;
-		0,												// dstSubpass;
-		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,			// srcStageMask;
-		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	// dstStageMask;
-		VK_ACCESS_MEMORY_READ_BIT,						// srcAccessMask;
+    const VkSubpassDependency inputDependency{
+		VK_SUBPASS_EXTERNAL,							
+		0,												
+		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,			
+		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	
+		VK_ACCESS_MEMORY_READ_BIT,						
 		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
-		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	        // dstAccessMask;
-		VK_DEPENDENCY_BY_REGION_BIT,                    // dependencyFlags;
+		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	       
+		VK_DEPENDENCY_BY_REGION_BIT,                   
 	};
 
-	VkSubpassDependency outputDependency{
-		0,												// srcSubpass;
-		VK_SUBPASS_EXTERNAL,							// dstSubpass;
-		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	// srcStageMask;
-		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,			// dstStageMask;
+    const VkSubpassDependency outputDependency{
+		0,									
+		VK_SUBPASS_EXTERNAL,							
+		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	
+		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,			
 		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
-		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	        // srcAccessMask;
-		VK_ACCESS_MEMORY_READ_BIT,						// dstAccessMask;
-		VK_DEPENDENCY_BY_REGION_BIT,					// dependencyFlags;
+		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	        
+		VK_ACCESS_MEMORY_READ_BIT,						
+		VK_DEPENDENCY_BY_REGION_BIT,					
 	};
 
 	std::vector<VkSubpassDependency> dependencies{
@@ -112,22 +112,22 @@ void SsaoRenderPass::createRenderPass()
 	// render pass (contain descriptions)
 
 	VkRenderPassCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,	// sType;
-		nullptr,									// pNext;
-		0,											// flags;
-		attachmentDescriptions.size(),				// attachmentCount;
-		attachmentDescriptions.data(),				// pAttachments;
-		1,											// subpassCount;
-		&subpass,									// pSubpasses;
-		dependencies.size(),						// dependencyCount;
-		dependencies.data(),						// pDependencies;
+		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,	
+		nullptr,									
+		0,											
+		attachmentDescriptions.size(),				
+		attachmentDescriptions.data(),				
+		1,											
+		&subpass,									
+		dependencies.size(),						
+		dependencies.data(),						
 	};
 
-	VkResult result = vkCreateRenderPass(pDevice->getVk(), &createInfo, nullptr, &renderPass);
+    const VkResult result = vkCreateRenderPass(device->getVk(), &createInfo, nullptr, &renderPass);
 	assert(result == VK_SUCCESS);
 }
 
 void SsaoRenderPass::createFramebuffers()
 {
-	addFramebuffer({ pSsaoMap->view });
+	addFramebuffer({ ssaoTexture->view });
 }

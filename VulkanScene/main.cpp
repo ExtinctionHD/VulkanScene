@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 		"Assets/SimpleScene.json",
 	};
 
-	auto window = Window(1920, 1080, Window::Mode::BORDERLESS);
+	auto window = Window(1280, 720, Window::Mode::WINDOWED);
 
 	auto engine = Engine(
 		window.getHWnd(),

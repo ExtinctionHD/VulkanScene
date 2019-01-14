@@ -10,7 +10,7 @@ public:
 	Device(
 		VkInstance instance,
 		VkSurfaceKHR surface,
-        const std::vector<const char*>& requiredLayers,
+        const std::vector<const char*> &requiredLayers,
 		VkSampleCountFlagBits maxRequiredSampleCount);
 
 	~Device();
@@ -65,23 +65,23 @@ private:
 
 	VkCommandPool commandPool;
 
-    VkPhysicalDevice pickPhysicalDevice(VkInstance instance, const std::vector<const char*>& layers) const;
+    VkPhysicalDevice pickPhysicalDevice(VkInstance instance, const std::vector<const char*> &layers) const;
 
 	// has all required queue families,
 	// support this surface (capabilities, formats, present modes)
 	// all required extensions and layers are available
 	bool isPhysicalDeviceSuitable(
         VkPhysicalDevice device,
-        const std::vector<const char*>& requiredLayers,
-        const std::vector<const char*>& requiredExtensions) const;
+        const std::vector<const char*> &requiredLayers,
+        const std::vector<const char*> &requiredExtensions) const;
 
 	VkSampleCountFlagBits getMaxSupportedSampleCount(VkPhysicalDevice physicalDevice) const;
 
-	static bool checkDeviceLayerSupport(VkPhysicalDevice device, const std::vector<const char*>& requiredLayers);
+	static bool checkDeviceLayerSupport(VkPhysicalDevice device, const std::vector<const char*> &requiredLayers);
 
-	static bool checkDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char*>& requiredExtensions);
+	static bool checkDeviceExtensionSupport(VkPhysicalDevice device, const std::vector<const char*> &requiredExtensions);
 
-	void createDevice(const std::vector<const char*>& layers);
+	void createDevice(const std::vector<const char*> &layers);
 
 	void createCommandPool();
 };

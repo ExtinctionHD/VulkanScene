@@ -224,7 +224,7 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 		&colorBlendState,			    // pColorBlendState;
 		nullptr,					    // pDynamicState;
 		layout,						    // layout;
-		pRenderPass->getRenderPass(),   // renderPass;
+		pRenderPass->getVk(),   // renderPass;
 		0,							    // subpass;
 		nullptr,				    // basePipelineHandle;
 		-1,							    // basePipelineIndex;
