@@ -3,11 +3,13 @@
 #include "Device.h"
 #include "SwapChainImage.h"
 
-class Image : 
+// allocates memory and creates new image,
+// can create image view, and transit its layout
+class Image :
 	public SwapChainImage
 {
 public:
-    Image(
+	Image(
 		Device *device,
 		VkExtent3D extent,
 		VkImageCreateFlags flags,
@@ -23,27 +25,19 @@ public:
 
 	~Image();
 
-	VkExtent3D getExtent() const;
-
 	VkSampleCountFlagBits getSampleCount() const;
 
-	void transitLayout(
-        Device *device,
-        VkImageLayout oldLayout,
-        VkImageLayout newLayout,
-        VkImageSubresourceRange subresourceRange) const;
+	void transitLayout(Device *device, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange) const;
 
-	// load pixels in image memory 
-	// pixel size depend from image format
-	// memory size must be equals width * height * pixel size
-	void updateData(std::vector<const void*> data, uint32_t layersOffset, uint32_t pixelSize) const;
+	void updateData(void **data, uint32_t pixelSize) const;
 
 	static void copyImage(
-		Device *device, 
-		Image *srcImage, 
-		Image *dstImage,
+		Device *device,
+		Image &srcImage,
+		Image &dstImage,
 		VkExtent3D extent,
-		VkImageSubresourceLayers subresourceLayers);
+		VkImageSubresourceLayers subresourceLayers
+	);
 
 protected:
 	Image() = default;
@@ -56,7 +50,7 @@ protected:
 
 	uint32_t arrayLayers;
 
-	void createThis(
+	void createThisImage(
 		Device *device,
 		VkExtent3D extent,
 		VkImageCreateFlags flags,

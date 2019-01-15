@@ -11,7 +11,7 @@ const std::vector<aiTextureType> Material::TEXTURES_ORDER{
 	aiTextureType_NORMALS
 };
 
-const std::vector<RgbaUNorm> Material::DEFAULT_TEXTURES_COLORS{
+std::vector<RgbaUNorm> Material::DEFAULT_TEXTURES_COLORS{
 	{ 255, 255, 255, 255 },
 	{ 255, 255, 255, 255 },
 	{ 255, 255, 255, 255 },
@@ -141,6 +141,7 @@ void Material::initDefaultTextures(Device *device)
 			{ 1, 1, 1 },
 			0,
 			VK_SAMPLE_COUNT_1_BIT,
+            1,
 			VK_FORMAT_R8G8B8A8_UNORM,
 			VK_IMAGE_TILING_OPTIMAL,
 			VK_IMAGE_USAGE_TRANSFER_DST_BIT,
@@ -151,8 +152,8 @@ void Material::initDefaultTextures(Device *device)
 			VK_FILTER_LINEAR,
 			VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
-		const void *data = reinterpret_cast<const void*>(&DEFAULT_TEXTURES_COLORS[i]);
-		defaultTexture->updateData({ data }, 0, sizeof RgbaUNorm);
+		void *data = reinterpret_cast<void*>(&DEFAULT_TEXTURES_COLORS[i]);
+		defaultTexture->updateData(&data, sizeof RgbaUNorm);
 
 		defaultTexture->transitLayout(
 			device,
