@@ -131,6 +131,7 @@ void Material::initDefaultTextures(Device *pDevice)
 			{ 1, 1, 1 },
 			0,
 			VK_SAMPLE_COUNT_1_BIT,
+            1,
 			VK_FORMAT_R8G8B8A8_UNORM,
 			VK_IMAGE_TILING_OPTIMAL,
 			VK_IMAGE_USAGE_TRANSFER_DST_BIT,
@@ -142,7 +143,7 @@ void Material::initDefaultTextures(Device *pDevice)
 			VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 		void *data = reinterpret_cast<void*>(&DEFAULT_TEXTURES_COLORS[i]);
-		defaultTexture->updateData({ data }, 0, sizeof RgbaUNorm);
+		defaultTexture->updateData(&data, sizeof RgbaUNorm);
 
 		defaultTexture->transitLayout(
 			pDevice,

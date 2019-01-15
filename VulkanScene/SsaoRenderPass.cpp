@@ -28,6 +28,7 @@ void SsaoRenderPass::createAttachments()
 		attachmentExtent,
 		0,
 		sampleCount,
+        1,
 		VK_FORMAT_R8_UNORM,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,

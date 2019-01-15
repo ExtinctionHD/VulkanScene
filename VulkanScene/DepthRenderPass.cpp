@@ -28,6 +28,7 @@ void DepthRenderPass::createAttachments()
 		attachmentExtent,
 		0,
 		sampleCount,
+        1,
 		depthAttachmentFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,

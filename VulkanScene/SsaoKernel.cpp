@@ -71,6 +71,7 @@ void SsaoKernel::createNoiseTexture()
 		noiseExtent,
 		0,
 		VK_SAMPLE_COUNT_1_BIT,
+        1,
 		VK_FORMAT_R32G32B32A32_SFLOAT,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_TRANSFER_DST_BIT,
@@ -82,7 +83,7 @@ void SsaoKernel::createNoiseTexture()
 		VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 	std::vector<glm::vec4*> data{ noise.data() };
-	pNoiseTexture->updateData({ data.data() }, 0, vectorSize);
+	pNoiseTexture->updateData(reinterpret_cast<void**>(data.data()), vectorSize);
 
 	pNoiseTexture->transitLayout(
 		pDevice,

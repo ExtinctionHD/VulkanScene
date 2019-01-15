@@ -6,34 +6,32 @@
 // public:
 
 Image::Image(
-	Device *device, 
-	VkExtent3D extent, 
+	Device *device,
+	VkExtent3D extent,
 	VkImageCreateFlags flags,
 	VkSampleCountFlagBits sampleCount,
-	uint32_t mipLevels, 
-	VkFormat format, 
-	VkImageTiling tiling, 
+	uint32_t mipLevels,
+	VkFormat format,
+	VkImageTiling tiling,
 	VkImageUsageFlags usage,
 	uint32_t arrayLayers,
 	bool cubeMap,
 	VkMemoryPropertyFlags properties,
 	VkImageAspectFlags aspectFlags)
 {
-	assert(extent.width > 0);
-
-	createThis(
-        device,
-        extent,
-        flags,
-        sampleCount,
-        mipLevels,
-        format,
-        tiling,
-        usage,
+	createThisImage(
+		device,
+		extent,
+		flags,
+		sampleCount,
+		mipLevels,
+		format,
+		tiling,
+		usage,
 		arrayLayers,
 		cubeMap,
 		properties,
-        aspectFlags);
+		aspectFlags);
 }
 
 Image::~Image()
@@ -41,11 +39,6 @@ Image::~Image()
 	vkDestroyImageView(device->get(), view, nullptr);
 	vkDestroyImage(device->get(), image, nullptr);
 	vkFreeMemory(device->get(), memory, nullptr);
-}
-
-VkExtent3D Image::getExtent() const
-{
-	return extent;
 }
 
 VkSampleCountFlagBits Image::getSampleCount() const
@@ -126,86 +119,75 @@ void Image::transitLayout(
 		commandBuffer,
 		sourceStage, destinationStage,
 		0,
-		0, 
-		nullptr,
-		0, 
-		nullptr,
-		1, 
-		&barrier);
+		0, nullptr,
+		0, nullptr,
+		1, &barrier);
 
 	device->endOneTimeCommands(commandBuffer);
 }
 
-void Image::updateData(std::vector<void*> data, uint32_t layersOffset, uint32_t pixelSize) const
+void Image::updateData(void **data, uint32_t pixelSize) const
 {
-	assert(layersOffset + data.size() <= arrayLayers);
-
-	const uint32_t updatedLayers = arrayLayers < layersOffset + data.size() ? arrayLayers - layersOffset : data.size();
     const VkImageSubresourceRange subresourceRange{
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		0,
 		mipLevels,
-		layersOffset,
-		updatedLayers
+		0,
+		arrayLayers
 	};
-    const VkDeviceSize layerSize = extent.width * extent.height * pixelSize;
 
-	StagingBuffer stagingBuffer(device, layerSize * updatedLayers);
-	for (uint32_t i = 0; i < updatedLayers; i++)
-	{
-		stagingBuffer.updateData(data[i], layerSize, i * layerSize);
-	}
-
-	std::vector<VkBufferImageCopy> regions(updatedLayers);
-	for (uint32_t i = 0; i < updatedLayers; i++)
-	{
-		regions[i] = VkBufferImageCopy{
-			i * layerSize,
-			0,
-			0,
-		    {
-			    VK_IMAGE_ASPECT_COLOR_BIT,
-			    0,
-			    layersOffset + i,
-			    1
-		    },
-		    { 0, 0, 0 },	
-		    { extent.width, extent.height, 1 }
-		};
-	}	
-    
-    // before copying the layout of the image must be TRANSFER_DST
+	// before copying the layout of the texture image must be TRANSFER_DST
 	transitLayout(
 		device,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		subresourceRange);
 
-	stagingBuffer.copyToImage(image, regions);
+    const VkDeviceSize arrayLayerSize = extent.width * extent.height * pixelSize;
+    auto stagingBuffer = new StagingBuffer(device, arrayLayerSize * arrayLayers);
+	for (uint32_t i = 0; i < arrayLayers; i++)
+	{
+		stagingBuffer->updateData(data[i], arrayLayerSize, i * arrayLayerSize);
+	}
+
+	std::vector<VkBufferImageCopy> regions(arrayLayers);
+	for (uint32_t i = 0; i < arrayLayers; i++)
+	{
+		regions[i] = VkBufferImageCopy{
+			i * arrayLayerSize,
+			0,
+			0,
+			{
+				VK_IMAGE_ASPECT_COLOR_BIT,
+				0,
+				i,
+				1
+			},
+			{ 0, 0, 0 },
+			{ extent.width, extent.height, 1 }
+		};
+	}
+	stagingBuffer->copyToImage(image, regions);
+	delete stagingBuffer;
 }
 
-void Image::copyImage(
-    Device *device,
-    Image *srcImage,
-    Image *dstImage,
-    VkExtent3D extent,
-    VkImageSubresourceLayers subresourceLayers)
+void Image::copyImage(Device *device, Image &srcImage, Image &dstImage, VkExtent3D extent, VkImageSubresourceLayers subresourceLayers)
 {
 	VkCommandBuffer commandBuffer = device->beginOneTimeCommands();
 
 	VkImageCopy region{
-		subresourceLayers,
-		{ 0, 0, 0},
 		subresourceLayers,	
-		{ 0, 0, 0 },	
-		extent
+		{ 0, 0, 0},
+		subresourceLayers,
+		{ 0, 0, 0 },
+		extent	
 	};
 
 	vkCmdCopyImage(
 		commandBuffer,
-		srcImage->image,
+		srcImage.image,
 		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-		dstImage->image,
+		dstImage.image,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		1,
 		&region);
@@ -215,7 +197,7 @@ void Image::copyImage(
 
 // protected:
 
-void Image::createThis(
+void Image::createThisImage(
 	Device *device,
 	VkExtent3D extent,
 	VkImageCreateFlags flags,
@@ -268,7 +250,7 @@ void Image::createThis(
 		imageType,
 		format,
 		extent,
-		mipLevels,								
+		mipLevels,
 		arrayLayers,
 		sampleCount,
 		tiling,
@@ -279,13 +261,14 @@ void Image::createThis(
 		VK_IMAGE_LAYOUT_UNDEFINED
 	};
 
-    const VkResult result = vkCreateImage(device->get(), &imageInfo, nullptr, &image);
+	const VkResult result = vkCreateImage(device->get(), &imageInfo, nullptr, &image);
 	assert(result == VK_SUCCESS);
 
 	allocateMemory(device, properties);
-	vkBindImageMemory(device->get(), image, memory, 0);	
-    
-    const VkImageSubresourceRange subresourceRange{
+
+	vkBindImageMemory(device->get(), image, memory, 0);
+
+	const VkImageSubresourceRange subresourceRange{
 		aspectFlags,
 		0,
 		mipLevels,
@@ -308,9 +291,9 @@ void Image::allocateMemory(Device *device, VkMemoryPropertyFlags properties)
 
 	VkMemoryAllocateInfo allocInfo{
 		VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-		nullptr,				
+		nullptr,			
 		memRequirements.size,	
-		memoryTypeIndex
+		memoryTypeIndex,		
 	};
 
     const VkResult result = vkAllocateMemory(device->get(), &allocInfo, nullptr, &memory);
