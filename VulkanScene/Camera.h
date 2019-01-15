@@ -6,11 +6,23 @@
 #include <vulkan/vulkan.h>
 #include "Buffer.h"
 
-// provides camera attributes
-// and movement functions
 class Camera
 {
 public:
+	enum Direction
+	{
+		NEGATIVE = -1,
+		NONE = 0,
+		POSITIVE = 1
+	};
+
+	struct Movement
+	{
+		Direction forward = NONE;
+		Direction right = NONE;
+		Direction up = NONE;
+	};
+
 	struct Attributes
 	{
 		glm::vec3 position;
@@ -22,26 +34,11 @@ public:
 	};
 
     // creates camera located in (0.0, 0.0, 0.0), locking at z axis, with 45.0 degrees field of view
-	Camera(Device *pDevice, VkExtent2D extent);
+	Camera(Device *device, VkExtent2D extent);
 
-	Camera(Device *pDevice, VkExtent2D extent, Attributes attributes);
+	Camera(Device *device, VkExtent2D extent, Attributes attributes);
 
 	~Camera();
-
-	enum Direction
-	{
-		NEGATIVE = -1,
-		NONE = 0,
-		POSITIVE = 1
-	};
-
-	// asix movement states
-	struct Movement
-	{
-		Direction forward = NONE;
-		Direction right = NONE;
-		Direction up = NONE;
-	} movement;
 
 	glm::vec3 getPos() const;
 
@@ -59,37 +56,29 @@ public:
 
 	void setExtent(VkExtent2D extent);
 
-	void updateSpace();
+	void setMovement(Movement movement);
+
+	void updateSpace() const;
 
 private:
-	glm::vec3 pos{};
+	VkExtent2D extent;
 
-	glm::vec3 forward{};
+	Attributes attributes;
 
-	glm::vec3 up{};
-
-	VkExtent2D extent{};
-
-	float fov;
-
-	float speed;
-
-	float sensitivity;
+	Movement movement;
 
 	// horizontal angle
 	// angle 0.0f directed towards z axis
-	float angleH{};
+	float angleH;
 
 	// vertical angle
-	float angleV{};
+	float angleV;
 
-	// camera view and projection matrices
-	Buffer *pSpaceBuffer{};
+	Buffer *spaceBuffer;
 
-	// initializes camera angles
 	void initAngles();
 
-	void initSpaceBuffer(Device *pDevice);
+	void initSpaceBuffer(Device *device);
 
 	glm::mat4 getViewMatrix() const;
 

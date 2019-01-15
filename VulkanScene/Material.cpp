@@ -4,14 +4,14 @@
 
 // public:
 
-Material::Material(Device *pDevice)
+Material::Material(Device *device)
 {
-	this->pDevice = pDevice;
+	this->device = device;
 
 	// create static vector with default textures
 	if (defaultTextures.empty())
 	{
-		initDefaultTextures(pDevice);
+		initDefaultTextures(device);
 	}
 
 	// initialize current material with default textures
@@ -26,7 +26,7 @@ Material::Material(Device *pDevice)
 		1.0f				// opacity
 	};
 
-	pColorsBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(MaterialColors));
+	pColorsBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(MaterialColors));
 	updateColorsBuffer();
 
 	objectCount++;
@@ -49,7 +49,7 @@ Material::~Material()
 
 	if (objectCount == 0 && dsLayout != nullptr)
 	{
-		vkDestroyDescriptorSetLayout(pDevice->get(), dsLayout, nullptr);
+		vkDestroyDescriptorSetLayout(device->get(), dsLayout, nullptr);
 		dsLayout = nullptr;
 	}
 }
@@ -122,12 +122,12 @@ VkDescriptorSetLayout Material::getDsLayout()
 	return dsLayout;
 }
 
-void Material::initDefaultTextures(Device *pDevice)
+void Material::initDefaultTextures(Device *device)
 {
 	for (uint32_t i = 0; i < TEXTURES_ORDER.size(); i++)
 	{
 		auto defaultTexture = new TextureImage(
-			pDevice,
+			device,
 			{ 1, 1, 1 },
 			0,
 			VK_SAMPLE_COUNT_1_BIT,
@@ -145,7 +145,7 @@ void Material::initDefaultTextures(Device *pDevice)
 		defaultTexture->updateData({ data }, 0, sizeof RgbaUNorm);
 
 		defaultTexture->transitLayout(
-			pDevice,
+			device,
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			{

@@ -8,7 +8,7 @@ float Timer::getDeltaSec()
 
 	if (lastTimePoint != time_point<steady_clock>::max())
 	{
-		deltaSec = duration_cast<milliseconds>(now - lastTimePoint).count() / 1000.0;
+		deltaSec = duration_cast<milliseconds>(now - lastTimePoint).count() / 1000.0f;
 	}
 
 	lastTimePoint = now;

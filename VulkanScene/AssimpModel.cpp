@@ -11,8 +11,8 @@
 
 // public:
 
-AssimpModel::AssimpModel(Device *pDevice, const std::string& path, uint32_t count) :
-	Model(pDevice, count)
+AssimpModel::AssimpModel(Device *device, const std::string& path, uint32_t count) :
+	Model(device, count)
 {
 	directory = File::getDirectory(path);
 
@@ -148,7 +148,7 @@ Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScen
 
 	Material *pMaterial = getMeshMaterial(pAiMesh->mMaterialIndex, pAiScene->mMaterials);
 
-	return new Mesh<Vertex>(pDevice, vertices, indices, pMaterial);
+	return new Mesh<Vertex>(device, vertices, indices, pMaterial);
 }
 
 void AssimpModel::initPosLimits(glm::vec3 pos)
@@ -221,7 +221,7 @@ void AssimpModel::initTangents(std::vector<Vertex>& vertices, std::vector<uint32
 
 Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial)
 {
-	Material *pMaterial = new Material(pDevice);
+	Material *pMaterial = new Material(device);
 
 	if (materials.find(index) == materials.end())
 	{
@@ -282,7 +282,7 @@ TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextur
 		VkFilter filter = type != aiTextureType_OPACITY ? VK_FILTER_LINEAR : VK_FILTER_NEAREST;
 
 		pTexture = new TextureImage(
-			pDevice, 
+			device, 
 			{File::getPath(directory, path)}, 
 			1, 
 			false, 

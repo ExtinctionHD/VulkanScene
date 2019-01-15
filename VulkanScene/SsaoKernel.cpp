@@ -7,9 +7,9 @@
 
 // public:
 
-SsaoKernel::SsaoKernel(Device *pDevice)
+SsaoKernel::SsaoKernel(Device *device)
 {
-	this->pDevice = pDevice;
+	this->device = device;
 	rndEngine = std::default_random_engine(unsigned(time(nullptr)));
 	rndDist = std::uniform_real_distribution<float>(0.0f, 1.0f);
 
@@ -19,44 +19,42 @@ SsaoKernel::SsaoKernel(Device *pDevice)
 
 SsaoKernel::~SsaoKernel()
 {
-	delete pKernelBuffer;
-	delete pNoiseTexture;
+	delete kernelBuffer;
+	delete noiseTexture;
 }
 
-Buffer * SsaoKernel::getKernelBuffer() const
+Buffer* SsaoKernel::getKernelBuffer() const
 {
-	return pKernelBuffer;
+	return kernelBuffer;
 }
 
 TextureImage * SsaoKernel::getNoiseTexture() const
 {
-	return pNoiseTexture;
+	return noiseTexture;
 }
 
 // private:
 
 void SsaoKernel::createKernel()
 {
-	VkDeviceSize vectorSize = sizeof(glm::vec4);
 	std::vector<glm::vec4> kernel(SIZE);
 
 	for (uint32_t i = 0; i < SIZE; ++i)
 	{
 		glm::vec3 sample(rndDist(rndEngine) * 2.0 - 1.0, rndDist(rndEngine) * 2.0 - 1.0, rndDist(rndEngine));
-		sample = glm::normalize(sample);
+		sample = normalize(sample);
 		sample *= rndDist(rndEngine);
 		float scale = float(i) / float(SIZE);
 		scale = lerp(0.1f, 1.0f, scale * scale);
 		kernel[i] = glm::vec4(sample * scale, 0.0f);
 	}
 
-	pKernelBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, kernel.size() * vectorSize);
-	pKernelBuffer->updateData(kernel.data(), kernel.size() * vectorSize, 0);
+	kernelBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, kernel.size() * VECTOR_SIZE);
+	kernelBuffer->updateData(kernel.data(), kernel.size() * VECTOR_SIZE, 0);
 }
 
 void SsaoKernel::createNoiseTexture()
 {
-	VkDeviceSize vectorSize = sizeof(glm::vec4);
 	std::vector<glm::vec4> noise(NOISE_DIM * NOISE_DIM);
 
 	for (glm::vec4 &pixel : noise)
@@ -64,10 +62,10 @@ void SsaoKernel::createNoiseTexture()
 		pixel = glm::vec4(rndDist(rndEngine) * 2.0f - 1.0f, rndDist(rndEngine) * 2.0f - 1.0f, 0.0f, 0.0f);
 	}
 
-	VkExtent3D noiseExtent = { NOISE_DIM, NOISE_DIM, 1 };
+    const VkExtent3D noiseExtent = { NOISE_DIM, NOISE_DIM, 1 };
 
-	pNoiseTexture = new TextureImage(
-		pDevice,
+	noiseTexture = new TextureImage(
+		device,
 		noiseExtent,
 		0,
 		VK_SAMPLE_COUNT_1_BIT,
@@ -82,10 +80,10 @@ void SsaoKernel::createNoiseTexture()
 		VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 	std::vector<glm::vec4*> data{ noise.data() };
-	pNoiseTexture->updateData({ data.data() }, 0, vectorSize);
+	noiseTexture->updateData({ data.data() }, 0, VECTOR_SIZE);
 
-	pNoiseTexture->transitLayout(
-		pDevice,
+	noiseTexture->transitLayout(
+		device,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 		{

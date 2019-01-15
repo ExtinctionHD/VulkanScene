@@ -13,7 +13,7 @@
 class Material
 {
 public:
-	Material(Device *pDevice);
+	Material(Device *device);
 
 	~Material();
 
@@ -49,10 +49,10 @@ public:
 
 	static VkDescriptorSetLayout getDsLayout();
 
-	static void initDefaultTextures(Device *pDevice);
+	static void initDefaultTextures(Device *device);
 
 private:
-	Device *pDevice;
+	Device *device;
 
 	static uint32_t objectCount;
 

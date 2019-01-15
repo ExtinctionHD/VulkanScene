@@ -147,11 +147,11 @@ void Model::optimizeMemory()
 
 // protected:
 
-Model::Model(Device *pDevice, uint32_t count)
+Model::Model(Device *device, uint32_t count)
 {
-	this->pDevice = pDevice;
+	this->device = device;
 
-	pTransformationsBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, count * sizeof glm::mat4);
+	pTransformationsBuffer = new Buffer(device, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, count * sizeof glm::mat4);
 
 	transformations.resize(count, glm::mat4(1.0f));
 	pTransformationsBuffer->updateData(transformations.data(), count * sizeof glm::mat4, 0);
@@ -197,7 +197,7 @@ GraphicsPipeline* Model::createDepthPipeline(
 	layouts.push_back(Material::getDsLayout());
 
 	GraphicsPipeline *pPipeline = new GraphicsPipeline(
-		pDevice,
+		device,
 		pRenderPass,
 		layouts,
 	    shaderModules,
@@ -219,7 +219,7 @@ GraphicsPipeline* Model::createGeometryPipeline(
 	layouts.push_back(Material::getDsLayout());
 
 	GraphicsPipeline *pPipeline = new GraphicsPipeline(
-		pDevice,
+		device,
 		pRenderPass,
 		layouts,
 	    shaderModules,
@@ -241,7 +241,7 @@ GraphicsPipeline* Model::createFinalPipeline(
 	layouts.push_back(Material::getDsLayout());
 
 	GraphicsPipeline *pPipeline = new GraphicsPipeline(
-		pDevice,
+		device,
 		pRenderPass,
 		layouts,
 	    shaderModules,

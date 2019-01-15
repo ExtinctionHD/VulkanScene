@@ -7,8 +7,10 @@
 class SsaoKernel
 {
 public:
-	SsaoKernel(Device *pDevice);
+	SsaoKernel(Device *device);
 	~SsaoKernel();
+
+	const uint32_t VECTOR_SIZE = sizeof glm::vec4;
 
 	const uint32_t SIZE = 32;
 	const uint32_t NOISE_DIM = 4;
@@ -21,15 +23,15 @@ public:
 	TextureImage* getNoiseTexture() const;
 
 private:
-	Device *pDevice;
+	Device *device;
 
     std::default_random_engine rndEngine;
 
 	std::uniform_real_distribution<float> rndDist;
 
-	Buffer *pKernelBuffer{};
+	Buffer *kernelBuffer;
 
-	TextureImage *pNoiseTexture{};
+	TextureImage *noiseTexture;
 
 	void createKernel();
 

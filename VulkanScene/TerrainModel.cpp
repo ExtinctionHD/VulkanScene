@@ -7,10 +7,10 @@
 // public:
 
 TerrainModel::TerrainModel(
-	Device *pDevice, 
+	Device *device, 
 	glm::vec2 cellSize,
 	VkExtent2D cellCount, 
-	ImageSetInfo imageSetInfo) : Model(pDevice, 1)
+	ImageSetInfo imageSetInfo) : Model(device, 1)
 {
 	this->cellSize = cellSize;
 	this->cellCount = cellCount;
@@ -56,13 +56,13 @@ void TerrainModel::initMaterial(const std::string &texturesDirectory, const std:
 		File::getPath(texturesDirectory, "normals" + extension),
 	};
 
-	Material *pMaterial = new Material(pDevice);
+	Material *pMaterial = new Material(device);
 
 	for (size_t i = 0; i < types.size(); i++)
 	{
 		if (File::exists(paths[i]))
 		{
-			TextureImage *pTexture = new TextureImage(pDevice, { paths[i] }, 1, false, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT);
+			TextureImage *pTexture = new TextureImage(device, { paths[i] }, 1, false, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT);
 			pMaterial->addTexture(types[i], pTexture);
 			textures.push_back(pTexture);
 		}
@@ -119,5 +119,5 @@ void TerrainModel::initMesh()
 		1, 2, 3
 	};
 
-	solidMeshes.push_back(new Mesh<Vertex>(pDevice, vertices, indices, materials.at(0)));
+	solidMeshes.push_back(new Mesh<Vertex>(device, vertices, indices, materials.at(0)));
 }

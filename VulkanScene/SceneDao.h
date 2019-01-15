@@ -24,7 +24,7 @@ public:
 
 	ImageSetInfo getTerrainInfo() const;
 
-	std::unordered_map<std::string, AssimpModel*> getModels(Device *pDevice);
+	std::unordered_map<std::string, AssimpModel*> getModels(Device *device);
 
 	static void saveScene(const std::string& path);
 
@@ -35,7 +35,7 @@ private:
 
 	static glm::vec3 getVec3(nlohmann::json json);
 
-	static std::unordered_map<std::string, AssimpModel*> parseModels(Device *pDevice, nlohmann::json modelsJson);
+	static std::unordered_map<std::string, AssimpModel*> parseModels(Device *device, nlohmann::json modelsJson);
 
 	static Transformation getTransformation(nlohmann::json json, AssimpModel *model);
 };
