@@ -4,7 +4,8 @@
 
 // public:
 
-LightingRenderPass::LightingRenderPass(Device *device, SwapChain *swapChain) : RenderPass(device, swapChain->getExtent(), device->getSampleCount())
+LightingRenderPass::LightingRenderPass(Device *device, SwapChain *swapChain)
+    : RenderPass(device, swapChain->getExtent(), device->getSampleCount())
 {
 	colorAttachmentFormat = swapChain->getImageFormat();
 }
@@ -41,9 +42,10 @@ void LightingRenderPass::createAttachments()
 		colorAttachmentFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		subresourceRange.layerCount,
+		false,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		subresourceRange.layerCount);
-	colorImage->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
+		VK_IMAGE_ASPECT_COLOR_BIT);
 	colorImage->transitLayout(
 		device,
 		VK_IMAGE_LAYOUT_UNDEFINED,
@@ -59,7 +61,7 @@ void LightingRenderPass::createRenderPass()
 
     const VkAttachmentDescription colorAttachmentDesc{
 		0,								
-		colorImage->format,		                
+		colorImage->getFormat(),		                
 		colorImage->getSampleCount(),			 
 		VK_ATTACHMENT_LOAD_OP_CLEAR,		     
 		VK_ATTACHMENT_STORE_OP_STORE,		     
@@ -136,12 +138,12 @@ void LightingRenderPass::createRenderPass()
 		dependencies.data(),						
 	};
 
-    const VkResult result = vkCreateRenderPass(device->getVk(), &createInfo, nullptr, &renderPass);
+    const VkResult result = vkCreateRenderPass(device->get(), &createInfo, nullptr, &renderPass);
 	assert(result == VK_SUCCESS);
 }
 
 void LightingRenderPass::createFramebuffers()
 {
-	addFramebuffer({ colorImage->view });
+	addFramebuffer({ colorImage->getView() });
 }
 

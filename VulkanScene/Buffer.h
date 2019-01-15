@@ -9,18 +9,16 @@
 class Buffer : public StagingBuffer
 {
 public:
-	Buffer(Device *pDevice, VkBufferUsageFlags usage, VkDeviceSize size);
+	Buffer(Device *device, VkBufferUsageFlags usage, VkDeviceSize size);
 	~Buffer();
 
-	VkBuffer getBuffer() const;
+	VkBuffer get() const;
 
-	void updateData(void *pData, VkDeviceSize dataSize, VkDeviceSize offset) override;
+	void updateData(void *data, VkDeviceSize dataSize, VkDeviceSize offset) override;
 
 private:
-	// main buffer object
-	VkBuffer buffer{};
+	VkBuffer buffer;
 
-	// main buffer memory
-	VkDeviceMemory memory{};
+	VkDeviceMemory memory;
 };
 

@@ -31,13 +31,13 @@ GraphicsPipeline::GraphicsPipeline(
 
 GraphicsPipeline::~GraphicsPipeline()
 {
-	vkDestroyPipeline(pDevice->getVk(), pipeline, nullptr);
-	vkDestroyPipelineLayout(pDevice->getVk(), layout, nullptr);
+	vkDestroyPipeline(pDevice->get(), pipeline, nullptr);
+	vkDestroyPipelineLayout(pDevice->get(), layout, nullptr);
 }
 
 void GraphicsPipeline::recreate()
 {
-	vkDestroyPipeline(pDevice->getVk(), pipeline, nullptr);
+	vkDestroyPipeline(pDevice->get(), pipeline, nullptr);
 	createPipeline(pRenderPass->getExtent());
 }
 
@@ -55,7 +55,7 @@ void GraphicsPipeline::createLayout(std::vector<VkDescriptorSetLayout> descripto
 		nullptr,										// pPushConstantRanges;
 	};
 
-	VkResult result = vkCreatePipelineLayout(pDevice->getVk(), &createInfo, nullptr, &layout);
+	VkResult result = vkCreatePipelineLayout(pDevice->get(), &createInfo, nullptr, &layout);
 	assert(result == VK_SUCCESS);
 }
 
@@ -223,13 +223,13 @@ void GraphicsPipeline::createPipeline(VkExtent2D viewportExtent)
 		&colorBlendState,			    // pColorBlendState;
 		nullptr,					    // pDynamicState;
 		layout,						    // layout;
-		pRenderPass->getVk(),   // renderPass;
+		pRenderPass->get(),   // renderPass;
 		0,							    // subpass;
 		nullptr,				    // basePipelineHandle;
 		-1,							    // basePipelineIndex;
 	};
 
-	VkResult result = vkCreateGraphicsPipelines(pDevice->getVk(), nullptr, 1, &createInfo, nullptr, &pipeline);
+	VkResult result = vkCreateGraphicsPipelines(pDevice->get(), nullptr, 1, &createInfo, nullptr, &pipeline);
 	assert(result == VK_SUCCESS);
 }
 

@@ -9,7 +9,7 @@ public:
 	Instance(const std::vector<const char*> &requiredLayers, std::vector<const char*> requiredExtensions);
 	~Instance();
 
-	VkInstance getVk() const;
+	VkInstance get() const;
 
 private:
 	VkInstance instance;

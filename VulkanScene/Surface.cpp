@@ -17,7 +17,7 @@ Surface::~Surface()
 	vkDestroySurfaceKHR(instance, surface, nullptr);
 }
 
-VkSurfaceKHR Surface::getVk() const
+VkSurfaceKHR Surface::get() const
 {
 	return surface;
 }

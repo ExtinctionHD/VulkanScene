@@ -8,11 +8,11 @@ MeshBase::~MeshBase()
 
 void MeshBase::render(VkCommandBuffer commandBuffer, uint32_t instanceCount) const
 {
-	VkBuffer vertexBuffer = pVertexBuffer->getBuffer();
+	VkBuffer vertexBuffer = pVertexBuffer->get();
 	VkDeviceSize offset = 0;
 	vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer, &offset);
 
-	VkBuffer indexBuffer = pIndexBuffer->getBuffer();
+	VkBuffer indexBuffer = pIndexBuffer->get();
 	vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
 	vkCmdDrawIndexed(commandBuffer, indexCount, instanceCount, 0, 0, 0);

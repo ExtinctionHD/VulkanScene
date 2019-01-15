@@ -15,7 +15,7 @@ public:
 
 	~Device();
 
-	VkDevice getVk() const;
+	VkDevice get() const;
 
 	VkQueue getGraphicsQueue() const;
 

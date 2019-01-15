@@ -47,11 +47,12 @@ void GeometryRenderPass::createAttachments()
 		VK_FORMAT_R16G16B16A16_SFLOAT,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		1,
+		false,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
-		VK_IMAGE_VIEW_TYPE_2D,
-		1,
-        VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+		VK_FILTER_LINEAR,
+		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 
 	normalTexture = std::make_shared<TextureImage>(
 		device,
@@ -61,10 +62,11 @@ void GeometryRenderPass::createAttachments()
 		VK_FORMAT_R8G8B8A8_UNORM,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		1,
+		false,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
-		VK_IMAGE_VIEW_TYPE_2D,
-		1,
+		VK_FILTER_LINEAR,
 		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 
 	albedoTexture = std::make_shared<TextureImage>(
@@ -75,10 +77,11 @@ void GeometryRenderPass::createAttachments()
         VK_FORMAT_R8G8B8A8_UNORM,
         VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		1,
+		false,
         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
-		VK_IMAGE_VIEW_TYPE_2D,
-		1,
+        VK_FILTER_LINEAR,
 		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 
 	const VkImageSubresourceRange subresourceRange{
@@ -97,9 +100,10 @@ void GeometryRenderPass::createAttachments()
         depthAttachmentFormat,
         VK_IMAGE_TILING_OPTIMAL,
         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-        subresourceRange.layerCount);
-	depthImage->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
+        subresourceRange.layerCount,
+		false,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		VK_IMAGE_ASPECT_DEPTH_BIT);
 	depthImage->transitLayout(
 		device,
 		VK_IMAGE_LAYOUT_UNDEFINED,
@@ -117,7 +121,7 @@ void GeometryRenderPass::createRenderPass()
 	{
 		VkAttachmentDescription attachmentDesc{
 		    0,                                 
-			image->format,                           
+			image->getFormat(),                           
 			image->getSampleCount(),				
 		    VK_ATTACHMENT_LOAD_OP_CLEAR,             
 		    VK_ATTACHMENT_STORE_OP_STORE,            
@@ -203,7 +207,7 @@ void GeometryRenderPass::createRenderPass()
 		dependencies.data(),						
 	};
 
-    const VkResult result = vkCreateRenderPass(device->getVk(), &createInfo, nullptr, &renderPass);
+    const VkResult result = vkCreateRenderPass(device->get(), &createInfo, nullptr, &renderPass);
 	assert(result == VK_SUCCESS);
 }
 
@@ -212,7 +216,7 @@ void GeometryRenderPass::createFramebuffers()
 	std::vector<VkImageView> imageViews;
     for(const auto &image : attachments)
     {
-		imageViews.push_back(image->view);
+		imageViews.push_back(image->getView());
     }
 
 	addFramebuffer(imageViews);

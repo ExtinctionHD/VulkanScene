@@ -8,7 +8,7 @@ RenderPass::~RenderPass()
 	cleanup();
 }
 
-VkRenderPass RenderPass::getVk() const
+VkRenderPass RenderPass::get() const
 {
 	return renderPass;
 }
@@ -34,7 +34,7 @@ uint32_t RenderPass::getColorAttachmentCount() const
 
 	for (const auto &image : attachments)
 	{
-		if (image->format != depthAttachmentFormat)
+		if (image->getFormat() != depthAttachmentFormat)
 		{
 			count++;
 		}
@@ -50,7 +50,7 @@ std::vector<VkClearValue> RenderPass::getClearValues() const
     {
 		VkClearValue clearValue{};
 
-        if (image->format == depthAttachmentFormat)
+        if (image->getFormat() == depthAttachmentFormat)
         {
 			clearValue.depthStencil = { 1.0f, 0 };
         }
@@ -109,7 +109,7 @@ void RenderPass::addFramebuffer(std::vector<VkImageView> imageViews)
 
 	VkFramebuffer framebuffer;
 
-    const VkResult result = vkCreateFramebuffer(device->getVk(), &createInfo, nullptr, &framebuffer);
+    const VkResult result = vkCreateFramebuffer(device->get(), &createInfo, nullptr, &framebuffer);
 	assert(result == VK_SUCCESS);
 
 	framebuffers.push_back(framebuffer);
@@ -121,10 +121,10 @@ void RenderPass::cleanup()
 
 	for (auto framebuffer : framebuffers)
 	{
-		vkDestroyFramebuffer(device->getVk(), framebuffer, nullptr);
+		vkDestroyFramebuffer(device->get(), framebuffer, nullptr);
 	}
 	framebuffers.clear();
 
-	vkDestroyRenderPass(device->getVk(), renderPass, nullptr);
+	vkDestroyRenderPass(device->get(), renderPass, nullptr);
 }
 

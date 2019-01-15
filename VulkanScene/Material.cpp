@@ -49,7 +49,7 @@ Material::~Material()
 
 	if (objectCount == 0 && dsLayout != nullptr)
 	{
-		vkDestroyDescriptorSetLayout(pDevice->getVk(), dsLayout, nullptr);
+		vkDestroyDescriptorSetLayout(pDevice->get(), dsLayout, nullptr);
 		dsLayout = nullptr;
 	}
 }
@@ -134,14 +134,15 @@ void Material::initDefaultTextures(Device *pDevice)
 			VK_FORMAT_R8G8B8A8_UNORM,
 			VK_IMAGE_TILING_OPTIMAL,
 			VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+			1,
+			false,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			VK_IMAGE_ASPECT_COLOR_BIT,
-			VK_IMAGE_VIEW_TYPE_2D,
-			1,
+            VK_FILTER_LINEAR,
 			VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 		void *data = reinterpret_cast<void*>(&DEFAULT_TEXTURES_COLORS[i]);
-		defaultTexture->updateData(&data, sizeof RgbaUNorm);
+		defaultTexture->updateData({ data }, 0, sizeof RgbaUNorm);
 
 		defaultTexture->transitLayout(
 			pDevice,

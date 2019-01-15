@@ -11,20 +11,23 @@ public:
 
 	virtual ~SwapChainImage() = default;
 
-    // save device, image, format
-	SwapChainImage(Device *pDevice, VkImage image, VkFormat format);
+	SwapChainImage(Device *device, VkImage image, VkFormat format, VkImageSubresourceRange subresourceRange);
 
-	VkFormat format{};
+	VkImage get() const;
 
-	// create view of saved image
-	VkImageView getImageView(VkImageSubresourceRange subresourceRange) const;
+	VkImageView getView() const;
 
 	VkFormat getFormat() const;
 
 protected:
-	// device that provides this buffer and memory
-	Device *pDevice{};
+	Device *device;
 
-	VkImage image{};
+	VkImage image;
+
+	VkImageView view;
+
+	VkFormat format;
+
+	void createImageView(VkImageSubresourceRange subresourceRange, VkImageViewType viewType);
 };
 

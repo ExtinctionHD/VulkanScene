@@ -12,7 +12,7 @@ class RenderPass
 public:
     virtual ~RenderPass();
 
-	VkRenderPass getVk() const;
+	VkRenderPass get() const;
 
 	std::vector<VkFramebuffer> getFramebuffers() const;
 

@@ -41,7 +41,7 @@ Scene::~Scene()
 
     for (auto [key, descriptorStruct] : descriptors)
     {
-		vkDestroyDescriptorSetLayout(device->getVk(), descriptorStruct.layout, nullptr);
+		vkDestroyDescriptorSetLayout(device->get(), descriptorStruct.layout, nullptr);
     }
 
 	delete lighting;

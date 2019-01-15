@@ -22,7 +22,7 @@ SwapChain::~SwapChain()
 	cleanup();
 }
 
-VkSwapchainKHR SwapChain::getVk() const
+VkSwapchainKHR SwapChain::get() const
 {
 	return swapChain;
 }
@@ -104,7 +104,7 @@ void SwapChain::create(VkExtent2D surfaceExtent)
 		createInfo.pQueueFamilyIndices = indices.data();
 	}
 
-    const VkResult result = vkCreateSwapchainKHR(device->getVk(), &createInfo, nullptr, &swapChain);
+    const VkResult result = vkCreateSwapchainKHR(device->get(), &createInfo, nullptr, &swapChain);
 	assert(result == VK_SUCCESS);
 
 	saveImages(minImageCount);
@@ -180,9 +180,9 @@ uint32_t SwapChain::chooseMinImageCount(VkSurfaceCapabilitiesKHR capabilities)
 void SwapChain::saveImages(uint32_t imageCount)
 {
 	// real count of images can be greater than requested
-	vkGetSwapchainImagesKHR(device->getVk(), swapChain, &imageCount, nullptr);  // get count
+	vkGetSwapchainImagesKHR(device->get(), swapChain, &imageCount, nullptr);  // get count
 	images.resize(imageCount);
-	vkGetSwapchainImagesKHR(device->getVk(), swapChain, &imageCount, images.data());  // get images
+	vkGetSwapchainImagesKHR(device->get(), swapChain, &imageCount, images.data());  // get images
 }
 
 void SwapChain::createImageViews()
@@ -191,17 +191,18 @@ void SwapChain::createImageViews()
 
 	for (uint32_t i = 0; i < getImageCount(); i++)
 	{
-		SwapChainImage image(device, images[i], imageFormat);
 
-        const VkImageSubresourceRange subresourceRange{
+		const VkImageSubresourceRange subresourceRange{
 			VK_IMAGE_ASPECT_COLOR_BIT,
 			0,
-			1,	
-			0,	
-			1,	
+			1,
+			0,
+			1,
 		};
 
-		imageViews[i] = image.getImageView(subresourceRange);
+		SwapChainImage image(device, images[i], imageFormat, subresourceRange);
+
+		imageViews[i] = image.getView();
 	}
 }
 
@@ -209,8 +210,8 @@ void SwapChain::cleanup()
 {
 	for (auto imageView : imageViews)
     {
-		vkDestroyImageView(device->getVk(), imageView, nullptr);
+		vkDestroyImageView(device->get(), imageView, nullptr);
 	}
 
-	vkDestroySwapchainKHR(device->getVk(), swapChain, nullptr);
+	vkDestroySwapchainKHR(device->get(), swapChain, nullptr);
 }

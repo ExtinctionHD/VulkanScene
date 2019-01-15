@@ -10,7 +10,7 @@ public:
 
 	~SwapChain();
 
-	VkSwapchainKHR getVk() const;
+	VkSwapchainKHR get() const;
 
 	std::vector<VkImageView> getImageViews() const;
 

@@ -1,105 +1,77 @@
 #include <algorithm>
 #include "StagingBuffer.h"
+#include "File.h"
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "TextureImage.h"
-#include "File.h"
 
 // public:
 
 TextureImage::TextureImage(
-	Device *pDevice, 
+	Device *device, 
 	std::vector<std::string> paths, 
 	uint32_t arrayLayers,
-	bool isCube, 
+	bool cubeMap, 
 	VkFilter filter,
 	VkSamplerAddressMode samplerAddressMode)
 {
 	assert(arrayLayers == paths.size());
 
-
-	// loads image bytes for each array layer
-	std::vector<stbi_uc*> pixels(arrayLayers);
+	std::vector<void*> pixels(arrayLayers);
 	for (uint32_t i = 0; i < arrayLayers; i++)
 	{
 		pixels[i] = loadPixels(paths[i]);
-	}
-
-	this->pDevice = pDevice;
-	format = VK_FORMAT_R8G8B8A8_UNORM;
-
-	VkImageCreateFlags flags = 0;
-	VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D;
-	if (arrayLayers > 1)
-	{
-		if (isCube)
-		{
-			assert(arrayLayers >= 6);
-
-			flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
-			viewType = VK_IMAGE_VIEW_TYPE_CUBE;
-		}
-		else
-		{
-			flags = VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT;
-			viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
-		}
 	}
 
     mipLevels = static_cast<uint32_t>(std::ceil(
 		std::log2(std::max(extent.width, extent.height))));
 	mipLevels = mipLevels > 0 ? mipLevels : 1;
 
-	createThisImage(
-		pDevice,
+	extent.depth = 1;
+	format = VK_FORMAT_R8G8B8A8_UNORM;
+
+	createThis(
+		device,
 		extent,
-		flags,
+		0,
         VK_SAMPLE_COUNT_1_BIT,
 		mipLevels,
 		format,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+		arrayLayers,
+		cubeMap,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		arrayLayers);
+        VK_IMAGE_ASPECT_COLOR_BIT);
 
-	updateData(reinterpret_cast<void**>(pixels.data()), STBI_rgb_alpha);
+	updateData(pixels, 0, STBI_rgb_alpha);
 
-    // free image pixels
     for (auto arrayLayerPixels : pixels)
     {
 		stbi_image_free(arrayLayerPixels);
     }
 
-	// create other image objects
-	generateMipmaps(pDevice, arrayLayers, VK_IMAGE_ASPECT_COLOR_BIT, filter);
-    
-    VkImageSubresourceRange subresourceRange{
-		VK_IMAGE_ASPECT_COLOR_BIT,
-		0,
-		mipLevels,
-		0,
-		arrayLayers
-	};
-	createImageView(subresourceRange, viewType);
+	generateMipmaps(device, arrayLayers, VK_IMAGE_ASPECT_COLOR_BIT, filter);
 
 	createSampler(filter, samplerAddressMode);
 }
 
 TextureImage::TextureImage(
-    Device *pDevice,
-    VkExtent3D extent,
-    VkImageCreateFlags flags,
+	Device *device,
+	VkExtent3D extent,
+	VkImageCreateFlags flags,
 	VkSampleCountFlagBits sampleCount,
-    VkFormat format,
-    VkImageTiling tiling,
-    VkImageUsageFlags usage,
-    VkMemoryPropertyFlags properties,
-    VkImageAspectFlags aspectFlags,
-	VkImageViewType viewType,
-    uint32_t arrayLayers,
+	VkFormat format,
+	VkImageTiling tiling,
+	VkImageUsageFlags usage,
+	uint32_t arrayLayers,
+	bool cubeMap,
+	VkMemoryPropertyFlags properties,
+	VkImageAspectFlags aspectFlags,
+	VkFilter filter,
     VkSamplerAddressMode samplerAddressMode)
     : Image(
-        pDevice,
+        device,
         extent,
         flags,
         sampleCount,
@@ -107,71 +79,76 @@ TextureImage::TextureImage(
         format,
         tiling,
         usage | VK_IMAGE_USAGE_SAMPLED_BIT,
-        properties,
-        arrayLayers)
+		arrayLayers,
+		cubeMap,
+		properties,
+		aspectFlags)
 {
-	VkImageSubresourceRange subresourceRange{
-		aspectFlags,
-		0,
-		mipLevels,
-		0,
-		arrayLayers
-	};
-
-	createImageView(subresourceRange, viewType);
-
-	createSampler(VK_FILTER_LINEAR, samplerAddressMode);
+	createSampler(filter, samplerAddressMode);
 }
 
 TextureImage::~TextureImage()
 {
-	if (sampler != nullptr)
-	{
-		vkDestroySampler(pDevice->getVk(), sampler, nullptr);
-	}
+	vkDestroySampler(device->get(), sampler, nullptr);
+}
+
+VkSampler TextureImage::getSampler() const
+{
+	return sampler;
 }
 
 // protected:
 
 stbi_uc* TextureImage::loadPixels(const std::string &path)
 {
-	extent.depth = 1;
+	VkExtent2D loadedExtent;
+
 	stbi_uc *pixels = stbi_load(
 		File::getAbsolute(path).c_str(),
-		reinterpret_cast<int*>(&extent.width),
-		reinterpret_cast<int*>(&extent.height),
+		reinterpret_cast<int*>(&loadedExtent.width),
+		reinterpret_cast<int*>(&loadedExtent.height),
 		nullptr,
 		STBI_rgb_alpha);
 
 	assert(pixels);
 
+    if (extent.width < loadedExtent.width)
+    {
+		extent.width = loadedExtent.width;
+    }
+
+    if (extent.height < loadedExtent.height)
+	{
+		extent.height = loadedExtent.height;
+	}
+
 	return pixels;
 }
 
-void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImageAspectFlags aspectFlags, VkFilter filter)
+void TextureImage::generateMipmaps(Device *device, uint32_t arrayLayers, VkImageAspectFlags aspectFlags, VkFilter filter) const
 {
-    const auto featureFlags = pDevice->getFormatProperties(format).optimalTilingFeatures;
+    const auto featureFlags = device->getFormatProperties(format).optimalTilingFeatures;
 	assert(featureFlags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT);
 
-    VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
+    VkCommandBuffer commandBuffer = device->beginOneTimeCommands();
 
 	VkImageMemoryBarrier barrier{
-		VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,	// sType;
-		nullptr,								// pNext;
-		0,										// srcAccessMask;
-		0,										// dstAccessMask;
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,	// oldLayout;
-		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,	// newLayout;
-		VK_QUEUE_FAMILY_IGNORED,				// srcQueueFamilyIndex;
-		VK_QUEUE_FAMILY_IGNORED,				// dstQueueFamilyIndex;
-		image,									// image;
+		VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+		nullptr,								
+		0,										
+		0,										
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,	
+		VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,	
+		VK_QUEUE_FAMILY_IGNORED,				
+		VK_QUEUE_FAMILY_IGNORED,				
+		image,									
 		{
-			aspectFlags,	            // aspectMask
-			0,							// baseMipLevel
-			1,							// levelCount
-			0,							// baseArrayLayer
-			arrayLayers					// layerCount
-		}										// subresourceRange;
+			aspectFlags,
+			0,						
+			1,						
+			0,						
+			arrayLayers				
+		}							
 	};
 
 	int32_t mipWidth = extent.width;
@@ -253,37 +230,37 @@ void TextureImage::generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImag
 		0, nullptr,
 		1, &barrier);
 
-	pDevice->endOneTimeCommands(commandBuffer);
+	device->endOneTimeCommands(commandBuffer);
 }
 
 void TextureImage::createSampler(VkFilter filter, VkSamplerAddressMode addressMode)
 {
 	VkSamplerCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,	// sType;
-		nullptr,								// pNext;
-		0,										// flags;
-		filter,									// magFilter;
-		filter,									// minFilter;
-		VK_SAMPLER_MIPMAP_MODE_LINEAR,			// mipmapMode;
-		addressMode,			                // addressModeU;
-		addressMode,			                // addressModeV;
-		addressMode,			                // addressModeW;
-		0,										// mipLodBias;
-		VK_TRUE,								// anisotropyEnable;
-		16.0f,									// maxAnisotropy;
-		VK_FALSE,								// compareEnable;
-		VK_COMPARE_OP_ALWAYS,					// compareOp;
-		0,										// minLod;
-		float(mipLevels),						// maxLod;
-		VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,		// borderColor;
-		VK_FALSE,								// unnormalizedCoordinates;
+		VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+		nullptr,								
+		0,										
+		filter,									
+		filter,									
+		VK_SAMPLER_MIPMAP_MODE_LINEAR,			
+		addressMode,			              
+		addressMode,			              
+		addressMode,			              
+		0,										
+		true,								
+		16.0f,
+		false,								
+		VK_COMPARE_OP_ALWAYS,					
+		0,										
+		float(mipLevels),						
+		VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE,		
+		false,								
 	};
 	if (filter == VK_FILTER_NEAREST)
 	{
-		createInfo.anisotropyEnable = VK_FALSE;
+		createInfo.anisotropyEnable = false;
 		createInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 	}
 
-	VkResult result = vkCreateSampler(pDevice->getVk(), &createInfo, nullptr, &sampler);
+    const VkResult result = vkCreateSampler(device->get(), &createInfo, nullptr, &sampler);
 	assert(result == VK_SUCCESS);
 }

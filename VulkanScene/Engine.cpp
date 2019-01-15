@@ -26,9 +26,9 @@ Engine::Engine(HWND hWnd, VkExtent2D frameExtent, Settings settings)
 	ssaoEnabled = settings.ssaoEnabled;
 
 	instance = new Instance(requiredLayers, extensions);
-	surface = new Surface(instance->getVk(), hWnd);
-	device = new Device(instance->getVk(), surface->getVk(), requiredLayers, settings.sampleCount);
-	swapChain = new SwapChain(device, surface->getVk(), frameExtent);
+	surface = new Surface(instance->get(), hWnd);
+	device = new Device(instance->get(), surface->get(), requiredLayers, settings.sampleCount);
+	swapChain = new SwapChain(device, surface->get(), frameExtent);
 
 	createRenderPasses(settings.shadowsDim);
 
@@ -39,15 +39,15 @@ Engine::Engine(HWND hWnd, VkExtent2D frameExtent, Settings settings)
 
 	initGraphicsCommands();
 
-	createSemaphore(device->getVk(), imageAvailable);
-	createSemaphore(device->getVk(), renderingFinished);
+	createSemaphore(device->get(), imageAvailable);
+	createSemaphore(device->get(), renderingFinished);
 }
 
 Engine::~Engine()
 {
-	vkDeviceWaitIdle(device->getVk());
-	vkDestroySemaphore(device->getVk(), imageAvailable, nullptr);
-	vkDestroySemaphore(device->getVk(), renderingFinished, nullptr);
+	vkDeviceWaitIdle(device->get());
+	vkDestroySemaphore(device->get(), imageAvailable, nullptr);
+	vkDestroySemaphore(device->get(), renderingFinished, nullptr);
 
     delete scene;
     delete descriptorPool;
@@ -82,8 +82,8 @@ void Engine::drawFrame()
 
 	uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(
-        device->getVk(),
-        swapChain->getVk(),
+        device->get(),
+        swapChain->get(),
         UINT64_MAX,
         imageAvailable,
         nullptr,
@@ -114,7 +114,7 @@ void Engine::drawFrame()
 	result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, nullptr);
 	assert(result == VK_SUCCESS);
 
-	std::vector<VkSwapchainKHR> swapChains{ swapChain->getVk() };
+	std::vector<VkSwapchainKHR> swapChains{ swapChain->get() };
 	VkPresentInfoKHR presentInfo{
 		VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
 		nullptr,
@@ -141,7 +141,7 @@ void Engine::resize(VkExtent2D newExtent)
 {
 	if (!minimized)
 	{
-		vkDeviceWaitIdle(device->getVk());
+		vkDeviceWaitIdle(device->get());
 
 		swapChain->recreate(newExtent);
 
@@ -191,7 +191,7 @@ void Engine::initGraphicsCommands()
 
 	if (!graphicsCommands.empty())
 	{
-		vkFreeCommandBuffers(device->getVk(), commandPool, graphicsCommands.size(), graphicsCommands.data());
+		vkFreeCommandBuffers(device->get(), commandPool, graphicsCommands.size(), graphicsCommands.data());
 	}
 
 	graphicsCommands.resize(swapChain->getImageCount());
@@ -204,7 +204,7 @@ void Engine::initGraphicsCommands()
 		graphicsCommands.size(),
 	};
 
-	VkResult result = vkAllocateCommandBuffers(device->getVk(), &allocInfo, graphicsCommands.data());
+	VkResult result = vkAllocateCommandBuffers(device->get(), &allocInfo, graphicsCommands.data());
 	assert(result == VK_SUCCESS);
 
 	for (size_t i = 0; i < graphicsCommands.size(); i++)
@@ -247,7 +247,7 @@ void Engine::beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type,
 	VkRenderPassBeginInfo renderPassBeginInfo{
 	    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 	    nullptr,
-	    renderPasses.at(type)->getVk(), 
+	    renderPasses.at(type)->get(), 
 	    renderPasses.at(type)->getFramebuffers()[framebufferIndex],
 	    renderArea,
 	    uint32_t(clearValues.size()),

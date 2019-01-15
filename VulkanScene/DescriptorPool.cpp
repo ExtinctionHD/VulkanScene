@@ -28,13 +28,13 @@ DescriptorPool::DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t t
 		poolSizes.data(),								// pDescriptorPoolSizes;
 	};
 
-	VkResult result = vkCreateDescriptorPool(pDevice->getVk(), &createInfo, nullptr, &pool);
+	VkResult result = vkCreateDescriptorPool(pDevice->get(), &createInfo, nullptr, &pool);
 	assert(result == VK_SUCCESS);
 }
 
 DescriptorPool::~DescriptorPool()
 {
-	vkDestroyDescriptorPool(pDevice->getVk(), pool, nullptr);
+	vkDestroyDescriptorPool(pDevice->get(), pool, nullptr);
 }
 
 VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
@@ -80,7 +80,7 @@ VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
 	};
 
 	VkDescriptorSetLayout layout;
-	VkResult result = vkCreateDescriptorSetLayout(pDevice->getVk(), &createInfo, nullptr, &layout);
+	VkResult result = vkCreateDescriptorSetLayout(pDevice->get(), &createInfo, nullptr, &layout);
 	assert(result == VK_SUCCESS);
 
 	return layout;
@@ -97,7 +97,7 @@ VkDescriptorSet DescriptorPool::getDescriptorSet(VkDescriptorSetLayout layout) c
 	};
 
 	VkDescriptorSet set;
-	VkResult result = vkAllocateDescriptorSets(pDevice->getVk(), &allocateInfo, &set);
+	VkResult result = vkAllocateDescriptorSets(pDevice->get(), &allocateInfo, &set);
 	assert(result == VK_SUCCESS);
 
 	return set;
@@ -114,7 +114,7 @@ void DescriptorPool::updateDescriptorSet(
 	for (size_t i = 0; i < buffers.size(); i++)
 	{
 		buffersInfo[i] = {
-			buffers[i]->getBuffer(),	// buffer;
+			buffers[i]->get(),	// buffer;
 			0,							// offset;
 			buffers[i]->getSize()		// range;
 		};
@@ -141,22 +141,22 @@ void DescriptorPool::updateDescriptorSet(
 	for (size_t i = 0; i < textures.size(); i++)
 	{
 		imagesInfo[i] = {
-			textures[i]->sampler,						// sampler;
-			textures[i]->view,							// imageView;
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,	// imageLayout;
+			textures[i]->getSampler(),				
+			textures[i]->getView(),					
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 		};
 
 		VkWriteDescriptorSet textureWrite{
-			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,			// sType;
-			nullptr,										// pNext;
-			set,											// dstSet;
-			buffers.size() + i,								// dstBinding;
-			0,												// dstArrayElement;
-			1,												// descriptorCount;
-			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,		// descriptorType;
-			&imagesInfo[i],									// pImageInfo;
-			nullptr,										// pBufferInfo;
-			nullptr,										// pTexelBufferView;
+			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+			nullptr,									
+			set,										
+			buffers.size() + i,							
+			0,											
+			1,											
+			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	
+			&imagesInfo[i],								
+			nullptr,									
+			nullptr,									
 		};
 
 		texturesWrites.push_back(textureWrite);
@@ -166,5 +166,5 @@ void DescriptorPool::updateDescriptorSet(
 	std::vector<VkWriteDescriptorSet> descriptorWrites(buffersWrites.begin(), buffersWrites.end());
 	descriptorWrites.insert(descriptorWrites.end(), texturesWrites.begin(), texturesWrites.end());
 
-	vkUpdateDescriptorSets(pDevice->getVk(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
+	vkUpdateDescriptorSets(pDevice->get(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
 }

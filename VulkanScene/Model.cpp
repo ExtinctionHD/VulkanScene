@@ -265,7 +265,7 @@ void Model::renderMeshes(VkCommandBuffer commandBuffer, std::vector<VkDescriptor
 
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(type)->layout, 0, descriptorSets.size(), descriptorSets.data(), 0, nullptr);
 
-	VkBuffer transformationsBuffer = pTransformationsBuffer->getBuffer();
+	VkBuffer transformationsBuffer = pTransformationsBuffer->get();
 	VkDeviceSize offset = 0;
 	vkCmdBindVertexBuffers(commandBuffer, 1, 1, &transformationsBuffer, &offset);
 

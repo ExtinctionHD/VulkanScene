@@ -21,7 +21,7 @@ ShaderModule::ShaderModule(Device *device, const std::string &path, VkShaderStag
 		reinterpret_cast<uint32_t*>(code.data())
 	};
 
-    const VkResult result = vkCreateShaderModule(device->getVk(), &createInfo, nullptr, &module);
+    const VkResult result = vkCreateShaderModule(device->get(), &createInfo, nullptr, &module);
 	assert(result == VK_SUCCESS);
 }
 
@@ -57,7 +57,7 @@ ShaderModule::~ShaderModule()
 {
 	delete pSpecializationInfo;
 	free(data);
-	vkDestroyShaderModule(device->getVk(), module, nullptr);
+	vkDestroyShaderModule(device->get(), module, nullptr);
 }
 
 VkShaderStageFlagBits ShaderModule::getStage() const

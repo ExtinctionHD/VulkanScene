@@ -32,7 +32,7 @@ void FinalRenderPass::createRenderPass()
 
     const VkAttachmentDescription colorAttachmentDesc{
 		0,								
-		colorImage->format,		                
+		colorImage->getFormat(),		                
 		colorImage->getSampleCount(),			 
 		VK_ATTACHMENT_LOAD_OP_LOAD,		         
 		VK_ATTACHMENT_STORE_OP_STORE,		     
@@ -145,7 +145,7 @@ void FinalRenderPass::createRenderPass()
 		dependencies.data(),						
 	};
 
-    const VkResult result = vkCreateRenderPass(device->getVk(), &createInfo, nullptr, &renderPass);
+    const VkResult result = vkCreateRenderPass(device->get(), &createInfo, nullptr, &renderPass);
 	assert(result == VK_SUCCESS);
 }
 
@@ -155,7 +155,7 @@ void FinalRenderPass::createFramebuffers()
 
 	for (auto swapChainImageView : swapChainImageViews)
 	{
-		addFramebuffer({ colorImage->view, depthImage->view, swapChainImageView});
+		addFramebuffer({ colorImage->getView(), depthImage->getView(), swapChainImageView});
 	}
 }
 

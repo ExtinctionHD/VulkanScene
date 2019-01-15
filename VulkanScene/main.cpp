@@ -7,11 +7,10 @@ int main(int argc, char *argv[])
 		4096,
 		40.0f,
 		true,
-		"Assets/SimpleScene.json",
+		"Assets/FullScene.json",
 	};
 
-	auto window = Window(1280, 720, Window::Mode::WINDOWED);
-
+	auto window = Window(1920, 1080, Window::Mode::BORDERLESS);
 	auto engine = Engine(
 		window.getHWnd(),
 		window.getClientExtent(),

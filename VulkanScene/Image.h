@@ -3,16 +3,12 @@
 #include "Device.h"
 #include "SwapChainImage.h"
 
-// allocates memory and creates new image,
-// can create image view, and transit its layout
 class Image : 
 	public SwapChainImage
 {
 public:
-	Image() = default;
-
     Image(
-		Device *pDevice,
+		Device *device,
 		VkExtent3D extent,
 		VkImageCreateFlags flags,
 		VkSampleCountFlagBits sampleCount,
@@ -20,44 +16,48 @@ public:
 		VkFormat format,
 		VkImageTiling tiling,
 		VkImageUsageFlags usage,
+		uint32_t arrayLayers,
+		bool cubeMap,
 		VkMemoryPropertyFlags properties,
-		uint32_t arrayLayers);
+		VkImageAspectFlags aspectFlags);
 
 	~Image();
 
-	// extent of this image
-	VkExtent3D extent{};
-
-	VkImageView view{};
+	VkExtent3D getExtent() const;
 
 	VkSampleCountFlagBits getSampleCount() const;
 
-	void createImageView(VkImageSubresourceRange subresourceRange, VkImageViewType viewType);
-
-	void transitLayout(Device *pDevice, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange);
+	void transitLayout(
+        Device *device,
+        VkImageLayout oldLayout,
+        VkImageLayout newLayout,
+        VkImageSubresourceRange subresourceRange) const;
 
 	// load pixels in image memory 
 	// pixel size depend from image format
 	// memory size must be equals width * height * pixel size
-	void updateData(void **data, uint32_t pixelSize);
+	void updateData(std::vector<void*> data, uint32_t layersOffset, uint32_t pixelSize) const;
 
 	static void copyImage(
-		Device *pDevice, 
-		Image& srcImage, 
-		Image& dstImage,
+		Device *device, 
+		Image *srcImage, 
+		Image *dstImage,
 		VkExtent3D extent,
-		VkImageSubresourceLayers subresourceLayers);
+		VkImageSubresourceLayers subresourceLayers);
 
 protected:
-	VkSampleCountFlagBits sampleCount{};
+	Image() = default;
 
-	uint32_t mipLevels{};
+	VkExtent3D extent;
 
-	uint32_t arrayLayers{};
+	VkSampleCountFlagBits sampleCount;
 
-	// constructor method to use in derived class
-	void createThisImage(
-		Device *pDevice,
+	uint32_t mipLevels;
+
+	uint32_t arrayLayers;
+
+	void createThis(
+		Device *device,
 		VkExtent3D extent,
 		VkImageCreateFlags flags,
 		VkSampleCountFlagBits sampleCount,
@@ -65,13 +65,14 @@ protected:
 		VkFormat format,
 		VkImageTiling tiling,
 		VkImageUsageFlags usage,
+		uint32_t arrayLayers,
+		bool cubeMap,
 		VkMemoryPropertyFlags properties,
-		uint32_t arrayLayers);
+		VkImageAspectFlags aspectFlags);
 
 private:
-	// memory that stores this image
-	VkDeviceMemory stagingMemory{};
+	VkDeviceMemory memory;
 
-	void allocateMemory(Device *pDevice, VkMemoryPropertyFlags properties);
+	void allocateMemory(Device *device, VkMemoryPropertyFlags properties);
 };
 

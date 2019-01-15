@@ -3,7 +3,8 @@
 
 // public:
 
-SsaoRenderPass::SsaoRenderPass(Device *device, VkExtent2D attachmentExtent) :RenderPass(device, attachmentExtent, VK_SAMPLE_COUNT_1_BIT)
+SsaoRenderPass::SsaoRenderPass(Device *device, VkExtent2D attachmentExtent)
+    : RenderPass(device, attachmentExtent, VK_SAMPLE_COUNT_1_BIT)
 {
 }
 
@@ -30,10 +31,11 @@ void SsaoRenderPass::createAttachments()
 		VK_FORMAT_R8_UNORM,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+        1,
+        false,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT,
-		VK_IMAGE_VIEW_TYPE_2D,
-		1,
+        VK_FILTER_LINEAR,
 		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 
 	attachments = { ssaoTexture };
@@ -45,7 +47,7 @@ void SsaoRenderPass::createRenderPass()
 
     const VkAttachmentDescription colorAttachmentDesc{
 		0,								
-		ssaoTexture->format,		             
+		ssaoTexture->getFormat(),		             
 		ssaoTexture->getSampleCount(),			 
 		VK_ATTACHMENT_LOAD_OP_CLEAR,		     
 		VK_ATTACHMENT_STORE_OP_STORE,		     
@@ -122,11 +124,11 @@ void SsaoRenderPass::createRenderPass()
 		dependencies.data(),						
 	};
 
-    const VkResult result = vkCreateRenderPass(device->getVk(), &createInfo, nullptr, &renderPass);
+    const VkResult result = vkCreateRenderPass(device->get(), &createInfo, nullptr, &renderPass);
 	assert(result == VK_SUCCESS);
 }
 
 void SsaoRenderPass::createFramebuffers()
 {
-	addFramebuffer({ ssaoTexture->view });
+	addFramebuffer({ ssaoTexture->getView() });
 }

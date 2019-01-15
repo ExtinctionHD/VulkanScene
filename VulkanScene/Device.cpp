@@ -29,7 +29,7 @@ Device::~Device()
 	vkDestroyDevice(device, nullptr);
 }
 
-VkDevice Device::getVk() const
+VkDevice Device::get() const
 {
 	return device;
 }

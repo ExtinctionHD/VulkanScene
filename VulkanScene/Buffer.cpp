@@ -2,41 +2,38 @@
 
 // public:
 
-Buffer::Buffer(Device *pDevice, VkBufferUsageFlags usage, VkDeviceSize size) :
-	StagingBuffer(pDevice, size)
+Buffer::Buffer(Device *device, VkBufferUsageFlags usage, VkDeviceSize size) : StagingBuffer(device, size)
 {
 	createBuffer(
-		pDevice,
+		device,
 		size,
 		usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		&buffer,
-		&memory);
+		&memory);
 }
 
 Buffer::~Buffer()
 {
-	vkFreeMemory(pDevice->getVk(), memory, nullptr);
-	vkDestroyBuffer(pDevice->getVk(), buffer, nullptr);
+	vkFreeMemory(device->get(), memory, nullptr);
+	vkDestroyBuffer(device->get(), buffer, nullptr);
 }
 
-VkBuffer Buffer::getBuffer() const
+VkBuffer Buffer::get() const
 {
 	return buffer;
 }
 
-void Buffer::updateData(void * data, VkDeviceSize dataSize, VkDeviceSize offset)
+void Buffer::updateData(void *data, VkDeviceSize dataSize, VkDeviceSize offset)
 {
-	// update staging buffer
 	StagingBuffer::updateData(data, dataSize, offset);
 
-	// update main buffer
-	VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
+	VkCommandBuffer commandBuffer = device->beginOneTimeCommands();
 	VkBufferCopy region{
-		offset,		// srcOffset;
-		offset,		// dstOffset;
-		dataSize,	// size;
+		offset,
+		offset,	
+		dataSize,
 	};
 	vkCmdCopyBuffer(commandBuffer, stagingBuffer, buffer, 1, &region);
-	pDevice->endOneTimeCommands(commandBuffer);
+	device->endOneTimeCommands(commandBuffer);
 }
