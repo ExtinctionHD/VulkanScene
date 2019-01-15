@@ -14,7 +14,7 @@ public:
 
 	VkBuffer get() const;
 
-	void updateData(void *data, VkDeviceSize dataSize, VkDeviceSize offset) override;
+	void updateData(const void *data, VkDeviceSize dataSize, VkDeviceSize offset) override;
 
 private:
 	VkBuffer buffer;

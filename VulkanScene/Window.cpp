@@ -82,9 +82,13 @@ void Window::controlCamera(Camera *camera) const
 	prevX = x;
 	prevY = y;
 
-	camera->movement.forward = getDirection(MOVE_FORWARD, MOVE_BACKWARD);
-	camera->movement.right = getDirection(MOVE_RIGHT, MOVE_LEFT);
-	camera->movement.up = getDirection(MOVE_UP, MOVE_DOWN);
+    const Camera::Movement movement{
+		getDirection(MOVE_FORWARD, MOVE_BACKWARD),
+		getDirection(MOVE_RIGHT, MOVE_LEFT),
+		getDirection(MOVE_UP, MOVE_DOWN)
+	};
+
+	camera->setMovement(movement);
 }
 
 Camera::Direction Window::getDirection(int positiveKey, int negativeKey) const

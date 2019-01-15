@@ -6,12 +6,12 @@
 
 // public:
 
-SceneDao::SceneDao(const std::string& path)
+SceneDao::SceneDao(const std::string &path)
 {
 	open(path);
 }
 
-void SceneDao::open(const std::string& path)
+void SceneDao::open(const std::string &path)
 {
 	std::ifstream stream(File::getAbsolute(path));
 	stream >> scene;
@@ -73,12 +73,12 @@ ImageSetInfo SceneDao::getTerrainInfo() const
 	return getImageSetInfo(scene["terrain"]);
 }
 
-std::unordered_map<std::string, AssimpModel*> SceneDao::getModels(Device* pDevice)
+std::unordered_map<std::string, AssimpModel*> SceneDao::getModels(Device *device)
 {
-	return parseModels(pDevice, scene["models"]);
+	return parseModels(device, scene["models"]);
 }
 
-void SceneDao::saveScene(const std::string& path)
+void SceneDao::saveScene(const std::string &path)
 {
 	nlohmann::json scene;
 
@@ -222,7 +222,7 @@ glm::vec3 SceneDao::getVec3(nlohmann::json json)
 	return vector;
 }
 
-std::unordered_map<std::string, AssimpModel*> SceneDao::parseModels(Device *pDevice, nlohmann::json modelsJson)
+std::unordered_map<std::string, AssimpModel*> SceneDao::parseModels(Device *device, nlohmann::json modelsJson)
 {
 	std::unordered_map<std::string, AssimpModel*> models;
 
@@ -234,13 +234,13 @@ std::unordered_map<std::string, AssimpModel*> SceneDao::parseModels(Device *pDev
 			nlohmann::json externalModelsJson;
 			stream >> externalModelsJson;
 
-			std::unordered_map<std::string, AssimpModel*> externalModels = parseModels(pDevice, externalModelsJson);
+			std::unordered_map<std::string, AssimpModel*> externalModels = parseModels(device, externalModelsJson);
 			models.merge(externalModels);
 		}
 		else
 		{
 			nlohmann::json transformationsJson = modelJson["transformations"];
-			AssimpModel *model = new AssimpModel(pDevice, modelJson["path"], transformationsJson.size());
+			AssimpModel *model = new AssimpModel(device, modelJson["path"], transformationsJson.size());
 
 			for (uint32_t i = 0; i < transformationsJson.size(); i++)
 			{
@@ -271,7 +271,7 @@ Transformation SceneDao::getTransformation(nlohmann::json json, AssimpModel *mod
 		{
 			if (transformationJson.find("size") != transformationJson.end())
 			{
-				float size = transformationJson["size"]["value"].get<float>();
+                const auto size = transformationJson["size"]["value"].get<float>();
 
 				if (transformationJson["size"]["axis"] == "x")
 				{

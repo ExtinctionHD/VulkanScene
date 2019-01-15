@@ -12,7 +12,7 @@ template <class T>
 class Mesh : public MeshBase
 {
 public:
-    Mesh(Device *pDevice, std::vector<T> vertices, std::vector<uint32_t> indices, Material *pMaterial);
+    Mesh(Device *device, std::vector<T> vertices, std::vector<uint32_t> indices, Material *pMaterial);
 
 	~Mesh() {}
 
@@ -21,11 +21,11 @@ public:
 private:
 	std::vector<T> vertices;
 
-    void initBuffers(Device *pDevice);
+    void initBuffers(Device *device);
 };
 
 template <class T>
-Mesh<T>::Mesh(Device *pDevice, std::vector<T> vertices, std::vector<uint32_t> indices, Material *pMaterial)
+Mesh<T>::Mesh(Device *device, std::vector<T> vertices, std::vector<uint32_t> indices, Material *pMaterial)
 {
     this->vertices = vertices;
     this->indices = indices;
@@ -33,7 +33,7 @@ Mesh<T>::Mesh(Device *pDevice, std::vector<T> vertices, std::vector<uint32_t> in
 
 	indexCount = indices.size();
 
-    initBuffers(pDevice);
+    initBuffers(device);
 }
 
 template <class T>
@@ -43,14 +43,14 @@ void Mesh<T>::clearHostVertices()
 }
 
 template <class T>
-void Mesh<T>::initBuffers(Device *pDevice)
+void Mesh<T>::initBuffers(Device *device)
 {
     VkDeviceSize size = vertices.size() * sizeof(vertices[0]);
-    pVertexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, size);
+    pVertexBuffer = new Buffer(device, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, size);
     pVertexBuffer->updateData(vertices.data(), vertices.size() * sizeof(vertices[0]), 0);
 
     size = indices.size() * sizeof(indices[0]);
-    pIndexBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, size);
+    pIndexBuffer = new Buffer(device, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, size);
     pIndexBuffer->updateData(indices.data(), indices.size() * sizeof(indices[0]), 0);
 }
 

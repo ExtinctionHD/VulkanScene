@@ -10,7 +10,7 @@
 class AssimpModel : public Model
 {
 public:
-	AssimpModel(Device *pDevice, const std::string& path, uint32_t count);
+	AssimpModel(Device *device, const std::string& path, uint32_t count);
 	~AssimpModel();
 
 	glm::vec3 getBaseSize() const;

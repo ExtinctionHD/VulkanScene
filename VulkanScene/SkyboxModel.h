@@ -14,7 +14,7 @@ public:
 
 	static const std::vector<std::string> FILENAMES;
 
-	SkyboxModel(Device *pDevice, ImageSetInfo imageSetInfo);
+	SkyboxModel(Device *device, ImageSetInfo imageSetInfo);
 	~SkyboxModel();
 
 protected:

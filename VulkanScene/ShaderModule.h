@@ -29,12 +29,12 @@ private:
 
 	VkShaderStageFlagBits stage;
 
-	VkShaderModule module{};
+	VkShaderModule module;
 
 	std::vector<VkSpecializationMapEntry> entries;
 
-	void *data{};
+	void *data;
 
-	VkSpecializationInfo *pSpecializationInfo{};
+	VkSpecializationInfo *specializationInfo;
 };
 

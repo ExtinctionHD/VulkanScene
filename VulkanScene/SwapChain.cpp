@@ -87,7 +87,7 @@ void SwapChain::create(VkExtent2D surfaceExtent)
 		surfaceCapabilities.currentTransform,			
 		VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,				
 		presentMode,									
-		VK_TRUE,										
+		true,										
 		nullptr,										
 	};
 

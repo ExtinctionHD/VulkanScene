@@ -12,15 +12,15 @@ const std::vector<std::string> SkyboxModel::FILENAMES = {
 	"back",
 };
 
-SkyboxModel::SkyboxModel(Device *pDevice, ImageSetInfo imageSetInfo) : 
-	Model(pDevice, 1)
+SkyboxModel::SkyboxModel(Device *device, ImageSetInfo imageSetInfo) : 
+	Model(device, 1)
 {
 	std::vector<std::string> paths;
 	for (auto& filename : FILENAMES)
 	{
 		paths.push_back(File::getPath(imageSetInfo.directory, filename + imageSetInfo.extension));
 	}
-	pTexture = new TextureImage(pDevice, paths, CUBE_SIDE_COUNT, true, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT);
+	pTexture = new TextureImage(device, paths, CUBE_SIDE_COUNT, true, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 	const std::vector<Position> cubeVertices{
 		glm::vec3(-1.0f, -1.0f, -1.0f),
@@ -47,11 +47,11 @@ SkyboxModel::SkyboxModel(Device *pDevice, ImageSetInfo imageSetInfo) :
 		7, 3, 1
 	};
 
-	Material *pMaterial = new Material(pDevice);
+	Material *pMaterial = new Material(device);
 	materials.insert({ 0, pMaterial });
 	pMaterial->addTexture(aiTextureType_DIFFUSE, pTexture);
 
-	transparentMeshes.push_back(new Mesh<Position>(pDevice, cubeVertices, cubeIndices, pMaterial));
+	transparentMeshes.push_back(new Mesh<Position>(device, cubeVertices, cubeIndices, pMaterial));
 }
 
 SkyboxModel::~SkyboxModel()

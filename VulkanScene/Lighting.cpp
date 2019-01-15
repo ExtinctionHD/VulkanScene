@@ -3,44 +3,42 @@
 
 #include "Lighting.h"
 
-Lighting::Lighting(Device *pDevice, Attributes attributes, float spaceRadius)
+Lighting::Lighting(Device *device, Attributes attributes, float spaceRadius) : attributes(attributes)
 {
-	this->attributes = attributes;
-
-	pAttributesBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(attributes));
-	pAttributesBuffer->updateData(&attributes, sizeof(attributes), 0);
+	attributesBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof attributes);
+	attributesBuffer->updateData(&attributes, sizeof attributes, 0);
 
 	projection = glm::ortho(-spaceRadius, spaceRadius, -spaceRadius, spaceRadius, -spaceRadius, spaceRadius);
 	projection[1][1] *= -1;
 
 	Space space = getSpace();
-	pSpaceBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(space));
-	pSpaceBuffer->updateData(&space, sizeof(space), 0);
+	spaceBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof space);
+	spaceBuffer->updateData(&space, sizeof space, 0);
 }
 
 Lighting::~Lighting()
 {
-	delete pSpaceBuffer;
-	delete pAttributesBuffer;
+	delete spaceBuffer;
+	delete attributesBuffer;
 }
 
-Buffer * Lighting::getAttributesBuffer() const
+Buffer* Lighting::getAttributesBuffer() const
 {
-	return pAttributesBuffer;
+	return attributesBuffer;
 }
 
 Buffer* Lighting::getSpaceBuffer() const
 {
-	return pSpaceBuffer;
+	return spaceBuffer;
 }
 
 void Lighting::update(glm::vec3 cameraPos)
 {
 	attributes.cameraPos = cameraPos;
-	pAttributesBuffer->updateData(&attributes.cameraPos, sizeof(attributes.cameraPos), offsetof(Attributes, cameraPos));
+	attributesBuffer->updateData(&attributes.cameraPos, sizeof attributes.cameraPos, offsetof(Attributes, cameraPos));
 
 	Space space = getSpace();
-	pSpaceBuffer->updateData(&space, sizeof(space), 0);
+	spaceBuffer->updateData(&space, sizeof space, 0);
 }
 
 Space Lighting::getSpace() const

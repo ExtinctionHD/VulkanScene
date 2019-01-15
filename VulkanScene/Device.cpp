@@ -191,7 +191,8 @@ VkSampleCountFlagBits Device::getMaxSupportedSampleCount(VkPhysicalDevice physic
 
     const VkSampleCountFlags counts = std::min(
 		physicalDeviceProperties.limits.framebufferColorSampleCounts,
-		physicalDeviceProperties.limits.framebufferDepthSampleCounts);
+		physicalDeviceProperties.limits.framebufferDepthSampleCounts
+);
 
 	if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
 	if (counts & VK_SAMPLE_COUNT_32_BIT) { return VK_SAMPLE_COUNT_32_BIT; }
@@ -282,8 +283,8 @@ void Device::createDevice(const std::vector<const char*> &layers)
 	}
 
 	VkPhysicalDeviceFeatures deviceFeatures{};
-	deviceFeatures.samplerAnisotropy = VK_TRUE;
-	deviceFeatures.sampleRateShading = VK_TRUE;
+	deviceFeatures.samplerAnisotropy = true;
+	deviceFeatures.sampleRateShading = true;
 
 	VkDeviceCreateInfo deviceCreateInfo{
 		VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,

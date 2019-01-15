@@ -46,11 +46,10 @@ TextureImage::TextureImage(
 
 	updateData(reinterpret_cast<void**>(pixels.data()), STBI_rgb_alpha);
 
-	// free image pixels
-	for (auto arrayLayerPixels : pixels)
-	{
+    for (auto arrayLayerPixels : pixels)
+    {
 		stbi_image_free(arrayLayerPixels);
-	}
+    }
 
 	// create other image objects
 	generateMipmaps(device, arrayLayers, VK_IMAGE_ASPECT_COLOR_BIT, filter);

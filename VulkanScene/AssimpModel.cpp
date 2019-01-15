@@ -11,8 +11,8 @@
 
 // public:
 
-AssimpModel::AssimpModel(Device *pDevice, const std::string& path, uint32_t count) :
-	Model(pDevice, count)
+AssimpModel::AssimpModel(Device *device, const std::string& path, uint32_t count) :
+	Model(device, count)
 {
 	directory = File::getDirectory(path);
 
@@ -65,7 +65,7 @@ void AssimpModel::processNode(aiNode *pAiNode, const aiScene *pAiScene)
 
 		MeshBase* pMesh = processMesh(pAiMesh, pAiScene);
 
-		if (pMesh->pMaterial->isSolid())
+		if (pMesh->pMaterial->solid())
 		{
 			solidMeshes.push_back(pMesh);
 		}
@@ -148,7 +148,7 @@ Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScen
 
 	Material *pMaterial = getMeshMaterial(pAiMesh->mMaterialIndex, pAiScene->mMaterials);
 
-	return new Mesh<Vertex>(pDevice, vertices, indices, pMaterial);
+	return new Mesh<Vertex>(device, vertices, indices, pMaterial);
 }
 
 void AssimpModel::initPosLimits(glm::vec3 pos)
@@ -221,17 +221,17 @@ void AssimpModel::initTangents(std::vector<Vertex>& vertices, std::vector<uint32
 
 Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial)
 {
-	Material *pMaterial = new Material(pDevice);
+	Material *pMaterial = new Material(device);
 
 	if (materials.find(index) == materials.end())
 	{
 		aiMaterial *pAiMaterial = ppAiMaterial[index];
 
-		pMaterial->colors.diffuseColor = getMaterialColor(pAiMaterial, "$clr.diffuse");
-		pMaterial->colors.specularColor = getMaterialColor(pAiMaterial, "$clr.specular");
-		aiGetMaterialFloat(pAiMaterial, AI_MATKEY_OPACITY, &pMaterial->colors.opacity);
-
-		pMaterial->updateColorsBuffer();
+		Material::Colors materialColors{};
+		materialColors.diffuseColor = getMaterialColor(pAiMaterial, "$clr.diffuse");
+		materialColors.specularColor = getMaterialColor(pAiMaterial, "$clr.specular");
+		aiGetMaterialFloat(pAiMaterial, AI_MATKEY_OPACITY, &materialColors.opacity);
+		pMaterial->setColors(materialColors);
 
 		for (aiTextureType type : Material::TEXTURES_ORDER)
 		{
@@ -282,7 +282,7 @@ TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextur
 		VkFilter filter = type != aiTextureType_OPACITY ? VK_FILTER_LINEAR : VK_FILTER_NEAREST;
 
 		pTexture = new TextureImage(
-			pDevice, 
+			device, 
 			{File::getPath(directory, path)}, 
 			1, 
 			false, 

@@ -7,10 +7,11 @@ class TerrainModel : public Model
 {
 public:
 	TerrainModel(
-		Device *pDevice, 
+		Device *device, 
 		glm::vec2 cellSize,
 		VkExtent2D cellCount,
-		ImageSetInfo imageSetInfo);
+		ImageSetInfo imageSetInfo
+);
 
 	~TerrainModel();
 
