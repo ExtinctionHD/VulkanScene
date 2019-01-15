@@ -24,7 +24,7 @@ StagingBuffer::~StagingBuffer()
 	vkDestroyBuffer(device->get(), stagingBuffer, nullptr);
 }
 
-void StagingBuffer::updateData(void *data, VkDeviceSize size, VkDeviceSize offset)
+void StagingBuffer::updateData(const void *data, VkDeviceSize size, VkDeviceSize offset)
 {
 	assert(offset + size <= this->size);
 

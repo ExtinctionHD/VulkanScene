@@ -36,7 +36,7 @@ public:
 	// load pixels in image memory 
 	// pixel size depend from image format
 	// memory size must be equals width * height * pixel size
-	void updateData(std::vector<void*> data, uint32_t layersOffset, uint32_t pixelSize) const;
+	void updateData(std::vector<const void*> data, uint32_t layersOffset, uint32_t pixelSize) const;
 
 	static void copyImage(
 		Device *device, 

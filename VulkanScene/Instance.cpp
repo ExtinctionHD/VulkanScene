@@ -116,10 +116,8 @@ VkResult Instance::vkCreateDebugReportCallbackEXT(
 	{
 		return func(instance, pCreateInfo, pAllocator, pCallback);
 	}
-	else
-	{
-		return VK_ERROR_EXTENSION_NOT_PRESENT;
-	}
+
+    return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
 void Instance::vkDestroyDebugReportCallbackEXT(
@@ -127,7 +125,7 @@ void Instance::vkDestroyDebugReportCallbackEXT(
     VkDebugReportCallbackEXT callback,
     const VkAllocationCallbacks *pAllocator)
 {
-	auto func = PFN_vkDestroyDebugReportCallbackEXT(vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT"));
+    const auto func = PFN_vkDestroyDebugReportCallbackEXT(vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT"));
 	if (func != nullptr)
 	{
 		func(instance, callback, pAllocator);
@@ -138,14 +136,14 @@ void Instance::createDebugCallback()
 {
 	VkDebugReportCallbackCreateInfoEXT createInfo =
 	{
-		VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,			// sType
-		nullptr,															// pNext
-		VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT,	// flags
-		validationLayerCallback,											// pfnCallback
-		nullptr																// pUserData
+		VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT,		
+		nullptr,														
+		VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT,
+		validationLayerCallback,										
+		nullptr															
 	};
 
-	VkResult result = vkCreateDebugReportCallbackEXT(instance, &createInfo, nullptr, &callback);
+    const VkResult result = vkCreateDebugReportCallbackEXT(instance, &createInfo, nullptr, &callback);
 	assert(result == VK_SUCCESS);
 }
 
@@ -159,7 +157,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Instance::validationLayerCallback(
 	const char * msg,
 	void * userData)
 {
-	assert(VK_FALSE);
+	assert(false);
 
-	return VK_FALSE;
+	return false;
 }

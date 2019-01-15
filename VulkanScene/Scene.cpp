@@ -354,22 +354,21 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	}
 
 	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
+	std::vector<const void*> data = { &sampleCount, &ssaoKernel->SIZE, &ssaoKernel->RADIUS, &ssaoKernel->POWER };
     const auto ssaoFragmentShader = std::make_shared<ShaderModule>(
 		device,
 		"Shaders/Ssao/Frag.spv",
 		VK_SHADER_STAGE_FRAGMENT_BIT,
 		ssaoConstantEntries,
-		std::vector<const void*>{ &sampleCount, &ssaoKernel->SIZE, &ssaoKernel->RADIUS, &ssaoKernel->POWER });
+		data);
     const auto ssaoPipeline = new GraphicsPipeline(
 		device,
-		{ descriptors.at(SSAO).layout },
 		renderPasses.at(SSAO),
+		{ descriptors.at(SSAO).layout },
 		{ fullscreenVertexShader, ssaoFragmentShader },
 		{},
 		{},
-		renderPasses.at(SSAO)->getSampleCount(),
-		renderPasses.at(SSAO)->getColorAttachmentCount(),
-		VK_FALSE);
+		false);
 
 	Model::setStaticPipeline(SSAO, ssaoPipeline);
 	pipelines.push_back(ssaoPipeline);
@@ -384,22 +383,20 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 		sizeof(uint32_t)
 	};
 
-    const auto ssaoBlurFragmentShader = std::make_shared<ShaderModule>(
-        device,
+	const auto ssaoBlurFragmentShader = std::make_shared<ShaderModule>(
+		device,
 		"Shaders/SsaoBlur/Frag.spv",
-        VK_SHADER_STAGE_FRAGMENT_BIT,
-        std::vector<VkSpecializationMapEntry>{ ssaoBlurConstantEntry },
-        std::vector<const void*>{ &ssaoKernel->BLUR_RADIUS });
+		VK_SHADER_STAGE_FRAGMENT_BIT,
+		std::vector<VkSpecializationMapEntry>{ ssaoBlurConstantEntry },
+		std::vector<const void*>{ &ssaoKernel->BLUR_RADIUS });
     const auto ssaoBlurPipeline = new GraphicsPipeline(
 		device,
-		{ descriptors.at(SSAO_BLUR).layout },
 		renderPasses.at(SSAO_BLUR),
+		{ descriptors.at(SSAO_BLUR).layout },
 		{ fullscreenVertexShader, ssaoBlurFragmentShader },
 		{},
 		{},
-		renderPasses.at(SSAO_BLUR)->getSampleCount(),
-		renderPasses.at(SSAO_BLUR)->getColorAttachmentCount(),
-		VK_FALSE);
+		false);
 
 	Model::setStaticPipeline(SSAO_BLUR, ssaoBlurPipeline);
 	pipelines.push_back(ssaoBlurPipeline);
@@ -423,14 +420,12 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 
     const auto lightingPipeline = new GraphicsPipeline(
 		device,
-		{ descriptors.at(LIGHTING).layout },
 		renderPasses.at(LIGHTING),
+		{ descriptors.at(LIGHTING).layout },
 		{ fullscreenVertexShader, lightingFragmentShader },
 		{},
 		{},
-		renderPasses.at(LIGHTING)->getSampleCount(),
-		renderPasses.at(LIGHTING)->getColorAttachmentCount(),
-		VK_FALSE);
+		false);
 
 	Model::setStaticPipeline(LIGHTING, lightingPipeline);
 	pipelines.push_back(lightingPipeline);

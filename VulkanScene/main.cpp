@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 		4096,
 		40.0f,
 		true,
-		"Assets/FullScene.json",
+		"Assets/SimpleScene.json",
 	};
 
 	auto window = Window(1920, 1080, Window::Mode::BORDERLESS);

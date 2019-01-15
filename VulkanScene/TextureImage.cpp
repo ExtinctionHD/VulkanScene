@@ -17,7 +17,7 @@ TextureImage::TextureImage(
 {
 	assert(arrayLayers == paths.size());
 
-	std::vector<void*> pixels(arrayLayers);
+	std::vector<const void*> pixels(arrayLayers);
 	for (uint32_t i = 0; i < arrayLayers; i++)
 	{
 		pixels[i] = loadPixels(paths[i]);
@@ -48,7 +48,7 @@ TextureImage::TextureImage(
 
     for (auto arrayLayerPixels : pixels)
     {
-		stbi_image_free(arrayLayerPixels);
+		stbi_image_free(const_cast<void*>(arrayLayerPixels));
     }
 
 	generateMipmaps(device, arrayLayers, VK_IMAGE_ASPECT_COLOR_BIT, filter);

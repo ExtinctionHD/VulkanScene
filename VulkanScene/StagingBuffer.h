@@ -10,7 +10,7 @@ public:
 	StagingBuffer(Device *device, VkDeviceSize size);
 	virtual ~StagingBuffer();
 
-	virtual void updateData(void *data, VkDeviceSize size, VkDeviceSize offset);
+	virtual void updateData(const void *data, VkDeviceSize size, VkDeviceSize offset);
 
 	void copyToImage(VkImage image, std::vector<VkBufferImageCopy> regions) const;
 

@@ -136,7 +136,7 @@ void Image::transitLayout(
 	device->endOneTimeCommands(commandBuffer);
 }
 
-void Image::updateData(std::vector<void*> data, uint32_t layersOffset, uint32_t pixelSize) const
+void Image::updateData(std::vector<const void*> data, uint32_t layersOffset, uint32_t pixelSize) const
 {
 	assert(layersOffset + data.size() <= arrayLayers);
 
