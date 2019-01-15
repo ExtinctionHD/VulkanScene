@@ -65,7 +65,7 @@ void AssimpModel::processNode(aiNode *pAiNode, const aiScene *pAiScene)
 
 		MeshBase* pMesh = processMesh(pAiMesh, pAiScene);
 
-		if (pMesh->pMaterial->isSolid())
+		if (pMesh->pMaterial->solid())
 		{
 			solidMeshes.push_back(pMesh);
 		}
@@ -227,11 +227,11 @@ Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial
 	{
 		aiMaterial *pAiMaterial = ppAiMaterial[index];
 
-		pMaterial->colors.diffuseColor = getMaterialColor(pAiMaterial, "$clr.diffuse");
-		pMaterial->colors.specularColor = getMaterialColor(pAiMaterial, "$clr.specular");
-		aiGetMaterialFloat(pAiMaterial, AI_MATKEY_OPACITY, &pMaterial->colors.opacity);
-
-		pMaterial->updateColorsBuffer();
+		Material::Colors materialColors{};
+		materialColors.diffuseColor = getMaterialColor(pAiMaterial, "$clr.diffuse");
+		materialColors.specularColor = getMaterialColor(pAiMaterial, "$clr.specular");
+		aiGetMaterialFloat(pAiMaterial, AI_MATKEY_OPACITY, &materialColors.opacity);
+		pMaterial->setColors(materialColors);
 
 		for (aiTextureType type : Material::TEXTURES_ORDER)
 		{

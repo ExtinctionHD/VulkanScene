@@ -350,7 +350,14 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	std::vector<VkSpecializationMapEntry> ssaoConstantEntries;
 	for (uint32_t i = 0; i < ssaoConstantCount; i++)
 	{
-		ssaoConstantEntries.push_back({ i, sizeof(uint32_t) * i, sizeof(uint32_t) });
+        if (i == ssaoConstantCount - 1)
+        {
+			ssaoConstantEntries.push_back({ i, sizeof(uint32_t) * i, sizeof(float) });
+        }
+		else
+		{
+			ssaoConstantEntries.push_back({ i, sizeof(uint32_t) * i, sizeof(uint32_t) });
+		}
 	}
 
 	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();

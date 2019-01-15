@@ -6,12 +6,12 @@
 
 // public:
 
-SceneDao::SceneDao(const std::string& path)
+SceneDao::SceneDao(const std::string &path)
 {
 	open(path);
 }
 
-void SceneDao::open(const std::string& path)
+void SceneDao::open(const std::string &path)
 {
 	std::ifstream stream(File::getAbsolute(path));
 	stream >> scene;
@@ -73,12 +73,12 @@ ImageSetInfo SceneDao::getTerrainInfo() const
 	return getImageSetInfo(scene["terrain"]);
 }
 
-std::unordered_map<std::string, AssimpModel*> SceneDao::getModels(Device* device)
+std::unordered_map<std::string, AssimpModel*> SceneDao::getModels(Device *device)
 {
 	return parseModels(device, scene["models"]);
 }
 
-void SceneDao::saveScene(const std::string& path)
+void SceneDao::saveScene(const std::string &path)
 {
 	nlohmann::json scene;
 
@@ -271,7 +271,7 @@ Transformation SceneDao::getTransformation(nlohmann::json json, AssimpModel *mod
 		{
 			if (transformationJson.find("size") != transformationJson.end())
 			{
-				float size = transformationJson["size"]["value"].get<float>();
+                const auto size = transformationJson["size"]["value"].get<float>();
 
 				if (transformationJson["size"]["axis"] == "x")
 				{

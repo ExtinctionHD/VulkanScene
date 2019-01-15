@@ -28,7 +28,7 @@ Buffer* SsaoKernel::getKernelBuffer() const
 	return kernelBuffer;
 }
 
-TextureImage * SsaoKernel::getNoiseTexture() const
+TextureImage* SsaoKernel::getNoiseTexture() const
 {
 	return noiseTexture;
 }
@@ -57,7 +57,7 @@ void SsaoKernel::createNoiseTexture()
 {
 	std::vector<glm::vec4> noise(NOISE_DIM * NOISE_DIM);
 
-	for (glm::vec4 &pixel : noise)
+	for (auto &pixel : noise)
 	{
 		pixel = glm::vec4(rndDist(rndEngine) * 2.0f - 1.0f, rndDist(rndEngine) * 2.0f - 1.0f, 0.0f, 0.0f);
 	}

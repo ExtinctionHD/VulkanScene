@@ -12,9 +12,10 @@ class SceneDao
 {
 public:
 	SceneDao() = default;
-	SceneDao(const std::string& path);
 
-	void open(const std::string& path);
+	SceneDao(const std::string &path);
+
+	void open(const std::string &path);
 
 	Camera::Attributes getCameraAttributes() const;
 
@@ -26,7 +27,7 @@ public:
 
 	std::unordered_map<std::string, AssimpModel*> getModels(Device *device);
 
-	static void saveScene(const std::string& path);
+	static void saveScene(const std::string &path);
 
 private:
 	nlohmann::json scene;
