@@ -134,13 +134,13 @@ void Scene::render(VkCommandBuffer commandBuffer, RenderPassType type)
 		terrain->renderGeometry(commandBuffer, { descriptors.at(GEOMETRY).set });
         break;
     case SSAO:
-		Model::renderFullscreenQuad(commandBuffer, { descriptors.at(SSAO).set }, SSAO);
+		Model::renderFullscreenQuad(commandBuffer, SSAO, { descriptors.at(SSAO).set });
         break;
 	case SSAO_BLUR:
-		Model::renderFullscreenQuad(commandBuffer, { descriptors.at(SSAO_BLUR).set }, SSAO_BLUR);
+		Model::renderFullscreenQuad(commandBuffer, SSAO_BLUR, { descriptors.at(SSAO_BLUR).set });
 		break;
     case LIGHTING:
-		Model::renderFullscreenQuad(commandBuffer, { descriptors.at(LIGHTING).set }, LIGHTING);
+		Model::renderFullscreenQuad(commandBuffer, LIGHTING, { descriptors.at(LIGHTING).set });
         break;
     case FINAL:
 		skybox->renderFinal(commandBuffer, { descriptors.at(FINAL).set });
@@ -312,9 +312,9 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 	};
 
 	pipelines.push_back(skybox->createPipeline(
-		{ descriptors.at(FINAL).layout },
-		FINAL,
-		renderPasses.at(FINAL),
+        FINAL,
+        renderPasses.at(FINAL),
+        { descriptors.at(FINAL).layout },
         shaderModules));
 
     for (const auto &[type, directory] : shadersDirectories)
@@ -325,10 +325,10 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
 		};
 
 		pipelines.push_back(terrain->createPipeline(
-			{ descriptors.at(type).layout },
             type,
-			renderPasses.at(type),
-			shaderModules));
+            renderPasses.at(type),
+            { descriptors.at(type).layout },
+            shaderModules));
 
         for (const auto &[key, model] : models)
         {

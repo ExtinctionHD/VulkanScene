@@ -31,26 +31,28 @@ public:
 
 	GraphicsPipeline* getPipeline(RenderPassType type) const;
 
-	void initDescriptorSets(DescriptorPool *pDescriptorPool);
+	void initDescriptorSets(DescriptorPool *descriptorPool);
 
 	GraphicsPipeline* createPipeline(
-	    const std::vector<VkDescriptorSetLayout> &layouts,
-		RenderPassType type,
-		RenderPass *pRenderPass,
-	    const std::vector<std::shared_ptr<ShaderModule>> &shaderModules
-);
+        RenderPassType type,
+        RenderPass *renderPass,
+        const std::vector<VkDescriptorSetLayout> &layouts,
+        const std::vector<std::shared_ptr<ShaderModule>> &shaderModules);
 
-	void setPipeline(RenderPassType type, GraphicsPipeline *pPipeline);
+	void setPipeline(RenderPassType type, GraphicsPipeline *pipeline);
 
-	static void setStaticPipeline(RenderPassType type, GraphicsPipeline *pPipeline);
+	static void setStaticPipeline(RenderPassType type, GraphicsPipeline *pipeline);
 
-	void renderDepth(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet>& descriptorSets) const;
+	void renderDepth(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet> &descriptorSets) const;
 
-	void renderGeometry(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
+	void renderGeometry(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet> &descriptorSets) const;
 
-	static void renderFullscreenQuad(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, RenderPassType type);
+	void renderFinal(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet> &descriptorSets) const;
 
-	void renderFinal(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets) const;
+	static void renderFullscreenQuad(
+        VkCommandBuffer commandBuffer,
+        RenderPassType type,
+        const std::vector<VkDescriptorSet> &descriptorSets);
 
 	void optimizeMemory();
 
@@ -67,45 +69,50 @@ protected:
 
 	virtual VkVertexInputBindingDescription getVertexBindingDescription(uint32_t binding) = 0;
 
-	virtual std::vector<VkVertexInputAttributeDescription> getVertexAttributeDescriptions(uint32_t binding, uint32_t locationOffset) = 0;
+	virtual std::vector<VkVertexInputAttributeDescription> getVertexAttributeDescriptions(
+        uint32_t binding,
+        uint32_t locationOffset) = 0;
 
 private:
 	std::unordered_map<RenderPassType, GraphicsPipeline*> pipelines;
 
-	std::vector<glm::mat4> transformations{};
+	std::vector<glm::mat4> transformations;
 
-	Buffer *pTransformationsBuffer{};
+	Buffer *transformationsBuffer;
 
 	static std::unordered_map<RenderPassType, GraphicsPipeline*> staticPipelines;
 
 	static VkVertexInputBindingDescription getTransformationBindingDescription(uint32_t inputBinding);
 
-	static std::vector<VkVertexInputAttributeDescription> getTransformationAttributeDescriptions(uint32_t binding, uint32_t locationOffset);
+	static std::vector<VkVertexInputAttributeDescription> getTransformationAttributeDescriptions(
+        uint32_t binding,
+        uint32_t locationOffset);
 
 	GraphicsPipeline* createDepthPipeline(
-		std::vector<VkDescriptorSetLayout> layouts, 
-		RenderPass * pRenderPass, 
-		std::vector<std::shared_ptr<ShaderModule>> shaderModules,
-		std::vector<VkVertexInputBindingDescription> bindingDescriptions,
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions
-);
+        RenderPass *renderPass,
+        std::vector<VkDescriptorSetLayout> layouts,
+        const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
+        const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
+        const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions);
 
 	GraphicsPipeline* createGeometryPipeline(
-		std::vector<VkDescriptorSetLayout> layouts,
-		RenderPass * pRenderPass,
-		std::vector<std::shared_ptr<ShaderModule>> shaderModules,
-		std::vector<VkVertexInputBindingDescription> bindingDescriptions,
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions
-);
+        RenderPass *renderPass,
+        std::vector<VkDescriptorSetLayout> layouts,
+        const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
+        const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
+        const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions);
 
 	GraphicsPipeline* createFinalPipeline(
-		std::vector<VkDescriptorSetLayout> layouts,
-		RenderPass * pRenderPass,
-		std::vector<std::shared_ptr<ShaderModule>> shaderModules,
-		std::vector<VkVertexInputBindingDescription> bindingDescriptions,
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions
-);
+        RenderPass *renderPass,
+        std::vector<VkDescriptorSetLayout> layouts,
+        const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
+        const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
+        const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions);
 
-	void renderMeshes(VkCommandBuffer commandBuffer, std::vector<VkDescriptorSet> descriptorSets, RenderPassType type, std::vector<MeshBase*> meshes) const;
+	void renderMeshes(
+        VkCommandBuffer commandBuffer,
+        RenderPassType type,
+        const std::vector<VkDescriptorSet> &descriptorSets,
+        std::vector<MeshBase*> meshes) const;
 };
 

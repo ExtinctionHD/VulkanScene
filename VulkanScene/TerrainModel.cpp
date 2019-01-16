@@ -10,11 +10,8 @@ TerrainModel::TerrainModel(
 	Device *device, 
 	glm::vec2 cellSize,
 	VkExtent2D cellCount, 
-	ImageSetInfo imageSetInfo) : Model(device, 1)
+	ImageSetInfo imageSetInfo) : Model(device, 1), cellSize(cellSize), cellCount(cellCount)
 {
-	this->cellSize = cellSize;
-	this->cellCount = cellCount;
-
 	initMaterial(imageSetInfo.directory, imageSetInfo.extension);
 	initMesh();
 }
@@ -22,9 +19,9 @@ TerrainModel::TerrainModel(
 
 TerrainModel::~TerrainModel()
 {
-	for (TextureImage *pTexture : textures)
+	for (auto texture : textures)
 	{
-		delete(pTexture);
+		delete texture;
 	}
 }
 
@@ -35,7 +32,9 @@ VkVertexInputBindingDescription TerrainModel::getVertexBindingDescription(uint32
 	return Vertex::getBindingDescription(binding);
 }
 
-std::vector<VkVertexInputAttributeDescription> TerrainModel::getVertexAttributeDescriptions(uint32_t binding, uint32_t locationOffset)
+std::vector<VkVertexInputAttributeDescription> TerrainModel::getVertexAttributeDescriptions(
+    uint32_t binding,
+    uint32_t locationOffset)
 {
 	return Vertex::getAttributeDescriptions(binding, locationOffset);
 }
@@ -56,19 +55,26 @@ void TerrainModel::initMaterial(const std::string &texturesDirectory, const std:
 		File::getPath(texturesDirectory, "normals" + extension),
 	};
 
-	Material *pMaterial = new Material(device);
+    auto material = new Material(device);
 
 	for (size_t i = 0; i < types.size(); i++)
 	{
 		if (File::exists(paths[i]))
 		{
-			TextureImage *pTexture = new TextureImage(device, { paths[i] }, 1, false, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT);
-			pMaterial->addTexture(types[i], pTexture);
-			textures.push_back(pTexture);
+			auto texture = new TextureImage(
+                device,
+                { paths[i] },
+                1,
+                false,
+                VK_FILTER_LINEAR,
+                VK_SAMPLER_ADDRESS_MODE_REPEAT);
+
+			material->addTexture(types[i], texture);
+			textures.push_back(texture);
 		}
 	}
 
-	materials.insert({ 0, pMaterial });
+	materials.insert({ 0, material });
 }
 
 void TerrainModel::initMesh()
