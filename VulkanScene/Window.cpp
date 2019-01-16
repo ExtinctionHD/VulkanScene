@@ -95,11 +95,11 @@ Camera::Direction Window::getDirection(int positiveKey, int negativeKey) const
 {
 	Camera::Direction direction;
 
-	if (isPressed(positiveKey))
+	if (pressed(positiveKey))
 	{
 		direction = Camera::Direction::POSITIVE;
 	}
-	else if (isPressed(negativeKey))
+	else if (pressed(negativeKey))
 	{
 		direction = Camera::Direction::NEGATIVE;
 	}
@@ -111,7 +111,7 @@ Camera::Direction Window::getDirection(int positiveKey, int negativeKey) const
 	return direction;
 }
 
-bool Window::isPressed(int key) const
+bool Window::pressed(int key) const
 {
 	return glfwGetKey(window, key) == GLFW_PRESS;
 }

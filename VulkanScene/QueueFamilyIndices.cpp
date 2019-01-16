@@ -26,7 +26,7 @@ QueueFamilyIndices::QueueFamilyIndices(VkPhysicalDevice device, VkSurfaceKHR sur
 			present = i;
 		}
 
-		if (isComplete())
+		if (completed())
 		{
 			break;
 		}
@@ -53,7 +53,7 @@ uint32_t QueueFamilyIndices::getPresent() const
 	throw std::runtime_error("No required queue family");
 }
 
-bool QueueFamilyIndices::isComplete() const
+bool QueueFamilyIndices::completed() const
 {
 	return graphics >= 0 && present >= 0;
 }

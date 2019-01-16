@@ -45,7 +45,7 @@ private:
 
 	Camera::Direction getDirection(int positiveKey, int negativeKey) const;
 
-	bool isPressed(int key) const;
+	bool pressed(int key) const;
 
 	static Engine* getEngine(GLFWwindow *window);
 

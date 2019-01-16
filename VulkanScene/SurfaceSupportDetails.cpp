@@ -38,7 +38,7 @@ std::vector<VkPresentModeKHR> SurfaceSupportDetails::getPresentModes() const
 	return presentModes;
 }
 
-bool SurfaceSupportDetails::isSuitable() const
+bool SurfaceSupportDetails::suitable() const
 {
 	return !formats.empty() && !presentModes.empty();
 }

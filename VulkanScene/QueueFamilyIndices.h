@@ -15,7 +15,7 @@ public:
 	uint32_t getPresent() const;
 
 	// this device have all required queue families (for this surface)
-	bool isComplete() const;
+	bool completed() const;
 
 private:
 	// queue family indices

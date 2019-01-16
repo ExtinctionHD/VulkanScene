@@ -80,8 +80,7 @@ void SsaoKernel::createNoiseTexture()
         VK_FILTER_LINEAR,
 		VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
-	std::vector<glm::vec4*> data{ noise.data() };
-	noiseTexture->updateData(reinterpret_cast<void**>(data.data()), VECTOR_SIZE);
+	noiseTexture->updateData({ noise.data() }, 0, VECTOR_SIZE);
 
 	noiseTexture->transitLayout(
 		device,

@@ -175,7 +175,7 @@ VkPhysicalDevice Device::pickPhysicalDevice(VkInstance instance, const std::vect
 
 	for (auto device : physicalDevices)
 	{
-		if (isPhysicalDeviceSuitable(device, layers, EXTENSIONS))
+		if (physicalDeviceSuitable(device, layers, EXTENSIONS))
 		{
 			return  device;
 		}
@@ -204,7 +204,7 @@ VkSampleCountFlagBits Device::getMaxSupportedSampleCount(VkPhysicalDevice physic
 	return VK_SAMPLE_COUNT_1_BIT;
 }
 
-bool Device::isPhysicalDeviceSuitable(
+bool Device::physicalDeviceSuitable(
     VkPhysicalDevice device,
     const std::vector<const char*> &requiredLayers,
     const std::vector<const char*> &requiredExtensions) const
@@ -215,7 +215,7 @@ bool Device::isPhysicalDeviceSuitable(
     const bool layerSupport = checkDeviceLayerSupport(device, requiredLayers);
     const bool extensionSupport = checkDeviceExtensionSupport(device, requiredExtensions);
 
-	return indices.isComplete() && details.isSuitable() && layerSupport && extensionSupport;
+	return indices.completed() && details.suitable() && layerSupport && extensionSupport;
 }
 
 bool Device::checkDeviceLayerSupport(VkPhysicalDevice device, const std::vector<const char*> &requiredLayers)

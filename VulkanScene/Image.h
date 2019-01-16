@@ -29,7 +29,7 @@ public:
 
 	void transitLayout(Device *device, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange) const;
 
-	void updateData(void **data, uint32_t pixelSize) const;
+	void updateData(std::vector<const void*>, uint32_t layersOffset, uint32_t pixelSize) const;
 
 	static void copyImage(
 		Device *device,

@@ -44,7 +44,7 @@ public:
 	static VkDescriptorSetLayout getDsLayout();
 
 private:
-	static std::vector<RgbaUNorm> DEFAULT_TEXTURES_COLORS;
+	const static std::vector<RgbaUNorm> DEFAULT_TEXTURES_COLORS;
 
 	Device *device;
 

@@ -16,7 +16,7 @@ public:
 
 	std::vector<VkPresentModeKHR> getPresentModes() const;
 
-	bool isSuitable() const;
+	bool suitable() const;
 
 private:
 	VkSurfaceCapabilitiesKHR capabilities;

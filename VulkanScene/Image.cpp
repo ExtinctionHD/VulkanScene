@@ -126,49 +126,52 @@ void Image::transitLayout(
 	device->endOneTimeCommands(commandBuffer);
 }
 
-void Image::updateData(void **data, uint32_t pixelSize) const
+void Image::updateData(std::vector<const void*> data, uint32_t layersOffset, uint32_t pixelSize) const
 {
-    const VkImageSubresourceRange subresourceRange{
+	assert(layersOffset + data.size() <= arrayLayers);
+
+	const uint32_t updatedLayers = arrayLayers < layersOffset + data.size() ? arrayLayers - layersOffset : data.size();
+	const VkImageSubresourceRange subresourceRange{
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		0,
 		mipLevels,
-		0,
-		arrayLayers
+		layersOffset,
+		updatedLayers
 	};
+	const VkDeviceSize layerSize = extent.width * extent.height * pixelSize;
 
-	// before copying the layout of the texture image must be TRANSFER_DST
-	transitLayout(
-		device,
-		VK_IMAGE_LAYOUT_UNDEFINED,
-		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-		subresourceRange);
-
-    const VkDeviceSize arrayLayerSize = extent.width * extent.height * pixelSize;
-    auto stagingBuffer = new StagingBuffer(device, arrayLayerSize * arrayLayers);
-	for (uint32_t i = 0; i < arrayLayers; i++)
+	StagingBuffer stagingBuffer(device, layerSize * updatedLayers);
+	for (uint32_t i = 0; i < updatedLayers; i++)
 	{
-		stagingBuffer->updateData(data[i], arrayLayerSize, i * arrayLayerSize);
+		stagingBuffer.updateData(data[i], layerSize, i * layerSize);
 	}
 
-	std::vector<VkBufferImageCopy> regions(arrayLayers);
-	for (uint32_t i = 0; i < arrayLayers; i++)
+	std::vector<VkBufferImageCopy> regions(updatedLayers);
+	for (uint32_t i = 0; i < updatedLayers; i++)
 	{
 		regions[i] = VkBufferImageCopy{
-			i * arrayLayerSize,
+			i * layerSize,
 			0,
 			0,
 			{
 				VK_IMAGE_ASPECT_COLOR_BIT,
 				0,
-				i,
+				layersOffset + i,
 				1
 			},
 			{ 0, 0, 0 },
 			{ extent.width, extent.height, 1 }
 		};
 	}
-	stagingBuffer->copyToImage(image, regions);
-	delete stagingBuffer;
+
+	// before copying the layout of the image must be TRANSFER_DST
+	transitLayout(
+		device,
+		VK_IMAGE_LAYOUT_UNDEFINED,
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		subresourceRange);
+
+	stagingBuffer.copyToImage(image, regions);
 }
 
 void Image::copyImage(Device *device, Image &srcImage, Image &dstImage, VkExtent3D extent, VkImageSubresourceLayers subresourceLayers)

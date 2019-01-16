@@ -70,7 +70,7 @@ private:
 	// has all required queue families,
 	// support this surface (capabilities, formats, present modes)
 	// all required extensions and layers are available
-	bool isPhysicalDeviceSuitable(
+	bool physicalDeviceSuitable(
         VkPhysicalDevice device,
         const std::vector<const char*> &requiredLayers,
         const std::vector<const char*> &requiredExtensions) const;
