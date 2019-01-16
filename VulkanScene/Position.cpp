@@ -2,23 +2,22 @@
 
 // public:
 
-Position::Position(glm::vec3 pos)
+Position::Position(glm::vec3 pos) : pos(pos)
 {
-	this->pos = pos;
 }
 
 VkVertexInputBindingDescription Position::getBindingDescription(uint32_t binding)
 {
 	return VkVertexInputBindingDescription{
-		binding,					// binding;
-		sizeof(Position),			// stride;
-		VK_VERTEX_INPUT_RATE_VERTEX	// inputRate;
+		binding,				
+		sizeof(Position),			
+		VK_VERTEX_INPUT_RATE_VERTEX	
 	};
 }
 
 std::vector<VkVertexInputAttributeDescription> Position::getAttributeDescriptions(uint32_t binding, uint32_t locationOffset)
 {
-	VkVertexInputAttributeDescription posDescription{
+    const VkVertexInputAttributeDescription posDescription{
 		locationOffset + 0,
 		binding,	
 		VK_FORMAT_R32G32B32_SFLOAT,

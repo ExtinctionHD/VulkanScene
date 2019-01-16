@@ -265,7 +265,7 @@ void Model::renderMeshes(VkCommandBuffer commandBuffer, std::vector<VkDescriptor
 
 	for (auto &mesh : meshes)
 	{
-		VkDescriptorSet materialDescriptorSet = mesh->pMaterial->getDescriptorSet();
+		VkDescriptorSet materialDescriptorSet = mesh->getMaterial()->getDescriptorSet();
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(type)->getLayout(), descriptorSets.size(), 1, &materialDescriptorSet, 0, nullptr);
 
 		mesh->render(commandBuffer, transformations.size());

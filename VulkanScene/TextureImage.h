@@ -4,8 +4,7 @@
 #include <stb_image.h>
 
 // create texture image from file
-class TextureImage :
-	public Image
+class TextureImage : public Image
 {
 public:
 	TextureImage() = default;

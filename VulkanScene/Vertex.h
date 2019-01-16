@@ -8,15 +8,13 @@
 
 struct Vertex
 {
-	glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);		// position of vertex (x, y, z)
-	glm::vec2 uv = glm::vec3(0.0f, 0.0f, 0.0f);		// position of texture on this vertex (u, v)
-	glm::vec3 normal = glm::vec3(0.0f, 0.0f, 0.0f);		// average normal for triangles that include this vertex (x, y, z)
-	glm::vec3 tangent = glm::vec3(0.0f, 0.0f, 0.0f);	// texture vector u in local space (x, y, z)
+	glm::vec3 pos = glm::vec3(0.0f);
+	glm::vec2 uv = glm::vec3(0.0f);
+	glm::vec3 normal = glm::vec3(0.0f, 0.0f, 1.0f);	
+	glm::vec3 tangent = glm::vec3(0.0f);
 
-	// description of whole vertex
 	static VkVertexInputBindingDescription getBindingDescription(uint32_t binding);
 
-	// description of each vertex attribute
 	static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions(uint32_t binding, uint32_t locationOffset);
 };
 

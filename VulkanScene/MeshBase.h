@@ -4,30 +4,31 @@
 #include "Buffer.h"
 #include "Material.h"
 
-// contains the same members of any mesh
 class MeshBase
 {
 public:
 	virtual ~MeshBase();
 
-	void render(VkCommandBuffer commandBuffer, uint32_t instanceCount) const;
+	Material* getMaterial() const;
 
-	Material *pMaterial{};
+	void render(VkCommandBuffer commandBuffer, uint32_t instanceCount) const;
 
 	void clearHostIndices();
 
 	virtual void clearHostVertices() = 0;
 
 protected:
-	MeshBase() = default;
+	MeshBase(Device *device, const std::vector<uint32_t> &indices, Material *material);
 
-    std::vector<uint32_t> indices;
+	Material *material;
 
-	Buffer *pVertexBuffer{};
+	Buffer *vertexBuffer;
 
-	Buffer *pIndexBuffer{};
+	Buffer *indexBuffer;
 
-	uint32_t indexCount{};
+	std::vector<uint32_t> indices;
+
+	uint32_t indexCount;
 
 };
 

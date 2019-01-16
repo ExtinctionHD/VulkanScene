@@ -5,8 +5,7 @@
 
 // allocates memory and creates new image,
 // can create image view, and transit its layout
-class Image :
-	public SwapChainImage
+class Image : public SwapChainImage
 {
 public:
 	Image(

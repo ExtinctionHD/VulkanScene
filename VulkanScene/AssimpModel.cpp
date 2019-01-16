@@ -65,7 +65,7 @@ void AssimpModel::processNode(aiNode *pAiNode, const aiScene *pAiScene)
 
 		MeshBase* pMesh = processMesh(pAiMesh, pAiScene);
 
-		if (pMesh->pMaterial->solid())
+		if (pMesh->getMaterial()->solid())
 		{
 			solidMeshes.push_back(pMesh);
 		}
