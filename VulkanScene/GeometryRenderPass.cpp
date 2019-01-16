@@ -147,14 +147,14 @@ void GeometryRenderPass::createRenderPass()
     for (size_t i = 0; i < colorAttachmentReferences.size(); i++)
     {
         const VkAttachmentReference colorAttachmentRef{
-			i,
+			uint32_t(i),
 			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
 		};
 		colorAttachmentReferences[i] = colorAttachmentRef;
     }
 
 	VkAttachmentReference depthAttachmentRef{
-		attachments.size() - 1,				
+		uint32_t(attachments.size() - 1),				
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
 	};
 
@@ -163,7 +163,7 @@ void GeometryRenderPass::createRenderPass()
 		VK_PIPELINE_BIND_POINT_GRAPHICS,	
 		0,									
 		nullptr,							
-		colorAttachmentReferences.size(),	
+		uint32_t(colorAttachmentReferences.size()),	
 		colorAttachmentReferences.data(),	
 		nullptr,							
 		&depthAttachmentRef,				
@@ -202,11 +202,11 @@ void GeometryRenderPass::createRenderPass()
 		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
 		nullptr,									
 		0,											
-		attachmentDescriptions.size(),				
+		uint32_t(attachmentDescriptions.size()),				
 		attachmentDescriptions.data(),				
 		1,											
 		&subpass,									
-		dependencies.size(),						
+		uint32_t(dependencies.size()),						
 		dependencies.data(),						
 	};
 

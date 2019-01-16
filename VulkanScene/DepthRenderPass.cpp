@@ -115,7 +115,7 @@ void DepthRenderPass::createRenderPass()
 		&depthAttachmentDesc,						
 		1,											
 		&subpass,									
-		dependencies.size(),						
+		uint32_t(dependencies.size()),
 		dependencies.data(),						
 	};
 

@@ -39,7 +39,7 @@ VkExtent2D SwapChain::getExtent() const
 
 uint32_t SwapChain::getImageCount() const
 {
-	return images.size();
+	return uint32_t(images.size());
 }
 
 VkFormat SwapChain::getImageFormat() const
@@ -100,7 +100,7 @@ void SwapChain::create(VkExtent2D surfaceExtent)
 	if (indices[0] != indices[1])
 	{
 		createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		createInfo.queueFamilyIndexCount = indices.size();
+		createInfo.queueFamilyIndexCount = uint32_t(indices.size());
 		createInfo.pQueueFamilyIndices = indices.data();
 	}
 

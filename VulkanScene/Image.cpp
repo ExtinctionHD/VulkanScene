@@ -130,7 +130,10 @@ void Image::updateData(std::vector<const void*> data, uint32_t layersOffset, uin
 {
 	assert(layersOffset + data.size() <= arrayLayers);
 
-	const uint32_t updatedLayers = arrayLayers < layersOffset + data.size() ? arrayLayers - layersOffset : data.size();
+	const uint32_t updatedLayers = arrayLayers < layersOffset + uint32_t(data.size())
+                                       ? arrayLayers - layersOffset
+                                       : uint32_t(data.size());
+
 	const VkImageSubresourceRange subresourceRange{
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		0,

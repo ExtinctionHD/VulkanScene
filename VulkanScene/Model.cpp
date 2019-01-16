@@ -24,22 +24,22 @@ Model::~Model()
 
 uint32_t Model::getBufferCount() const 
 {
-	return 1 + materials.size();
+	return uint32_t(1 + materials.size());
 }
 
 uint32_t Model::getTextureCount() const
 {
-	return Material::TEXTURES_ORDER.size() * materials.size();
+	return uint32_t(Material::TEXTURES_ORDER.size() * materials.size());
 }
 
 uint32_t Model::getDescriptorSetCount() const
 {
-	return 1 + materials.size();
+	return uint32_t(1 + materials.size());
 }
 
 uint32_t Model::getMeshCount() const
 {
-	return solidMeshes.size();
+	return uint32_t(solidMeshes.size());
 }
 
 Transformation Model::getTransformation(uint32_t index)
@@ -79,7 +79,7 @@ GraphicsPipeline * Model::createPipeline(
 
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions = getVertexAttributeDescriptions(0, 0);
 	std::vector<VkVertexInputAttributeDescription> transformationAttributeDescriptions =
-        getTransformationAttributeDescriptions(1, attributeDescriptions.size());
+        getTransformationAttributeDescriptions(1, uint32_t(attributeDescriptions.size()));
 	attributeDescriptions.insert(
         attributeDescriptions.end(),
         transformationAttributeDescriptions.begin(),
@@ -136,7 +136,7 @@ void Model::renderFullscreenQuad(
 		VK_PIPELINE_BIND_POINT_GRAPHICS,
 		staticPipelines.at(type)->getLayout(),
 		0,
-		descriptorSets.size(),
+		uint32_t(descriptorSets.size()),
 		descriptorSets.data(),
 		0,
 		nullptr);
@@ -284,14 +284,14 @@ void Model::renderMeshes(
         VK_PIPELINE_BIND_POINT_GRAPHICS,
         pipelines.at(type)->getLayout(),
         0,
-        descriptorSets.size(),
+        uint32_t(descriptorSets.size()),
         descriptorSets.data(),
         0,
         nullptr);
 
-	VkBuffer transformationsBuffer = this->transformationsBuffer->get();
+	VkBuffer buffer = transformationsBuffer->get();
 	VkDeviceSize offset = 0;
-	vkCmdBindVertexBuffers(commandBuffer, 1, 1, &transformationsBuffer, &offset);
+	vkCmdBindVertexBuffers(commandBuffer, 1, 1, &buffer, &offset);
 
 	for (auto &mesh : meshes)
 	{
@@ -300,13 +300,13 @@ void Model::renderMeshes(
             commandBuffer,
             VK_PIPELINE_BIND_POINT_GRAPHICS,
             pipelines.at(type)->getLayout(),
-            descriptorSets.size(),
+            uint32_t(descriptorSets.size()),
             1,
             &materialDescriptorSet,
             0,
             nullptr);
 
-		mesh->render(commandBuffer, transformations.size());
+		mesh->render(commandBuffer, uint32_t(transformations.size()));
 	}
 }
 

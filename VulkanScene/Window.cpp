@@ -78,7 +78,7 @@ void Window::controlCamera(Camera *camera) const
 	static double prevX, prevY;
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
-	camera->rotate(x - prevX, y - prevY);
+	camera->rotate(float(x - prevX), float(y - prevY));
 	prevX = x;
 	prevY = y;
 

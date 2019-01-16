@@ -130,11 +130,11 @@ void LightingRenderPass::createRenderPass()
 		VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,	
 		nullptr,									
 		0,											
-		attachmentDescriptions.size(),				
+		uint32_t(attachmentDescriptions.size()),				
 		attachmentDescriptions.data(),				
 		1,											
 		&subpass,									
-		dependencies.size(),						
+		uint32_t(dependencies.size()),						
 		dependencies.data(),						
 	};
 

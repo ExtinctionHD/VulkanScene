@@ -290,11 +290,11 @@ void Device::createDevice(const std::vector<const char*> &layers)
 		VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
 		nullptr,
 		0,
-		queueCreateInfos.size(),
+		uint32_t(queueCreateInfos.size()),
 		queueCreateInfos.data(),
-		layers.size(),
+		uint32_t(layers.size()),
 		layers.data(),
-		EXTENSIONS.size(),
+		uint32_t(EXTENSIONS.size()),
 		EXTENSIONS.data(),
 		&deviceFeatures
 	};

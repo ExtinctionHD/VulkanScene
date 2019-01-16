@@ -55,7 +55,7 @@ void GraphicsPipeline::createLayout(std::vector<VkDescriptorSetLayout> descripto
 		VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 		nullptr,										
 		0,												
-		descriptorSetLayouts.size(),					
+		uint32_t(descriptorSetLayouts.size()),					
 		descriptorSetLayouts.data(),					
 		0,												
 		nullptr,										
@@ -91,7 +91,7 @@ void GraphicsPipeline::createPipeline()
 		VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 		nullptr,												
 		0,														
-		bindingDescriptions.size(),								
+		uint32_t(bindingDescriptions.size()),								
 		bindingDescriptions.data(),								
 		uint32_t(attributeDescriptions.size()),					
 		attributeDescriptions.data()							
@@ -211,7 +211,7 @@ void GraphicsPipeline::createPipeline()
 		0,                            
 		false,                     
 		VK_LOGIC_OP_COPY,             
-		colorBlendAttachments.size(), 
+		uint32_t(colorBlendAttachments.size()), 
 		colorBlendAttachments.data(), 
 		{ 0, 0, 0, 0 }                
 	};
@@ -222,7 +222,7 @@ void GraphicsPipeline::createPipeline()
 		VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 		nullptr,		
 		0,					
-		shaderStages.size(),
+		uint32_t(shaderStages.size()),
 		shaderStages.data(),
 		&vertexInputState,	
 		&inputAssemblyState,

@@ -55,7 +55,7 @@ TextureImage::TextureImage(
     }
 
 	// create other image objects
-	generateMipmaps(device, arrayLayers, VK_IMAGE_ASPECT_COLOR_BIT, filter);
+	generateMipmaps(device, VK_IMAGE_ASPECT_COLOR_BIT, filter);
 
 	createSampler(filter, samplerAddressMode);
 }
@@ -119,15 +119,14 @@ stbi_uc* TextureImage::loadPixels(const std::string &path)
 }
 
 void TextureImage::generateMipmaps(
-    Device *pDevice,
-    uint32_t arrayLayers,
+    Device *device,
     VkImageAspectFlags aspectFlags,
     VkFilter filter) const
 {
-	const auto featureFlags = pDevice->getFormatProperties(format).optimalTilingFeatures;
+	const auto featureFlags = device->getFormatProperties(format).optimalTilingFeatures;
 	assert(featureFlags & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT);
 
-	VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
+	VkCommandBuffer commandBuffer = device->beginOneTimeCommands();
 
 	VkImageMemoryBarrier barrier{
 		VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -227,7 +226,7 @@ void TextureImage::generateMipmaps(
 		0, nullptr,
 		1, &barrier);
 
-	pDevice->endOneTimeCommands(commandBuffer);
+	device->endOneTimeCommands(commandBuffer);
 }
 
 void TextureImage::createSampler(VkFilter filter, VkSamplerAddressMode addressMode)

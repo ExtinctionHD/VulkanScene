@@ -24,13 +24,13 @@ StagingBuffer::~StagingBuffer()
 	vkDestroyBuffer(device->get(), stagingBuffer, nullptr);
 }
 
-void StagingBuffer::updateData(const void *data, VkDeviceSize size, VkDeviceSize offset)
+void StagingBuffer::updateData(const void *data, VkDeviceSize dataSize, VkDeviceSize offset)
 {
-	assert(offset + size <= this->size);
+	assert(offset + dataSize <= size);
 
 	void *bufferData;
-	vkMapMemory(device->get(), stagingMemory, offset, size, 0, &bufferData);
-	memcpy(bufferData, data, size);
+	vkMapMemory(device->get(), stagingMemory, offset, dataSize, 0, &bufferData);
+	memcpy(bufferData, data, dataSize);
 	vkUnmapMemory(device->get(), stagingMemory);
 }
 
@@ -43,7 +43,7 @@ void StagingBuffer::copyToImage(VkImage image, std::vector<VkBufferImageCopy> re
         stagingBuffer,
         image,
         VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-        regions.size(),
+		uint32_t(regions.size()),
         regions.data());
 
 	device->endOneTimeCommands(commandBuffer);

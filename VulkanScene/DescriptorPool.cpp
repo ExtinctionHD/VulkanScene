@@ -24,7 +24,7 @@ DescriptorPool::DescriptorPool(Device *device, uint32_t bufferCount, uint32_t te
 		nullptr,										
 		0,												
 		setCount,										
-		poolSizes.size(),								
+		uint32_t(poolSizes.size()),								
 		poolSizes.data(),								
 	};
 
@@ -46,7 +46,7 @@ VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
 	for (size_t i = 0; i < buffersShaderStages.size(); i++)
 	{
 		VkDescriptorSetLayoutBinding uniformBufferLayoutBinding{
-			i,                        
+			uint32_t(i),                        
 			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 			1,                                
 			buffersShaderStages[i],           
@@ -59,7 +59,7 @@ VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
 	for (size_t i = 0; i < texturesShaderStages.size(); i++)
 	{
 		VkDescriptorSetLayoutBinding textureLayoutBinding{
-			buffersShaderStages.size() + i,    
+			uint32_t(buffersShaderStages.size() + i),    
 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 
 			1,                                         
 			texturesShaderStages[i],                   
@@ -73,7 +73,7 @@ VkDescriptorSetLayout DescriptorPool::createDescriptorSetLayout(
 		VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
 		nullptr,											
 		0,													
-		bindings.size(),									
+		uint32_t(bindings.size()),									
 		bindings.data(),									
 	};
 
@@ -121,9 +121,9 @@ void DescriptorPool::updateDescriptorSet(
 			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 			nullptr,							
 			set,								
-			i,									
-			0,									
-			1,									
+			uint32_t(i),									
+			0,				
+			1,		
 			VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,	
 			nullptr,							
 			&buffersInfo[i],					
@@ -148,7 +148,7 @@ void DescriptorPool::updateDescriptorSet(
 			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 			nullptr,									
 			set,										
-			buffers.size() + i,							
+			uint32_t(buffers.size() + i),							
 			0,											
 			1,											
 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	
@@ -163,5 +163,5 @@ void DescriptorPool::updateDescriptorSet(
 	std::vector<VkWriteDescriptorSet> descriptorWrites(buffersWrites.begin(), buffersWrites.end());
 	descriptorWrites.insert(descriptorWrites.end(), texturesWrites.begin(), texturesWrites.end());
 
-	vkUpdateDescriptorSets(device->get(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
+	vkUpdateDescriptorSets(device->get(), uint32_t(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 }

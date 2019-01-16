@@ -100,7 +100,7 @@ void RenderPass::addFramebuffer(std::vector<VkImageView> imageViews)
 		nullptr,			
 		0,					
 		renderPass,			
-		imageViews.size(),	
+		uint32_t(imageViews.size()),
 		imageViews.data(),	
 		extent.width,		
 		extent.height,		

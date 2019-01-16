@@ -34,7 +34,7 @@ MeshBase::MeshBase(Device *device, const std::vector<uint32_t> &indices, Materia
 	this->indices = indices;
 	this->material = material;
 
-	indexCount = indices.size();
+	indexCount = uint32_t(indices.size());
 
     const VkDeviceSize size = indexCount * sizeof uint32_t;
 	indexBuffer = new Buffer(device, VK_BUFFER_USAGE_INDEX_BUFFER_BIT, size);

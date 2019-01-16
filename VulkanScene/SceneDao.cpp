@@ -240,7 +240,7 @@ std::unordered_map<std::string, AssimpModel*> SceneDao::parseModels(Device *devi
 		else
 		{
 			nlohmann::json transformationsJson = modelJson["transformations"];
-			AssimpModel *model = new AssimpModel(device, modelJson["path"], transformationsJson.size());
+			AssimpModel *model = new AssimpModel(device, modelJson["path"], uint32_t(transformationsJson.size()));
 
 			for (uint32_t i = 0; i < transformationsJson.size(); i++)
 			{

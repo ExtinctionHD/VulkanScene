@@ -12,6 +12,15 @@ Surface::Surface(VkInstance instance, HWND hWnd)
 	createSurface(hWnd);
 }
 
+Surface::Surface(VkInstance instance, GLFWwindow *window)
+{
+	this->instance = instance;
+
+	glfwCreateWindowSurface(instance, window, nullptr, &surface);
+
+	assert(surface);
+}
+
 Surface::~Surface()
 {
 	vkDestroySurfaceKHR(instance, surface, nullptr);

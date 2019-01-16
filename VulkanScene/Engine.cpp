@@ -102,12 +102,12 @@ void Engine::drawFrame()
 	VkSubmitInfo submitInfo{
 		VK_STRUCTURE_TYPE_SUBMIT_INFO,
 		nullptr,	
-		waitSemaphores.size(),
+		uint32_t(waitSemaphores.size()),
 		waitSemaphores.data(),
 		waitStages.data(),
 		1,
 		&graphicsCommands[imageIndex],
-		signalSemaphores.size(),
+		uint32_t(signalSemaphores.size()),
 		signalSemaphores.data(),	
 	};
 
@@ -118,9 +118,9 @@ void Engine::drawFrame()
 	VkPresentInfoKHR presentInfo{
 		VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
 		nullptr,
-		signalSemaphores.size(),
+		uint32_t(signalSemaphores.size()),
 		signalSemaphores.data(),
-		swapChains.size(),
+		uint32_t(swapChains.size()),
 		swapChains.data(),
 		&imageIndex,
 		nullptr,
@@ -191,7 +191,7 @@ void Engine::initGraphicsCommands()
 
 	if (!graphicsCommands.empty())
 	{
-		vkFreeCommandBuffers(device->get(), commandPool, graphicsCommands.size(), graphicsCommands.data());
+		vkFreeCommandBuffers(device->get(), commandPool, uint32_t(graphicsCommands.size()), graphicsCommands.data());
 	}
 
 	graphicsCommands.resize(swapChain->getImageCount());
@@ -201,7 +201,7 @@ void Engine::initGraphicsCommands()
 		nullptr,
 		commandPool,
 		VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-		graphicsCommands.size(),
+		uint32_t(graphicsCommands.size()),
 	};
 
 	VkResult result = vkAllocateCommandBuffers(device->get(), &allocInfo, graphicsCommands.data());
@@ -227,7 +227,7 @@ void Engine::initGraphicsCommands()
 			recordRenderPassCommands(graphicsCommands[i], SSAO_BLUR, 0);
         }
 		recordRenderPassCommands(graphicsCommands[i], LIGHTING, 0);
-		recordRenderPassCommands(graphicsCommands[i], FINAL, i);
+		recordRenderPassCommands(graphicsCommands[i], FINAL, uint32_t(i));
 
 		result = vkEndCommandBuffer(graphicsCommands[i]);
 

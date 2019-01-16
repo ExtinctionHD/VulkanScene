@@ -55,9 +55,9 @@ void Instance::createInstance(
 		nullptr,
 		0,
 		&appInfo,
-		requiredLayers.size(),
+		uint32_t(requiredLayers.size()),
 		requiredLayers.data(),
-		requiredExtensions.size(),
+		uint32_t(requiredExtensions.size()),
 		requiredExtensions.data()
 	};
 
@@ -153,9 +153,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Instance::validationLayerCallback(
 	uint64_t obj,
 	size_t location,
 	int32_t code,
-	const char * layerPrefix,
-	const char * msg,
-	void * userData)
+	const char *layerPrefix,
+	const char *msg,
+	void *userData)
 {
 	assert(false);
 

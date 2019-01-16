@@ -43,7 +43,7 @@ protected:
 	stbi_uc* loadPixels(const std::string &path);
 
 	// generate mipmap levels and transit image layout to SHADER_READ_ONLY
-	void generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImageAspectFlags aspectFlags, VkFilter filter) const;
+	void generateMipmaps(Device *device, VkImageAspectFlags aspectFlags, VkFilter filter) const;
 
 	void createSampler(VkFilter filter, VkSamplerAddressMode addressMode);
 };
