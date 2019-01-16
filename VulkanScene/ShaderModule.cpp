@@ -6,60 +6,55 @@
 
 // public:
 
-ShaderModule::ShaderModule(VkDevice device, std::string path, VkShaderStageFlagBits stage)
+ShaderModule::ShaderModule(Device *device, const std::string &path, VkShaderStageFlagBits stage)
+    : device(device), stage(stage), data(nullptr), specializationInfo(nullptr)
 {
-	this->device = device;
-	this->stage = stage;
-
 	std::vector<char> code = File::getBytes(path);
 
 	VkShaderModuleCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,    // sType;
-		nullptr,                                        // pNext;
-		0,                                              // flags;
-		code.size(),									// codeSize;
-		reinterpret_cast<uint32_t*>(code.data())		// pCode;
+		VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO,
+		nullptr,
+		0,
+		code.size(),
+		reinterpret_cast<uint32_t*>(code.data())
 	};
 
-	VkResult result = vkCreateShaderModule(device, &createInfo, nullptr, &module);
+    const VkResult result = vkCreateShaderModule(device->get(), &createInfo, nullptr, &module);
 	assert(result == VK_SUCCESS);
 }
 
 ShaderModule::ShaderModule(
-    VkDevice device,
-    std::string path,
+	Device *device,
+    const std::string &path,
     VkShaderStageFlagBits stage,
     std::vector<VkSpecializationMapEntry> entries,
-    const std::vector<const void*> &data
-) : ShaderModule(device, path, stage)
+    std::vector<const void*> data) : ShaderModule(device, path, stage)
 {
 	assert(entries.size() == data.size());
 
+    const size_t size = entries.back().offset + entries.back().size;
+
+	this->data = malloc(size);
 	this->entries = entries;
 
-	VkSpecializationMapEntry lastEntry = *(--entries.end());
-	size_t size = lastEntry.offset + lastEntry.size;
-
-	pData = malloc(size);
     for (size_t i = 0; i < data.size(); i++)
     {
-		memcpy(reinterpret_cast<char*>(pData) + entries[i].offset, data[i], entries[i].size);
+		memcpy(reinterpret_cast<char*>(this->data) + entries[i].offset, data[i], entries[i].size);
     }
 
-	pSpecializationInfo = new VkSpecializationInfo{
+	specializationInfo = new VkSpecializationInfo{
 		uint32_t(entries.size()),
 		this->entries.data(),
 		size,
-		this->pData
+		this->data
 	};
 }
 
 ShaderModule::~ShaderModule()
 {
-	delete pSpecializationInfo;
-	free(pData);
-
-	vkDestroyShaderModule(device, module, nullptr);
+	delete specializationInfo;
+	free(data);
+	vkDestroyShaderModule(device->get(), module, nullptr);
 }
 
 VkShaderStageFlagBits ShaderModule::getStage() const
@@ -74,5 +69,5 @@ VkShaderModule ShaderModule::getModule() const
 
 VkSpecializationInfo* ShaderModule::getSpecializationInfo() const
 {
-	return pSpecializationInfo;
+	return specializationInfo;
 }

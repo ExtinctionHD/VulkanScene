@@ -2,7 +2,7 @@
 
 #include <GLFW/glfw3.h>
 #define GLFW_EXPOSE_NATIVE_WIN32
-#include <GLFW/glfw3native.h>
+#include "GLFW/glfw3native.h"
 #include <vulkan/vulkan.h>
 #include "Engine.h"
 
@@ -12,7 +12,7 @@ public:
 	enum Mode
 	{
 		WINDOWED,
-		BORDERLESS_WINDOWED,
+		BORDERLESS,
 		FULLSCREEN
 	};
 
@@ -33,7 +33,7 @@ private:
 	{
 		MOVE_FORWARD = GLFW_KEY_W,
 		MOVE_LEFT = GLFW_KEY_A,
-		MOVE_BACK = GLFW_KEY_S,
+		MOVE_BACKWARD = GLFW_KEY_S,
 		MOVE_RIGHT = GLFW_KEY_D,
 		MOVE_UP = GLFW_KEY_SPACE,
 		MOVE_DOWN = GLFW_KEY_LEFT_CONTROL,
@@ -43,7 +43,9 @@ private:
 
 	void controlCamera(Camera *camera) const;
 
-	bool isPressed(int key) const;
+	Camera::Direction getDirection(int positiveKey, int negativeKey) const;
+
+	bool pressed(int key) const;
 
 	static Engine* getEngine(GLFWwindow *window);
 

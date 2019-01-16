@@ -13,28 +13,28 @@ VkVertexInputBindingDescription Vertex::getBindingDescription(uint32_t binding)
 
 std::vector<VkVertexInputAttributeDescription> Vertex::getAttributeDescriptions(uint32_t binding, uint32_t locationOffset)
 {
-	VkVertexInputAttributeDescription posDescription{
+    const VkVertexInputAttributeDescription posDescription{
 		locationOffset + 0,	
 		binding,	
 		VK_FORMAT_R32G32B32_SFLOAT,
 		offsetof(Vertex, pos)
 	};
 
-	VkVertexInputAttributeDescription texDescription{
+    const VkVertexInputAttributeDescription texDescription{
 		locationOffset + 1,
 		binding,	
 		VK_FORMAT_R32G32_SFLOAT,
 		offsetof(Vertex, uv)
 	};
 
-	VkVertexInputAttributeDescription normalDescription{
+    const VkVertexInputAttributeDescription normalDescription{
 		locationOffset + 2,	
 		binding,	
 		VK_FORMAT_R32G32B32_SFLOAT,
 		offsetof(Vertex, normal)
 	};
 
-	VkVertexInputAttributeDescription tangentDescription{
+    const VkVertexInputAttributeDescription tangentDescription{
 		locationOffset + 3,
 		binding,	
 		VK_FORMAT_R32G32B32_SFLOAT,

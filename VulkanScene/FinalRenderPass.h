@@ -9,9 +9,9 @@
 class FinalRenderPass : public RenderPass
 {
 public:
-	FinalRenderPass(Device *pDevice, SwapChain *pSwapChain);
+	FinalRenderPass(Device *device, SwapChain *swapChain);
 
-	void saveRenderPasses(GeometryRenderPass *pGeometryRenderPass, LightingRenderPass *pLightingRenderPass);
+	void saveRenderPasses(GeometryRenderPass *geometryRenderPass, LightingRenderPass *lightingRenderPass);
 
 protected:
     void createAttachments() override;
@@ -23,13 +23,12 @@ protected:
 private:
     SwapChain *pSwapChain;
 
-	GeometryRenderPass *pGeometryRenderPass{};
+	GeometryRenderPass *geometryRenderPass;
 
-	LightingRenderPass *pLightingRenderPass{};
+	LightingRenderPass *lightingRenderPass;
 
-	Image *pColorImage{};
+	std::shared_ptr<Image> colorImage;
 
-	// depth image and its view
-	Image *pDepthImage{};
+	std::shared_ptr<Image> depthImage;
 };
 

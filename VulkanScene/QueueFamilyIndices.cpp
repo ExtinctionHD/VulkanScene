@@ -2,12 +2,7 @@
 
 #include "QueueFamilyIndices.h"
 
-// pubilc:
-
-bool QueueFamilyIndices::isComplete() const
-{
-	return graphics >= 0 && present >= 0;
-}
+// public:
 
 QueueFamilyIndices::QueueFamilyIndices(VkPhysicalDevice device, VkSurfaceKHR surface)
 {
@@ -17,24 +12,48 @@ QueueFamilyIndices::QueueFamilyIndices(VkPhysicalDevice device, VkSurfaceKHR sur
 	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
 	vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());  // get queue family properties
 
-	// check each queue family in this device
-	for (int i = 0; i < queueFamilyCount; i++)
+	for (uint32_t i = 0; i < queueFamilyCount; i++)
 	{
 		if (queueFamilies[i].queueCount > 0 && queueFamilies[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
 		{
-			graphics = i;  // this family can draw graphics
+			graphics = i;
 		}
 
 		VkBool32 presentSupport = false;
 		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
 		if (queueFamilies[i].queueCount > 0 && presentSupport)
 		{
-			present = i;  // this family can present it on pSurface
+			present = i;
 		}
 
-		if (isComplete())
+		if (completed())
 		{
 			break;
 		}
 	}
+}
+
+uint32_t QueueFamilyIndices::getGraphics() const
+{
+    if (graphics >= 0)
+    {
+		return uint32_t(graphics);
+    }
+
+	throw std::runtime_error("No required queue family");
+}
+
+uint32_t QueueFamilyIndices::getPresent() const
+{
+	if (present >= 0)
+	{
+		return uint32_t(present);
+	}
+
+	throw std::runtime_error("No required queue family");
+}
+
+bool QueueFamilyIndices::completed() const
+{
+	return graphics >= 0 && present >= 0;
 }

@@ -3,7 +3,6 @@
 #include <vector>
 #include "TextureImage.h"
 #include <glm/glm.hpp>
-#include <string>
 #include <assimp/scene.h>
 #include <unordered_map>
 #include "Buffer.h"
@@ -13,58 +12,58 @@
 class Material
 {
 public:
-	Material(Device *pDevice);
+    struct Colors
+    {
+	    glm::vec4 diffuseColor;
+
+	    glm::vec4 specularColor;
+
+	    float opacity;
+	};
+
+	static const std::vector<aiTextureType> TEXTURES_ORDER;
+
+	Material(Device *device);
 
 	~Material();
 
-	// order of textures for each material
-	static const std::vector<aiTextureType> TEXTURES_ORDER;
-
-	uint32_t index{};
-
-	struct MaterialColors
-	{
-		glm::vec4 diffuseColor;
-
-		glm::vec4 specularColor;
-
-		float opacity;
-	} colors{};
-
 	std::vector<TextureImage*> getTextures() const;
 
-	bool isSolid() const;
+	void setColors(Colors colors);
 
-	Buffer *pColorsBuffer;
+	uint32_t getIndex() const;
 
-	// loads colors data in buffer
-	void updateColorsBuffer();
+	bool solid() const;
 
-	// adds texture of this type
-	void addTexture(aiTextureType type, TextureImage *pTexture);
+	void addTexture(aiTextureType type, TextureImage *texture);
 
-	void initDescriptorSet(DescriptorPool *pDescriptorPool);
+	void initDescriptorSet(DescriptorPool *descriptorPool);
 
 	VkDescriptorSet getDescriptorSet() const;
 
 	static VkDescriptorSetLayout getDsLayout();
 
-	static void initDefaultTextures(Device *pDevice);
-
 private:
-	Device *pDevice;
+	const static std::vector<RgbaUNorm> DEFAULT_TEXTURES_COLORS;
 
-	static uint32_t objectCount;
+	Device *device;
+
+	Colors colors;
+
+	uint32_t index;
+
+	Buffer *colorsBuffer;
 
 	std::unordered_map<aiTextureType, TextureImage*> textures;
 
-	VkDescriptorSet descriptorSet{};
+	VkDescriptorSet descriptorSet;
+
+	static uint32_t objectCount;
 
 	static VkDescriptorSetLayout dsLayout;
 
-	static std::vector<RgbaUNorm> DEFAULT_TEXTURES_COLORS;
-
 	static std::unordered_map<aiTextureType, TextureImage*> defaultTextures;
 
+	static void initDefaultTextures(Device *device);
 };
 

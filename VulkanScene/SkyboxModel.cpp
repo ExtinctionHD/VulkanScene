@@ -1,5 +1,7 @@
-#include "SkyboxModel.h"
+#include "Position.h"
 #include "File.h"
+
+#include "SkyboxModel.h"
 
 // public:
 
@@ -12,15 +14,14 @@ const std::vector<std::string> SkyboxModel::FILENAMES = {
 	"back",
 };
 
-SkyboxModel::SkyboxModel(Device *pDevice, ImageSetInfo imageSetInfo) : 
-	Model(pDevice, 1)
+SkyboxModel::SkyboxModel(Device *device, ImageSetInfo imageSetInfo) : Model(device, 1)
 {
 	std::vector<std::string> paths;
-	for (auto& filename : FILENAMES)
+	for (auto &filename : FILENAMES)
 	{
 		paths.push_back(File::getPath(imageSetInfo.directory, filename + imageSetInfo.extension));
 	}
-	pTexture = new TextureImage(pDevice, paths, CUBE_SIDE_COUNT, true, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT);
+	texture = new TextureImage(device, paths, CUBE_SIDE_COUNT, true, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 	const std::vector<Position> cubeVertices{
 		glm::vec3(-1.0f, -1.0f, -1.0f),
@@ -47,16 +48,16 @@ SkyboxModel::SkyboxModel(Device *pDevice, ImageSetInfo imageSetInfo) :
 		7, 3, 1
 	};
 
-	Material *pMaterial = new Material(pDevice);
-	materials.insert({ 0, pMaterial });
-	pMaterial->addTexture(aiTextureType_DIFFUSE, pTexture);
+    auto material = new Material(device);
+	materials.insert({ 0, material });
+	material->addTexture(aiTextureType_DIFFUSE, texture);
 
-	transparentMeshes.push_back(new Mesh<Position>(pDevice, cubeVertices, cubeIndices, pMaterial));
+	transparentMeshes.push_back(new Mesh<Position>(device, cubeVertices, cubeIndices, material));
 }
 
 SkyboxModel::~SkyboxModel()
 {
-	delete(pTexture);
+	delete texture;
 }
 
 // protected:
@@ -66,7 +67,9 @@ VkVertexInputBindingDescription SkyboxModel::getVertexBindingDescription(uint32_
 	return Position::getBindingDescription(binding);
 }
 
-std::vector<VkVertexInputAttributeDescription> SkyboxModel::getVertexAttributeDescriptions(uint32_t binding, uint32_t locationOffset)
+std::vector<VkVertexInputAttributeDescription> SkyboxModel::getVertexAttributeDescriptions(
+    uint32_t binding,
+    uint32_t locationOffset)
 {
 	return Position::getAttributeDescriptions(binding, locationOffset);
 }

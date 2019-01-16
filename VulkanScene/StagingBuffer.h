@@ -7,40 +7,38 @@
 class StagingBuffer
 {
 public:
-	StagingBuffer(Device *pDevice, VkDeviceSize size);
+	StagingBuffer(Device *device, VkDeviceSize size);
 	virtual ~StagingBuffer();
 
-	// load data in this buffer
-	virtual void updateData(void *data, VkDeviceSize size, VkDeviceSize offset);
+	virtual void updateData(const void *data, VkDeviceSize dataSize, VkDeviceSize offset);
 
 	void copyToImage(VkImage image, std::vector<VkBufferImageCopy> regions) const;
 
-	VkBuffer getBuffer() const;
+	VkBuffer get() const;
 
 	VkDeviceSize getSize() const;
 
 protected:
-	// device that provides this buffer and memory
-	Device * pDevice;
+	Device *device;
 
-	// main buffer object
-	VkBuffer stagingBuffer{};
+	VkBuffer stagingBuffer;
 
-	// size of this buffer
 	VkDeviceSize size;
 
-	// buffer memory
-	VkDeviceMemory stagingMemory{};
+	VkDeviceMemory stagingMemory;
 
 	static void createBuffer(
-		Device *pDevice,
+		Device *device,
 		VkDeviceSize size,
 		VkBufferUsageFlags usage,
 		VkMemoryPropertyFlags properties,
-		VkBuffer *pBuffer,
-		VkDeviceMemory *pMemory
-	);
+		VkBuffer *buffer,
+		VkDeviceMemory *memory);
 
-	static void allocateMemory(Device *pDevice, VkBuffer *pBuffer, VkDeviceMemory *pMemory, VkMemoryPropertyFlags properties);
+	static void allocateMemory(
+        Device *device,
+        VkBuffer buffer,
+        VkDeviceMemory *memory,
+        VkMemoryPropertyFlags properties);
 };
 

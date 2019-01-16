@@ -5,19 +5,20 @@
 #include "Device.h"
 #include <unordered_map>
 #include "Image.h"
+#include <memory>
 
 class RenderPass
 {
 public:
     virtual ~RenderPass();
 
-	VkRenderPass getRenderPass() const;
+	VkRenderPass get() const;
 
 	std::vector<VkFramebuffer> getFramebuffers() const;
 
 	VkExtent2D getExtent() const;
 
-	virtual uint32_t getColorAttachmentCount() const;
+	uint32_t getColorAttachmentCount() const;
 
 	virtual std::vector<VkClearValue> getClearValues() const;
 
@@ -28,7 +29,7 @@ public:
 	void recreate(VkExtent2D newExtent);
 
 protected:
-	RenderPass(Device *pDevice, VkExtent2D extent);
+	RenderPass(Device *device, VkExtent2D extent, VkSampleCountFlagBits sampleCount);
 
 	// possible formats of depth attachment
 	const std::vector<VkFormat> DEPTH_FORMATS{
@@ -37,20 +38,19 @@ protected:
 		VK_FORMAT_D24_UNORM_S8_UINT
 	};
 
-	Device *pDevice;
+	Device *device;
 
-	VkRenderPass renderPass{};
+	VkRenderPass renderPass;
 
-	// destination images for rendering
 	std::vector<VkFramebuffer> framebuffers;
 
-	VkExtent2D extent{};
+	VkExtent2D extent;
 
 	VkFormat depthAttachmentFormat;
 
 	VkSampleCountFlagBits sampleCount;
 
-	std::vector<Image*> attachments{};
+	std::vector<std::shared_ptr<Image>> attachments;
 
 	virtual void createAttachments() = 0;
 
@@ -63,7 +63,6 @@ protected:
 private:
 	void cleanup();
 };
-
 
 enum RenderPassType
 {

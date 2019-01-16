@@ -2,19 +2,19 @@
 
 #include <vulkan/vulkan.h>
 #include <vector>
+#include "Device.h"
 
 class ShaderModule
 {
 public:
-	ShaderModule(VkDevice device, std::string path, VkShaderStageFlagBits stage);
+	ShaderModule(Device *device, const std::string &path, VkShaderStageFlagBits stage);
 
 	ShaderModule(
-		VkDevice device, 
-		std::string path, 
+		Device *device,
+        const std::string &path, 
 		VkShaderStageFlagBits stage, 
 		std::vector<VkSpecializationMapEntry> entries,
-	    const std::vector<const void*> &data
-	);
+	    std::vector<const void*> data);
 
 	~ShaderModule();
 
@@ -25,17 +25,16 @@ public:
 	VkSpecializationInfo* getSpecializationInfo() const;
 
 private:
-	// device that provide shader module
-	VkDevice device;
+	Device *device;
 
 	VkShaderStageFlagBits stage;
 
-	VkShaderModule module{};
+	VkShaderModule module;
 
 	std::vector<VkSpecializationMapEntry> entries;
 
-	void *pData{};
+	void *data;
 
-	VkSpecializationInfo *pSpecializationInfo{};
+	VkSpecializationInfo *specializationInfo;
 };
 

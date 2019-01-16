@@ -13,7 +13,8 @@
 class Scene
 {
 public:
-	Scene(Device *pDevice, VkExtent2D cameraExtent, const std::string &path, float shadowsDistance);
+	Scene(Device *device, VkExtent2D cameraExtent, const std::string &path, float shadowsDistance);
+
 	~Scene();
 
 	uint32_t getBufferCount() const;
@@ -22,9 +23,9 @@ public:
 
 	uint32_t getDescriptorSetCount() const;
 
-	Camera *getCamera() const;
+	Camera* getCamera() const;
 
-	void prepareSceneRendering(DescriptorPool *pDescriptorPool, const RenderPassesMap &renderPasses);
+	void prepareSceneRendering(DescriptorPool *descriptorPool, const RenderPassesMap &renderPasses);
 
 	void updateScene();
 
@@ -32,38 +33,31 @@ public:
 
 	void resizeExtent(VkExtent2D newExtent);
 
-	void updateDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses);
+	void updateDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap renderPasses);
 
 private:
-	Device *pDevice;
+	Device *device;
+
+	Camera *camera;
+
+	Lighting *lighting;
+
+	SsaoKernel *ssaoKernel;
 
 	SceneDao sceneDao;
 
-	// camera attributes
-	Camera *pCamera{};
-
-	// timer for animations
 	Timer frameTimer;
 
-	// scene lighting attributes
-	Lighting *pLighting{};
-
-	SsaoKernel *pSsaoKernel{};
-
-	// scene descriptors
-	std::unordered_map<RenderPassType, DescriptorStruct> descriptors;
-
-	// models
-	SkyboxModel *skybox{};
-	TerrainModel *terrain{};
+	SkyboxModel *skybox;
+	TerrainModel *terrain;
 	std::unordered_map<std::string, AssimpModel*> models;
 
+	std::unordered_map<RenderPassType, DescriptorStruct> descriptors;
 	std::vector<GraphicsPipeline*> pipelines;
 
-	void initDescriptorSets(DescriptorPool *pDescriptorPool, RenderPassesMap renderPasses);
+	void initDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap renderPasses);
 
 	void initPipelines(RenderPassesMap renderPasses);
 
 	void initStaticPipelines(RenderPassesMap renderPasses);
 };
-

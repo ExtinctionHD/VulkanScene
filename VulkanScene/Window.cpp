@@ -14,7 +14,7 @@ Window::Window(int width, int height, Mode mode)
 	{
 	case WINDOWED:
 		break;
-	case BORDERLESS_WINDOWED:
+	case BORDERLESS:
 		glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 		break;
@@ -37,7 +37,7 @@ Window::~Window()
 	glfwTerminate();
 }
 
-void Window::setUserPointer(void* pointer) const
+void Window::setUserPointer(void *pointer) const
 {
 	glfwSetWindowUserPointer(window, pointer);
 }
@@ -52,10 +52,9 @@ VkExtent2D Window::getClientExtent() const
 	VkExtent2D extent;
 
 	glfwGetFramebufferSize(
-		window, 
-		reinterpret_cast<int *>(&extent.width), 
-		reinterpret_cast<int *>(&extent.height)
-	);
+		window,
+		reinterpret_cast<int*>(&extent.width),
+		reinterpret_cast<int*>(&extent.height));
 
 	return extent;
 }
@@ -66,7 +65,7 @@ void Window::mainLoop() const
 	{
 		glfwPollEvents();
 
-		Engine *engine = getEngine(window);
+        auto engine = getEngine(window);
 		controlCamera(engine->getCamera());
 		engine->drawFrame();
 	}
@@ -74,61 +73,50 @@ void Window::mainLoop() const
 
 // private:
 
-void Window::controlCamera(Camera* camera) const
+void Window::controlCamera(Camera *camera) const
 {
 	static double prevX, prevY;
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
-	camera->rotate(x - prevX, y - prevY);
+	camera->rotate(float(x - prevX), float(y - prevY));
 	prevX = x;
 	prevY = y;
 
-	if (isPressed(MOVE_FORWARD))
-	{
-		camera->movement.forward = Camera::Direction::POSITIVE;
-	}
-	else if (isPressed(MOVE_BACK))
-	{
-		camera->movement.forward = Camera::Direction::NEGATIVE;
-	}
-	else
-	{
-		camera->movement.forward = Camera::Direction::NONE;
-	}
+    const Camera::Movement movement{
+		getDirection(MOVE_FORWARD, MOVE_BACKWARD),
+		getDirection(MOVE_RIGHT, MOVE_LEFT),
+		getDirection(MOVE_UP, MOVE_DOWN)
+	};
 
-	if (isPressed(MOVE_RIGHT))
-	{
-		camera->movement.right = Camera::Direction::POSITIVE;
-	}
-	else if (isPressed(MOVE_LEFT))
-	{
-		camera->movement.right = Camera::Direction::NEGATIVE;
-	}
-	else
-	{
-		camera->movement.right = Camera::Direction::NONE;
-	}
-
-	if (isPressed(MOVE_UP))
-	{
-		camera->movement.up = Camera::Direction::POSITIVE;
-	}
-	else if (isPressed(MOVE_DOWN))
-	{
-		camera->movement.up = Camera::Direction::NEGATIVE;
-	}
-	else
-	{
-		camera->movement.up = Camera::Direction::NONE;
-	}
+	camera->setMovement(movement);
 }
 
-bool Window::isPressed(int key) const
+Camera::Direction Window::getDirection(int positiveKey, int negativeKey) const
+{
+	Camera::Direction direction;
+
+	if (pressed(positiveKey))
+	{
+		direction = Camera::Direction::POSITIVE;
+	}
+	else if (pressed(negativeKey))
+	{
+		direction = Camera::Direction::NEGATIVE;
+	}
+	else
+	{
+		direction = Camera::Direction::NONE;
+	}
+
+	return direction;
+}
+
+bool Window::pressed(int key) const
 {
 	return glfwGetKey(window, key) == GLFW_PRESS;
 }
 
-Engine* Window::getEngine(GLFWwindow* window)
+Engine* Window::getEngine(GLFWwindow *window)
 {
 	return reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
 }
@@ -136,24 +124,15 @@ Engine* Window::getEngine(GLFWwindow* window)
 void Window::framebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
 	Engine *engine = getEngine(window);
-	if (!engine)
+	if (engine)
 	{
-		return;
-	}
+		engine->setMinimized(width == 0 || height == 0);
 
-	if (width == 0 || height == 0)
-	{
-		engine->minimized = true;
-	}
-	else
-	{
-		engine->minimized = false;
-	}
+		const VkExtent2D extent{
+			uint32_t(width),
+			uint32_t(height)
+		};
 
-	VkExtent2D extent{
-		uint32_t(width),
-		uint32_t(height)
-	};
-
-	getEngine(window)->resize(extent);
+		getEngine(window)->resize(extent);
+	}
 }

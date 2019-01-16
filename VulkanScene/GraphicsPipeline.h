@@ -9,50 +9,41 @@
 class GraphicsPipeline
 {
 public:
-	// all stages of graphics pipeline
-	VkPipeline pipeline{};
-
 	GraphicsPipeline(
-		Device *pDevice, 
-		std::vector<VkDescriptorSetLayout> descriptorSetLayouts, 
-		RenderPass *pRenderPass, 
-		std::vector<std::shared_ptr<ShaderModule>> shaderModules,
-		std::vector<VkVertexInputBindingDescription> bindingDescriptions,
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions,
-		VkSampleCountFlagBits sampleCount,
-        uint32_t colorAttachmentCount,
-        VkBool32 blendEnable
-	);
+		Device *device,
+		RenderPass *renderPass,
+		const std::vector<VkDescriptorSetLayout> &descriptorSetLayouts,
+		const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
+		const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
+		const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions,
+		VkBool32 blendEnable);
 
 	~GraphicsPipeline();
 
-	// layout of pipeline resources (descriptors)
-	VkPipelineLayout layout{};
+	VkPipeline get() const;
 
-	// recreate with new render pass
+	VkPipelineLayout getLayout() const;
+
 	void recreate();
 
 private:
-	// device that provide pipeline
-	Device *pDevice;
+	Device *device;
 
-	RenderPass *pRenderPass;
+	RenderPass *renderPass;
 
-	// shader modules for this pipeline
+	VkPipeline pipeline;
+
+	VkPipelineLayout layout;
+
 	std::vector<std::shared_ptr<ShaderModule>> shaderModules;
 
-	// information about input vertices
 	std::vector<VkVertexInputBindingDescription> bindingDescriptions;
 	std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
-
-	VkSampleCountFlagBits sampleCount;
-
-	uint32_t attachmentCount;
 
 	VkBool32 blendEnable;
 
 	void createLayout(std::vector<VkDescriptorSetLayout> descriptorSetLayouts);
 
-	void createPipeline(VkExtent2D viewportExtent);
+	void createPipeline();
 };
 

@@ -6,9 +6,9 @@ class SsaoRenderPass :
 	public RenderPass
 {
 public:
-	SsaoRenderPass(Device *pDevice, VkExtent2D attachmentExtent);
+	SsaoRenderPass(Device *device, VkExtent2D attachmentExtent);
 
-	TextureImage* getSsaoMap() const;
+	std::shared_ptr<TextureImage> getSsaoTexture() const;
 
 protected:
     void createAttachments() override;
@@ -18,6 +18,6 @@ protected:
     void createFramebuffers() override;
 
 private:
-	TextureImage *pSsaoMap{};
+	std::shared_ptr<TextureImage> ssaoTexture;
 };
 

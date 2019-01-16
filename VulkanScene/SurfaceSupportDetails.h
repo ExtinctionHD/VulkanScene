@@ -6,20 +6,24 @@
 class SurfaceSupportDetails
 {
 public:
-	VkSurfaceCapabilitiesKHR capabilities{};
+	SurfaceSupportDetails() = default;
+
+	SurfaceSupportDetails(VkPhysicalDevice device, VkSurfaceKHR surface);
+
+	VkSurfaceCapabilitiesKHR getCapabilities() const;
+
+	std::vector<VkSurfaceFormatKHR> getFormats() const;
+
+	std::vector<VkPresentModeKHR> getPresentModes() const;
+
+	bool suitable() const;
+
+private:
+	VkSurfaceCapabilitiesKHR capabilities;
 
 	std::vector<VkSurfaceFormatKHR> formats;
 
 	std::vector<VkPresentModeKHR> presentModes;
-
-	// base constructor
-	SurfaceSupportDetails() = default;
-
-    // initialize all details
-	SurfaceSupportDetails(VkPhysicalDevice device, VkSurfaceKHR surface);
-
-	// this device is suitable for this pSurface
-	bool isSuitable() const;
 
 };
 

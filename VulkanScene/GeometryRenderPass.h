@@ -8,17 +8,15 @@
 class GeometryRenderPass : public RenderPass
 {
 public:
-	GeometryRenderPass(Device *pDevice, VkExtent2D attachmentExtent);
+	GeometryRenderPass(Device *device, VkExtent2D attachmentExtent);
 
-    uint32_t getColorAttachmentCount() const override;
+	std::shared_ptr<TextureImage> getPosTexture() const;
 
-	TextureImage* getPosMap() const;
+	std::shared_ptr<TextureImage> getNormalTexture() const;
 
-	TextureImage* getNormalMap() const;
+	std::shared_ptr<TextureImage> getAlbedoTexture() const;
 
-	TextureImage* getAlbedoMap() const;
-
-	Image* getDepthImage() const;
+	std::shared_ptr<Image> getDepthImage() const;
 
 protected:
 	void createAttachments() override;
@@ -28,12 +26,12 @@ protected:
 	void createFramebuffers() override;
 
 private:
-	TextureImage *pPosMap{};
+	std::shared_ptr<TextureImage> posTexture;
 
-	TextureImage *pNormalMap{};
+	std::shared_ptr<TextureImage> normalTexture;
 
-	TextureImage *pAlbedoMap{};
+	std::shared_ptr<TextureImage> albedoTexture;
 
-	Image *pDepthImage{};
+	std::shared_ptr<Image> depthImage;
 };
 

@@ -11,31 +11,30 @@
 
 // public:
 
-AssimpModel::AssimpModel(Device *pDevice, const std::string& path, uint32_t count) :
-	Model(pDevice, count)
+AssimpModel::AssimpModel(Device *device, const std::string &path, uint32_t count) :
+	Model(device, count)
 {
 	directory = File::getDirectory(path);
 
 	Assimp::Importer importer;
-	const aiScene *pScene = importer.ReadFile(
+	const aiScene *aiScene = importer.ReadFile(
 		File::getAbsolute(path),
 		aiProcess_Triangulate | 
 		aiProcess_GenNormals |
-		aiProcess_FlipUVs
-	);
+		aiProcess_FlipUVs);
+
 	importer.ApplyPostProcessing(aiProcess_CalcTangentSpace);
 
-	assert(pScene);
+	assert(aiScene);
 
-	processNode(pScene->mRootNode, pScene);
+	processNode(aiScene->mRootNode, aiScene);
 }
 
 AssimpModel::~AssimpModel()
 {
-	// cleanup textures
-	for (const auto& texture : textures)
+	for (const auto &[name, texture] : textures)
 	{
-		delete texture.second;
+		delete texture;
 	}
 }
 
@@ -51,82 +50,79 @@ VkVertexInputBindingDescription AssimpModel::getVertexBindingDescription(uint32_
 	return Vertex::getBindingDescription(binding);
 }
 
-std::vector<VkVertexInputAttributeDescription> AssimpModel::getVertexAttributeDescriptions(uint32_t binding, uint32_t locationOffset)
+std::vector<VkVertexInputAttributeDescription> AssimpModel::getVertexAttributeDescriptions(
+    uint32_t binding,
+    uint32_t locationOffset)
 {
 	return Vertex::getAttributeDescriptions(binding, locationOffset);
 }
 
 // private:
 
-void AssimpModel::processNode(aiNode *pAiNode, const aiScene *pAiScene)
+void AssimpModel::processNode(aiNode *aiNode, const aiScene *aiScene)
 {
-	for (unsigned int i = 0; i < pAiNode->mNumMeshes; i++)
+	for (unsigned int i = 0; i < aiNode->mNumMeshes; i++)
 	{
-		aiMesh *pAiMesh = pAiScene->mMeshes[pAiNode->mMeshes[i]];
+		aiMesh *aiMesh = aiScene->mMeshes[aiNode->mMeshes[i]];
 
-		MeshBase* pMesh = processMesh(pAiMesh, pAiScene);
+		MeshBase *mesh = processMesh(aiMesh, aiScene);
 
-		if (pMesh->pMaterial->isSolid())
+		if (mesh->getMaterial()->solid())
 		{
-			solidMeshes.push_back(pMesh);
+			solidMeshes.push_back(mesh);
 		}
 		else
 		{
-			transparentMeshes.push_back(pMesh);
+			transparentMeshes.push_back(mesh);
 		}
 	}
 
-	for (unsigned int i = 0; i < pAiNode->mNumChildren; i++)
+	for (unsigned int i = 0; i < aiNode->mNumChildren; i++)
 	{
-		processNode(pAiNode->mChildren[i], pAiScene);
+		processNode(aiNode->mChildren[i], aiScene);
 	}
 }
 
-Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScene)
+Mesh<Vertex>* AssimpModel::processMesh(aiMesh *aiMesh, const aiScene *aiScene)
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
 
-	bool needInitTangets = false;
+	bool needInitTangents = false;
 
-	// add mesh vertices
-	for (unsigned int i = 0; i < pAiMesh->mNumVertices; i++)
+	for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
 	{
 		Vertex vertex;
 
 		vertex.pos = glm::vec3(
-			pAiMesh->mVertices[i].x,
-			pAiMesh->mVertices[i].y,
-			pAiMesh->mVertices[i].z
-		);
+			aiMesh->mVertices[i].x,
+			aiMesh->mVertices[i].y,
+			aiMesh->mVertices[i].z);
 
 		initPosLimits(vertex.pos);
 
 		vertex.normal = glm::vec3(
-			pAiMesh->mNormals[i].x,
-			pAiMesh->mNormals[i].y,
-			pAiMesh->mNormals[i].z
-		);
+			aiMesh->mNormals[i].x,
+			aiMesh->mNormals[i].y,
+			aiMesh->mNormals[i].z);
 
-		if (pAiMesh->mTangents != nullptr)
+		if (aiMesh->mTangents)
 		{
 			vertex.tangent = glm::vec3(
-				pAiMesh->mTangents[i].x,
-				pAiMesh->mTangents[i].y,
-				pAiMesh->mTangents[i].z
-			);
+				aiMesh->mTangents[i].x,
+				aiMesh->mTangents[i].y,
+				aiMesh->mTangents[i].z);
 		}
 		else
 		{
-			needInitTangets = true;
+			needInitTangents = true;
 		}
 
-		if (pAiMesh->mTextureCoords[0])
+		if (aiMesh->mTextureCoords[0])
 		{
 			vertex.uv = glm::vec2(
-				pAiMesh->mTextureCoords[0][i].x,
-				pAiMesh->mTextureCoords[0][i].y
-			);
+				aiMesh->mTextureCoords[0][i].x,
+				aiMesh->mTextureCoords[0][i].y);
 		}
 		else
 		{
@@ -136,24 +132,23 @@ Mesh<Vertex>* AssimpModel::processMesh(aiMesh * pAiMesh, const aiScene * pAiScen
 		vertices.push_back(vertex);
 	}
 
-	// add mesh indices
-	for (unsigned int i = 0; i < pAiMesh->mNumFaces; i++)
+	for (unsigned int i = 0; i < aiMesh->mNumFaces; i++)
 	{
-		aiFace face = pAiMesh->mFaces[i];
+		aiFace face = aiMesh->mFaces[i];
 		for (unsigned int j = 0; j < face.mNumIndices; j++)
 		{
 			indices.push_back(face.mIndices[j]);
 		}
 	}
 
-	if (needInitTangets)
+	if (needInitTangents)
 	{
 		initTangents(vertices, indices);
 	}
 
-	Material *pMaterial = getMeshMaterial(pAiMesh->mMaterialIndex, pAiScene->mMaterials);
+	Material *material = getMeshMaterial(aiMesh->mMaterialIndex, aiScene->mMaterials);
 
-	return new Mesh<Vertex>(pDevice, vertices, indices, pMaterial);
+	return new Mesh<Vertex>(device, vertices, indices, material);
 }
 
 void AssimpModel::initPosLimits(glm::vec3 pos)
@@ -185,11 +180,10 @@ void AssimpModel::initPosLimits(glm::vec3 pos)
 	}
 }
 
-void AssimpModel::initTangents(std::vector<Vertex>& vertices, std::vector<uint32_t> indices)
+void AssimpModel::initTangents(std::vector<Vertex> &vertices, std::vector<uint32_t> indices) const
 {
 	for (unsigned int i = 0; i < indices.size(); i = i + 3) 
 	{
-
 		Vertex& v0 = vertices[indices[i]];
 		Vertex& v1 = vertices[indices[i + 1]];
 		Vertex& v2 = vertices[indices[i + 2]];
@@ -211,95 +205,96 @@ void AssimpModel::initTangents(std::vector<Vertex>& vertices, std::vector<uint32
 		else
 			tan = deltaPos / 1.0f;
 
-		tan = glm::normalize(tan - glm::dot(normal, tan) * normal);
+		tan = normalize(tan - dot(normal, tan) * normal);
 
 		v0.tangent += tan;
 		v1.tangent += tan;
 		v2.tangent += tan;
 	}
 
-	for (uint32_t i = 0; i < vertices.size(); i++)
+	for (auto &vertex : vertices)
     {
-    	vertices[i].tangent = glm::normalize(vertices[i].tangent);
+		vertex.tangent = normalize(vertex.tangent);
     }
 }
 
-Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial **ppAiMaterial)
+Material* AssimpModel::getMeshMaterial(uint32_t index, aiMaterial *aiMaterials[])
 {
-	Material *pMaterial = new Material(pDevice);
+    auto material = new Material(device);
 
 	if (materials.find(index) == materials.end())
 	{
-		aiMaterial *pAiMaterial = ppAiMaterial[index];
+        const auto aiMaterial = aiMaterials[index];
 
-		pMaterial->colors.diffuseColor = getMaterialColor(pAiMaterial, "$clr.diffuse");
-		pMaterial->colors.specularColor = getMaterialColor(pAiMaterial, "$clr.specular");
-		aiGetMaterialFloat(pAiMaterial, AI_MATKEY_OPACITY, &pMaterial->colors.opacity);
+        // load material colors
+		Material::Colors materialColors{};
+		materialColors.diffuseColor = getMaterialColor(aiMaterial, "$clr.diffuse");
+		materialColors.specularColor = getMaterialColor(aiMaterial, "$clr.specular");
+		aiGetMaterialFloat(aiMaterial, AI_MATKEY_OPACITY, &materialColors.opacity);
+		material->setColors(materialColors);
 
-		pMaterial->updateColorsBuffer();
-
-		for (aiTextureType type : Material::TEXTURES_ORDER)
+		for (auto type : Material::TEXTURES_ORDER)
 		{
             if (type == aiTextureType_NORMALS)
             {
-				if (pAiMaterial->GetTextureCount(aiTextureType_HEIGHT))
+				if (aiMaterial->GetTextureCount(aiTextureType_HEIGHT))
 				{
-					pMaterial->addTexture(aiTextureType_NORMALS, loadMaterialTexture(pAiMaterial, aiTextureType_HEIGHT));
+					material->addTexture(aiTextureType_NORMALS, loadMaterialTexture(aiMaterial, aiTextureType_HEIGHT));
 				}
             }
 
-			if (pAiMaterial->GetTextureCount(type))
+			if (aiMaterial->GetTextureCount(type))
 			{
-				pMaterial->addTexture(type, loadMaterialTexture(pAiMaterial, type));
+				material->addTexture(type, loadMaterialTexture(aiMaterial, type));
 			}
 		}
 
-		materials.insert({ index, pMaterial });
+		materials.insert({ index, material });
 	}
 	else
 	{
-		delete pMaterial;
-		pMaterial = materials[index];
+		delete material;
+		material = materials[index];
 	}
 
-	return pMaterial;
+	return material;
 }
 
-glm::vec4 AssimpModel::getMaterialColor(aiMaterial *pAiMaterial, const char * key)
+glm::vec4 AssimpModel::getMaterialColor(aiMaterial *aiMaterial, const char *key)
 {
 	aiColor4D color;
-	if (aiGetMaterialColor(pAiMaterial, key, 0, 0, &color) != aiReturn_SUCCESS)
+	if (aiGetMaterialColor(aiMaterial, key, 0, 0, &color) != aiReturn_SUCCESS)
 	{
 		return glm::vec4(1.0f);
 	}
 	return glm::vec4(color.r, color.g, color.b, color.a);
 }
 
-TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *pAiMaterial, aiTextureType type)
+TextureImage* AssimpModel::loadMaterialTexture(aiMaterial *aiMaterial, aiTextureType type)
 {
 	aiString aiPath;
-	assert(pAiMaterial->GetTexture(type, 0, &aiPath) == aiReturn_SUCCESS);
+	assert(aiMaterial->GetTexture(type, 0, &aiPath) == aiReturn_SUCCESS);
 	std::string path(aiPath.C_Str());
 
-	TextureImage *pTexture;
+	TextureImage *texture;
 	if (textures.find(path) == textures.end())
 	{
-		VkFilter filter = type != aiTextureType_OPACITY ? VK_FILTER_LINEAR : VK_FILTER_NEAREST;
+        const VkFilter filter = type != aiTextureType_OPACITY ? VK_FILTER_LINEAR : VK_FILTER_NEAREST;
 
-		pTexture = new TextureImage(
-			pDevice, 
-			{File::getPath(directory, path)}, 
+		texture = new TextureImage(
+			device, 
+			{ File::getPath(directory, path) }, 
 			1, 
 			false, 
 			filter,
-			VK_SAMPLER_ADDRESS_MODE_REPEAT
-		);
-		textures.insert({ path, pTexture });
+			VK_SAMPLER_ADDRESS_MODE_REPEAT);
+
+		textures.insert({ path, texture });
 	}
 	else
 	{
-		pTexture = textures[path];
+		texture = textures[path];
 	}
 
-	return pTexture;
+	return texture;
 }

@@ -4,48 +4,52 @@
 
 // public:
 
-StagingBuffer::StagingBuffer(Device * pDevice, VkDeviceSize size)
+StagingBuffer::StagingBuffer(Device *device, VkDeviceSize size)
 {
-	this->pDevice = pDevice;
+	this->device = device;
 	this->size = size;
 
 	createBuffer(
-		pDevice,
+		device,
 		size,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		&stagingBuffer,
-		&stagingMemory
-	);
+		&stagingMemory);
 }
 
 StagingBuffer::~StagingBuffer()
 {
-	vkFreeMemory(pDevice->device, stagingMemory, nullptr);
-	vkDestroyBuffer(pDevice->device, stagingBuffer, nullptr);
+	vkFreeMemory(device->get(), stagingMemory, nullptr);
+	vkDestroyBuffer(device->get(), stagingBuffer, nullptr);
 }
 
-void StagingBuffer::updateData(void * data, VkDeviceSize dataSize, VkDeviceSize offset)
+void StagingBuffer::updateData(const void *data, VkDeviceSize dataSize, VkDeviceSize offset)
 {
 	assert(offset + dataSize <= size);
 
-	// update staging buffer
 	void *bufferData;
-	vkMapMemory(pDevice->device, stagingMemory, offset, dataSize, 0, &bufferData);
+	vkMapMemory(device->get(), stagingMemory, offset, dataSize, 0, &bufferData);
 	memcpy(bufferData, data, dataSize);
-	vkUnmapMemory(pDevice->device, stagingMemory);
+	vkUnmapMemory(device->get(), stagingMemory);
 }
 
 void StagingBuffer::copyToImage(VkImage image, std::vector<VkBufferImageCopy> regions) const
 {
-	VkCommandBuffer commandBuffer = pDevice->beginOneTimeCommands();
+    VkCommandBuffer commandBuffer = device->beginOneTimeCommands();
 
-	vkCmdCopyBufferToImage(commandBuffer, stagingBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.size(), regions.data());
+	vkCmdCopyBufferToImage(
+        commandBuffer,
+        stagingBuffer,
+        image,
+        VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		uint32_t(regions.size()),
+        regions.data());
 
-	pDevice->endOneTimeCommands(commandBuffer);
+	device->endOneTimeCommands(commandBuffer);
 }
 
-VkBuffer StagingBuffer::getBuffer() const
+VkBuffer StagingBuffer::get() const
 {
 	return stagingBuffer;
 }
@@ -57,45 +61,53 @@ VkDeviceSize StagingBuffer::getSize() const
 
 // protected:
 
-void StagingBuffer::createBuffer(Device * pDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer * pBuffer, VkDeviceMemory * pMemory)
+void StagingBuffer::createBuffer(
+    Device *device,
+    VkDeviceSize size,
+    VkBufferUsageFlags usage,
+    VkMemoryPropertyFlags properties,
+    VkBuffer *buffer,
+    VkDeviceMemory *memory)
 {
 	VkBufferCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,	// sType
-		nullptr,								// pNext
-		0,										// flags
-		size,									// size
-		usage,									// usage
-		VK_SHARING_MODE_EXCLUSIVE,				// sharingMode
-		0,										// queueFamilyIndexCount;
-		nullptr,								// pQueueFamilyIndices;
+		VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+		nullptr,							
+		0,									
+		size,								
+		usage,								
+		VK_SHARING_MODE_EXCLUSIVE,			
+		0,									
+		nullptr,							
 	};
 
-	VkResult result = vkCreateBuffer(pDevice->device, &createInfo, nullptr, pBuffer);
+    const VkResult result = vkCreateBuffer(device->get(), &createInfo, nullptr, buffer);
 	assert(result == VK_SUCCESS);
 
-	allocateMemory(pDevice, pBuffer, pMemory, properties);
+	allocateMemory(device, *buffer, memory, properties);
 
-	vkBindBufferMemory(pDevice->device, *pBuffer, *pMemory, 0);
+	vkBindBufferMemory(device->get(), *buffer, *memory, 0);
 }
 
-void StagingBuffer::allocateMemory(Device * pDevice, VkBuffer * pBuffer, VkDeviceMemory * pMemory, VkMemoryPropertyFlags properties)
+void StagingBuffer::allocateMemory(
+    Device *device,
+    VkBuffer buffer,
+    VkDeviceMemory *memory,
+    VkMemoryPropertyFlags properties)
 {
 	VkMemoryRequirements memRequirements;
-	vkGetBufferMemoryRequirements(pDevice->device, *pBuffer, &memRequirements);
+	vkGetBufferMemoryRequirements(device->get(), buffer, &memRequirements);
 
-	uint32_t memoryTypeIndex = pDevice->findMemoryTypeIndex(
+    const uint32_t memoryTypeIndex = device->findMemoryTypeIndex(
 		memRequirements.memoryTypeBits,
-		properties
-	);
+		properties);
 
-	VkMemoryAllocateInfo allocInfo =
-	{
-		VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,	// sType
-		nullptr,								// pNext
-		memRequirements.size,					// allocationSize
-		memoryTypeIndex,						// memoryTypeIndex
+	VkMemoryAllocateInfo allocInfo{
+		VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+		nullptr,				
+		memRequirements.size,	
+		memoryTypeIndex,		
 	};
 
-	VkResult result = vkAllocateMemory(pDevice->device, &allocInfo, nullptr, pMemory);
+    const VkResult result = vkAllocateMemory(device->get(), &allocInfo, nullptr, memory);
 	assert(result == VK_SUCCESS);
 }

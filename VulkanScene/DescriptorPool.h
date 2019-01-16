@@ -5,33 +5,28 @@
 #include "Buffer.h"
 #include "TextureImage.h"
 
-// provides pool of resource descriptors
 class DescriptorPool
 {
 public:
-	DescriptorPool(Device *pDevice, uint32_t bufferCount, uint32_t textureCount, uint32_t setCount);
+	DescriptorPool(Device *device, uint32_t bufferCount, uint32_t textureCount, uint32_t setCount);
+
 	~DescriptorPool();
 
 	VkDescriptorSetLayout createDescriptorSetLayout(
 		std::vector<VkShaderStageFlags> buffersShaderStages,
-		std::vector<VkShaderStageFlags> texturesShaderStages
-	) const;
+		std::vector<VkShaderStageFlags> texturesShaderStages) const;
 
-	// returns set of descriptors and create the layout of this descriptor set
-	VkDescriptorSet getDescriptorSet(
-		VkDescriptorSetLayout layout
-	) const;
+	VkDescriptorSet getDescriptorSet(VkDescriptorSetLayout layout) const;
 
 	void updateDescriptorSet(
 		VkDescriptorSet set,
 		std::vector<Buffer*> buffers,
-		std::vector<TextureImage*> textures
-	) const;
+		std::vector<TextureImage*> textures) const;
 
 private:
-	Device *pDevice;
+	Device *device;
 
-	VkDescriptorPool pool{};
+	VkDescriptorPool pool;
 };
 
 struct DescriptorStruct

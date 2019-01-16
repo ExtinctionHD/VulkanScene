@@ -4,51 +4,46 @@
 #include <stb_image.h>
 
 // create texture image from file
-class TextureImage : 
-	public Image
+class TextureImage : public Image
 {
 public:
 	TextureImage() = default;
 
-    // loads texture from files
-	// array layer count must be equal to paths count
-	// images must have same extent
 	TextureImage(
-		Device *pDevice, 
-		std::vector<std::string> paths, 
-		uint32_t arrayLayers, 
-		bool isCube,
+		Device *device,
+		const std::vector<std::string> &paths,
+		uint32_t arrayLayers,
+		bool cubeMap,
 		VkFilter filter,
-		VkSamplerAddressMode samplerAddressMode
-	);
+		VkSamplerAddressMode samplerAddressMode);
 
-    // creates device local texture
 	TextureImage(
-	    Device *pDevice,
-	    VkExtent3D extent,
+		Device *device,
+		VkExtent3D extent,
 		VkImageCreateFlags flags,
 		VkSampleCountFlagBits sampleCount,
-	    VkFormat format,
+		uint32_t mipLevels,
+		VkFormat format,
 		VkImageTiling tiling,
 		VkImageUsageFlags usage,
+		uint32_t arrayLayers,
+		bool cubeMap,
 		VkMemoryPropertyFlags properties,
-	    VkImageAspectFlags aspectFlags,
-        VkImageViewType viewType,
-	    uint32_t arrayLayers,
-		VkSamplerAddressMode samplerAddressMode
-	);
+		VkImageAspectFlags aspectFlags,
+		VkFilter filter,
+		VkSamplerAddressMode samplerAddressMode);
 
 	~TextureImage();
 
-	// image in shader
-	VkSampler sampler{};
+	VkSampler getSampler() const;
 
 protected:
-	// returns pixel bytes and save image extent
+	VkSampler sampler;
+
 	stbi_uc* loadPixels(const std::string &path);
 
 	// generate mipmap levels and transit image layout to SHADER_READ_ONLY
-	void generateMipmaps(Device *pDevice, uint32_t arrayLayers, VkImageAspectFlags aspectFlags, VkFilter filter);
+	void generateMipmaps(Device *device, VkImageAspectFlags aspectFlags, VkFilter filter) const;
 
 	void createSampler(VkFilter filter, VkSamplerAddressMode addressMode);
 };

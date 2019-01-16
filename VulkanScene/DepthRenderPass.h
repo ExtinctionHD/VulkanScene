@@ -6,11 +6,9 @@
 class DepthRenderPass : public RenderPass
 {
 public:
-	DepthRenderPass(Device *pDevice, VkExtent2D attachmentExtent);
+	DepthRenderPass(Device *device, VkExtent2D attachmentExtent);
 
-    uint32_t getColorAttachmentCount() const override;
-
-	TextureImage* getDepthMap() const;
+	std::shared_ptr<TextureImage> getDepthTexture() const;
 
 protected:
     void createAttachments() override;
@@ -20,6 +18,6 @@ protected:
     void createFramebuffers() override;
 
 private:
-	TextureImage *pDepthMap{};
+	std::shared_ptr<TextureImage> depthTexture;
     
 };

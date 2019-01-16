@@ -1,13 +1,14 @@
 #pragma once
+
 #include "RenderPass.h"
 #include "SwapChain.h"
 
 class LightingRenderPass : public RenderPass
 {
 public:
-	LightingRenderPass(Device *pDevice, SwapChain *pSwapChain);
+	LightingRenderPass(Device *device, SwapChain *swapChain);
 
-	Image* getColorImage() const;
+	std::shared_ptr<Image> getColorImage() const;
 
 protected:
     void createAttachments() override;
@@ -19,6 +20,6 @@ protected:
 private:
 	VkFormat colorAttachmentFormat;
 
-	Image *pColorImage{};
+	std::shared_ptr<Image> colorImage;
 };
 

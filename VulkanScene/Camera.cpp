@@ -6,61 +6,48 @@
 
 // public:
 
-Camera::Camera(Device *pDevice, VkExtent2D extent)
+Camera::Camera(Device *device, VkExtent2D extent) : extent(extent)
 {
-	this->extent = extent;
-
-	pos = glm::vec3(0.0f, 0.0f, 0.0f);
-	forward = glm::vec3(0.0f, 0.0f, 1.0f);
-	up = glm::vec3(0.0f, -1.0f, 0.0f);
-
-	fov = 45.0f;
-	speed = 2.0f;
-	sensitivity = 0.1f;
+	attributes.position = glm::vec3(0.0f, 0.0f, 0.0f);
+	attributes.forward = glm::vec3(0.0f, 0.0f, 1.0f);
+	attributes.up = glm::vec3(0.0f, -1.0f, 0.0f);
+	attributes.fov = 45.0f;
+	attributes.speed = 2.0f;
+	attributes.sensitivity = 0.15f;
 
 	initAngles();
-	initSpaceBuffer(pDevice);
+	initSpaceBuffer(device);
 }
 
-Camera::Camera(Device *pDevice, VkExtent2D extent, Attributes attributes)
+Camera::Camera(Device *device, VkExtent2D extent, Attributes attributes) : extent(extent), attributes(attributes)
 {
-	this->extent = extent;
-
-	this->pos = attributes.position;
-	this->forward = glm::normalize(attributes.forward);
-	this->up = glm::normalize(attributes.up);
-
-	this->fov = attributes.fov;
-	this->speed = attributes.speed;
-	this->sensitivity = attributes.sensitivity;
-
 	initAngles();
-	initSpaceBuffer(pDevice);
+	initSpaceBuffer(device);
 }
 
 Camera::~Camera()
 {
-	delete(pSpaceBuffer);
+	delete(spaceBuffer);
 }
 
 glm::vec3 Camera::getPos() const
 {
-	return pos;
+	return attributes.position;
 }
 
 glm::vec3 Camera::getTarget() const
 {
-	return forward + pos;
+	return attributes.forward + attributes.position;
 }
 
 glm::vec3 Camera::getUp() const
 {
-	return up;
+	return attributes.up;
 }
 
-Buffer * Camera::getSpaceBuffer() const
+Buffer* Camera::getSpaceBuffer() const
 {
-	return pSpaceBuffer;
+	return spaceBuffer;
 }
 
 glm::vec2 Camera::getCenter() const
@@ -70,52 +57,52 @@ glm::vec2 Camera::getCenter() const
 
 void Camera::move(float deltaSec)
 {
-	const float DISTANCE = speed * deltaSec;
+	const float distance = attributes.speed * deltaSec;
 
-	glm::vec3 direction = forward * float(movement.forward);
+	glm::vec3 direction = attributes.forward * float(movement.forward);
 
-	glm::vec3 right = glm::cross(forward, up);
+	glm::vec3 right = glm::cross(attributes.forward, attributes.up);
 	right = glm::normalize(right);
 	direction += right * float(movement.right);
 
-	direction += up * float(movement.up);
+	direction += attributes.up * float(movement.up);
 
-	if (glm::length(direction) != 0.0f)
+	if (length(direction) != 0.0f)
 	{
-		direction = glm::normalize(direction);
+		direction = normalize(direction);
 	}
-	pos += direction * DISTANCE;
+	attributes.position += direction * distance;
 }
 
 void Camera::rotate(float deltaX, float deltaY)
 {
-	const float MAX_DELTA = 100.0f;
-	const float VERT_ANGLE_LIMIT = 90.0f;
+	const float maxDelta = 100.0f;
+	const float vertAngleLimit = 90.0f;
 
-	deltaX = abs(deltaX) < MAX_DELTA ? deltaX : MAX_DELTA * deltaX / abs(deltaX);
-	angleH += (deltaX * sensitivity);
+	deltaX = abs(deltaX) < maxDelta ? deltaX : maxDelta * deltaX / abs(deltaX);
+	angleH += (deltaX * attributes.sensitivity);
 
-	deltaY = abs(deltaY) < MAX_DELTA ? deltaY : MAX_DELTA * deltaY / abs(deltaY);
-	angleV += (deltaY * sensitivity);
-	// set vertical angle limits: -VERT_ANGLE_LIMIT and VERT_ANGLE_LIMIT degrees
-	angleV = abs(angleV) > VERT_ANGLE_LIMIT ? VERT_ANGLE_LIMIT * angleV / abs(angleV) : angleV;
+	deltaY = abs(deltaY) < maxDelta ? deltaY : maxDelta * deltaY / abs(deltaY);
+	angleV += (deltaY * attributes.sensitivity);
+	// set vertical angle limits: -vertAngleLimit and vertAngleLimit degrees
+	angleV = abs(angleV) > vertAngleLimit ? vertAngleLimit * angleV / abs(angleV) : angleV;
 
 	const glm::vec3 vAxis{ 0.0f, 1.0f, 0.0f };
 
 	// rotate the view by the horizontal angle
 	glm::vec3 view(0.0f, 0.0f, 1.0f);
 	view = glm::rotate(view, glm::radians(angleH), vAxis);
-	view = glm::normalize(view);
+	view = normalize(view);
 
 	// rotate the view by the vertical angle
-	glm::vec3 hAxis = glm::cross(view, vAxis);
-	hAxis = glm::normalize(hAxis);
+	glm::vec3 hAxis = cross(view, vAxis);
+	hAxis = normalize(hAxis);
 	view = glm::rotate(view, glm::radians(angleV), hAxis);
 
 	// save changes
-	forward = glm::normalize(view);
-	up = glm::cross(forward, hAxis);
-	up = glm::normalize(up);
+	attributes.forward = normalize(view);
+	attributes.up = cross(attributes.forward, hAxis);
+	attributes.up = normalize(attributes.up);
 }
 
 void Camera::setExtent(VkExtent2D extent)
@@ -125,18 +112,23 @@ void Camera::setExtent(VkExtent2D extent)
 	updateSpace();
 }
 
-void Camera::updateSpace()
+void Camera::setMovement(Movement movement)
+{
+	this->movement = movement;
+}
+
+void Camera::updateSpace() const
 {
 	Space space{ getViewMatrix(), getProjectionMatrix() };
-	pSpaceBuffer->updateData(&space, sizeof(space), 0);
+	spaceBuffer->updateData(&space, sizeof(space), 0);
 }
 
 // private:
 
 void Camera::initAngles()
 {
-	glm::vec3 horizontal{ forward.x, 0.0f, forward.z };
-	horizontal = glm::normalize(horizontal);
+	glm::vec3 horizontal{ attributes.forward.x, 0.0f, attributes.forward.z };
+	horizontal = normalize(horizontal);
 
 	// horizontal camera angle
 	if (horizontal.x >= 0.0f)
@@ -167,12 +159,12 @@ void Camera::initAngles()
 	}
 
 	// vertical camera angle
-	angleV = glm::degrees(glm::asin(forward.y));
+	angleV = glm::degrees(glm::asin(attributes.forward.y));
 }
 
-void Camera::initSpaceBuffer(Device *pDevice)
+void Camera::initSpaceBuffer(Device *device)
 {
-	pSpaceBuffer = new Buffer(pDevice, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(Space));
+	spaceBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(Space));
     updateSpace();
 }
 
@@ -185,9 +177,9 @@ glm::mat4 Camera::getProjectionMatrix() const
 {
 	const float aspect = extent.width / float(extent.height);
 	const float zNear = 0.01f;
-	const float zFar = 200.0f;
+	const float zFar = 500.0f;
 
-	glm::mat4 proj = glm::perspective(glm::radians(fov), aspect, zNear, zFar);
+	glm::mat4 proj = glm::perspective(glm::radians(attributes.fov), aspect, zNear, zFar);
 	proj[1][1] *= -1;
 
 	return proj;

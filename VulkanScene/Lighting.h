@@ -22,7 +22,7 @@ public:
 		float specularPower;
 	};
 
-	Lighting(Device *pDevice, Attributes attributes, float spaceRadius);
+	Lighting(Device *device, Attributes attributes, float spaceRadius);
 	~Lighting();
 
 	Buffer* getAttributesBuffer() const;
@@ -32,13 +32,13 @@ public:
 	void update(glm::vec3 cameraPos);
 
 private:
-	Attributes attributes{};
+	Attributes attributes;
 
-	glm::mat4 projection{};
+	glm::mat4 projection;
 
-	Buffer *pAttributesBuffer;
+	Buffer *attributesBuffer;
 
-	Buffer *pSpaceBuffer;
+	Buffer *spaceBuffer;
 
 	Space getSpace() const;
 };

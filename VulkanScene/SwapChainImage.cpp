@@ -3,35 +3,47 @@
 
 #include "SwapChainImage.h"
 
-SwapChainImage::SwapChainImage(Device *pDevice, VkImage image, VkFormat format)
+// public:
+
+SwapChainImage::SwapChainImage(Device *device, VkImage image, VkFormat format, VkImageSubresourceRange subresourceRange)
 {
+	this->device = device;
 	this->image = image;
 	this->format = format;
-	this->pDevice = pDevice;
+
+	createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
 }
 
-VkImageView SwapChainImage::getImageView(VkImageSubresourceRange subresourceRange) const
+VkImage SwapChainImage::get() const
 {
-	VkImageView imageView;
+	return image;
+}
 
-	VkImageViewCreateInfo createInfo{
-		VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,	// sType
-		nullptr,									// pNext
-		0,											// flags
-		image,										// image
-		VK_IMAGE_VIEW_TYPE_2D,						// viewType
-		format,										// format
-		VkComponentMapping(),						// components
-		subresourceRange,							// subresourceRange
-	};
-
-	VkResult result = vkCreateImageView(pDevice->device, &createInfo, nullptr, &imageView);
-	assert(result == VK_SUCCESS);
-
-	return imageView;
+VkImageView SwapChainImage::getView() const
+{
+	return view;
 }
 
 VkFormat SwapChainImage::getFormat() const
 {
 	return format;
+}
+
+// private:
+
+void SwapChainImage::createImageView(VkImageSubresourceRange subresourceRange, VkImageViewType viewType)
+{
+	VkImageViewCreateInfo createInfo{
+		VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+		nullptr,
+		0,
+		image,
+		viewType,
+		format,
+		VkComponentMapping(),
+		subresourceRange,
+	};
+
+	const VkResult result = vkCreateImageView(device->get(), &createInfo, nullptr, &view);
+	assert(result == VK_SUCCESS);
 }
