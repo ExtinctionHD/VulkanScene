@@ -37,17 +37,26 @@ Engine::Engine(HWND hWnd, VkExtent2D frameExtent, Settings settings)
 
 	scene->prepareSceneRendering(descriptorPool, renderPasses);
 
-	initGraphicsCommands();
+	imageAvailableSemaphore = nullptr;
+	createSemaphore(device->get(), imageAvailableSemaphore);
 
-	createSemaphore(device->get(), imageAvailable);
-	createSemaphore(device->get(), renderingFinished);
+	stageFinishedSemaphores.resize(renderPasses.size(), nullptr);
+    for (auto &semaphore : stageFinishedSemaphores)
+    {
+		createSemaphore(device->get(), semaphore);
+    }
+
+	initGraphicsCommands();
 }
 
 Engine::~Engine()
 {
 	vkDeviceWaitIdle(device->get());
-	vkDestroySemaphore(device->get(), imageAvailable, nullptr);
-	vkDestroySemaphore(device->get(), renderingFinished, nullptr);
+	vkDestroySemaphore(device->get(), imageAvailableSemaphore, nullptr);
+    for (auto semaphore : stageFinishedSemaphores)
+    {
+		vkDestroySemaphore(device->get(), semaphore, nullptr);
+    }
 
     delete scene;
     delete descriptorPool;
@@ -75,17 +84,14 @@ void Engine::drawFrame()
 {
 	scene->updateScene();
 
-	if (minimized)
-	{
-		return;
-	}
+	if (minimized) return;
 
 	uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(
         device->get(),
         swapChain->get(),
         UINT64_MAX,
-        imageAvailable,
+        imageAvailableSemaphore,
         nullptr,
         &imageIndex);
 
@@ -96,21 +102,107 @@ void Engine::drawFrame()
 	}
     assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
 
-    std::vector<VkSemaphore> waitSemaphores{ imageAvailable };
-	std::vector<VkPipelineStageFlags> waitStages{ VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-	std::vector<VkSemaphore> signalSemaphores{ renderingFinished };
+    // Depth:
+	std::vector<VkSemaphore> signalSemaphores{ stageFinishedSemaphores[DEPTH] };
 	VkSubmitInfo submitInfo{
 		VK_STRUCTURE_TYPE_SUBMIT_INFO,
-		nullptr,	
+		nullptr,
+		0,
+		nullptr,
+		nullptr,
+		1,
+		&graphicsCommands.at(DEPTH)[0],
+		uint32_t(signalSemaphores.size()),
+		signalSemaphores.data(),
+	};
+	result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, nullptr);
+	assert(result == VK_SUCCESS);
+
+    // Geometry:
+	signalSemaphores = { stageFinishedSemaphores[GEOMETRY] };
+	submitInfo = {
+		VK_STRUCTURE_TYPE_SUBMIT_INFO,
+		nullptr,
+		0,
+		nullptr,
+		nullptr,
+		1,
+		&graphicsCommands.at(GEOMETRY)[0],
+		uint32_t(signalSemaphores.size()),
+		signalSemaphores.data(),
+	};
+	result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, nullptr);
+	assert(result == VK_SUCCESS);
+
+    // Ssao:
+	std::vector<VkSemaphore> waitSemaphores{ stageFinishedSemaphores[GEOMETRY] };
+	std::vector<VkPipelineStageFlags> waitStages{ VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT };
+	signalSemaphores = { stageFinishedSemaphores[SSAO] };
+	submitInfo = {
+		VK_STRUCTURE_TYPE_SUBMIT_INFO,
+		nullptr,
 		uint32_t(waitSemaphores.size()),
 		waitSemaphores.data(),
 		waitStages.data(),
 		1,
-		&graphicsCommands[imageIndex],
+		&graphicsCommands.at(SSAO)[0],
 		uint32_t(signalSemaphores.size()),
-		signalSemaphores.data(),	
+		signalSemaphores.data(),
 	};
+	result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, nullptr);
+	assert(result == VK_SUCCESS);
 
+    // Ssao blur:
+	waitSemaphores = { stageFinishedSemaphores[SSAO] };
+	waitStages = { VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT };
+	signalSemaphores = { stageFinishedSemaphores[SSAO_BLUR] };
+	submitInfo = {
+		VK_STRUCTURE_TYPE_SUBMIT_INFO,
+		nullptr,
+		uint32_t(waitSemaphores.size()),
+		waitSemaphores.data(),
+		waitStages.data(),
+		1,
+		&graphicsCommands.at(SSAO_BLUR)[0],
+		uint32_t(signalSemaphores.size()),
+		signalSemaphores.data(),
+	};
+	result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, nullptr);
+	assert(result == VK_SUCCESS);
+
+    // Lighting:
+	waitSemaphores = { stageFinishedSemaphores[SSAO_BLUR], stageFinishedSemaphores[DEPTH] };
+	waitStages = { VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT };
+	signalSemaphores = { stageFinishedSemaphores[LIGHTING] };
+	submitInfo = {
+		VK_STRUCTURE_TYPE_SUBMIT_INFO,
+		nullptr,
+		uint32_t(waitSemaphores.size()),
+		waitSemaphores.data(),
+		waitStages.data(),
+		1,
+		&graphicsCommands.at(LIGHTING)[0],
+		uint32_t(signalSemaphores.size()),
+		signalSemaphores.data(),
+	};
+	result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, nullptr);
+	assert(result == VK_SUCCESS);
+
+    // Final:
+	waitSemaphores = { stageFinishedSemaphores[LIGHTING], imageAvailableSemaphore };
+	waitStages = { VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	signalSemaphores = { stageFinishedSemaphores[FINAL] };
+	submitInfo = {
+		VK_STRUCTURE_TYPE_SUBMIT_INFO,
+		nullptr,
+		uint32_t(waitSemaphores.size()),
+		waitSemaphores.data(),
+		waitStages.data(),
+		1,
+		&graphicsCommands.at(FINAL)[imageIndex],
+		uint32_t(signalSemaphores.size()),
+		signalSemaphores.data(),
+	};
 	result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, nullptr);
 	assert(result == VK_SUCCESS);
 
@@ -187,28 +279,37 @@ void Engine::createRenderPasses(uint32_t shadowsDim)
 
 void Engine::initGraphicsCommands()
 {
+    if (graphicsCommands.empty())
+    {
+		for (auto[type, renderPass] : renderPasses)
+		{
+			graphicsCommands.insert({ type, {} });
+		}
+    }
+
     const VkCommandPool commandPool = device->getCommandPool();
 
-	if (!graphicsCommands.empty())
-	{
-		vkFreeCommandBuffers(device->get(), commandPool, uint32_t(graphicsCommands.size()), graphicsCommands.data());
-	}
+    for (auto &[type, commandBuffers] : graphicsCommands)
+    {
+		if (!commandBuffers.empty())
+		{
+			vkFreeCommandBuffers(device->get(), commandPool, uint32_t(commandBuffers.size()), commandBuffers.data());
+		}
 
-	graphicsCommands.resize(swapChain->getImageCount());
+        const uint32_t size = uint32_t(renderPasses.at(type)->getFramebuffers().size());
+		commandBuffers.resize(size);
 
-	VkCommandBufferAllocateInfo allocInfo{
-		VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-		nullptr,
-		commandPool,
-		VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-		uint32_t(graphicsCommands.size()),
-	};
+		VkCommandBufferAllocateInfo allocInfo{
+		    VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+		    nullptr,
+		    commandPool,
+		    VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+		    size,
+		};
 
-	VkResult result = vkAllocateCommandBuffers(device->get(), &allocInfo, graphicsCommands.data());
-	assert(result == VK_SUCCESS);
+		VkResult result = vkAllocateCommandBuffers(device->get(), &allocInfo, commandBuffers.data());
+		assert(result == VK_SUCCESS);
 
-	for (size_t i = 0; i < graphicsCommands.size(); i++)
-	{
 		VkCommandBufferBeginInfo beginInfo{
 			VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 			nullptr,
@@ -216,26 +317,20 @@ void Engine::initGraphicsCommands()
 			nullptr,
 		};
 
-		result = vkBeginCommandBuffer(graphicsCommands[i], &beginInfo);
-		assert(result == VK_SUCCESS);
-
-		recordRenderPassCommands(graphicsCommands[i], DEPTH, 0);
-		recordRenderPassCommands(graphicsCommands[i], GEOMETRY, 0);
-        if (ssaoEnabled)
+        for (uint32_t i = 0; i < size; i++)
         {
-			recordRenderPassCommands(graphicsCommands[i], SSAO, 0);
-			recordRenderPassCommands(graphicsCommands[i], SSAO_BLUR, 0);
+			result = vkBeginCommandBuffer(commandBuffers[i], &beginInfo);
+			assert(result == VK_SUCCESS);
+
+			recordRenderPassCommands(type, i);
+
+			result = vkEndCommandBuffer(commandBuffers[i]);
+			assert(result == VK_SUCCESS);
         }
-		recordRenderPassCommands(graphicsCommands[i], LIGHTING, 0);
-		recordRenderPassCommands(graphicsCommands[i], FINAL, uint32_t(i));
-
-		result = vkEndCommandBuffer(graphicsCommands[i]);
-
-		assert(result == VK_SUCCESS);
-	}
+    }
 }
 
-void Engine::beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex)
+void Engine::beginRenderPass(RenderPassType type, uint32_t index)
 {
 	const VkRect2D renderArea{
 		{ 0, 0 },
@@ -248,22 +343,22 @@ void Engine::beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type,
 	    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 	    nullptr,
 	    renderPasses.at(type)->get(), 
-	    renderPasses.at(type)->getFramebuffers()[framebufferIndex],
+	    renderPasses.at(type)->getFramebuffers()[index],
 	    renderArea,
 	    uint32_t(clearValues.size()),
 		clearValues.data()
 	};
 
-	vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(graphicsCommands.at(type)[index], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void Engine::recordRenderPassCommands(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex)
+void Engine::recordRenderPassCommands(RenderPassType type, uint32_t index)
 {
-	beginRenderPass(commandBuffer, type, framebufferIndex);
+	beginRenderPass(type, index);
 
-	scene->render(commandBuffer, type);
+	scene->render(graphicsCommands.at(type)[index], type);
 
-	vkCmdEndRenderPass(commandBuffer);
+	vkCmdEndRenderPass(graphicsCommands.at(type)[index]);
 }
 
 void Engine::createSemaphore(VkDevice device, VkSemaphore &semaphore)

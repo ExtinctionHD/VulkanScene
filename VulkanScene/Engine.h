@@ -28,6 +28,8 @@ public:
 	void resize(VkExtent2D newExtent);
 
 private:
+	typedef std::map<RenderPassType, std::vector<VkCommandBuffer>> GraphicsCommands;
+
 	Instance *instance;
 
 	Surface *surface;
@@ -42,10 +44,10 @@ private:
 
 	DescriptorPool *descriptorPool;
 
-	std::vector<VkCommandBuffer> graphicsCommands;
+	GraphicsCommands graphicsCommands;
 
-	VkSemaphore imageAvailable{};
-	VkSemaphore renderingFinished{};
+	VkSemaphore imageAvailableSemaphore;
+	std::vector<VkSemaphore> stageFinishedSemaphores;
 
 	bool ssaoEnabled;
 
@@ -55,9 +57,9 @@ private:
 
 	void initGraphicsCommands();
 
-	void beginRenderPass(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex);
+	void beginRenderPass(RenderPassType type, uint32_t index);
 
-	void recordRenderPassCommands(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t framebufferIndex);
+	void recordRenderPassCommands(RenderPassType type, uint32_t index);
 
 	static void createSemaphore(VkDevice device, VkSemaphore &semaphore);
 };
