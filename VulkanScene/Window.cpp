@@ -29,6 +29,7 @@ Window::Window(int width, int height, Mode mode)
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+	glfwSetKeyCallback(window, keyCallback);
 }
 
 Window::~Window()
@@ -61,11 +62,12 @@ VkExtent2D Window::getClientExtent() const
 
 void Window::mainLoop() const
 {
+	auto engine = getEngine(window);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
 
-        auto engine = getEngine(window);
 		controlCamera(engine->getCamera());
 		engine->drawFrame();
 	}
@@ -135,4 +137,16 @@ void Window::framebufferSizeCallback(GLFWwindow *window, int width, int height)
 
 		getEngine(window)->resize(extent);
 	}
+}
+
+void Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+    switch (key)
+    {
+	case GLFW_KEY_ESCAPE:
+		glfwSetWindowShouldClose(window, true);
+        break;
+	default:
+        break;
+    }
 }
