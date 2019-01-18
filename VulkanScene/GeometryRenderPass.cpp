@@ -125,9 +125,9 @@ void GeometryRenderPass::createRenderPass()
 		VkAttachmentDescription attachmentDesc{
 		    0,                                 
 			image->getFormat(),                           
-			image->getSampleCount(),				
+			image->getSampleCount(),	
 		    VK_ATTACHMENT_LOAD_OP_CLEAR,             
-		    VK_ATTACHMENT_STORE_OP_STORE,            
+		    VK_ATTACHMENT_STORE_OP_STORE,         
 		    VK_ATTACHMENT_LOAD_OP_DONT_CARE,         
 		    VK_ATTACHMENT_STORE_OP_DONT_CARE,        
 		    VK_IMAGE_LAYOUT_UNDEFINED,               

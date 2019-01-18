@@ -50,11 +50,11 @@ void SsaoRenderPass::createRenderPass()
 		0,								
 		ssaoTexture->getFormat(),		             
 		ssaoTexture->getSampleCount(),			 
-		VK_ATTACHMENT_LOAD_OP_CLEAR,		     
+		VK_ATTACHMENT_LOAD_OP_DONT_CARE,		     
 		VK_ATTACHMENT_STORE_OP_STORE,		     
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,	     
+		VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,	     
-		VK_IMAGE_LAYOUT_UNDEFINED,			     
+		VK_IMAGE_LAYOUT_UNDEFINED,	
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 	};
 

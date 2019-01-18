@@ -63,7 +63,7 @@ void LightingRenderPass::createRenderPass()
 		0,								
 		colorImage->getFormat(),		                
 		colorImage->getSampleCount(),			 
-		VK_ATTACHMENT_LOAD_OP_CLEAR,		     
+		VK_ATTACHMENT_LOAD_OP_DONT_CARE,		     
 		VK_ATTACHMENT_STORE_OP_STORE,		     
 		VK_ATTACHMENT_LOAD_OP_DONT_CARE,	     
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,	     
@@ -102,20 +102,20 @@ void LightingRenderPass::createRenderPass()
 		0,												
 		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,			
 		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	
-		VK_ACCESS_MEMORY_READ_BIT,						
+		VK_ACCESS_MEMORY_READ_BIT,	
 		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
 		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	        
-		VK_DEPENDENCY_BY_REGION_BIT,                    
+		VK_DEPENDENCY_BY_REGION_BIT,  
 	};
 
     const VkSubpassDependency outputDependency{
 		0,									
 		VK_SUBPASS_EXTERNAL,							
 		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,	
-		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,			
+		VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
 		VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
-		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,	        
-		VK_ACCESS_MEMORY_READ_BIT,						
+		VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+		VK_ACCESS_MEMORY_READ_BIT,
 		VK_DEPENDENCY_BY_REGION_BIT,					
 	};
 
@@ -131,7 +131,7 @@ void LightingRenderPass::createRenderPass()
 		nullptr,									
 		0,											
 		uint32_t(attachmentDescriptions.size()),				
-		attachmentDescriptions.data(),				
+		attachmentDescriptions.data(),
 		1,											
 		&subpass,									
 		uint32_t(dependencies.size()),						
