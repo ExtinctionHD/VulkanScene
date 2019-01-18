@@ -47,7 +47,6 @@ void LightingRenderPass::createAttachments()
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_COLOR_BIT);
 	colorImage->transitLayout(
-		device,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 		subresourceRange);

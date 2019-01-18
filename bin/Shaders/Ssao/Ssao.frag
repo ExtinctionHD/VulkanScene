@@ -9,7 +9,8 @@ layout (constant_id = 2) const float SSAO_RADIUS = 0.5f;
 layout (constant_id = 3) const float SSAO_POWER = 1.0f;
 
 layout (binding = 0) uniform SsaoKernel{
-	vec4 samples[SSAO_KERNEL_SIZE];
+	vec4 kernel[SSAO_KERNEL_SIZE];
+	bool stencil;
 };
 
 layout (binding = 1) uniform Space{
@@ -45,6 +46,12 @@ void main()
 	ivec2 dim = textureSize(posMap);
 	ivec2 uv = ivec2(inUV * dim);
 
+	bvec2 even = bvec2(uv.x % 2, uv.y % 2);
+	if (even.x ^^ even.y ^^ stencil)
+	{
+		discard;
+	}
+
 	vec3 pos = vec3(view * resolve(posMap, uv));
 	vec3 normal = vec3(view * vec4(resolve(normalMap, uv).rgb * 2.0f - 1.0f, 0.0f));
 
@@ -61,7 +68,7 @@ void main()
 	float occlusion = 0.0f;
 	for(int i = 0; i < SSAO_KERNEL_SIZE; ++i)
 	{
-		vec3 samplePos = TBN * samples[i].xyz; 
+		vec3 samplePos = TBN * kernel[i].xyz; 
 	    samplePos = pos + samplePos * SSAO_RADIUS;
 
 	    vec4 offset = vec4(samplePos, 1.0f);

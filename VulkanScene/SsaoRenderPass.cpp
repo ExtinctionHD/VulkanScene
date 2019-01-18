@@ -39,6 +39,16 @@ void SsaoRenderPass::createAttachments()
         VK_FILTER_LINEAR,
 		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 
+    const VkImageSubresourceRange subresourceRange{
+		VK_IMAGE_ASPECT_COLOR_BIT,
+		0,
+		1,
+		0,
+		1
+	};
+
+	ssaoTexture->transitLayout(VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, subresourceRange);
+
 	attachments = { ssaoTexture };
 }
 
@@ -50,11 +60,11 @@ void SsaoRenderPass::createRenderPass()
 		0,								
 		ssaoTexture->getFormat(),		             
 		ssaoTexture->getSampleCount(),			 
-		VK_ATTACHMENT_LOAD_OP_DONT_CARE,		     
+		VK_ATTACHMENT_LOAD_OP_LOAD,		     
 		VK_ATTACHMENT_STORE_OP_STORE,		     
 		VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 		VK_ATTACHMENT_STORE_OP_DONT_CARE,	     
-		VK_IMAGE_LAYOUT_UNDEFINED,	
+		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 	};
 

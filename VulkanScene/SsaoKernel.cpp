@@ -7,25 +7,24 @@
 
 // public:
 
-SsaoKernel::SsaoKernel(Device *device)
+SsaoKernel::SsaoKernel(Device *device) : device(device), stencil(false)
 {
-	this->device = device;
 	rndEngine = std::default_random_engine(unsigned(time(nullptr)));
 	rndDist = std::uniform_real_distribution<float>(0.0f, 1.0f);
 
-	createKernel();
+	createBuffer();
 	createNoiseTexture();
 }
 
 SsaoKernel::~SsaoKernel()
 {
-	delete kernelBuffer;
+	delete buffer;
 	delete noiseTexture;
 }
 
-Buffer* SsaoKernel::getKernelBuffer() const
+Buffer* SsaoKernel::getBuffer() const
 {
-	return kernelBuffer;
+	return buffer;
 }
 
 TextureImage* SsaoKernel::getNoiseTexture() const
@@ -33,9 +32,15 @@ TextureImage* SsaoKernel::getNoiseTexture() const
 	return noiseTexture;
 }
 
+void SsaoKernel::invertStencil()
+{
+	stencil = !stencil;
+	buffer->updateData(&stencil, sizeof VkBool32, SIZE * VECTOR_SIZE);
+}
+
 // private:
 
-void SsaoKernel::createKernel()
+void SsaoKernel::createBuffer()
 {
 	std::vector<glm::vec4> kernel(SIZE);
 
@@ -49,8 +54,10 @@ void SsaoKernel::createKernel()
 		kernel[i] = glm::vec4(sample * scale, 0.0f);
 	}
 
-	kernelBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, kernel.size() * VECTOR_SIZE);
-	kernelBuffer->updateData(kernel.data(), kernel.size() * VECTOR_SIZE, 0);
+    const VkDeviceSize kernelSize = SIZE * VECTOR_SIZE;
+	buffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, kernelSize + sizeof VkBool32);
+	buffer->updateData(kernel.data(), kernelSize, 0);
+	buffer->updateData(&stencil, sizeof VkBool32, kernelSize);
 }
 
 void SsaoKernel::createNoiseTexture()
@@ -83,7 +90,6 @@ void SsaoKernel::createNoiseTexture()
 	noiseTexture->updateData({ noise.data() }, 0, VECTOR_SIZE);
 
 	noiseTexture->transitLayout(
-		device,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 		{

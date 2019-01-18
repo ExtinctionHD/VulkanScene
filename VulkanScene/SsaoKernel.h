@@ -15,13 +15,15 @@ public:
 	const uint32_t SIZE = 32;
 	const uint32_t NOISE_DIM = 4;
 	const float RADIUS = 0.4f;
-	const float POWER = 1.2f;
+	const float POWER = 1.0f;
 
-	const uint32_t BLUR_RADIUS = 1;
+	const uint32_t BLUR_RADIUS = 2;
 
-	Buffer* getKernelBuffer() const;
+	Buffer* getBuffer() const;
 
 	TextureImage* getNoiseTexture() const;
+
+	void invertStencil();
 
 private:
 	Device *device;
@@ -30,11 +32,13 @@ private:
 
 	std::uniform_real_distribution<float> rndDist;
 
-	Buffer *kernelBuffer;
+	VkBool32 stencil;
+
+	Buffer *buffer;
 
 	TextureImage *noiseTexture;
 
-	void createKernel();
+	void createBuffer();
 
 	void createNoiseTexture();
 

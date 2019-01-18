@@ -156,7 +156,6 @@ void Material::initDefaultTextures(Device *device)
 		defaultTexture->updateData({ data }, 0, sizeof RgbaUNorm);
 
 		defaultTexture->transitLayout(
-			device,
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			{

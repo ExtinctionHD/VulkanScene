@@ -47,7 +47,6 @@ VkSampleCountFlagBits Image::getSampleCount() const
 }
 
 void Image::transitLayout(
-    Device *device,
     VkImageLayout oldLayout,
     VkImageLayout newLayout,
     VkImageSubresourceRange subresourceRange) const
@@ -85,6 +84,14 @@ void Image::transitLayout(
 
 		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+	}
+	else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+	{
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 	}
 	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
 	{
@@ -169,7 +176,6 @@ void Image::updateData(std::vector<const void*> data, uint32_t layersOffset, uin
 
 	// before copying the layout of the image must be TRANSFER_DST
 	transitLayout(
-		device,
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		subresourceRange);

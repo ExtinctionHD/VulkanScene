@@ -110,6 +110,7 @@ void Scene::updateScene()
 {
 	const float deltaSec = frameTimer.getDeltaSec();
 
+	ssaoKernel->invertStencil();
 	camera->move(deltaSec);
 	camera->updateSpace();
 	lighting->update(camera->getPos());
@@ -177,7 +178,7 @@ void Scene::updateDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap
 	};
 	descriptorPool->updateDescriptorSet(
 		descriptors.at(SSAO).set,
-		{ ssaoKernel->getKernelBuffer(), camera->getSpaceBuffer() },
+		{ ssaoKernel->getBuffer(), camera->getSpaceBuffer() },
 		textures);
 
 	// Ssao blur:
@@ -240,7 +241,7 @@ void Scene::initDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap r
 	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
 	descriptorPool->updateDescriptorSet(
 		descriptorStruct.set,
-		{ ssaoKernel->getKernelBuffer(), camera->getSpaceBuffer() },
+		{ ssaoKernel->getBuffer(), camera->getSpaceBuffer() },
 		textures);
 	descriptors.insert({ SSAO, descriptorStruct });
 
@@ -437,5 +438,5 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 	Model::setStaticPipeline(LIGHTING, lightingPipeline);
 	pipelines.push_back(lightingPipeline);
 
-    #pragma endregion 
+    #pragma endregion
 }

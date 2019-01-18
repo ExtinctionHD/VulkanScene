@@ -26,7 +26,7 @@ public:
 
 	VkSampleCountFlagBits getSampleCount() const;
 
-	void transitLayout(Device *device, VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange) const;
+	void transitLayout(VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange) const;
 
 	void updateData(std::vector<const void*>, uint32_t layersOffset, uint32_t pixelSize) const;
 
