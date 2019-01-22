@@ -1,12 +1,9 @@
 #version 450
-
 #extension GL_ARB_separate_shader_objects : enable
-#extension GL_ARB_shading_language_420pack : enable
 
-layout (constant_id = 0) const int NUM_SAMPLES = 1;
-layout (constant_id = 1) const int SSAO_KERNEL_SIZE = 32;
-layout (constant_id = 2) const float SSAO_RADIUS = 0.5f;
-layout (constant_id = 3) const float SSAO_POWER = 1.0f;
+layout (constant_id = 0) const uint SSAO_KERNEL_SIZE = 32;
+layout (constant_id = 1) const float SSAO_RADIUS = 0.4f;
+layout (constant_id = 2) const float SSAO_POWER = 1.0f;
 
 layout (binding = 0) uniform SsaoKernel{
 	vec4 kernel[SSAO_KERNEL_SIZE];

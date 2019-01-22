@@ -343,8 +343,8 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 
 	std::vector<VkSpecializationMapEntry> ssaoConstantEntries{
 		{ 0, 0, sizeof(uint32_t)},
-		{ 0, sizeof(uint32_t), sizeof(float)},
-		{ 0, sizeof(uint32_t) + sizeof(float), sizeof(float)}
+		{ 1, sizeof(uint32_t), sizeof(float)},
+		{ 2, sizeof(uint32_t) + sizeof(float), sizeof(float)}
 	};
 	std::vector<const void*> data = { &ssaoKernel->SIZE, &ssaoKernel->RADIUS, &ssaoKernel->POWER };
     const auto ssaoFragmentShader = std::make_shared<ShaderModule>(
