@@ -23,8 +23,6 @@ public:
 
 	TextureImage* getNoiseTexture() const;
 
-	void invertStencil();
-
 private:
 	Device *device;
 
@@ -32,13 +30,11 @@ private:
 
 	std::uniform_real_distribution<float> rndDist;
 
-	VkBool32 stencil;
-
-	Buffer *buffer;
+	Buffer *kernelBuffer;
 
 	TextureImage *noiseTexture;
 
-	void createBuffer();
+	void createKernelBuffer();
 
 	void createNoiseTexture();
 

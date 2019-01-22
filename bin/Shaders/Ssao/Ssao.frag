@@ -7,7 +7,6 @@ layout (constant_id = 2) const float SSAO_POWER = 1.0f;
 
 layout (binding = 0) uniform SsaoKernel{
 	vec4 kernel[SSAO_KERNEL_SIZE];
-	bool stencil;
 };
 
 layout (binding = 1) uniform Space{
@@ -29,12 +28,6 @@ void main()
 {
 	ivec2 dim = textureSize(posMap);
 	ivec2 uv = ivec2(inUV * dim);
-
-	bvec2 even = bvec2(uv.x % 2, uv.y % 2);
-	if (even.x ^^ even.y ^^ stencil)
-	{
-		discard;
-	}
 
 	vec3 pos = vec3(view * texelFetch(posMap, uv, 0));
 	vec3 normal = vec3(view * vec4(texelFetch(normalMap, uv, 0).rgb * 2.0f - 1.0f, 0.0f));

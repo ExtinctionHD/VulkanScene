@@ -110,7 +110,6 @@ void Scene::updateScene()
 {
 	const float deltaSec = frameTimer.getDeltaSec();
 
-	ssaoKernel->invertStencil();
 	camera->move(deltaSec);
 	camera->updateSpace();
 	lighting->update(camera->getPos());
