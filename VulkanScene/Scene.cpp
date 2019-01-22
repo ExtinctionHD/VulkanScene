@@ -172,8 +172,8 @@ void Scene::updateDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap
 
     const auto geometryRenderPass = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY));
 	std::vector<TextureImage*> textures{
-		geometryRenderPass->getPosTexture().get(),
-		geometryRenderPass->getNormalTexture().get(),
+		geometryRenderPass->getTexture(POSITION).get(),
+		geometryRenderPass->getTexture(NORMAL).get(),
 		ssaoKernel->getNoiseTexture()
 	};
 	descriptorPool->updateDescriptorSet(
@@ -190,14 +190,11 @@ void Scene::updateDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap
 
 	// Lighting:
 
+	const auto ssaoTexture = dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO_BLUR))->getSsaoTexture().get();
     const auto shadowsTexture = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthTexture().get();
-	textures = std::vector<TextureImage*>{
-		geometryRenderPass->getPosTexture().get(),
-		geometryRenderPass->getNormalTexture().get(),
-		geometryRenderPass->getAlbedoTexture().get(),
-		dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO_BLUR))->getSsaoTexture().get(),
-		shadowsTexture
-	};
+	textures = geometryRenderPass->getGBuffer();
+	textures.push_back(ssaoTexture);
+	textures.push_back(shadowsTexture);
 	descriptorPool->updateDescriptorSet(
 		descriptors.at(LIGHTING).set,
 		{ lighting->getAttributesBuffer(), lighting->getSpaceBuffer() },
@@ -228,8 +225,8 @@ void Scene::initDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap r
 
     const auto geometryRenderPass = dynamic_cast<GeometryRenderPass*>(renderPasses.at(GEOMETRY));
 	std::vector<TextureImage*> textures{
-		geometryRenderPass->getPosTexture().get(),
-		geometryRenderPass->getNormalTexture().get(),
+		geometryRenderPass->getTexture(POSITION).get(),
+		geometryRenderPass->getTexture(NORMAL).get(),
 		ssaoKernel->getNoiseTexture()
 	};
 
@@ -257,14 +254,11 @@ void Scene::initDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap r
 
     // Lighting:
 
+	const auto ssaoTexture = dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO_BLUR))->getSsaoTexture().get();
     const auto shadowsTexture = dynamic_cast<DepthRenderPass*>(renderPasses.at(DEPTH))->getDepthTexture().get();
-	textures = std::vector<TextureImage*>{
-		geometryRenderPass->getPosTexture().get(),
-		geometryRenderPass->getNormalTexture().get(),
-		geometryRenderPass->getAlbedoTexture().get(),
-		dynamic_cast<SsaoRenderPass*>(renderPasses.at(SSAO_BLUR))->getSsaoTexture().get(),
-		shadowsTexture
-	};
+	textures = geometryRenderPass->getGBuffer();
+	textures.push_back(ssaoTexture);
+	textures.push_back(shadowsTexture);
 	texturesShaderStages = std::vector<VkShaderStageFlags>(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout(
@@ -347,22 +341,12 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 
     #pragma region Ssao
 
-    const uint32_t ssaoConstantCount = 4;
-	std::vector<VkSpecializationMapEntry> ssaoConstantEntries;
-	for (uint32_t i = 0; i < ssaoConstantCount; i++)
-	{
-        if (i == ssaoConstantCount - 1)
-        {
-			ssaoConstantEntries.push_back({ i, sizeof(uint32_t) * i, sizeof(float) });
-        }
-		else
-		{
-			ssaoConstantEntries.push_back({ i, sizeof(uint32_t) * i, sizeof(uint32_t) });
-		}
-	}
-
-	uint32_t sampleCount = renderPasses.at(GEOMETRY)->getSampleCount();
-	std::vector<const void*> data = { &sampleCount, &ssaoKernel->SIZE, &ssaoKernel->RADIUS, &ssaoKernel->POWER };
+	std::vector<VkSpecializationMapEntry> ssaoConstantEntries{
+		{ 0, 0, sizeof(uint32_t)},
+		{ 0, sizeof(uint32_t), sizeof(float)},
+		{ 0, sizeof(uint32_t) + sizeof(float), sizeof(float)}
+	};
+	std::vector<const void*> data = { &ssaoKernel->SIZE, &ssaoKernel->RADIUS, &ssaoKernel->POWER };
     const auto ssaoFragmentShader = std::make_shared<ShaderModule>(
 		device,
 		"Shaders/Ssao/Frag.spv",
@@ -419,6 +403,7 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 		sizeof(uint32_t)
 	};
 
+	const uint32_t sampleCount = device->getSampleCount();
     const auto lightingFragmentShader = std::make_shared<ShaderModule>(
         device,
 		"Shaders/Lighting/Frag.spv",

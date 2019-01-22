@@ -129,19 +129,6 @@ void main()
 	ivec2 size = textureSize(posMap);
 	ivec2 uv = ivec2(inUV * size);
 
-	// vec3 fragColor = vec3(0.0f);
-	// for (int i = 0; i < NUM_SAMPLES; i++)
-	// { 
-	// 	vec3 pos = texelFetch(posMap, uv, i).rgb;
-	// 	vec3 normal = texelFetch(normalMap, uv, i).rgb;
-	// 	vec4 albedoAndSpec = texelFetch(albedoMap, uv, i);
-	// 	vec3 albedo = albedoAndSpec.rgb;
-	// 	float specular = albedoAndSpec.a;
-	// 	vec4 posInLightSpace = texelFetch(posInLightSpaceMap, uv, i);
-	//
-	// 	fragColor += calculateLighting(pos, normal, albedo, specular, posInLightSpace);
-	// }
-
 	vec3 pos = resolve(posMap, uv).rgb;
 	vec3 normal = resolve(normalMap, uv).rgb * 2.0f - 1.0f;
 	vec4 albedoAndSpec = resolve(albedoMap, uv);
@@ -149,6 +136,6 @@ void main()
 	float specular = albedoAndSpec.a;
 	float ssao = texture(ssaoMap, inUV).r;
 	vec4 posInLightSpace = lightSpace.proj * lightSpace.view * vec4(pos, 1.0f);
-
+	
 	outColor = vec4(calculateLighting(pos, normal, albedo, specular, ssao, posInLightSpace), 1.0f);
 }

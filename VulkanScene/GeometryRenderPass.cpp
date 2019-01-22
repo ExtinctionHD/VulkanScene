@@ -9,19 +9,21 @@ GeometryRenderPass::GeometryRenderPass(Device *device, VkExtent2D attachmentExte
 {
 }
 
-std::shared_ptr<TextureImage> GeometryRenderPass::getPosTexture() const
+std::vector<TextureImage*> GeometryRenderPass::getGBuffer() const
 {
-	return posTexture;
+	std::vector<TextureImage*> result;
+
+    for (const auto &texture : gBuffer)
+    {
+		result.push_back(texture.get());
+    }
+
+	return result;
 }
 
-std::shared_ptr<TextureImage> GeometryRenderPass::getNormalTexture() const
+std::shared_ptr<TextureImage> GeometryRenderPass::getTexture(TextureType type) const
 {
-	return normalTexture;
-}
-
-std::shared_ptr<TextureImage> GeometryRenderPass::getAlbedoTexture() const
-{
-	return albedoTexture;
+	return gBuffer[type];
 }
 
 std::shared_ptr<Image> GeometryRenderPass::getDepthImage() const
@@ -33,60 +35,16 @@ std::shared_ptr<Image> GeometryRenderPass::getDepthImage() const
 
 void GeometryRenderPass::createAttachments()
 {
+	gBuffer.resize(ALBEDO + 1);
+	createGBufferTexture(POSITION, VK_FORMAT_R16G16B16A16_SFLOAT);
+	createGBufferTexture(NORMAL, VK_FORMAT_R8G8B8A8_UNORM);
+	createGBufferTexture(ALBEDO, VK_FORMAT_R8G8B8A8_UNORM);
+
 	const VkExtent3D attachmentExtent{
 		extent.width,
 		extent.height,
 		1
 	};
-
-	posTexture = std::make_shared<TextureImage>(
-		device,
-		attachmentExtent,
-		0,
-		sampleCount,
-        1,
-		VK_FORMAT_R16G16B16A16_SFLOAT,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		1,
-		false,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		VK_IMAGE_ASPECT_COLOR_BIT,
-		VK_FILTER_LINEAR,
-		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
-
-	normalTexture = std::make_shared<TextureImage>(
-		device,
-		attachmentExtent,
-		0,
-		sampleCount,
-        1,
-		VK_FORMAT_R8G8B8A8_UNORM,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		1,
-		false,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		VK_IMAGE_ASPECT_COLOR_BIT,
-		VK_FILTER_LINEAR,
-		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
-
-	albedoTexture = std::make_shared<TextureImage>(
-		device,
-		attachmentExtent,
-		0,
-        sampleCount,
-        1,
-        VK_FORMAT_R8G8B8A8_UNORM,
-        VK_IMAGE_TILING_OPTIMAL,
-        VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
-		1,
-		false,
-        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		VK_IMAGE_ASPECT_COLOR_BIT,
-        VK_FILTER_LINEAR,
-		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
-
 	const VkImageSubresourceRange subresourceRange{
 		VK_IMAGE_ASPECT_DEPTH_BIT,
 		0,
@@ -94,6 +52,7 @@ void GeometryRenderPass::createAttachments()
 		0,
 		1,
 	};
+
 	depthImage = std::make_shared<Image>(
 		device,
         attachmentExtent,
@@ -112,35 +71,42 @@ void GeometryRenderPass::createAttachments()
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
 		subresourceRange);
 
-	attachments = { posTexture, normalTexture, albedoTexture, depthImage };
+	attachments = {
+	    gBuffer[POSITION],
+		gBuffer[NORMAL],
+		gBuffer[ALBEDO],
+	    depthImage 
+	};
 }
 
 void GeometryRenderPass::createRenderPass()
 {
 	std::vector<VkAttachmentDescription> attachmentDescriptions;
-
-	for (const auto &image : attachments)
+	for (const auto &texture : gBuffer)
 	{
-		VkAttachmentDescription attachmentDesc{
-		    0,                                 
-			image->getFormat(),                           
-			image->getSampleCount(),	
-		    VK_ATTACHMENT_LOAD_OP_CLEAR,             
-		    VK_ATTACHMENT_STORE_OP_STORE,         
-		    VK_ATTACHMENT_LOAD_OP_DONT_CARE,         
-		    VK_ATTACHMENT_STORE_OP_DONT_CARE,        
-		    VK_IMAGE_LAYOUT_UNDEFINED,               
-		    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-		};
-
-        if (image == depthImage)
-        {
-			attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			attachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-        }
-
-		attachmentDescriptions.push_back(attachmentDesc);
+		attachmentDescriptions.push_back(VkAttachmentDescription{
+			0,
+			texture->getFormat(),
+			texture->getSampleCount(),
+			VK_ATTACHMENT_LOAD_OP_CLEAR,
+			VK_ATTACHMENT_STORE_OP_STORE,
+			VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+			VK_ATTACHMENT_STORE_OP_DONT_CARE,
+			VK_IMAGE_LAYOUT_UNDEFINED,
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+		});
 	}
+	attachmentDescriptions.push_back(VkAttachmentDescription{
+		0,
+		depthImage->getFormat(),
+		depthImage->getSampleCount(),
+		VK_ATTACHMENT_LOAD_OP_CLEAR,
+		VK_ATTACHMENT_STORE_OP_STORE,
+		VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+		VK_ATTACHMENT_STORE_OP_DONT_CARE,
+		VK_IMAGE_LAYOUT_UNDEFINED,
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+	});
 
 	std::vector<VkAttachmentReference> colorAttachmentReferences(getColorAttachmentCount());
     for (size_t i = 0; i < colorAttachmentReferences.size(); i++)
@@ -151,9 +117,8 @@ void GeometryRenderPass::createRenderPass()
 		};
 		colorAttachmentReferences[i] = colorAttachmentRef;
     }
-
 	VkAttachmentReference depthAttachmentRef{
-		uint32_t(attachments.size() - 1),				
+		getColorAttachmentCount(),
 		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
 	};
 
@@ -222,4 +187,29 @@ void GeometryRenderPass::createFramebuffers()
     }
 
 	addFramebuffer(imageViews);
+}
+
+void GeometryRenderPass::createGBufferTexture(TextureType type, VkFormat format)
+{
+	const VkExtent3D attachmentExtent{
+		extent.width,
+		extent.height,
+		1
+	};
+
+	gBuffer[type] = std::make_shared<TextureImage>(
+		device,
+		attachmentExtent,
+		0,
+		sampleCount,
+		1,
+		format,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+		1,
+		false,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		VK_IMAGE_ASPECT_COLOR_BIT,
+		VK_FILTER_LINEAR,
+		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 }

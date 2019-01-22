@@ -5,16 +5,21 @@
 #include "RenderPass.h"
 #include "TextureImage.h"
 
+enum TextureType
+{
+    POSITION,
+    NORMAL,
+    ALBEDO
+};
+
 class GeometryRenderPass : public RenderPass
 {
 public:
 	GeometryRenderPass(Device *device, VkExtent2D attachmentExtent);
 
-	std::shared_ptr<TextureImage> getPosTexture() const;
+	std::vector<TextureImage*> getGBuffer() const;
 
-	std::shared_ptr<TextureImage> getNormalTexture() const;
-
-	std::shared_ptr<TextureImage> getAlbedoTexture() const;
+	std::shared_ptr<TextureImage> getTexture(TextureType type) const;
 
 	std::shared_ptr<Image> getDepthImage() const;
 
@@ -26,12 +31,10 @@ protected:
 	void createFramebuffers() override;
 
 private:
-	std::shared_ptr<TextureImage> posTexture;
-
-	std::shared_ptr<TextureImage> normalTexture;
-
-	std::shared_ptr<TextureImage> albedoTexture;
+	std::vector<std::shared_ptr<TextureImage>> gBuffer;
 
 	std::shared_ptr<Image> depthImage;
+
+	void createGBufferTexture(TextureType type, VkFormat format);
 };
 

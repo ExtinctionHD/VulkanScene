@@ -28,19 +28,6 @@ layout (location = 0) out float outColor;
 
 const float BIAS = 0.0001f;
 
-// Manual resolve for MSAA samples 
-vec4 resolve(sampler2DMS tex, ivec2 uv)
-{
-	vec4 result = vec4(0.0f);	   
-	for (int i = 0; i < (NUM_SAMPLES); i++)
-	{
-		vec4 val = texelFetch(tex, uv, i); 
-		result += val;
-	}    
-	// Average resolved samples
-	return result / float(NUM_SAMPLES);
-}
-
 void main() 
 {
 	ivec2 dim = textureSize(posMap);
@@ -52,8 +39,8 @@ void main()
 		discard;
 	}
 
-	vec3 pos = vec3(view * resolve(posMap, uv));
-	vec3 normal = vec3(view * vec4(resolve(normalMap, uv).rgb * 2.0f - 1.0f, 0.0f));
+	vec3 pos = vec3(view * texelFetch(posMap, uv, 0));
+	vec3 normal = vec3(view * vec4(texelFetch(normalMap, uv, 0).rgb * 2.0f - 1.0f, 0.0f));
 
 	ivec2 noiseDim = textureSize(noiseTexture, 0);
 	vec2 noiseUV = vec2(float(dim.x) / float(noiseDim.x), float(dim.y) / (noiseDim.y)) * inUV;  
@@ -76,7 +63,7 @@ void main()
 		offset.xyz /= offset.w;
 		offset.xy = offset.xy * 0.5f + 0.5f;
 
-		float sampleDepth = vec4(view * resolve(posMap, ivec2(offset.xy * dim))).z;
+		float sampleDepth = vec4(view * texelFetch(posMap, ivec2(offset.xy * dim), 0)).z;
 
 		float rangeCheck = smoothstep(0.0f, 1.0f, SSAO_RADIUS / abs(pos.z - sampleDepth));
 		occlusion += (sampleDepth >= samplePos.z + BIAS ? 1.0 : 0.0) * rangeCheck;
