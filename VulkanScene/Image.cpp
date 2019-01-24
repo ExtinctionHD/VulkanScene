@@ -41,9 +41,24 @@ Image::~Image()
 	vkFreeMemory(device->get(), memory, nullptr);
 }
 
+VkExtent3D Image::getExtent() const
+{
+	return extent;
+}
+
 VkSampleCountFlagBits Image::getSampleCount() const
 {
 	return sampleCount;
+}
+
+uint32_t Image::getMipLevelCount() const
+{
+	return mipLevels;
+}
+
+uint32_t Image::getArrayLayerCount() const
+{
+	return arrayLayers;
 }
 
 void Image::transitLayout(
@@ -287,7 +302,7 @@ void Image::createThisImage(
 		0,
 		arrayLayers
 	};
-	createImageView(subresourceRange, viewType);
+	view = createImageView(subresourceRange, viewType);
 }
 
 // private:

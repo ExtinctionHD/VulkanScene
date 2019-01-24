@@ -24,7 +24,13 @@ public:
 
 	~Image();
 
+	VkExtent3D getExtent() const;
+
 	VkSampleCountFlagBits getSampleCount() const;
+
+	uint32_t getMipLevelCount() const;
+
+	uint32_t getArrayLayerCount() const;
 
 	void transitLayout(VkImageLayout oldLayout, VkImageLayout newLayout, VkImageSubresourceRange subresourceRange) const;
 
