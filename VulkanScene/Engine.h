@@ -57,9 +57,9 @@ private:
 
 	void initGraphicsCommands();
 
-	void beginRenderPass(RenderPassType type, uint32_t index);
+	void recordRenderPassCommands(RenderPassType type, uint32_t commandBufferIndex, uint32_t renderCount);
 
-	void recordRenderPassCommands(RenderPassType type, uint32_t index);
+	void beginRenderPass(RenderPassType type, uint32_t commandBufferIndex, uint32_t framebufferIndex);
 
 	static void createSemaphore(VkDevice device, VkSemaphore &semaphore);
 };

@@ -10,7 +10,7 @@ layout(set = 0, binding = 2) uniform Lighting{
 	float specularPower;
 } lighting;
 
-layout(set = 0, binding = 3) uniform sampler2D shadowsMap;
+layout(set = 0, binding = 3) uniform sampler2DArray shadowsMap;
 
 layout(set = 1, binding = 0) uniform Material{
 	vec4 diffuse;
@@ -92,7 +92,7 @@ float getShading(vec4 posInLightSpace, float bias)
 
     float currentDepth = projCoords.z;
     float shadow = 0.0f;
-	vec2 texelSize = 1.0f / textureSize(shadowsMap, 0);
+	vec2 texelSize = 1.0f / textureSize(shadowsMap, 0).xy;
 
 	// avarage value from 9 nearest texels (PCF)
 	int count = 0;
@@ -101,7 +101,7 @@ float getShading(vec4 posInLightSpace, float bias)
 	{
 	    for(int y = -range; y <= range; ++y)
 	    {
-	        float pcfDepth = texture(shadowsMap, projCoords.xy + vec2(x, y) * texelSize).r;
+	        float pcfDepth = texture(shadowsMap, vec3(projCoords.xy + vec2(x, y) * texelSize, 0)).r;
 	        shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
 	        count++;
 	    }

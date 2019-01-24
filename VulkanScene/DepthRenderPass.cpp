@@ -8,9 +8,19 @@ DepthRenderPass::DepthRenderPass(Device *device, VkExtent2D attachmentExtent)
 {
 }
 
+DepthRenderPass::~DepthRenderPass()
+{
+	destroyCascadeViews();
+}
+
 std::shared_ptr<TextureImage> DepthRenderPass::getDepthTexture() const
 {
 	return depthTexture;
+}
+
+uint32_t DepthRenderPass::getRenderCount() const
+{
+	return CASCADE_COUNT;
 }
 
 // protected:
@@ -32,7 +42,7 @@ void DepthRenderPass::createAttachments()
 		depthAttachmentFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        1,
+        CASCADE_COUNT,
         false,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_DEPTH_BIT,
@@ -40,6 +50,25 @@ void DepthRenderPass::createAttachments()
         VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
 
 	attachments = { depthTexture };
+
+    if (!cascadeViews.empty())
+    {
+		destroyCascadeViews();
+    }
+
+	cascadeViews.resize(CASCADE_COUNT);
+    for (uint32_t i = 0; i < CASCADE_COUNT; i++)
+    {
+        const VkImageSubresourceRange subresourceRange{
+			VK_IMAGE_ASPECT_DEPTH_BIT,
+			0,
+			1,
+			i,
+			1
+		};
+
+		cascadeViews[i] = depthTexture->createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
+    }
 }
 
 void DepthRenderPass::createRenderPass()
@@ -125,7 +154,18 @@ void DepthRenderPass::createRenderPass()
 
 void DepthRenderPass::createFramebuffers()
 {
-	addFramebuffer({ depthTexture->getView() });
+    for (const auto &view : cascadeViews)
+    {
+		addFramebuffer({ view });
+    }
 }
 
 // private:
+
+void DepthRenderPass::destroyCascadeViews()
+{
+	for (auto &view : cascadeViews)
+	{
+		vkDestroyImageView(device->get(), view, nullptr);
+	}
+}

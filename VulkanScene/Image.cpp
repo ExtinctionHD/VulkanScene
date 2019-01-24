@@ -261,13 +261,8 @@ void Image::createThisImage(
 		}
 		else if (arrayLayers > 1)
 		{
-			flags = VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT;
 			viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 		}
-	}
-	else
-	{
-		imageType = VK_IMAGE_TYPE_1D;
 	}
 
 	VkImageCreateInfo imageInfo{

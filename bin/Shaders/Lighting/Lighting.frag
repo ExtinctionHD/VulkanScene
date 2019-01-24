@@ -21,7 +21,7 @@ layout (binding = 2) uniform sampler2DMS posMap;
 layout (binding = 3) uniform sampler2DMS normalMap;
 layout (binding = 4) uniform sampler2DMS albedoMap;
 layout (binding = 5) uniform sampler2D ssaoMap;
-layout (binding = 6) uniform sampler2D shadowsMap;
+layout (binding = 6) uniform sampler2DArray shadowsMap;
 
 layout (location = 0) in vec2 inUV;
 
@@ -77,7 +77,7 @@ float getShading(vec4 posInLightSpace, float bias)
 
     float currentDepth = projCoords.z;
     float shadow = 0.0f;
-	vec2 texelSize = 1.0f / textureSize(shadowsMap, 0);
+	vec2 texelSize = 1.0f / textureSize(shadowsMap, 0).xy;
 
 	// avarage value from 9 nearest texels (PCF)
 	int count = 0;
@@ -86,7 +86,7 @@ float getShading(vec4 posInLightSpace, float bias)
 	{
 	    for(int y = -range; y <= range; ++y)
 	    {
-	        float pcfDepth = texture(shadowsMap, projCoords.xy + vec2(x, y) * texelSize).r;
+	        float pcfDepth = texture(shadowsMap, vec3(projCoords.xy + vec2(x, y) * texelSize, 0)).r;
 	        shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
 	        count++;
 	    }
