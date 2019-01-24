@@ -1,5 +1,7 @@
-﻿#include "DepthRenderPass.h"
-#include <cassert>
+﻿#include <cassert>
+#include "PssmKernel.h"
+
+#include "DepthRenderPass.h"
 
 // public:
 
@@ -20,7 +22,7 @@ std::shared_ptr<TextureImage> DepthRenderPass::getDepthTexture() const
 
 uint32_t DepthRenderPass::getRenderCount() const
 {
-	return CASCADE_COUNT;
+	return PssmKernel::CASCADE_COUNT;
 }
 
 // protected:
@@ -42,7 +44,7 @@ void DepthRenderPass::createAttachments()
 		depthAttachmentFormat,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-        CASCADE_COUNT,
+        PssmKernel::CASCADE_COUNT,
         false,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_DEPTH_BIT,
@@ -56,8 +58,8 @@ void DepthRenderPass::createAttachments()
 		destroyCascadeViews();
     }
 
-	cascadeViews.resize(CASCADE_COUNT);
-    for (uint32_t i = 0; i < CASCADE_COUNT; i++)
+	cascadeViews.resize(PssmKernel::CASCADE_COUNT);
+    for (uint32_t i = 0; i < PssmKernel::CASCADE_COUNT; i++)
     {
         const VkImageSubresourceRange subresourceRange{
 			VK_IMAGE_ASPECT_DEPTH_BIT,

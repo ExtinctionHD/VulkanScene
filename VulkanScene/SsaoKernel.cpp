@@ -48,7 +48,7 @@ void SsaoKernel::createKernelBuffer()
 		kernel[i] = glm::vec4(sample * scale, 0.0f);
 	}
 
-    const VkDeviceSize kernelSize = SIZE * VECTOR_SIZE;
+    const VkDeviceSize kernelSize = SIZE * sizeof glm::vec4;
 	kernelBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, kernelSize);
 	kernelBuffer->updateData(kernel.data(), kernelSize, 0);
 }
@@ -80,7 +80,7 @@ void SsaoKernel::createNoiseTexture()
         VK_FILTER_LINEAR,
 		VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
-	noiseTexture->updateData({ noise.data() }, 0, VECTOR_SIZE);
+	noiseTexture->updateData({ noise.data() }, 0, sizeof glm::vec4);
 
 	noiseTexture->transitLayout(
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,

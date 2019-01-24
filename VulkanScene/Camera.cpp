@@ -14,6 +14,8 @@ Camera::Camera(Device *device, VkExtent2D extent) : extent(extent)
 	attributes.fov = 45.0f;
 	attributes.speed = 2.0f;
 	attributes.sensitivity = 0.15f;
+	attributes.nearPlane = 0.1f;
+	attributes.farPlane = 100.0f;
 
 	initAngles();
 	initSpaceBuffer(device);
@@ -21,6 +23,8 @@ Camera::Camera(Device *device, VkExtent2D extent) : extent(extent)
 
 Camera::Camera(Device *device, VkExtent2D extent, Attributes attributes) : extent(extent), attributes(attributes)
 {
+	projectionMatrix = createProjectionMatrix();
+
 	initAngles();
 	initSpaceBuffer(device);
 }
@@ -53,6 +57,26 @@ Buffer* Camera::getSpaceBuffer() const
 glm::vec2 Camera::getCenter() const
 {
 	return glm::vec2(extent.width / 2, extent.height / 2);
+}
+
+float Camera::getNearPlane() const
+{
+	return attributes.nearPlane;
+}
+
+float Camera::getFarPlane() const
+{
+	return attributes.farPlane;
+}
+
+glm::mat4 Camera::getViewMatrix() const
+{
+	return lookAt(getPos(), getTarget(), getUp());
+}
+
+glm::mat4 Camera::getProjectionMatrix() const
+{
+	return projectionMatrix;
 }
 
 void Camera::move(float deltaSec)
@@ -109,6 +133,8 @@ void Camera::setExtent(VkExtent2D extent)
 {
 	this->extent = extent;
 
+	projectionMatrix = createProjectionMatrix();
+
 	updateSpace();
 }
 
@@ -119,7 +145,7 @@ void Camera::setMovement(Movement movement)
 
 void Camera::updateSpace() const
 {
-	Space space{ getViewMatrix(), getProjectionMatrix() };
+	Space space{ getViewMatrix(), projectionMatrix };
 	spaceBuffer->updateData(&space, sizeof(space), 0);
 }
 
@@ -168,18 +194,11 @@ void Camera::initSpaceBuffer(Device *device)
     updateSpace();
 }
 
-glm::mat4 Camera::getViewMatrix() const
-{
-	return lookAt(getPos(), getTarget(), getUp());
-}
-
-glm::mat4 Camera::getProjectionMatrix() const
+glm::mat4 Camera::createProjectionMatrix() const
 {
 	const float aspect = extent.width / float(extent.height);
-	const float zNear = 0.01f;
-	const float zFar = 500.0f;
 
-	glm::mat4 proj = glm::perspective(glm::radians(attributes.fov), aspect, zNear, zFar);
+	glm::mat4 proj = glm::perspective(glm::radians(attributes.fov), aspect, attributes.nearPlane, attributes.farPlane);
 	proj[1][1] *= -1;
 
 	return proj;

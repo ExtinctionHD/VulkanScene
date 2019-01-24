@@ -6,8 +6,6 @@
 class DepthRenderPass : public RenderPass
 {
 public:
-	const uint32_t CASCADE_COUNT = 4;
-
 	DepthRenderPass(Device *device, VkExtent2D attachmentExtent);
 
 	~DepthRenderPass();

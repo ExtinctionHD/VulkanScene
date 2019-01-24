@@ -37,6 +37,7 @@
     <ClInclude Include="MeshBase.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Position.h" />
+    <ClInclude Include="PssmKernel.h" />
     <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="FinalRenderPass.h" />
     <ClInclude Include="RenderPass.h" />
@@ -81,6 +82,7 @@
     <ClCompile Include="MeshBase.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Position.cpp" />
+    <ClCompile Include="PssmKernel.cpp" />
     <ClCompile Include="QueueFamilyIndices.cpp" />
     <ClCompile Include="FinalRenderPass.cpp" />
     <ClCompile Include="RenderPass.cpp" />

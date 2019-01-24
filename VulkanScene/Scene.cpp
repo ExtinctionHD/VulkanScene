@@ -13,7 +13,7 @@
 // public:
 
 Scene::Scene(Device *device, VkExtent2D cameraExtent, const std::string &path, float shadowsDistance)
-    : device(device), ssaoKernel(new SsaoKernel(device))
+    : device(device)
 {
 	sceneDao.open(path);
 
@@ -21,6 +21,9 @@ Scene::Scene(Device *device, VkExtent2D cameraExtent, const std::string &path, f
 	lighting = new Lighting(device, sceneDao.getLightingAttributes(), shadowsDistance);
 	skybox = new SkyboxModel(device, sceneDao.getSkyboxInfo());
 	terrain = new TerrainModel(device, { 1.0f, 1.0f }, { 1000, 1000 }, sceneDao.getTerrainInfo());
+
+	ssaoKernel = new SsaoKernel(device);
+	pssmKernel = new PssmKernel(device, camera, lighting->getDirection());
 
 	models = sceneDao.getModels(device);
 }
@@ -112,7 +115,11 @@ void Scene::updateScene()
 
 	camera->move(deltaSec);
 	camera->updateSpace();
+
 	lighting->update(camera->getPos());
+
+	pssmKernel->update();
+
 	skybox->setTransformation(translate(glm::mat4(1.0f), camera->getPos()), 0);
 }
 
@@ -210,7 +217,7 @@ void Scene::initDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap r
 
 	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT }, {});
 	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
-	descriptorPool->updateDescriptorSet(descriptorStruct.set, { lighting->getSpaceBuffer() }, {});
+	descriptorPool->updateDescriptorSet(descriptorStruct.set, { pssmKernel->getSpacesBuffer() }, {});
 	descriptors.insert({ DEPTH, descriptorStruct });
 
     // Geometry:

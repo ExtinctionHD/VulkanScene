@@ -9,6 +9,7 @@
 #include "TerrainModel.h"
 #include "SsaoKernel.h"
 #include "SceneDao.h"
+#include "PssmKernel.h"
 
 class Scene
 {
@@ -38,13 +39,15 @@ public:
 private:
 	Device *device;
 
+	SceneDao sceneDao;
+
 	Camera *camera;
 
 	Lighting *lighting;
 
 	SsaoKernel *ssaoKernel;
 
-	SceneDao sceneDao;
+	PssmKernel *pssmKernel;
 
 	Timer frameTimer;
 
