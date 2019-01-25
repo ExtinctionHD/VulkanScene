@@ -9,11 +9,12 @@
 #include "TerrainModel.h"
 #include "SsaoKernel.h"
 #include "SceneDao.h"
+#include "PssmKernel.h"
 
 class Scene
 {
 public:
-	Scene(Device *device, VkExtent2D cameraExtent, const std::string &path, float shadowsDistance);
+	Scene(Device *device, VkExtent2D cameraExtent, const std::string &path);
 
 	~Scene();
 
@@ -29,7 +30,7 @@ public:
 
 	void updateScene();
 
-	void render(VkCommandBuffer commandBuffer, RenderPassType type);
+	void render(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t renderIndex);
 
 	void resizeExtent(VkExtent2D newExtent);
 
@@ -38,13 +39,15 @@ public:
 private:
 	Device *device;
 
+	SceneDao sceneDao;
+
 	Camera *camera;
 
 	Lighting *lighting;
 
 	SsaoKernel *ssaoKernel;
 
-	SceneDao sceneDao;
+	PssmKernel *pssmKernel;
 
 	Timer frameTimer;
 
@@ -59,5 +62,5 @@ private:
 
 	void initPipelines(RenderPassesMap renderPasses);
 
-	void initStaticPipelines(RenderPassesMap renderPasses);
+	void initStaticPipelines(const RenderPassesMap &renderPasses);
 };

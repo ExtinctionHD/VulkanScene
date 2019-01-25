@@ -228,6 +228,9 @@
     <ClInclude Include="Transformation.h">
       <Filter>Файлы заголовков\Scene\Models</Filter>
     </ClInclude>
+    <ClInclude Include="PssmKernel.h">
+      <Filter>Файлы заголовков\Scene\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
@@ -346,6 +349,9 @@
     </ClCompile>
     <ClCompile Include="Transformation.cpp">
       <Filter>Исходные файлы\Scene\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="PssmKernel.cpp">
+      <Filter>Исходные файлы\Scene\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

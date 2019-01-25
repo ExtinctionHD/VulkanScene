@@ -11,7 +11,7 @@ SwapChainImage::SwapChainImage(Device *device, VkImage image, VkFormat format, V
 	this->image = image;
 	this->format = format;
 
-	createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
+	view = createImageView(subresourceRange, VK_IMAGE_VIEW_TYPE_2D);
 }
 
 VkImage SwapChainImage::get() const
@@ -24,15 +24,10 @@ VkImageView SwapChainImage::getView() const
 	return view;
 }
 
-VkFormat SwapChainImage::getFormat() const
+VkImageView SwapChainImage::createImageView(VkImageSubresourceRange subresourceRange, VkImageViewType viewType) const
 {
-	return format;
-}
+	VkImageView view;
 
-// private:
-
-void SwapChainImage::createImageView(VkImageSubresourceRange subresourceRange, VkImageViewType viewType)
-{
 	VkImageViewCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 		nullptr,
@@ -46,4 +41,11 @@ void SwapChainImage::createImageView(VkImageSubresourceRange subresourceRange, V
 
 	const VkResult result = vkCreateImageView(device->get(), &createInfo, nullptr, &view);
 	assert(result == VK_SUCCESS);
+
+	return view;
+}
+
+VkFormat SwapChainImage::getFormat() const
+{
+	return format;
 }

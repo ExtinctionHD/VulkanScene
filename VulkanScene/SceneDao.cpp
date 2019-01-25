@@ -35,6 +35,8 @@ Camera::Attributes SceneDao::getCameraAttributes() const
 		camera["fov"].get<float>(),
 		camera["speed"].get<float>(),
 		camera["sensitivity"].get<float>(),
+		camera["nearPlane"].get<float>(),
+		camera["farPlane"].get<float>(),
 	};
 
 	return attributes;

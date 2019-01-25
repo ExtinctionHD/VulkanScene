@@ -31,6 +31,8 @@ public:
 		float fov;
 		float speed;
 		float sensitivity;
+		float nearPlane;
+		float farPlane;
 	};
 
     // creates camera located in (0.0, 0.0, 0.0), locking at z axis, with 45.0 degrees field of view
@@ -49,6 +51,14 @@ public:
 	Buffer* getSpaceBuffer() const;
 
 	glm::vec2 getCenter() const;
+
+	float getNearPlane() const;
+
+	float getFarPlane() const;
+
+	glm::mat4 getViewMatrix() const;
+
+	glm::mat4 getProjectionMatrix() const;
 
 	void move(float deltaSec);
 
@@ -74,14 +84,14 @@ private:
 	// vertical angle
 	float angleV;
 
+	glm::mat4 projectionMatrix;
+
 	Buffer *spaceBuffer;
 
 	void initAngles();
 
 	void initSpaceBuffer(Device *device);
 
-	glm::mat4 getViewMatrix() const;
-
-	glm::mat4 getProjectionMatrix() const;
+	glm::mat4 createProjectionMatrix() const;
 };
 

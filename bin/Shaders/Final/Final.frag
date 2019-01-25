@@ -1,7 +1,9 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-layout(set = 0, binding = 2) uniform Lighting{
+layout (constant_id = 0) const int CASCADE_COUNT = 4;
+
+layout(set = 0, binding = 1) uniform Lighting{
 	vec3 color;
 	float ambientStrength;
 	vec3 direction;
@@ -10,7 +12,15 @@ layout(set = 0, binding = 2) uniform Lighting{
 	float specularPower;
 } lighting;
 
-layout(set = 0, binding = 3) uniform sampler2D shadowsMap;
+layout (set = 0, binding = 2) uniform CascadeSplits{
+	vec4 splits;
+};
+
+layout (set = 0, binding = 3) uniform CascadeSpaces{
+	mat4 viewProj[CASCADE_COUNT];
+};
+
+layout(set = 0, binding = 4) uniform sampler2DArray shadowMap;
 
 layout(set = 1, binding = 0) uniform Material{
 	vec4 diffuse;
@@ -27,7 +37,7 @@ layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec2 inUV;
 layout(location = 2) in vec3 inNormal;
 layout(location = 3) in vec3 inTangent;
-layout(location = 4) in vec4 inPosInLightSpace;
+layout(location = 4) in vec3 inViewPos;
 
 layout(location = 0) out vec4 outColor;
 
@@ -84,15 +94,15 @@ float getSpecularIntensity(vec3 N, vec3 L, vec3 V)
 }
 
 // 1 - fragment in the shadow, 0 - fragment in the lighting
-float getShading(vec4 posInLightSpace, float bias)
+float getShading(vec4 pos, float bias, uint cascadeIndex)
 {
 	// normalize proj coordiantes
-    vec3 projCoords = posInLightSpace.xyz / posInLightSpace.w;
+    vec3 projCoords = pos.xyz / pos.w;
     projCoords = vec3(projCoords.xy * 0.5f + 0.5f, projCoords.z);
 
     float currentDepth = projCoords.z;
     float shadow = 0.0f;
-	vec2 texelSize = 1.0f / textureSize(shadowsMap, 0);
+	vec2 texelSize = 1.0f / textureSize(shadowMap, 0).xy;
 
 	// avarage value from 9 nearest texels (PCF)
 	int count = 0;
@@ -101,7 +111,7 @@ float getShading(vec4 posInLightSpace, float bias)
 	{
 	    for(int y = -range; y <= range; ++y)
 	    {
-	        float pcfDepth = texture(shadowsMap, projCoords.xy + vec2(x, y) * texelSize).r;
+	        float pcfDepth = texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, cascadeIndex)).r;
 	        shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
 	        count++;
 	    }
@@ -117,6 +127,7 @@ float getShading(vec4 posInLightSpace, float bias)
 }
 
 const float MIN_OPACITY = 0.2f;
+
 const float BIAS_FACTOR = 0.001f;
 const float MIN_BIAS = 0.0001f;
 
@@ -135,8 +146,21 @@ void main()
 	N = dot(V, N) < 0 ? -N : N;
 	N = getBumpedNormal(N, inTangent, inUV, normalMap);
 
-	float bias = max(BIAS_FACTOR * (1.0f - dot(N, lighting.direction)), MIN_BIAS);
-	float illumination = 1.0f - getShading(inPosInLightSpace, bias);
+	// Get cascade index for the current fragment's view position
+	uint cascadeIndex = 0;
+	for(uint i = 0; i < CASCADE_COUNT - 1; ++i) 
+	{
+		if(inViewPos.z < splits[i]) 
+		{
+			cascadeIndex = i + 1;
+		}
+	}
+
+	// Depth compare for shadowing
+	vec4 shadowCoord = viewProj[cascadeIndex] * vec4(inPos, 1.0f);	
+
+	float bias = max(BIAS_FACTOR * (1.0f - dot(N, lighting.direction)), MIN_BIAS) / (cascadeIndex + 1);
+	float illumination = 1.0f - getShading(shadowCoord, bias, cascadeIndex);
 
 	float ambientI = getAmbientIntensity();
 	float diffuseI = getDiffuseIntensity(N, L) * illumination;

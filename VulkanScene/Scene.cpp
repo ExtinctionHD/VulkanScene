@@ -12,15 +12,17 @@
 
 // public:
 
-Scene::Scene(Device *device, VkExtent2D cameraExtent, const std::string &path, float shadowsDistance)
-    : device(device), ssaoKernel(new SsaoKernel(device))
+Scene::Scene(Device *device, VkExtent2D cameraExtent, const std::string &path)  : device(device)
 {
 	sceneDao.open(path);
 
 	camera = new Camera(device, cameraExtent, sceneDao.getCameraAttributes());
-	lighting = new Lighting(device, sceneDao.getLightingAttributes(), shadowsDistance);
+	lighting = new Lighting(device, sceneDao.getLightingAttributes());
 	skybox = new SkyboxModel(device, sceneDao.getSkyboxInfo());
 	terrain = new TerrainModel(device, { 1.0f, 1.0f }, { 1000, 1000 }, sceneDao.getTerrainInfo());
+
+	ssaoKernel = new SsaoKernel(device);
+	pssmKernel = new PssmKernel(device, camera, lighting->getDirection());
 
 	models = sceneDao.getModels(device);
 }
@@ -47,11 +49,12 @@ Scene::~Scene()
 	delete lighting;
 	delete camera;
 	delete ssaoKernel;
+	delete pssmKernel;
 }
 
 uint32_t Scene::getBufferCount() const
 {
-	uint32_t bufferCount = 9;
+	uint32_t bufferCount = 10;
 
 	bufferCount += skybox->getBufferCount();
 	bufferCount += terrain->getBufferCount();
@@ -112,18 +115,22 @@ void Scene::updateScene()
 
 	camera->move(deltaSec);
 	camera->updateSpace();
+
 	lighting->update(camera->getPos());
+
+	pssmKernel->update();
+
 	skybox->setTransformation(translate(glm::mat4(1.0f), camera->getPos()), 0);
 }
 
-void Scene::render(VkCommandBuffer commandBuffer, RenderPassType type)
+void Scene::render(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t renderIndex)
 {
     switch (type)
     {
     case DEPTH:
 		for (const auto&[key, model] : models)
 		{
-			model->renderDepth(commandBuffer, { descriptors.at(DEPTH).set });
+			model->renderDepth(commandBuffer, { descriptors.at(DEPTH).set }, renderIndex);
 		}
         break;
     case GEOMETRY:
@@ -196,7 +203,7 @@ void Scene::updateDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap
 	textures.push_back(shadowsTexture);
 	descriptorPool->updateDescriptorSet(
 		descriptors.at(LIGHTING).set,
-		{ lighting->getAttributesBuffer(), lighting->getSpaceBuffer() },
+		{ lighting->getAttributesBuffer(), camera->getSpaceBuffer(), pssmKernel->getSplitsBuffer(), pssmKernel->getSpacesBuffer() },
 		textures);
 }
 
@@ -210,7 +217,7 @@ void Scene::initDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap r
 
 	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout({ VK_SHADER_STAGE_VERTEX_BIT }, {});
 	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
-	descriptorPool->updateDescriptorSet(descriptorStruct.set, { lighting->getSpaceBuffer() }, {});
+	descriptorPool->updateDescriptorSet(descriptorStruct.set, { pssmKernel->getSpacesBuffer() }, {});
 	descriptors.insert({ DEPTH, descriptorStruct });
 
     // Geometry:
@@ -261,24 +268,24 @@ void Scene::initDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap r
 	texturesShaderStages = std::vector<VkShaderStageFlags>(textures.size(), VK_SHADER_STAGE_FRAGMENT_BIT);
 
 	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout(
-		{ VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_FRAGMENT_BIT },
+		{ VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_FRAGMENT_BIT },
 		texturesShaderStages);
 	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
 	descriptorPool->updateDescriptorSet(
 		descriptorStruct.set,
-		{ lighting->getAttributesBuffer(), lighting->getSpaceBuffer() },
+		{ lighting->getAttributesBuffer(), camera->getSpaceBuffer(), pssmKernel->getSplitsBuffer(), pssmKernel->getSpacesBuffer() },
 		textures);
 	descriptors.insert({ LIGHTING, descriptorStruct });
 
     // Final:
 
 	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout(
-		{ VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT },
+		{ VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_FRAGMENT_BIT, VK_SHADER_STAGE_FRAGMENT_BIT },
 		{ VK_SHADER_STAGE_FRAGMENT_BIT });
 	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
 	descriptorPool->updateDescriptorSet(
 		descriptorStruct.set,
-		{ camera->getSpaceBuffer(), lighting->getSpaceBuffer(), lighting->getAttributesBuffer() },
+		{ camera->getSpaceBuffer(), lighting->getAttributesBuffer(), pssmKernel->getSplitsBuffer(), pssmKernel->getSpacesBuffer() },
 		{ shadowsTexture });
 	descriptors.insert({ FINAL, descriptorStruct });
 
@@ -309,19 +316,46 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
         FINAL,
         renderPasses.at(FINAL),
         { descriptors.at(FINAL).layout },
+		{},
         shaderModules));
 
     for (const auto &[type, directory] : shadersDirectories)
     {
 		shaderModules = std::vector<std::shared_ptr<ShaderModule>>{
-			std::make_shared<ShaderModule>(device, File::getPath(directory, "Vert.spv"), VK_SHADER_STAGE_VERTEX_BIT),
-			std::make_shared<ShaderModule>(device, File::getPath(directory, "Frag.spv"), VK_SHADER_STAGE_FRAGMENT_BIT)
+			std::make_shared<ShaderModule>(device, File::getPath(directory, "Vert.spv"), VK_SHADER_STAGE_VERTEX_BIT)
 		};
+
+		std::vector<VkSpecializationMapEntry> constantEntries;
+		std::vector<const void*> constantData;
+		std::vector<VkPushConstantRange> pushConstantRanges;
+
+        if (type == DEPTH)
+        {
+            pushConstantRanges = {
+                { VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(uint32_t) }
+			};
+        }
+        if (type == FINAL)
+        {
+			constantEntries = {
+				{ 0, 0, sizeof(uint32_t)}
+			};
+			constantData = { &PssmKernel::CASCADE_COUNT };
+        }
+
+		shaderModules.push_back(
+			std::make_shared<ShaderModule>(
+				device,
+				File::getPath(directory, "Frag.spv"),
+				VK_SHADER_STAGE_FRAGMENT_BIT,
+				constantEntries,
+				constantData));
 
 		pipelines.push_back(terrain->createPipeline(
             type,
             renderPasses.at(type),
             { descriptors.at(type).layout },
+			pushConstantRanges,
             shaderModules));
 
         for (const auto &[key, model] : models)
@@ -331,7 +365,7 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
     }
 }
 
-void Scene::initStaticPipelines(RenderPassesMap renderPasses)
+void Scene::initStaticPipelines(const RenderPassesMap &renderPasses)
 {
     const auto fullscreenVertexShader = std::make_shared<ShaderModule>(
         device,
@@ -356,6 +390,7 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 		device,
 		renderPasses.at(SSAO),
 		{ descriptors.at(SSAO).layout },
+		{},
 		{ fullscreenVertexShader, ssaoFragmentShader },
 		{},
 		{},
@@ -384,6 +419,7 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 		device,
 		renderPasses.at(SSAO_BLUR),
 		{ descriptors.at(SSAO_BLUR).layout },
+		{},
 		{ fullscreenVertexShader, ssaoBlurFragmentShader },
 		{},
 		{},
@@ -396,10 +432,9 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
 
     #pragma region Lighting
 
-    const VkSpecializationMapEntry lightingConstantEntry{
-		0,
-		0,
-		sizeof(uint32_t)
+	std::vector<VkSpecializationMapEntry> lightingConstantEntries{
+		{ 0, 0, sizeof(uint32_t)},
+		{ 1, sizeof(uint32_t), sizeof(uint32_t)},
 	};
 
 	const uint32_t sampleCount = device->getSampleCount();
@@ -407,13 +442,14 @@ void Scene::initStaticPipelines(RenderPassesMap renderPasses)
         device,
 		"Shaders/Lighting/Frag.spv",
         VK_SHADER_STAGE_FRAGMENT_BIT, 
-        std::vector<VkSpecializationMapEntry>{ lightingConstantEntry }, 
-        std::vector<const void*>{ &sampleCount });
+		lightingConstantEntries,
+        std::vector<const void*>{ &sampleCount, &PssmKernel::CASCADE_COUNT });
 
     const auto lightingPipeline = new GraphicsPipeline(
 		device,
 		renderPasses.at(LIGHTING),
 		{ descriptors.at(LIGHTING).layout },
+		{},
 		{ fullscreenVertexShader, lightingFragmentShader },
 		{},
 		{},

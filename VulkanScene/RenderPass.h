@@ -24,6 +24,8 @@ public:
 
 	VkSampleCountFlagBits getSampleCount() const;
 
+	virtual uint32_t getRenderCount() const;
+
 	void create();
 
 	void recreate(VkExtent2D newExtent);

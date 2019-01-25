@@ -1,5 +1,6 @@
 #include <set>
 #include <cassert>
+#include <iostream>
 
 #include "Instance.h"
 
@@ -157,7 +158,9 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Instance::validationLayerCallback(
 	const char *msg,
 	void *userData)
 {
-	assert(false);
+	// assert(false);
+
+	std::cout << msg << std::endl;
 
 	return false;
 }

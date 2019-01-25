@@ -3,11 +3,9 @@
 int main(int argc, char *argv[])
 {
 	const Settings settings{
-		VK_SAMPLE_COUNT_4_BIT,
+		VK_SAMPLE_COUNT_2_BIT,
 		4096,
-		40.0f,
-		true,
-		"Assets/SimpleScene.json",
+		"Assets/FullScene.json",
 	};
 
 	auto window = Window(1920, 1080, Window::BORDERLESS);

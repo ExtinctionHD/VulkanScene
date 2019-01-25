@@ -148,7 +148,7 @@ void DescriptorPool::updateDescriptorSet(
 			VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 			nullptr,									
 			set,										
-			uint32_t(buffers.size() + i),							
+			uint32_t(buffers.size() + i),						
 			0,											
 			1,											
 			VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	

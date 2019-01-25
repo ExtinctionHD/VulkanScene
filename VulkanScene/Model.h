@@ -37,13 +37,14 @@ public:
         RenderPassType type,
         RenderPass *renderPass,
         const std::vector<VkDescriptorSetLayout> &layouts,
+		const std::vector<VkPushConstantRange> &pushConstantRanges,
         const std::vector<std::shared_ptr<ShaderModule>> &shaderModules);
 
 	void setPipeline(RenderPassType type, GraphicsPipeline *pipeline);
 
 	static void setStaticPipeline(RenderPassType type, GraphicsPipeline *pipeline);
 
-	void renderDepth(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet> &descriptorSets) const;
+	void renderDepth(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet> &descriptorSets, uint32_t renderIndex) const;
 
 	void renderGeometry(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet> &descriptorSets) const;
 
@@ -91,6 +92,7 @@ private:
 	GraphicsPipeline* createDepthPipeline(
         RenderPass *renderPass,
         std::vector<VkDescriptorSetLayout> layouts,
+		const std::vector<VkPushConstantRange> &pushConstantRanges,
         const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
         const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
         const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions);
@@ -98,6 +100,7 @@ private:
 	GraphicsPipeline* createGeometryPipeline(
         RenderPass *renderPass,
         std::vector<VkDescriptorSetLayout> layouts,
+		const std::vector<VkPushConstantRange> &pushConstantRanges,
         const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
         const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
         const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions);
@@ -105,6 +108,7 @@ private:
 	GraphicsPipeline* createFinalPipeline(
         RenderPass *renderPass,
         std::vector<VkDescriptorSetLayout> layouts,
+		const std::vector<VkPushConstantRange> &pushConstantRanges,
         const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
         const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
         const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions);
@@ -113,6 +117,8 @@ private:
         VkCommandBuffer commandBuffer,
         RenderPassType type,
         const std::vector<VkDescriptorSet> &descriptorSets,
+		const std::vector<VkPushConstantRange> &pushConstantRanges,
+		const std::vector<const void *> &pushConstantData,
         std::vector<MeshBase*> meshes) const;
 };
 

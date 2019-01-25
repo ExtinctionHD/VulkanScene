@@ -2,7 +2,6 @@
 
 #include <glm/glm.hpp>
 #include "Buffer.h"
-#include "Space.h"
 
 class Lighting
 {
@@ -22,23 +21,17 @@ public:
 		float specularPower;
 	};
 
-	Lighting(Device *device, Attributes attributes, float spaceRadius);
+	Lighting(Device *device, Attributes attributes);
 	~Lighting();
 
-	Buffer* getAttributesBuffer() const;
+	glm::vec3 getDirection() const;
 
-    Buffer* getSpaceBuffer() const;
+	Buffer* getAttributesBuffer() const;
 
 	void update(glm::vec3 cameraPos);
 
 private:
 	Attributes attributes;
 
-	glm::mat4 projection;
-
 	Buffer *attributesBuffer;
-
-	Buffer *spaceBuffer;
-
-	Space getSpace() const;
 };

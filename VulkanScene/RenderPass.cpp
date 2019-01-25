@@ -18,6 +18,11 @@ VkSampleCountFlagBits RenderPass::getSampleCount() const
 	return sampleCount;
 }
 
+uint32_t RenderPass::getRenderCount() const
+{
+	return 1;
+}
+
 std::vector<VkFramebuffer> RenderPass::getFramebuffers() const
 {
 	return framebuffers;

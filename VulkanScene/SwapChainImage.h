@@ -17,6 +17,8 @@ public:
 
 	VkImageView getView() const;
 
+	VkImageView createImageView(VkImageSubresourceRange subresourceRange, VkImageViewType viewType) const;
+
 	VkFormat getFormat() const;
 
 protected:
@@ -27,7 +29,5 @@ protected:
 	VkImageView view;
 
 	VkFormat format;
-
-	void createImageView(VkImageSubresourceRange subresourceRange, VkImageViewType viewType);
 };
 

@@ -23,8 +23,6 @@ Engine::Engine(HWND hWnd, VkExtent2D frameExtent, Settings settings)
         "VK_KHR_win32_surface"
 	};
 
-	ssaoEnabled = settings.ssaoEnabled;
-
 	instance = new Instance(requiredLayers, extensions);
 	surface = new Surface(instance->get(), hWnd);
 	device = new Device(instance->get(), surface->get(), requiredLayers, settings.sampleCount);
@@ -32,8 +30,12 @@ Engine::Engine(HWND hWnd, VkExtent2D frameExtent, Settings settings)
 
 	createRenderPasses(settings.shadowsDim);
 
-	scene = new Scene(device, swapChain->getExtent(), settings.scenePath, settings.shadowsDistance);
-	descriptorPool = new DescriptorPool(device, scene->getBufferCount(), scene->getTextureCount(), scene->getDescriptorSetCount());
+	scene = new Scene(device, swapChain->getExtent(), settings.scenePath);
+	descriptorPool = new DescriptorPool(
+        device,
+        scene->getBufferCount(),
+        scene->getTextureCount(),
+        scene->getDescriptorSetCount());
 
 	scene->prepareSceneRendering(descriptorPool, renderPasses);
 
@@ -296,7 +298,11 @@ void Engine::initGraphicsCommands()
 			vkFreeCommandBuffers(device->get(), commandPool, uint32_t(commandBuffers.size()), commandBuffers.data());
 		}
 
-        const uint32_t size = uint32_t(renderPasses.at(type)->getFramebuffers().size());
+		uint32_t size = 1;
+        if (type == FINAL)
+        {
+			size = swapChain->getImageCount();
+        }
 		commandBuffers.resize(size);
 
 		VkCommandBufferAllocateInfo allocInfo{
@@ -322,7 +328,7 @@ void Engine::initGraphicsCommands()
 			result = vkBeginCommandBuffer(commandBuffers[i], &beginInfo);
 			assert(result == VK_SUCCESS);
 
-			recordRenderPassCommands(type, i);
+			recordRenderPassCommands(type, i, renderPasses.at(type)->getRenderCount());
 
 			result = vkEndCommandBuffer(commandBuffers[i]);
 			assert(result == VK_SUCCESS);
@@ -330,7 +336,19 @@ void Engine::initGraphicsCommands()
     }
 }
 
-void Engine::beginRenderPass(RenderPassType type, uint32_t index)
+void Engine::recordRenderPassCommands(RenderPassType type, uint32_t commandBufferIndex, uint32_t renderCount)
+{
+	for (uint32_t i = 0; i < renderCount; i++)
+	{
+		beginRenderPass(type, commandBufferIndex, commandBufferIndex + i);
+
+		scene->render(graphicsCommands.at(type)[commandBufferIndex], type, i);
+
+		vkCmdEndRenderPass(graphicsCommands.at(type)[commandBufferIndex]);
+	}
+}
+
+void Engine::beginRenderPass(RenderPassType type, uint32_t commandBufferIndex, uint32_t framebufferIndex)
 {
 	const VkRect2D renderArea{
 		{ 0, 0 },
@@ -343,22 +361,13 @@ void Engine::beginRenderPass(RenderPassType type, uint32_t index)
 	    VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 	    nullptr,
 	    renderPasses.at(type)->get(), 
-	    renderPasses.at(type)->getFramebuffers()[index],
+	    renderPasses.at(type)->getFramebuffers()[framebufferIndex],
 	    renderArea,
 	    uint32_t(clearValues.size()),
 		clearValues.data()
 	};
 
-	vkCmdBeginRenderPass(graphicsCommands.at(type)[index], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-}
-
-void Engine::recordRenderPassCommands(RenderPassType type, uint32_t index)
-{
-	beginRenderPass(type, index);
-
-	scene->render(graphicsCommands.at(type)[index], type);
-
-	vkCmdEndRenderPass(graphicsCommands.at(type)[index]);
+	vkCmdBeginRenderPass(graphicsCommands.at(type)[commandBufferIndex], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
 void Engine::createSemaphore(VkDevice device, VkSemaphore &semaphore)
