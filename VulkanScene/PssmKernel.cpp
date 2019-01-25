@@ -8,8 +8,11 @@
 PssmKernel::PssmKernel(Device *device, Camera *camera, glm::vec3 lightingDirection)
     : camera(camera), lightingDirection(lightingDirection)
 {
-	splitsBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, splitDepths.size() * sizeof(float));
-	spacesBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, cascadeSpaces.size() * sizeof glm::mat4);
+	cascadeSplits.resize(CASCADE_COUNT);
+	cascadeSpaces.resize(CASCADE_COUNT);
+
+	splitsBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, CASCADE_COUNT * sizeof(float));
+	spacesBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, CASCADE_COUNT * sizeof glm::mat4);
 
 	update();
 }
@@ -42,7 +45,7 @@ void PssmKernel::update()
 	float range = maxZ - minZ;
 	float ratio = maxZ / minZ;
 
-	float cascadeSplits[CASCADE_COUNT];
+	std::vector<float> splits(CASCADE_COUNT);
 
 	for (uint32_t i = 0; i < CASCADE_COUNT; i++)
 	{
@@ -50,14 +53,14 @@ void PssmKernel::update()
 		float log = minZ * std::pow(ratio, p);
 		float uniform = minZ + range * p;
 		float d = CASCADE_SPLIT_LAMBDA * (log - uniform) + uniform;
-		cascadeSplits[i] = (d - nearPlane) / clipRange;
+		splits[i] = (d - nearPlane) / clipRange;
 	}
 
 	// Calculate orthographic projection matrix for each cascade
 	float lastSplitDist = 0.0;
 	for (uint32_t i = 0; i < CASCADE_COUNT; i++)
 	{
-		float splitDist = cascadeSplits[i];
+		float splitDist = splits[i];
 
 		glm::vec3 frustumCorners[8] = {
 			glm::vec3(-1.0f,  1.0f, -1.0f),
@@ -117,12 +120,12 @@ void PssmKernel::update()
             maxExtents.z - minExtents.z);
 
 		// Store split distance and matrix in cascade
-		splitDepths[i] = (nearPlane + splitDist * clipRange) * -1.0f;
+		cascadeSplits[i] = (nearPlane + splitDist * clipRange) * -1.0f;
 		cascadeSpaces[i] = lightOrthoMatrix * lightViewMatrix;
 
-		lastSplitDist = cascadeSplits[i];
+		lastSplitDist = splits[i];
 	}
 
-	splitsBuffer->updateData(splitDepths.data(), splitDepths.size(), 0);
-	spacesBuffer->updateData(cascadeSpaces.data(), cascadeSpaces.size(), 0);
+	splitsBuffer->updateData(cascadeSplits.data(), cascadeSplits.size() * sizeof(float), 0);
+	spacesBuffer->updateData(cascadeSpaces.data(), cascadeSpaces.size() * sizeof(glm::mat4), 0);
 }

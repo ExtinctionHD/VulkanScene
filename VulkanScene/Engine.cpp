@@ -344,7 +344,7 @@ void Engine::recordRenderPassCommands(RenderPassType type, uint32_t commandBuffe
 	{
 		beginRenderPass(type, commandBufferIndex, commandBufferIndex + i);
 
-		scene->render(graphicsCommands.at(type)[commandBufferIndex], type);
+		scene->render(graphicsCommands.at(type)[commandBufferIndex], type, i);
 
 		vkCmdEndRenderPass(graphicsCommands.at(type)[commandBufferIndex]);
 	}

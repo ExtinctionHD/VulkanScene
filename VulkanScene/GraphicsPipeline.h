@@ -13,6 +13,7 @@ public:
 		Device *device,
 		RenderPass *renderPass,
 		const std::vector<VkDescriptorSetLayout> &descriptorSetLayouts,
+		const std::vector<VkPushConstantRange> &pushConstantRanges,
 		const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
 		const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
 		const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions,
@@ -42,7 +43,9 @@ private:
 
 	VkBool32 blendEnable;
 
-	void createLayout(std::vector<VkDescriptorSetLayout> descriptorSetLayouts);
+	void createLayout(
+		std::vector<VkDescriptorSetLayout> descriptorSetLayouts,
+		const std::vector<VkPushConstantRange> &pushConstantRanges);
 
 	void createPipeline();
 };

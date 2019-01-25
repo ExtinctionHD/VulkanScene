@@ -3,7 +3,7 @@
 
 layout (constant_id = 0) const int CASCADE_COUNT = 4;
 
-layout(set = 0, binding = 0) uniform Space{
+layout(binding = 0) uniform LightSpace{
     mat4 viewProj[CASCADE_COUNT];
 };
 

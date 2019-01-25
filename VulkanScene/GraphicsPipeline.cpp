@@ -7,7 +7,8 @@
 GraphicsPipeline::GraphicsPipeline(
 	Device *device,
 	RenderPass *renderPass,
-	const std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, 
+	const std::vector<VkDescriptorSetLayout> &descriptorSetLayouts,
+    const std::vector<VkPushConstantRange> &pushConstantRanges,
 	const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
 	const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
 	const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions,
@@ -20,7 +21,7 @@ GraphicsPipeline::GraphicsPipeline(
 	this->attributeDescriptions = attributeDescriptions;
 	this->blendEnable = blendEnable;
 
-	createLayout(descriptorSetLayouts);
+	createLayout(descriptorSetLayouts, pushConstantRanges);
 
 	createPipeline();
 }
@@ -49,7 +50,9 @@ void GraphicsPipeline::recreate()
 
 // private:
 
-void GraphicsPipeline::createLayout(std::vector<VkDescriptorSetLayout> descriptorSetLayouts)
+void GraphicsPipeline::createLayout(
+	std::vector<VkDescriptorSetLayout> descriptorSetLayouts,
+	const std::vector<VkPushConstantRange> &pushConstantRanges)
 {
 	VkPipelineLayoutCreateInfo createInfo{
 		VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
@@ -57,8 +60,8 @@ void GraphicsPipeline::createLayout(std::vector<VkDescriptorSetLayout> descripto
 		0,												
 		uint32_t(descriptorSetLayouts.size()),					
 		descriptorSetLayouts.data(),					
-		0,												
-		nullptr,										
+		uint32_t(pushConstantRanges.size()),												
+		pushConstantRanges.data(),
 	};
 
     const VkResult result = vkCreatePipelineLayout(device->get(), &createInfo, nullptr, &layout);

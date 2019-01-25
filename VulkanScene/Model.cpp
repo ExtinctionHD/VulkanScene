@@ -70,6 +70,7 @@ GraphicsPipeline * Model::createPipeline(
     RenderPassType type,
     RenderPass *renderPass,
     const std::vector<VkDescriptorSetLayout> &layouts,
+	const std::vector<VkPushConstantRange> &pushConstantRanges,
     const std::vector<std::shared_ptr<ShaderModule>> &shaderModules)
 {
 	const std::vector<VkVertexInputBindingDescription> bindingDescriptions = {
@@ -88,11 +89,29 @@ GraphicsPipeline * Model::createPipeline(
     switch (type)
     {
     case DEPTH:
-		return createDepthPipeline(renderPass, layouts, shaderModules, bindingDescriptions, attributeDescriptions);
+		return createDepthPipeline(
+            renderPass,
+            layouts,
+            pushConstantRanges,
+            shaderModules,
+            bindingDescriptions,
+            attributeDescriptions);
     case GEOMETRY:
-		return createGeometryPipeline(renderPass, layouts, shaderModules, bindingDescriptions, attributeDescriptions);
+		return createGeometryPipeline(
+            renderPass,
+            layouts,
+            pushConstantRanges,
+            shaderModules,
+            bindingDescriptions,
+            attributeDescriptions);
     case FINAL:
-		return createFinalPipeline(renderPass, layouts, shaderModules, bindingDescriptions, attributeDescriptions);
+		return createFinalPipeline(
+            renderPass,
+            layouts,
+            pushConstantRanges,
+            shaderModules,
+            bindingDescriptions,
+            attributeDescriptions);
     default: 
         throw std::invalid_argument("No pipeline for this render pass type");
     }
@@ -108,20 +127,27 @@ void Model::setStaticPipeline(RenderPassType type, GraphicsPipeline *pipeline)
 	staticPipelines.insert({ type, pipeline });
 }
 
-void Model::renderDepth(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet> &descriptorSets) const
+void Model::renderDepth(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet> &descriptorSets, uint32_t renderIndex) const
 {
-	renderMeshes(commandBuffer, DEPTH, descriptorSets, solidMeshes);
-	renderMeshes(commandBuffer, DEPTH, descriptorSets, transparentMeshes);
+    const std::vector<VkPushConstantRange> pushConstantRanges{
+		{ VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(uint32_t) }
+	};
+    const std::vector<const void *> pushConstantData{
+		&renderIndex
+	};
+
+	renderMeshes(commandBuffer, DEPTH, descriptorSets, pushConstantRanges, pushConstantData, solidMeshes);
+	renderMeshes(commandBuffer, DEPTH, descriptorSets, pushConstantRanges, pushConstantData, transparentMeshes);
 }
 
 void Model::renderGeometry(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet> &descriptorSets) const
 {
-	renderMeshes(commandBuffer, GEOMETRY, descriptorSets, solidMeshes);
+	renderMeshes(commandBuffer, GEOMETRY, descriptorSets, {}, {}, solidMeshes);
 }
 
 void Model::renderFinal(VkCommandBuffer commandBuffer, const std::vector<VkDescriptorSet> &descriptorSets) const
 {
-	renderMeshes(commandBuffer, FINAL, descriptorSets, transparentMeshes);
+	renderMeshes(commandBuffer, FINAL, descriptorSets, {}, {}, transparentMeshes);
 }
 
 void Model::renderFullscreenQuad(
@@ -205,6 +231,7 @@ std::vector<VkVertexInputAttributeDescription> Model::getTransformationAttribute
 GraphicsPipeline* Model::createDepthPipeline(
     RenderPass *renderPass,
     std::vector<VkDescriptorSetLayout> layouts,
+	const std::vector<VkPushConstantRange> &pushConstantRanges,
     const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
     const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
     const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions)
@@ -215,6 +242,7 @@ GraphicsPipeline* Model::createDepthPipeline(
 		device,
 		renderPass,
 		layouts,
+        pushConstantRanges,
 	    shaderModules,
 		bindingDescriptions,
 		attributeDescriptions,
@@ -228,6 +256,7 @@ GraphicsPipeline* Model::createDepthPipeline(
 GraphicsPipeline* Model::createGeometryPipeline(
     RenderPass *renderPass,
     std::vector<VkDescriptorSetLayout> layouts,
+	const std::vector<VkPushConstantRange> &pushConstantRanges,
     const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
     const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
     const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions)
@@ -238,6 +267,7 @@ GraphicsPipeline* Model::createGeometryPipeline(
 		device,
 		renderPass,
 		layouts,
+		pushConstantRanges,
 	    shaderModules,
 		bindingDescriptions,
 		attributeDescriptions,
@@ -251,6 +281,7 @@ GraphicsPipeline* Model::createGeometryPipeline(
 GraphicsPipeline* Model::createFinalPipeline(
     RenderPass *renderPass,
     std::vector<VkDescriptorSetLayout> layouts,
+	const std::vector<VkPushConstantRange> &pushConstantRanges,
     const std::vector<std::shared_ptr<ShaderModule>> &shaderModules,
     const std::vector<VkVertexInputBindingDescription> &bindingDescriptions,
     const std::vector<VkVertexInputAttributeDescription> &attributeDescriptions)
@@ -261,6 +292,7 @@ GraphicsPipeline* Model::createFinalPipeline(
 		device,
 		renderPass,
 		layouts,
+		pushConstantRanges,
 	    shaderModules,
 		bindingDescriptions,
 		attributeDescriptions,
@@ -275,9 +307,23 @@ void Model::renderMeshes(
     VkCommandBuffer commandBuffer,
     RenderPassType type,
     const std::vector<VkDescriptorSet> &descriptorSets,
+    const std::vector<VkPushConstantRange> &pushConstantRanges,
+    const std::vector<const void *> &pushConstantData,
     std::vector<MeshBase*> meshes) const
 {
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.at(type)->get());
+
+
+    for (uint32_t i = 0; i < pushConstantRanges.size(); i++)
+    {
+		vkCmdPushConstants(
+            commandBuffer,
+            pipelines.at(type)->getLayout(),
+            pushConstantRanges[i].stageFlags,
+            pushConstantRanges[i].offset,
+            pushConstantRanges[i].size,
+            pushConstantData[i]);
+    }
 
 	vkCmdBindDescriptorSets(
         commandBuffer,

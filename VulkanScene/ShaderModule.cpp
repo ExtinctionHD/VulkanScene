@@ -30,24 +30,27 @@ ShaderModule::ShaderModule(
     std::vector<VkSpecializationMapEntry> entries,
     std::vector<const void*> data) : ShaderModule(device, path, stage)
 {
-	assert(entries.size() == data.size());
-
-    const size_t size = entries.back().offset + entries.back().size;
-
-	this->data = malloc(size);
-	this->entries = entries;
-
-    for (size_t i = 0; i < data.size(); i++)
+    if (!entries.empty())
     {
-		memcpy(reinterpret_cast<char*>(this->data) + entries[i].offset, data[i], entries[i].size);
-    }
+		assert(entries.size() == data.size());
 
-	specializationInfo = new VkSpecializationInfo{
-		uint32_t(entries.size()),
-		this->entries.data(),
-		size,
-		this->data
-	};
+		const size_t size = entries.back().offset + entries.back().size;
+
+		this->data = malloc(size);
+		this->entries = entries;
+
+		for (size_t i = 0; i < data.size(); i++)
+		{
+			memcpy(reinterpret_cast<char*>(this->data) + entries[i].offset, data[i], entries[i].size);
+		}
+
+		specializationInfo = new VkSpecializationInfo{
+			uint32_t(entries.size()),
+			this->entries.data(),
+			size,
+			this->data
+		};    
+    }
 }
 
 ShaderModule::~ShaderModule()

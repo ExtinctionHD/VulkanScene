@@ -22,7 +22,7 @@ public:
 	void update();
 
 private:
-	std::vector<float> splitDepths;
+	std::vector<float> cascadeSplits;
 
 	std::vector<glm::mat4> cascadeSpaces;
 

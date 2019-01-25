@@ -30,7 +30,7 @@ public:
 
 	void updateScene();
 
-	void render(VkCommandBuffer commandBuffer, RenderPassType type);
+	void render(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t renderIndex);
 
 	void resizeExtent(VkExtent2D newExtent);
 
@@ -62,5 +62,5 @@ private:
 
 	void initPipelines(RenderPassesMap renderPasses);
 
-	void initStaticPipelines(RenderPassesMap renderPasses);
+	void initStaticPipelines(const RenderPassesMap &renderPasses);
 };
