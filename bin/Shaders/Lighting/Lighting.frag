@@ -19,7 +19,7 @@ layout (binding = 1) uniform Space{
 };
 
 layout (binding = 2) uniform CascadeSplits{
-	float splits[CASCADE_COUNT];
+	vec4 splits;
 };
 
 layout (binding = 3) uniform CascadeSpaces{
@@ -78,10 +78,10 @@ float getSpecularIntensity(vec3 N, vec3 L, vec3 V, float specular)
 }
 
 // 1 - fragment in the shadow, 0 - fragment in the lighting
-float getShading(vec4 posInLightSpace, float bias)
+float getShading(vec4 pos, float bias, uint cascadeIndex)
 {
 	// normalize proj coordiantes
-    vec3 projCoords = posInLightSpace.xyz / posInLightSpace.w;
+    vec3 projCoords = pos.xyz / pos.w;
     projCoords = vec3(projCoords.xy * 0.5f + 0.5f, projCoords.z);
 
     float currentDepth = projCoords.z;
@@ -95,7 +95,7 @@ float getShading(vec4 posInLightSpace, float bias)
 	{
 	    for(int y = -range; y <= range; ++y)
 	    {
-	        float pcfDepth = texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, 0)).r;
+	        float pcfDepth = texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, cascadeIndex)).r;
 	        shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
 	        count++;
 	    }
@@ -110,55 +110,8 @@ float getShading(vec4 posInLightSpace, float bias)
     return shadow;
 }
 
-float textureProj(vec4 P, vec2 offset, float bias, uint cascadeIndex)
-{
-	float shadow = 0.0f;
-	vec4 shadowCoord = P / P.w;
-
-	if (shadowCoord.z > -1.0 && shadowCoord.z < 1.0 ) 
-	{
-		float dist = texture(shadowMap, vec3(shadowCoord.st + offset, cascadeIndex)).r;
-		if (shadowCoord.w > 0 && dist < shadowCoord.z - bias) 
-		{
-			shadow = 1.0f;
-		}
-	}
-
-	return shadow;
-}
-
-float filterPCF(vec4 sc, float bias, uint cascadeIndex)
-{
-	ivec2 texDim = textureSize(shadowMap, 0).xy;
-	float scale = 0.75f;
-	float dx = scale * 1.0f / float(texDim.x);
-	float dy = scale * 1.0f / float(texDim.y);
-
-	float shadowFactor = 0.0f;
-	int count = 0;
-	int range = 1;
-	
-	for (int x = -range; x <= range; x++) 
-	{
-		for (int y = -range; y <= range; y++) 
-		{
-			shadowFactor += textureProj(sc, vec2(dx*x, dy*y), bias, cascadeIndex);
-			count++;
-		}
-	}
-
-	return shadowFactor / count;
-}
-
 const float BIAS_FACTOR = 0.001f;
 const float MIN_BIAS = 0.0001f;
-
-const mat4 BIAS_MAT = mat4( 
-	0.5f, 0.0f, 0.0f, 0.0f,
-	0.0f, 0.5f, 0.0f, 0.0f,
-	0.0f, 0.0f, 1.0f, 0.0f,
-	0.5f, 0.5f, 0.0f, 1.0f 
-);
 
 vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, float ssao, vec4 viewPos)
 {
@@ -169,17 +122,17 @@ vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, float ssao
 	uint cascadeIndex = 0;
 	for(uint i = 0; i < CASCADE_COUNT - 1; ++i) 
 	{
-		if(viewPos.z < -splits[i]) 
+		if(viewPos.z < splits[i]) 
 		{
 			cascadeIndex = i + 1;
 		}
 	}
 
 	// Depth compare for shadowing
-	vec4 shadowCoord = (BIAS_MAT * viewProj[cascadeIndex]) * vec4(pos, 1.0f);	
+	vec4 shadowCoord = viewProj[cascadeIndex] * vec4(pos, 1.0f);	
 
-	float bias = max(BIAS_FACTOR * (1.0f - dot(N, lighting.direction)), MIN_BIAS);
-	float illumination = 1.0f - filterPCF(shadowCoord / shadowCoord.w, bias, cascadeIndex);
+	float bias = max(BIAS_FACTOR * (1.0f - dot(N, lighting.direction)), MIN_BIAS) / (cascadeIndex + 1);
+	float illumination = 1.0f - getShading(shadowCoord, bias, cascadeIndex);
 
 	float ambientI = getAmbientIntensity() * (1.0f - ssao);
 	float directI = getdirectIntensity(N, L) * illumination;
@@ -188,7 +141,26 @@ vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, float ssao
 	vec3 lightingComponent = lighting.color * albedo * (ambientI + directI);
 	vec3 specularComponent = lighting.color * specularI;
 
-	return lightingComponent + specularComponent;
+	vec3 result = lightingComponent + specularComponent;
+
+	// Pssm debug
+	// switch(cascadeIndex) 
+	// {
+	// case 0: 
+	// 	result *= vec3(1.0f, 0.25f, 0.25f);
+	// 	break;
+	// case 1: 
+	// 	result *= vec3(0.25f, 1.0f, 0.25f);
+	// 	break;
+	// case 2: 
+	// 	result *= vec3(0.25f, 0.25f, 1.0f);
+	// 	break;
+	// case 3: 
+	// 	result *= vec3(1.0f, 1.0f, 0.25f);
+	// 	break;
+	// }
+
+	return result;
 }
 
 void main() 

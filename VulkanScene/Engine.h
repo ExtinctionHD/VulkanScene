@@ -49,8 +49,6 @@ private:
 	VkSemaphore imageAvailableSemaphore;
 	std::vector<VkSemaphore> stageFinishedSemaphores;
 
-	bool ssaoEnabled;
-
 	bool minimized = false;
 
 	void createRenderPasses(uint32_t shadowsDim);

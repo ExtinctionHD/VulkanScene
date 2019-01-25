@@ -3,7 +3,7 @@
 
 #include "Lighting.h"
 
-Lighting::Lighting(Device *device, Attributes attributes, float spaceRadius) : attributes(attributes)
+Lighting::Lighting(Device *device, Attributes attributes) : attributes(attributes)
 {
 	attributesBuffer = new Buffer(device, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof attributes);
 	attributesBuffer->updateData(&attributes, sizeof attributes, 0);

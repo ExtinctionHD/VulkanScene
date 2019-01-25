@@ -23,8 +23,6 @@ Engine::Engine(HWND hWnd, VkExtent2D frameExtent, Settings settings)
         "VK_KHR_win32_surface"
 	};
 
-	ssaoEnabled = settings.ssaoEnabled;
-
 	instance = new Instance(requiredLayers, extensions);
 	surface = new Surface(instance->get(), hWnd);
 	device = new Device(instance->get(), surface->get(), requiredLayers, settings.sampleCount);
@@ -32,7 +30,7 @@ Engine::Engine(HWND hWnd, VkExtent2D frameExtent, Settings settings)
 
 	createRenderPasses(settings.shadowsDim);
 
-	scene = new Scene(device, swapChain->getExtent(), settings.scenePath, settings.shadowsDistance);
+	scene = new Scene(device, swapChain->getExtent(), settings.scenePath);
 	descriptorPool = new DescriptorPool(
         device,
         scene->getBufferCount(),

@@ -14,7 +14,7 @@
 class Scene
 {
 public:
-	Scene(Device *device, VkExtent2D cameraExtent, const std::string &path, float shadowsDistance);
+	Scene(Device *device, VkExtent2D cameraExtent, const std::string &path);
 
 	~Scene();
 

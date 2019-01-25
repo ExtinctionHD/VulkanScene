@@ -21,7 +21,7 @@ public:
 		float specularPower;
 	};
 
-	Lighting(Device *device, Attributes attributes, float spaceRadius);
+	Lighting(Device *device, Attributes attributes);
 	~Lighting();
 
 	glm::vec3 getDirection() const;

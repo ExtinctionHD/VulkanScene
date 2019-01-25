@@ -49,7 +49,7 @@ void DepthRenderPass::createAttachments()
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 		VK_IMAGE_ASPECT_DEPTH_BIT,
         VK_FILTER_LINEAR,
-        VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
 
 	attachments = { depthTexture };
 

@@ -8,9 +8,5 @@ struct Settings
 
     uint32_t shadowsDim;
 
-    float shadowsDistance;
-
-    bool ssaoEnabled;
-
     std::string scenePath;
 };

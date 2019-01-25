@@ -10,7 +10,7 @@ class PssmKernel
 public:
 	static const uint32_t CASCADE_COUNT = 4; 
     
-    const float CASCADE_SPLIT_LAMBDA = 0.95f;
+    const float CASCADE_SPLIT_LAMBDA = 0.9f;
 
 	PssmKernel(Device *device, Camera *camera, glm::vec3 lightingDirection);
 	~PssmKernel();

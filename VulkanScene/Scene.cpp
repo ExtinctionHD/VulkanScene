@@ -12,13 +12,12 @@
 
 // public:
 
-Scene::Scene(Device *device, VkExtent2D cameraExtent, const std::string &path, float shadowsDistance)
-    : device(device)
+Scene::Scene(Device *device, VkExtent2D cameraExtent, const std::string &path)  : device(device)
 {
 	sceneDao.open(path);
 
 	camera = new Camera(device, cameraExtent, sceneDao.getCameraAttributes());
-	lighting = new Lighting(device, sceneDao.getLightingAttributes(), shadowsDistance);
+	lighting = new Lighting(device, sceneDao.getLightingAttributes());
 	skybox = new SkyboxModel(device, sceneDao.getSkyboxInfo());
 	terrain = new TerrainModel(device, { 1.0f, 1.0f }, { 1000, 1000 }, sceneDao.getTerrainInfo());
 
