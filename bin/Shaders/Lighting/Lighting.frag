@@ -110,8 +110,8 @@ float getShading(vec4 pos, float bias, uint cascadeIndex)
     return shadow;
 }
 
-const float BIAS_FACTOR = 0.001f;
-const float MIN_BIAS = 0.0001f;
+const float BIAS_FACTOR = 0.0005f;
+const float MIN_BIAS = 0.00005f;
 
 vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, float ssao, vec4 viewPos)
 {

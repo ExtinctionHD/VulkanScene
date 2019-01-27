@@ -128,8 +128,8 @@ float getShading(vec4 pos, float bias, uint cascadeIndex)
 
 const float MIN_OPACITY = 0.2f;
 
-const float BIAS_FACTOR = 0.001f;
-const float MIN_BIAS = 0.0001f;
+const float BIAS_FACTOR = 0.0005f;
+const float MIN_BIAS = 0.00005f;
 
 void main() 
 {
