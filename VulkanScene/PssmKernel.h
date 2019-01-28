@@ -12,6 +12,8 @@ public:
     
     const float CASCADE_SPLIT_LAMBDA = 0.85f;
 
+	const float BIAS = 0.0005f;
+
 	PssmKernel(Device *device, Camera *camera, glm::vec3 lightingDirection);
 	~PssmKernel();
 

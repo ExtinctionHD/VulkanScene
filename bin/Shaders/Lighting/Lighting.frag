@@ -3,6 +3,7 @@
 
 layout (constant_id = 0) const int SAMPLE_COUNT = 1;
 layout (constant_id = 1) const int CASCADE_COUNT = 4;
+layout (constant_id = 2) const float BIAS = 0.0005f;
 
 layout (binding = 0) uniform Lighting{
 	vec3 color;
@@ -110,9 +111,6 @@ float getShading(vec4 pos, float bias, uint cascadeIndex)
     return shadow;
 }
 
-const float BIAS_FACTOR = 0.0005f;
-const float MIN_BIAS = 0.00005f;
-
 vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, float ssao, vec4 viewPos)
 {
 	vec3 L = normalize(-lighting.direction);
@@ -131,7 +129,7 @@ vec3 calculateLighting(vec3 pos, vec3 N, vec3 albedo, float specular, float ssao
 	// Depth compare for shadowing
 	vec4 shadowCoord = viewProj[cascadeIndex] * vec4(pos, 1.0f);	
 
-	float bias = max(BIAS_FACTOR * (1.0f - dot(N, lighting.direction)), MIN_BIAS) / (cascadeIndex + 1);
+	float bias = max(BIAS * (1.0f - dot(N, lighting.direction)), BIAS / 10) / (cascadeIndex + 1);
 	float illumination = 1.0f - getShading(shadowCoord, bias, cascadeIndex);
 
 	float ambientI = getAmbientIntensity() * (1.0f - ssao);

@@ -1,7 +1,10 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-layout (constant_id = 0) const int CASCADE_COUNT = 4;
+layout(constant_id = 0) const int CASCADE_COUNT = 4;
+layout(constant_id = 1) const float BIAS = 0.0005f;
+
+const float MIN_OPACITY = 0.2f;
 
 layout(set = 0, binding = 1) uniform Lighting{
 	vec3 color;
@@ -126,11 +129,6 @@ float getShading(vec4 pos, float bias, uint cascadeIndex)
     return shadow;
 }
 
-const float MIN_OPACITY = 0.2f;
-
-const float BIAS_FACTOR = 0.0005f;
-const float MIN_BIAS = 0.00005f;
-
 void main() 
 {
 	float opacity = material.opacity * texture(opacityMap, inUV).r;
@@ -159,7 +157,7 @@ void main()
 	// Depth compare for shadowing
 	vec4 shadowCoord = viewProj[cascadeIndex] * vec4(inPos, 1.0f);	
 
-	float bias = max(BIAS_FACTOR * (1.0f - dot(N, lighting.direction)), MIN_BIAS) / (cascadeIndex + 1);
+	float bias = max(BIAS * (1.0f - dot(N, lighting.direction)), BIAS / 10) / (cascadeIndex + 1);
 	float illumination = 1.0f - getShading(shadowCoord, bias, cascadeIndex);
 
 	float ambientI = getAmbientIntensity();

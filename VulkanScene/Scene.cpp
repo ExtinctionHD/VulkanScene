@@ -338,9 +338,10 @@ void Scene::initPipelines(RenderPassesMap renderPasses)
         if (type == FINAL)
         {
 			constantEntries = {
-				{ 0, 0, sizeof(uint32_t)}
+				{ 0, 0, sizeof(uint32_t) },
+				{ 1, sizeof(uint32_t), sizeof(float) }
 			};
-			constantData = { &PssmKernel::CASCADE_COUNT };
+			constantData = { &PssmKernel::CASCADE_COUNT, &pssmKernel->BIAS };
         }
 
 		shaderModules.push_back(
@@ -435,6 +436,7 @@ void Scene::initStaticPipelines(const RenderPassesMap &renderPasses)
 	std::vector<VkSpecializationMapEntry> lightingConstantEntries{
 		{ 0, 0, sizeof(uint32_t)},
 		{ 1, sizeof(uint32_t), sizeof(uint32_t)},
+		{ 1, sizeof(uint32_t) * 2, sizeof(float)},
 	};
 
 	const uint32_t sampleCount = device->getSampleCount();
@@ -443,7 +445,7 @@ void Scene::initStaticPipelines(const RenderPassesMap &renderPasses)
 		"Shaders/Lighting/Frag.spv",
         VK_SHADER_STAGE_FRAGMENT_BIT, 
 		lightingConstantEntries,
-        std::vector<const void*>{ &sampleCount, &PssmKernel::CASCADE_COUNT });
+        std::vector<const void*>{ &sampleCount, &PssmKernel::CASCADE_COUNT, &pssmKernel->BIAS });
 
     const auto lightingPipeline = new GraphicsPipeline(
 		device,
