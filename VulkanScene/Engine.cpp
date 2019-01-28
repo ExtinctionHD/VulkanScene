@@ -7,6 +7,7 @@
 #include "SsaoRenderPass.h"
 
 #include "Engine.h"
+#include "ToneRenderPass.h"
 
 // public:
 
@@ -191,8 +192,8 @@ void Engine::drawFrame()
 	assert(result == VK_SUCCESS);
 
     // Final:
-	waitSemaphores = { stageFinishedSemaphores[LIGHTING], imageAvailableSemaphore };
-	waitStages = { VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	waitSemaphores = { stageFinishedSemaphores[LIGHTING] };
+	waitStages = { VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT };
 	signalSemaphores = { stageFinishedSemaphores[FINAL] };
 	submitInfo = {
 		VK_STRUCTURE_TYPE_SUBMIT_INFO,
@@ -201,7 +202,25 @@ void Engine::drawFrame()
 		waitSemaphores.data(),
 		waitStages.data(),
 		1,
-		&graphicsCommands.at(FINAL)[imageIndex],
+		&graphicsCommands.at(FINAL)[0],
+		uint32_t(signalSemaphores.size()),
+		signalSemaphores.data(),
+	};
+	result = vkQueueSubmit(device->getGraphicsQueue(), 1, &submitInfo, nullptr);
+	assert(result == VK_SUCCESS);
+
+	// Tone:
+	waitSemaphores = { stageFinishedSemaphores[FINAL], imageAvailableSemaphore };
+	waitStages = { VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+	signalSemaphores = { stageFinishedSemaphores[TONE] };
+	submitInfo = {
+		VK_STRUCTURE_TYPE_SUBMIT_INFO,
+		nullptr,
+		uint32_t(waitSemaphores.size()),
+		waitSemaphores.data(),
+		waitStages.data(),
+		1,
+		&graphicsCommands.at(TONE)[imageIndex],
 		uint32_t(signalSemaphores.size()),
 		signalSemaphores.data(),
 	};
@@ -264,8 +283,9 @@ void Engine::createRenderPasses(uint32_t shadowsDim)
 	renderPasses.insert({ GEOMETRY, new GeometryRenderPass(device, swapChain->getExtent()) });
 	renderPasses.insert({ SSAO, new SsaoRenderPass(device, swapChain->getExtent()) });
 	renderPasses.insert({ SSAO_BLUR, new SsaoRenderPass(device, swapChain->getExtent()) });
-	renderPasses.insert({ LIGHTING, new LightingRenderPass(device, swapChain) });
-	renderPasses.insert({ FINAL, new FinalRenderPass(device, swapChain) });
+	renderPasses.insert({ LIGHTING, new LightingRenderPass(device, swapChain->getExtent()) });
+	renderPasses.insert({ FINAL, new FinalRenderPass(device, swapChain->getExtent()) });
+	renderPasses.insert({ TONE, new ToneRenderPass(device, swapChain) });
 
     for (auto [type, renderPass] : renderPasses)
     {
@@ -299,7 +319,7 @@ void Engine::initGraphicsCommands()
 		}
 
 		uint32_t size = 1;
-        if (type == FINAL)
+        if (type == LAST)
         {
 			size = swapChain->getImageCount();
         }

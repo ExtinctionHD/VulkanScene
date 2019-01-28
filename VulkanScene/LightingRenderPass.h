@@ -2,13 +2,14 @@
 
 #include "RenderPass.h"
 #include "SwapChain.h"
+#include "TextureImage.h"
 
 class LightingRenderPass : public RenderPass
 {
 public:
-	LightingRenderPass(Device *device, SwapChain *swapChain);
+	LightingRenderPass(Device *device, VkExtent2D attachmentExtent);
 
-	std::shared_ptr<Image> getColorImage() const;
+	std::shared_ptr<TextureImage> getColorTexture() const;
 
 protected:
     void createAttachments() override;
@@ -18,8 +19,6 @@ protected:
     void createFramebuffers() override;
 
 private:
-	VkFormat colorAttachmentFormat;
-
-	std::shared_ptr<Image> colorImage;
+	std::shared_ptr<TextureImage> colorTexture;
 };
 

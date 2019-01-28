@@ -9,7 +9,7 @@
 class FinalRenderPass : public RenderPass
 {
 public:
-	FinalRenderPass(Device *device, SwapChain *swapChain);
+	FinalRenderPass(Device *device, VkExtent2D attachmentExtent);
 
 	void saveRenderPasses(GeometryRenderPass *geometryRenderPass, LightingRenderPass *lightingRenderPass);
 
@@ -21,8 +21,6 @@ protected:
 	void createFramebuffers() override;
 
 private:
-    SwapChain *pSwapChain;
-
 	GeometryRenderPass *geometryRenderPass;
 
 	LightingRenderPass *lightingRenderPass;

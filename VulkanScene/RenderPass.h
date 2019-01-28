@@ -18,7 +18,7 @@ public:
 
 	VkExtent2D getExtent() const;
 
-	uint32_t getColorAttachmentCount() const;
+	virtual uint32_t getColorAttachmentCount() const;
 
 	virtual std::vector<VkClearValue> getClearValues() const;
 
@@ -73,7 +73,9 @@ enum RenderPassType
     SSAO,
     SSAO_BLUR,
     LIGHTING,
-	FINAL
+	FINAL,
+    TONE,
+    LAST = TONE
 };
 
 typedef std::unordered_map<RenderPassType, RenderPass*> RenderPassesMap;

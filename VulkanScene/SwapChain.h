@@ -34,9 +34,11 @@ private:
 	VkSwapchainKHR swapChain;
 
 	VkExtent2D extent;
+
 	VkFormat imageFormat;
 
 	std::vector<VkImage> images;
+
 	std::vector<VkImageView> imageViews;
 
 	void create(VkExtent2D surfaceExtent);

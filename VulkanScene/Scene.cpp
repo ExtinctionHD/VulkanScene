@@ -9,6 +9,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 
 #include "SsaoRenderPass.h"
+#include "LightingRenderPass.h"
 
 // public:
 
@@ -69,7 +70,7 @@ uint32_t Scene::getBufferCount() const
 
 uint32_t Scene::getTextureCount() const
 {
-	uint32_t textureCount = 10;
+	uint32_t textureCount = 11;
 
 	textureCount += skybox->getTextureCount();
 	textureCount += terrain->getTextureCount();
@@ -84,7 +85,7 @@ uint32_t Scene::getTextureCount() const
 
 uint32_t Scene::getDescriptorSetCount() const
 {
-	uint32_t setCount = uint32_t(FINAL) + 1;
+    auto setCount = uint32_t(LAST + 1);
 
 	setCount += skybox->getDescriptorSetCount();
 	setCount += terrain->getDescriptorSetCount();
@@ -157,6 +158,9 @@ void Scene::render(VkCommandBuffer commandBuffer, RenderPassType type, uint32_t 
 		}
 		terrain->renderFinal(commandBuffer, { descriptors.at(FINAL).set });
         break;
+	case TONE:
+		Model::renderFullscreenQuad(commandBuffer, TONE, { descriptors.at(TONE).set });
+		break;
     default:
 		throw std::invalid_argument("Can't render scene for this type");
     }
@@ -205,6 +209,11 @@ void Scene::updateDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap
 		descriptors.at(LIGHTING).set,
 		{ lighting->getAttributesBuffer(), camera->getSpaceBuffer(), pssmKernel->getSplitsBuffer(), pssmKernel->getSpacesBuffer() },
 		textures);
+
+    // Tone:
+
+	const auto colorTexture = dynamic_cast<LightingRenderPass*>(renderPasses.at(LIGHTING))->getColorTexture().get();
+	descriptorPool->updateDescriptorSet(descriptors.at(LIGHTING).set, {}, { colorTexture });
 }
 
 // private:
@@ -288,6 +297,16 @@ void Scene::initDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap r
 		{ camera->getSpaceBuffer(), lighting->getAttributesBuffer(), pssmKernel->getSplitsBuffer(), pssmKernel->getSpacesBuffer() },
 		{ shadowsTexture });
 	descriptors.insert({ FINAL, descriptorStruct });
+
+    // Tone:
+
+	const auto colorTexture = dynamic_cast<LightingRenderPass*>(renderPasses.at(LIGHTING))->getColorTexture().get();
+	descriptorStruct.layout = descriptorPool->createDescriptorSetLayout({}, { VK_SHADER_STAGE_FRAGMENT_BIT });
+	descriptorStruct.set = descriptorPool->getDescriptorSet(descriptorStruct.layout);
+	descriptorPool->updateDescriptorSet(descriptorStruct.set, {}, { colorTexture });
+	descriptors.insert({ TONE, descriptorStruct });
+
+    // Models:
 
 	skybox->initDescriptorSets(descriptorPool);
 	terrain->initDescriptorSets(descriptorPool);
@@ -373,7 +392,7 @@ void Scene::initStaticPipelines(const RenderPassesMap &renderPasses)
 		"Shaders/Fullscreen/Vert.spv",
         VK_SHADER_STAGE_VERTEX_BIT);
 
-    #pragma region Ssao
+#pragma region Ssao
 
 	std::vector<VkSpecializationMapEntry> ssaoConstantEntries{
 		{ 0, 0, sizeof(uint32_t)},
@@ -400,9 +419,9 @@ void Scene::initStaticPipelines(const RenderPassesMap &renderPasses)
 	Model::setStaticPipeline(SSAO, ssaoPipeline);
 	pipelines.push_back(ssaoPipeline);
 
-    #pragma endregion 
+#pragma endregion 
 
-    #pragma region SsaoBlur
+#pragma region SsaoBlur
 
     const VkSpecializationMapEntry ssaoBlurConstantEntry{
 		0,    
@@ -429,14 +448,14 @@ void Scene::initStaticPipelines(const RenderPassesMap &renderPasses)
 	Model::setStaticPipeline(SSAO_BLUR, ssaoBlurPipeline);
 	pipelines.push_back(ssaoBlurPipeline);
 
-    #pragma endregion 
+#pragma endregion 
 
-    #pragma region Lighting
+#pragma region Lighting
 
 	std::vector<VkSpecializationMapEntry> lightingConstantEntries{
 		{ 0, 0, sizeof(uint32_t)},
 		{ 1, sizeof(uint32_t), sizeof(uint32_t)},
-		{ 1, sizeof(uint32_t) * 2, sizeof(float)},
+		{ 2, sizeof(uint32_t) * 2, sizeof(float)},
 	};
 
 	const uint32_t sampleCount = device->getSampleCount();
@@ -460,5 +479,34 @@ void Scene::initStaticPipelines(const RenderPassesMap &renderPasses)
 	Model::setStaticPipeline(LIGHTING, lightingPipeline);
 	pipelines.push_back(lightingPipeline);
 
-    #pragma endregion
+#pragma endregion
+
+#pragma region Tone
+
+	std::vector<VkSpecializationMapEntry> toneConstantEntries{
+	    { 0, 0, sizeof(uint32_t)},
+		{ 1, sizeof(uint32_t), sizeof(float)}
+	};
+
+	const auto toneFragmentShader = std::make_shared<ShaderModule>(
+		device,
+		"Shaders/Tone/Frag.spv",
+		VK_SHADER_STAGE_FRAGMENT_BIT,
+		toneConstantEntries,
+		std::vector<const void*>{ &sampleCount, &TONE_MAPPING_EXPOSURE });
+
+	const auto tonePipeline = new GraphicsPipeline(
+		device,
+		renderPasses.at(TONE),
+		{ descriptors.at(TONE).layout },
+		{},
+		{ fullscreenVertexShader, toneFragmentShader },
+		{},
+		{},
+		false);
+
+	Model::setStaticPipeline(TONE, tonePipeline);
+	pipelines.push_back(tonePipeline);
+
+#pragma endregion
 }

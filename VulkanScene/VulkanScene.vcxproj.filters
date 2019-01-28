@@ -231,6 +231,9 @@
     <ClInclude Include="PssmKernel.h">
       <Filter>Файлы заголовков\Scene\Components</Filter>
     </ClInclude>
+    <ClInclude Include="ToneRenderPass.h">
+      <Filter>Файлы заголовков\Engine\Rendering\RenderPasses</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Device.cpp">
@@ -352,6 +355,9 @@
     </ClCompile>
     <ClCompile Include="PssmKernel.cpp">
       <Filter>Исходные файлы\Scene\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ToneRenderPass.cpp">
+      <Filter>Исходные файлы\Engine\Rendering\RenderPasses</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

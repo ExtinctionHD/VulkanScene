@@ -4,15 +4,14 @@
 
 // public:
 
-LightingRenderPass::LightingRenderPass(Device *device, SwapChain *swapChain)
-    : RenderPass(device, swapChain->getExtent(), device->getSampleCount())
+LightingRenderPass::LightingRenderPass(Device *device, VkExtent2D attachmentExtent)
+    : RenderPass(device, attachmentExtent, device->getSampleCount())
 {
-	colorAttachmentFormat = swapChain->getImageFormat();
 }
 
-std::shared_ptr<Image> LightingRenderPass::getColorImage() const
+std::shared_ptr<TextureImage> LightingRenderPass::getColorTexture() const
 {
-	return colorImage;
+	return colorTexture;
 }
 
 // protected:
@@ -33,25 +32,27 @@ void LightingRenderPass::createAttachments()
 		1,
 	};
 
-	colorImage = std::make_shared<Image>(
+	colorTexture = std::make_shared<TextureImage>(
 		device,
 		attachmentExtent,
 		0,
 		sampleCount,
 		subresourceRange.levelCount,
-		colorAttachmentFormat,
+		VK_FORMAT_R16G16B16A16_SFLOAT,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 		subresourceRange.layerCount,
 		false,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		VK_IMAGE_ASPECT_COLOR_BIT);
-	colorImage->transitLayout(
+		VK_IMAGE_ASPECT_COLOR_BIT,
+		VK_FILTER_LINEAR,
+		VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+	colorTexture->transitLayout(
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 		subresourceRange);
 
-	attachments = { colorImage };
+	attachments = { colorTexture };
 }
 
 void LightingRenderPass::createRenderPass()
@@ -60,8 +61,8 @@ void LightingRenderPass::createRenderPass()
 
     const VkAttachmentDescription colorAttachmentDesc{
 		0,								
-		colorImage->getFormat(),		                
-		colorImage->getSampleCount(),			 
+		colorTexture->getFormat(),		                
+		colorTexture->getSampleCount(),			 
 		VK_ATTACHMENT_LOAD_OP_DONT_CARE,		     
 		VK_ATTACHMENT_STORE_OP_STORE,		     
 		VK_ATTACHMENT_LOAD_OP_DONT_CARE,	     
@@ -143,6 +144,6 @@ void LightingRenderPass::createRenderPass()
 
 void LightingRenderPass::createFramebuffers()
 {
-	addFramebuffer({ colorImage->getView() });
+	addFramebuffer({ colorTexture->getView() });
 }
 

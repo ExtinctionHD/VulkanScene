@@ -37,6 +37,8 @@ public:
 	void updateDescriptorSets(DescriptorPool *descriptorPool, RenderPassesMap renderPasses);
 
 private:
+	const float TONE_MAPPING_EXPOSURE = 1.0f;
+
 	Device *device;
 
 	SceneDao sceneDao;
