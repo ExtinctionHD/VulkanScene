@@ -4,6 +4,7 @@
 
 #include "TextureImage.h"
 #include "File.h"
+#include <cmath>
 
 // public:
 

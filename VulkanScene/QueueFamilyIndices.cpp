@@ -1,6 +1,7 @@
 #include <vector>
 
 #include "QueueFamilyIndices.h"
+#include <stdexcept>
 
 // public:
 

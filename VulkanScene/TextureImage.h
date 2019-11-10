@@ -2,6 +2,7 @@
 #include "Image.h"
 
 #include <stb_image.h>
+#include <string>
 
 // create texture image from file
 class TextureImage : public Image

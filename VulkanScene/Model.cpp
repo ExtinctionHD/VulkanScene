@@ -1,4 +1,5 @@
 #include "Model.h"
+#include <stdexcept>
 
 // public:
 

@@ -4,6 +4,7 @@
 
 #include "Device.h"
 #include <algorithm>
+#include <stdexcept>
 
 // public:
 

@@ -2,6 +2,7 @@
 #include "StagingBuffer.h"
 
 #include "Image.h"
+#include <stdexcept>
 
 // public:
 

@@ -110,7 +110,9 @@ void SceneDao::saveScene(const std::string &path)
 	scene["camera"] = {
 		{ "fov", 45.0f },
 		{ "speed", 2.0f },
-		{ "sensitivity", 0.1f }
+		{ "sensitivity", 0.1f },
+        { "nearPlane", 0.01f },
+        { "farPlane", 500.0f}
 	};
 	scene["camera"]["position"] = {
 		{ "x", 0.0f },
@@ -141,12 +143,10 @@ void SceneDao::saveScene(const std::string &path)
 	};
 	scene["models"]["Regera"]["transformations"][0][1] = {
 		{ "type", "SCALE" },
-		{ "sizeX", 2.050f },
-		{ "scale", {
-			{ "x", 0.0f },
-			{ "y", -1.0f },
-			{ "z", 0.0f }
-		}}
+		{ "size", {
+            { "axis", "x" },
+            { "value", 2.050f }
+		} },
 	};
 	scene["models"]["Regera"]["transformations"][0][2] = {
 		{ "type", "ROTATE" },
@@ -188,7 +188,8 @@ void SceneDao::saveScene(const std::string &path)
 		}}
 	};
 
-	std::ofstream stream(File::getAbsolute(path));
+    std::string fullPath = File::getAbsolute(path);
+	std::ofstream stream(fullPath);
 	stream << scene;
 }
 

@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include "Device.h"
+#include <string>
 
 class ShaderModule
 {

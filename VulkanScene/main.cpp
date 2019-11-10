@@ -3,7 +3,7 @@
 int main(int argc, char *argv[])
 {
 	const Settings settings{
-		VK_SAMPLE_COUNT_2_BIT,
+		VK_SAMPLE_COUNT_4_BIT,
 		4096,
 		"Assets/FullScene.json",
 	};

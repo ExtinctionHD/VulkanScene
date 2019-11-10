@@ -1,7 +1,7 @@
 #include <fstream>
 #include <cassert>
 #include <string>
-#include <experimental/filesystem>
+#include <filesystem>
 #include <Windows.h>
 
 #include "File.h"
@@ -31,27 +31,27 @@ std::string File::getBaseDirectory()
 	GetModuleFileName(nullptr, stagingBuffer, MAX_PATH);
     const std::string path(stagingBuffer);
 
-	return std::experimental::filesystem::path(path).parent_path().parent_path().string();
+	return std::filesystem::path(path).parent_path().parent_path().string();
 }
 
 std::string File::getAbsolute(const std::string &path)
 {
-	return std::experimental::filesystem::absolute(path, getBaseDirectory()).string();
+	return getBaseDirectory() + "\\" + path;
 }
 
 std::string File::getDirectory(const std::string &path)
 {
-	return std::experimental::filesystem::path(path).remove_filename().string();
+	return std::filesystem::path(path).remove_filename().string();
 }
 
 std::string File::getFilename(const std::string &path)
 {
-	return std::experimental::filesystem::path(path).filename().string();
+	return std::filesystem::path(path).filename().string();
 }
 
 std::string File::getPath(const std::string &directory, const std::string &path)
 {
-	return std::experimental::filesystem::path(directory).append(path).string();
+	return std::filesystem::path(directory).append(path).string();
 }
 
 bool File::exists(const std::string &path)
