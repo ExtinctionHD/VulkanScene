@@ -1,0 +1,495 @@
+{
+    "camera": {
+        "forward": {
+            "x": 1.0,
+            "y": 0.1,
+            "z": -0.35
+        },
+        "fov": 70.0,
+        "position": {
+            "x": 14.0,
+            "y": -2.6,
+            "z": 3.7
+        },
+        "sensitivity": 0.10000000149011612,
+        "speed": 2.5,
+        "up": {
+            "x": -0.0,
+            "y": -1.0,
+            "z": 0.0
+        },
+        "nearPlane": 0.01,
+        "farPlane": 500
+    },
+    "lighting": {
+        "ambientStrength": 0.8,
+        "color": {
+            "b": 1.0,
+            "g": 1.0,
+            "r": 1.0
+        },
+        "directedStrength": 0.8,
+        "direction": {
+            "x": -1.0,
+            "y": 0.6,
+            "z": -0.55
+        },
+        "specularPower": 8.0
+    },
+    "models": {
+        "House": {
+            "path": "models/House/House.obj",
+            "transformations": [
+                [
+                    {
+                        "distance": {
+                            "x": -2.0999999046325684,
+                            "y": 0.14000000059604645,
+                            "z": 3.0999999046325684
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "angle": 180,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ],
+                [
+                    {
+                        "distance": {
+                            "x": -6.0999999046325684,
+                            "y": 0.14000000059604645,
+                            "z": -16.0
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "angle": 45,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 180,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ],
+                [
+                    {
+                        "distance": {
+                            "x": -30.0999999046325684,
+                            "y": 0.14000000059604645,
+                            "z": 10.0
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "angle": 90,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 180,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ],
+                [
+                    {
+                        "distance": {
+                            "x": -42.0999999046325684,
+                            "y": 0.14000000059604645,
+                            "z": -35.0
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "angle": 210,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 180,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ],
+                [
+                    {
+                        "distance": {
+                            "x": -80.0999999046325684,
+                            "y": 0.14000000059604645,
+                            "z": -18.0
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "angle": 140,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 180,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ]
+            ]
+        },
+        "Regera": {
+            "path": "models/Koenigsegg Regera/Regera.fbx",
+            "transformations": [
+                [
+                    {
+                        "distance": {
+                            "x": 10.0,
+                            "y": 0.0,
+                            "z": 1.0
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "size": {
+                            "value": 2.049999952316284,
+                            "axis": "x"
+                        },
+                        "type": "SCALE"
+                    },
+                    {
+                        "angle": 210,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 90,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ]
+            ]
+        },
+        "Norway Marple": {
+            "path": "models/Trees/NorwayMarple.obj",
+            "transformations": [
+                [
+                    {
+                        "distance": {
+                            "x": -10.0,
+                            "y": 0.0,
+                            "z": -5.0
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "size": {
+                            "value": 12.0,
+                            "axis": "y"
+                        },
+                        "type": "SCALE"
+                    },
+                    {
+                        "angle": 30,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 180,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ],
+                [
+                    {
+                        "distance": {
+                            "x": 20.0,
+                            "y": 0.0,
+                            "z": -5.0
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "size": {
+                            "value": 12.0,
+                            "axis": "y"
+                        },
+                        "type": "SCALE"
+                    },
+                    {
+                        "angle": 79,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 180,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ]
+            ]
+        },
+        "Sugar Marple": {
+            "path": "models/Trees/SugarMarple.obj",
+            "transformations": [
+                [
+                    {
+                        "distance": {
+                            "x": -18.0,
+                            "y": 0.0,
+                            "z": -24.0
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "size": {
+                            "value": 14.0,
+                            "axis": "y"
+                        },
+                        "type": "SCALE"
+                    },
+                    {
+                        "angle": 30,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 180,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ],
+                [
+                    {
+                        "distance": {
+                            "x": -16.0,
+                            "y": 0.0,
+                            "z": 10.0
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "size": {
+                            "value": 13.0,
+                            "axis": "y"
+                        },
+                        "type": "SCALE"
+                    },
+                    {
+                        "angle": 200,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 180,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ]
+            ]
+        },
+        "AMG GT": {
+            "path": "models/Mercedes AMG GT/amgGT.fbx",
+            "transformations": [
+                [
+                    {
+                        "distance": {
+                            "x": -2.0,
+                            "y": 0.0,
+                            "z": -10.0
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "size": {
+                            "value": 4.55,
+                            "axis": "z"
+                        },
+                        "type": "SCALE"
+                    },
+                    {
+                        "angle": 210,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 180,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ]
+            ]
+        },
+        "Mercedes S63": {
+            "path": "models/Mercedes S63/s63.fbx",
+            "transformations": [
+                [
+                    {
+                        "distance": {
+                            "x": -18.0,
+                            "y": 0.0,
+                            "z": -6.5
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "size": {
+                            "value": 5.03,
+                            "axis": "z"
+                        },
+                        "type": "SCALE"
+                    },
+                    {
+                        "angle": 15,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 180,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ]
+            ]
+        },
+        "Aston Martin Vulcan": {
+            "path": "models/Aston Martin Vulcan/vulcan.fbx",
+            "transformations": [
+                [
+                    {
+                        "distance": {
+                            "x": -39.5,
+                            "y": 0.0,
+                            "z": -36.5
+                        },
+                        "type": "MOVE"
+                    },
+                    {
+                        "size": {
+                            "value": 4.81,
+                            "axis": "y"
+                        },
+                        "type": "SCALE"
+                    },
+                    {
+                        "angle": 15,
+                        "axis": {
+                            "x": 0.0,
+                            "y": 1.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    },
+                    {
+                        "angle": 90,
+                        "axis": {
+                            "x": 1.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "type": "ROTATE"
+                    }
+                ]
+            ]
+        }
+    },
+    "skybox": {
+        "directory": "textures/skyboxClouds",
+        "extension": ".jpg"
+    },
+    "terrain": {
+        "directory": "textures/grass",
+        "extension": ".jpg"
+    }
+}
