@@ -1,2 +1,2 @@
 # VulkanScene
-3d scene rendered using Vulkan API
+Render engine with deferred shading based on Vulkan API 
